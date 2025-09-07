@@ -1,0 +1,19 @@
+{
+  "name": "ux-lab",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:ui": "npm --workspace @ux-lab/ui run dev",
+    "build:ui": "npm --workspace @ux-lab/ui run build",
+    "dev:showcase": "npm --workspace @ux-lab/showcase run dev",
+    "build:showcase": "npm --workspace @ux-lab/showcase run build",
+    "build:all": "npm run build:ui && npm run build:showcase",
+    "dev:all": "concurrently \"npm run dev:ui\" \"npm run dev:showcase\"",
+    "install:all": "npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
