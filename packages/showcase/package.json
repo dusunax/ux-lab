@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@ux-lab/ui": "file:../ui/dist",
+    "@ux-lab/ui": "file:../ui",
     "framer-motion": "^10.12.0",
     "next": "15.5.2",
     "react": "19.1.0",
