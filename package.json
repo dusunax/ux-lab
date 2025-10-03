@@ -9,8 +9,10 @@
     "build:ui": "npm --workspace @ux-lab/ui run build",
     "dev:showcase": "npm --workspace @ux-lab/showcase run dev",
     "build:showcase": "npm --workspace @ux-lab/showcase run build",
-    "build:all": "npm run build:ui && npm run build:showcase",
-    "dev:all": "concurrently \"npm run dev:ui\" \"npm run dev:showcase\"",
+    "dev:flow": "npm --workspace @ux-lab/flow run dev",
+    "build:flow": "npm --workspace @ux-lab/flow run build",
+    "build:all": "npm run build:ui && npm run build:showcase && npm run build:flow",
+    "dev:all": "concurrently \"npm run dev:ui\" \"npm run dev:showcase\" \"npm run dev:flow\"",
     "install:all": "npm install"
   },
   "devDependencies": {

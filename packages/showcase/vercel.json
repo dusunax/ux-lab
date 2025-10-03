@@ -1,4 +1,6 @@
 {
   "buildCommand": "cd ../.. && npm run build:ui && cd packages/showcase && npm run build",
-  "installCommand": "cd ../.. && npm install --legacy-peer-deps && cd packages/showcase && npm install --legacy-peer-deps"
+  "installCommand": "cd ../.. && npm install --legacy-peer-deps && cd packages/showcase && npm install --legacy-peer-deps",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
 }
