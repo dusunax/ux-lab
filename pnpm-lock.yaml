@@ -15,8 +15,8 @@ importers:
   apps/flow:
     dependencies:
       '@ux-lab/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
+        specifier: file:../../packages/ui
+        version: file:packages/ui(react-dom@19.1.0)(react@19.1.0)
       '@xyflow/react':
         specifier: ^12.0.0
         version: 12.8.6(react-dom@19.1.0)(react@19.1.0)
@@ -58,8 +58,8 @@ importers:
   packages/showcase:
     dependencies:
       '@ux-lab/ui':
-        specifier: workspace:*
-        version: link:../ui
+        specifier: file:../ui
+        version: file:packages/ui(react-dom@19.1.0)(react@19.1.0)
       framer-motion:
         specifier: ^11.11.0
         version: 11.18.2(react-dom@19.1.0)(react@19.1.0)
@@ -2426,4 +2426,16 @@ packages:
     dependencies:
       react: 19.1.0
       use-sync-external-store: 1.6.0(react@19.1.0)
+    dev: false
+
+  file:packages/ui(react-dom@19.1.0)(react@19.1.0):
+    resolution: {directory: packages/ui, type: directory}
+    id: file:packages/ui
+    name: '@ux-lab/ui'
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
     dev: false
