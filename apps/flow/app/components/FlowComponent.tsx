@@ -8,33 +8,38 @@ import {
   BackgroundVariant,
   Controls,
   MiniMap,
-  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useState } from "react";
+import CRUDPanel from "./CRUDPanel";
 
-const initialNodes: Node[] = [
+const initialNodes = [
   {
-    id: "n1",
-    position: { x: 0, y: 0 },
-    data: { label: "Node 1" },
+    id: "1",
+    type: "classNode",
+    position: { x: 100, y: 100 },
+    data: { label: "Class: Animal" },
   },
   {
-    id: "n2",
-    position: { x: 0, y: 100 },
-    data: { label: "Node 2" },
+    id: "2",
+    type: "instanceNode",
+    position: { x: 400, y: 100 },
+    data: { label: "Instance: Cat" },
   },
   {
-    id: "n3",
-    position: { x: 0, y: 200 },
-    data: { label: "Node 3" },
+    id: "3",
+    type: "instanceNode",
+    position: { x: 600, y: 100 },
+    data: { label: "Instance: Dog" },
   },
 ];
-const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
+const initialEdges = [{ id: "e1-2", source: "2", target: "1", label: "is-a" }];
 
 const FlowComponent = () => {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null);
 
   const onNodesChange = useCallback(
     (changes) =>
@@ -47,24 +52,82 @@ const FlowComponent = () => {
     []
   );
   const onConnect = useCallback(
-    (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
+    (params) =>
+      setEdges((eds) => addEdge({ ...params, label: "relation" }, eds)),
     []
   );
 
+  const handleAddNode = useCallback((type: "classNode" | "instanceNode") => {
+    const newNode = {
+      id: `${Date.now()}`,
+      type,
+      position: { x: 100, y: 100 },
+      data: { label: `New ${type}` },
+    };
+    setNodes((nds) => [...nds, newNode]);
+  }, []);
+
+  const handleUpdateNode = useCallback((id: string, data: any) => {
+    setNodes((nds) =>
+      nds.map((node) => (node.id === id ? { ...node, data } : node))
+    );
+  }, []);
+
+  const handleDeleteNode = useCallback((id: string) => {
+    setNodes((nds) => nds.filter((node) => node.id !== id));
+    setEdges((eds) =>
+      eds.filter((edge) => edge.source !== id && edge.target !== id)
+    );
+    setSelectedNode(null);
+  }, []);
+
+  const handleUpdateEdge = useCallback((id: string, label: string) => {
+    setEdges((eds) =>
+      eds.map((edge) => (edge.id === id ? { ...edge, label } : edge))
+    );
+  }, []);
+
+  const handleDeleteEdge = useCallback((id: string) => {
+    setEdges((eds) => eds.filter((edge) => edge.id !== id));
+    setSelectedEdge(null);
+  }, []);
+
+  const onNodeClick = useCallback((_, node) => {
+    setSelectedNode(node);
+    setSelectedEdge(null);
+  }, []);
+
+  const onEdgeClick = useCallback((_, edge) => {
+    setSelectedEdge(edge);
+    setSelectedNode(null);
+  }, []);
+
   return (
-    <div className="flex-1">
+    <div className="flex-1 relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeClick={onNodeClick}
+        onEdgeClick={onEdgeClick}
         fitView
       >
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         <Controls />
         <MiniMap className="border-2 border-gray-300 shadow-lg rounded-md" />
       </ReactFlow>
+      <CRUDPanel
+        onAddNode={handleAddNode}
+        onUpdateNode={handleUpdateNode}
+        onDeleteNode={handleDeleteNode}
+        onAddEdge={() => {}}
+        onUpdateEdge={handleUpdateEdge}
+        onDeleteEdge={handleDeleteEdge}
+        selectedNode={selectedNode}
+        selectedEdge={selectedEdge}
+      />
     </div>
   );
 };
