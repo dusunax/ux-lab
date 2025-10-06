@@ -12,6 +12,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import { useCallback, useState } from "react";
 import CRUDPanel from "./CRUDPanel";
+import { ClassNode, InstanceNode } from "./CustomNodes";
 
 const initialNodes = [
   {
@@ -102,11 +103,17 @@ const FlowComponent = () => {
     setSelectedNode(null);
   }, []);
 
+  const nodeTypes = {
+    classNode: ClassNode,
+    instanceNode: InstanceNode,
+  };
+
   return (
     <div className="flex-1 relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
