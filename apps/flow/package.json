@@ -10,6 +10,7 @@
   "dependencies": {
     "@ux-lab/ui": "file:../../packages/ui",
     "@xyflow/react": "^12.0.0",
+    "firebase": "^12.3.0",
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.400.0",
     "next": "15.5.2",

@@ -11,37 +11,15 @@ import {
   addEdge,
 } from "@xyflow/react";
 
-const initialNodes: Node[] = [
-  {
-    id: "1",
-    type: "classNode",
-    position: { x: 100, y: 0 },
-    data: { label: "Class: Animal" },
-  },
-  {
-    id: "2",
-    type: "instanceNode",
-    position: { x: 400, y: 0 },
-    data: { label: "Instance: Cat" },
-  },
-  {
-    id: "3",
-    type: "instanceNode",
-    position: { x: 400, y: 50 },
-    data: { label: "Instance: Dog" },
-  },
-];
 
-const initialEdges: Edge[] = [
-  { id: "e1-2", source: "1", target: "2", label: "is-a" },
-];
-
-export const useFlow = (flowId: string = 'default') => {
+export const useFlow = (flowId: string = "default") => {
   const { saveFlow, loadFlow } = useFlowData();
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
@@ -55,35 +33,38 @@ export const useFlow = (flowId: string = 'default') => {
     []
   );
 
-    const onConnect = useCallback(
-      (params: Connection) => {
-        const newEdge = { ...params, label: "default" };
-        setEdges((eds: Edge[]) => {
-          const updatedEdges = addEdge(newEdge, eds);
-          const addedEdge = updatedEdges[updatedEdges.length - 1];
-          setTimeout(() => {
-            setSelectedEdge(addedEdge);
-            setSelectedNode(null);
-          }, 0);
-          return updatedEdges;
-        });
-      },
-      []
-    );
+  const onConnect = useCallback((params: Connection) => {
+    const newEdge = { ...params, label: "default" };
+    setEdges((eds: Edge[]) => {
+      const updatedEdges = addEdge(newEdge, eds);
+      const addedEdge = updatedEdges[updatedEdges.length - 1];
+      setTimeout(() => {
+        setSelectedEdge(addedEdge);
+        setSelectedNode(null);
+      }, 0);
+      return updatedEdges;
+    });
+  }, []);
 
-  const handleAddNode = useCallback((type: "classNode" | "instanceNode") => {
-    const newNode = {
-      id: `${Date.now()}`,
-      type,
-      position: { x: 100 + (type === "classNode" ? 0 : 300), y: 50 + nodes.filter(node => node.type === type).length * 50 },
-      data: { label: `New ${type}` },
+  const handleAddNode = useCallback(
+    (type: "classNode" | "instanceNode") => {
+      const newNode = {
+        id: `${Date.now()}`,
+        type,
+        position: {
+          x: 100 + (type === "classNode" ? 0 : 300),
+          y: 50 + nodes.filter((node) => node.type === type).length * 50,
+        },
+        data: { label: `New ${type}` },
       };
       setNodes((nds) => [...nds, newNode]);
       setTimeout(() => {
         setSelectedNode(newNode);
         setSelectedEdge(null);
       }, 0);
-    }, [nodes]);
+    },
+    [nodes]
+  );
 
   const handleUpdateNode = useCallback((id: string, data: any) => {
     setNodes((nds) => {
@@ -139,28 +120,43 @@ export const useFlow = (flowId: string = 'default') => {
   // Load initial data
   useEffect(() => {
     const loadInitialData = async () => {
-      const data = await loadFlow(flowId);
-      if (data) {
+      setIsLoading(true);
+      try {
+        const data = await loadFlow(flowId);
         setNodes(data.nodes);
         setEdges(data.edges);
+      } catch (error) {
+        console.error("Error loading flow data:", error);
+        const data = await loadFlow(flowId);
+        setNodes(data.nodes);
+        setEdges(data.edges);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadInitialData();
   }, [flowId, loadFlow]);
 
-  // Save changes
-  useEffect(() => {
-    const saveChanges = async () => {
+    const handleSaveChanges = useCallback(async () => {
+      if (isFirstLoad) {
+        setIsFirstLoad(false);
+        return;
+      }
       await saveFlow(flowId, nodes, edges);
-    };
-    saveChanges();
-  }, [flowId, nodes, edges, saveFlow]);
+    }, [flowId, nodes, edges, saveFlow, isFirstLoad]);
+  useEffect(() => {
+    handleSaveChanges();
+  }, [
+    nodes.map((n) => `${n.id}-${n.type}-${JSON.stringify(n.data)}`).join("|"),
+    edges.map((e) => `${e.id}-${e.source}-${e.target}-${e.label}`).join("|"),
+  ]);
 
   return {
     nodes,
     edges,
     selectedNode,
     selectedEdge,
+    isLoading,
     onNodesChange,
     onEdgesChange,
     onConnect,
