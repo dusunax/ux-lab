@@ -3,37 +3,34 @@
 ## 🚀 시작하기
 
 ```bash
-# 컴포넌트 쇼케이스 프로젝트 개발 서버 실행
-npm run dev:showcase
+# 의존성 설치
+pnpm install
+
+# 개발 서버 실행
+pnpm -w run dev:all
 
 # 브라우저에서 확인
-# http://localhost:3000
+# Showcase: http://localhost:3000
+# Flow: http://localhost:3333
 ```
+
+## 🔧 환경 설정
+
+1. Firebase 프로젝트 설정
+2. `.env.local` 파일 생성 (apps/flow/.env.example 참고)
+3. Firebase 설정 값 입력
 
 ## 📦 패키지
 
-- **@ux-lab/ui** (v0.1.0) - 공통 UI 컴포넌트 라이브러리
-- **@ux-lab/showcase** (v0.1.0) - 컴포넌트 쇼케이스
+- **@ux-lab/ui** - 공통 UI 컴포넌트 라이브러리
+- **@ux-lab/showcase** - 컴포넌트 쇼케이스
+- **@ux-lab/flow** - UX Flow 다이어그램 에디터
 
 ## 🛠️ 기술 스택
-
-### **@ux-lab/ui** (v0.1.0)
-
-- TypeScript 5.0+
-- Tailwind CSS 3.4.0 기반의 스타일
-
-### **@ux-lab/showcase** (v0.1.0)
 
 - React 19.1.0
 - Next.js 15.5.2
 - TypeScript 5.0+
 - Tailwind CSS 3.4.0
-- Framer Motion 10.12.0
-
-## 🎨 컴포넌트
-
-- **Button** - Primary, Ghost, Danger variants
-- **Input** - Form input with validation
-- **Card** - Content container with header/footer
-- **Modal** - Overlay dialog
-- **Spinner** - Loading indicator
+- Firebase
+- React Flow
