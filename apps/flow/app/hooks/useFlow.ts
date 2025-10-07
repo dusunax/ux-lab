@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useFlowData } from "./useFlowData";
 import {
   Node,
   Edge,
@@ -35,7 +36,8 @@ const initialEdges: Edge[] = [
   { id: "e1-2", source: "1", target: "2", label: "is-a" },
 ];
 
-export const useFlow = () => {
+export const useFlow = (flowId: string = 'default') => {
+  const { saveFlow, loadFlow } = useFlowData();
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -133,6 +135,26 @@ export const useFlow = () => {
     setSelectedEdge(edge);
     setSelectedNode(null);
   }, []);
+
+  // Load initial data
+  useEffect(() => {
+    const loadInitialData = async () => {
+      const data = await loadFlow(flowId);
+      if (data) {
+        setNodes(data.nodes);
+        setEdges(data.edges);
+      }
+    };
+    loadInitialData();
+  }, [flowId, loadFlow]);
+
+  // Save changes
+  useEffect(() => {
+    const saveChanges = async () => {
+      await saveFlow(flowId, nodes, edges);
+    };
+    saveChanges();
+  }, [flowId, nodes, edges, saveFlow]);
 
   return {
     nodes,
