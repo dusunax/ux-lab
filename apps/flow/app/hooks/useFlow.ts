@@ -38,10 +38,7 @@ export const useFlow = (flowId: string = "default") => {
     setEdges((eds: Edge[]) => {
       const updatedEdges = addEdge(newEdge, eds);
       const addedEdge = updatedEdges[updatedEdges.length - 1];
-      setTimeout(() => {
-        setSelectedEdge(addedEdge);
-        setSelectedNode(null);
-      }, 0);
+      setSelectedEdge(addedEdge);
       return updatedEdges;
     });
   }, []);
@@ -114,7 +111,10 @@ export const useFlow = (flowId: string = "default") => {
 
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
     setSelectedEdge(edge);
-    setSelectedNode(null);
+  }, []);
+
+  const onDeleteEdge = useCallback((id: string) => {
+    setSelectedEdge(null);
   }, []);
 
   // Load initial data
@@ -137,13 +137,13 @@ export const useFlow = (flowId: string = "default") => {
     loadInitialData();
   }, [flowId, loadFlow]);
 
-    const handleSaveChanges = useCallback(async () => {
-      if (isFirstLoad) {
-        setIsFirstLoad(false);
-        return;
-      }
-      await saveFlow(flowId, nodes, edges);
-    }, [flowId, nodes, edges, saveFlow, isFirstLoad]);
+  const handleSaveChanges = useCallback(async () => {
+    if (isFirstLoad) {
+      setIsFirstLoad(false);
+      return;
+    }
+    await saveFlow(flowId, nodes, edges);
+  }, [flowId, nodes, edges, saveFlow, isFirstLoad]);
   useEffect(() => {
     handleSaveChanges();
   }, [
@@ -162,6 +162,7 @@ export const useFlow = (flowId: string = "default") => {
     onConnect,
     onNodeClick,
     onEdgeClick,
+    onDeleteEdge,
     handleAddNode,
     handleUpdateNode,
     handleDeleteNode,

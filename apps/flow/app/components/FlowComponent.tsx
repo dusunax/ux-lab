@@ -35,6 +35,7 @@ const FlowComponent = () => {
           onConnect={flowController.onConnect}
           onNodeClick={flowController.onNodeClick}
           onEdgeClick={flowController.onEdgeClick}
+          onEdgesDelete={flowController.onDeleteEdge}
           fitView
         >
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
@@ -50,6 +51,8 @@ const FlowComponent = () => {
         onDeleteEdge={flowController.handleDeleteEdge}
         selectedNode={flowController.selectedNode}
         selectedEdge={flowController.selectedEdge}
+        nodes={flowController.nodes}
+        edges={flowController.edges}
       />
     </div>
   );
