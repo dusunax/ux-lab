@@ -22,6 +22,8 @@ interface CRUDPanelProps {
   selectedEdge?: any;
   nodes: any[];
   edges: any[];
+  allSourceNodes: Array<{ node: any; edge: any }>;
+  allTargetNodes: Array<{ node: any; edge: any }>;
 }
 
 const CRUDPanel = ({
@@ -34,6 +36,8 @@ const CRUDPanel = ({
   selectedEdge,
   nodes,
   edges,
+  allSourceNodes,
+  allTargetNodes,
 }: CRUDPanelProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -70,14 +74,14 @@ const CRUDPanel = ({
 
   return (
     <motion.div
-      className="fixed right-0 top-0 h-full bg-white shadow-lg flex"
+      className="fixed right-0 flex flex-col top-0 h-full bg-white shadow-lg"
       initial={{ width: "320px" }}
       animate={{ width: isExpanded ? "320px" : "0px" }}
       transition={{ type: "spring", stiffness: 300, damping: 30, bounce: 0.1 }}
     >
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="absolute -left-4 bottom-6 -translate-x-full transform bg-[#2563eb] text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow"
+        className="absolute -left-4 bottom-6 -translate-x-full transform bg-[#2563eb] text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow z-10"
       >
         <ChevronRight
           size={16}
@@ -87,7 +91,11 @@ const CRUDPanel = ({
         />
       </button>
 
-      <div className={`w-full p-4 ${!isExpanded ? "hidden" : ""}`}>
+      <div
+        className={`w-full flex-1 p-4 pb-8 overflow-y-auto ${
+          !isExpanded ? "hidden" : ""
+        }`}
+      >
         <h2 className="text-xl font-bold mb-4">Flow Editor</h2>
 
         <div className="space-y-6">
@@ -150,9 +158,9 @@ const CRUDPanel = ({
             </Panel>
           )}
 
-          {/* Node Connections */}
+          {/* Direct Connections */}
           {selectedNode && (
-            <Panel title="Node Connections">
+            <Panel title="Direct Connections">
               <PanelSection title="Source Connections">
                 {sourceConnections.map((conn) => (
                   <ConnectionItem
@@ -178,6 +186,39 @@ const CRUDPanel = ({
                 ))}
                 {targetConnections.length === 0 && (
                   <EmptyMessage message="No incoming connections" />
+                )}
+              </PanelSection>
+            </Panel>
+          )}
+
+          {/* All Connected Nodes */}
+          {selectedNode && (
+            <Panel title="All Connected Nodes">
+              <PanelSection title="All Source Nodes">
+                {allSourceNodes.map(({ node, edge }) => (
+                  <ConnectionItem
+                    key={`${node.id}-${edge.id}`}
+                    sourceLabel={node.data.label}
+                    relationLabel={edge.label || "relation"}
+                    targetLabel={selectedNode.data.label}
+                  />
+                ))}
+                {allSourceNodes.length === 0 && (
+                  <EmptyMessage message="No source nodes found" />
+                )}
+              </PanelSection>
+
+              <PanelSection title="All Target Nodes">
+                {allTargetNodes.map(({ node, edge }) => (
+                  <ConnectionItem
+                    key={`${node.id}-${edge.id}`}
+                    sourceLabel={selectedNode.data.label}
+                    relationLabel={edge.label || "relation"}
+                    targetLabel={node.data.label}
+                  />
+                ))}
+                {allTargetNodes.length === 0 && (
+                  <EmptyMessage message="No target nodes found" />
                 )}
               </PanelSection>
             </Panel>

@@ -5,7 +5,9 @@ interface PanelProps {
 }
 
 export const Panel = ({ title, children, className = "" }: PanelProps) => (
-  <section className={className}>
+  <section
+    className={`last:border-b-0 border-b border-gray-100 pb-4 ${className}`}
+  >
     <h3 className="text-lg font-semibold mb-2">{title}</h3>
     <div className="space-y-2">{children}</div>
   </section>
@@ -17,8 +19,12 @@ interface PanelSectionProps {
   className?: string;
 }
 
-export const PanelSection = ({ title, children, className = "" }: PanelSectionProps) => (
-  <div className={`border rounded p-2 space-y-1 ${className}`}>
+export const PanelSection = ({
+  title,
+  children,
+  className = "",
+}: PanelSectionProps) => (
+  <div className={`border rounded p-2 space-y-2 ${className}`}>
     <h4 className="font-medium text-gray-700">{title}</h4>
     {children}
   </div>
@@ -35,12 +41,10 @@ export const ConnectionItem = ({
   targetLabel,
   relationLabel,
 }: ConnectionItemProps) => (
-  <div className="flex items-center gap-2 text-gray-600 flex-wrap">
+  <div className="flex items-center gap-2 text-gray-600 flex-wrap gap-y-1 text-xs">
     <span className="bg-blue-100 px-2 py-0.5 rounded">{sourceLabel}</span>
     <span>→</span>
-    <span className="bg-gray-100 px-2 py-0.5 rounded text-xs">
-      {relationLabel}
-    </span>
+    <span className="px-1 py-0.5 rounded text-[10px]">{relationLabel}</span>
     <span>→</span>
     <span className="bg-blue-100 px-2 py-0.5 rounded">{targetLabel}</span>
   </div>

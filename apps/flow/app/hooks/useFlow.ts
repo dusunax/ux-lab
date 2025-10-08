@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import { useFlowData } from "./useFlowData";
 import {
   Node,
@@ -10,7 +10,6 @@ import {
   applyEdgeChanges,
   addEdge,
 } from "@xyflow/react";
-
 
 export const useFlow = (flowId: string = "default") => {
   const { saveFlow, loadFlow } = useFlowData();
@@ -117,6 +116,56 @@ export const useFlow = (flowId: string = "default") => {
     setSelectedEdge(null);
   }, []);
 
+  // 모든 상위/하위 노드 찾기
+  const findAllConnectedNodes = useCallback(
+    (
+      startNodeId: string,
+      direction: "source" | "target",
+      visited = new Set<string>()
+    ) => {
+      if (visited.has(startNodeId)) return [];
+
+      visited.add(startNodeId);
+      const connections = edges.filter((edge) =>
+        direction === "source"
+          ? edge.target === startNodeId
+          : edge.source === startNodeId
+      );
+
+      const connectedNodes = connections.map((conn) => {
+        const nodeId = direction === "source" ? conn.source : conn.target;
+        const node = nodes.find((n) => n.id === nodeId);
+        return {
+          edge: conn,
+          node,
+        };
+      });
+
+      const nestedConnections = connectedNodes.flatMap(({ edge, node }) =>
+        node
+          ? [
+              { edge, node },
+              ...findAllConnectedNodes(node.id, direction, visited),
+            ]
+          : []
+      );
+
+      return nestedConnections;
+    },
+    [edges, nodes]
+  );
+
+  // 모든 상위/하위 노드 메모이제이션
+  const allSourceNodes = useMemo(() => {
+    if (!selectedNode) return [];
+    return findAllConnectedNodes(selectedNode.id, "source");
+  }, [selectedNode, findAllConnectedNodes]);
+
+  const allTargetNodes = useMemo(() => {
+    if (!selectedNode) return [];
+    return findAllConnectedNodes(selectedNode.id, "target");
+  }, [selectedNode, findAllConnectedNodes]);
+
   // Load initial data
   useEffect(() => {
     const loadInitialData = async () => {
@@ -168,5 +217,7 @@ export const useFlow = (flowId: string = "default") => {
     handleDeleteNode,
     handleUpdateEdge,
     handleDeleteEdge,
+    allSourceNodes,
+    allTargetNodes,
   };
 };

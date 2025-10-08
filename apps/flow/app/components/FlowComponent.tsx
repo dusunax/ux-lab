@@ -53,6 +53,8 @@ const FlowComponent = () => {
         selectedEdge={flowController.selectedEdge}
         nodes={flowController.nodes}
         edges={flowController.edges}
+        allSourceNodes={flowController.allSourceNodes}
+        allTargetNodes={flowController.allTargetNodes}
       />
     </div>
   );
