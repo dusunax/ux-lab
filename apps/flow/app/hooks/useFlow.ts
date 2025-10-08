@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useMemo } from "react";
+import { useCallback, useState, useEffect, useMemo, useRef } from "react";
 import { useFlowData } from "./useFlowData";
 import {
   Node,
@@ -193,11 +193,20 @@ export const useFlow = (flowId: string = "default") => {
     }
     await saveFlow(flowId, nodes, edges);
   }, [flowId, nodes, edges, saveFlow, isFirstLoad]);
+
+  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debouncedSave = useCallback(() => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(handleSaveChanges, 1000);
+  }, [handleSaveChanges]);
+
   useEffect(() => {
-    handleSaveChanges();
+    debouncedSave();
+    return () => saveTimerRef.current && clearTimeout(saveTimerRef.current);
   }, [
     nodes.map((n) => `${n.id}-${n.type}-${JSON.stringify(n.data)}`).join("|"),
     edges.map((e) => `${e.id}-${e.source}-${e.target}-${e.label}`).join("|"),
+    debouncedSave,
   ]);
 
   return {
