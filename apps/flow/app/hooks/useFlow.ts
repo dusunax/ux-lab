@@ -197,7 +197,7 @@ export const useFlow = (flowId: string = "default") => {
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const debouncedSave = useCallback(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(handleSaveChanges, 1000);
+    saveTimerRef.current = setTimeout(handleSaveChanges, 3000);
   }, [handleSaveChanges]);
 
   useEffect(() => {

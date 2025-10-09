@@ -66,12 +66,12 @@ interface ActionButtonProps {
   className?: string;
 }
 
-export const ActionButton = ({ 
-  onClick, 
-  variant = "primary", 
+export const ActionButton = ({
+  onClick,
+  variant = "primary",
   size = "md",
   children,
-  className = ""
+  className = "",
 }: ActionButtonProps) => {
   const baseStyles = "w-full rounded hover:shadow-lg transition-all";
   const variantStyles = {
@@ -99,6 +99,7 @@ interface InputFieldProps {
   placeholder?: string;
   size?: "sm" | "md";
   className?: string;
+  autoFocus?: boolean;
 }
 
 export const InputField = ({
@@ -106,7 +107,8 @@ export const InputField = ({
   onChange,
   placeholder,
   size = "md",
-  className = ""
+  className = "",
+  autoFocus = true,
 }: InputFieldProps) => {
   const sizeStyles = {
     sm: "px-3 py-1.5 text-sm",
@@ -120,6 +122,7 @@ export const InputField = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={`w-full border rounded ${sizeStyles[size]} ${className}`}
+      autoFocus={autoFocus}
     />
   );
 };
