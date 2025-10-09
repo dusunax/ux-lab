@@ -100,6 +100,7 @@ interface InputFieldProps {
   size?: "sm" | "md";
   className?: string;
   autoFocus?: boolean;
+  error?: boolean;
 }
 
 export const InputField = ({
@@ -108,7 +109,8 @@ export const InputField = ({
   placeholder,
   size = "md",
   className = "",
-  autoFocus = true,
+  autoFocus = false,
+  error = false,
 }: InputFieldProps) => {
   const sizeStyles = {
     sm: "px-3 py-1.5 text-sm",
@@ -121,7 +123,9 @@ export const InputField = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full border rounded ${sizeStyles[size]} ${className}`}
+      className={`w-full border rounded focus:ring-0 outline-none placeholder:text-gray-300 ${
+        sizeStyles[size]
+      } ${error ? "border-red-500" : "border-gray-300"} ${className}`}
       autoFocus={autoFocus}
     />
   );

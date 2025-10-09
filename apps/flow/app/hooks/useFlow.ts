@@ -43,39 +43,71 @@ export const useFlow = (flowId: string = "default") => {
   }, []);
 
   const handleAddNode = useCallback(
-    (type: "classNode" | "instanceNode") => {
+    (type: "classNode" | "instanceNode", id: string, label: string) => {
+      const nodeId = id || sanitizeNodeLabel(label);
+
+      if (nodes.some((node) => node.id === nodeId)) {
+        alert("이미 사용 중인 ID입니다.");
+        return false;
+      }
+
       const newNode = {
-        id: `${Date.now()}`,
+        id: nodeId,
         type,
         position: {
           x: 100 + (type === "classNode" ? 0 : 300),
           y: 50 + nodes.filter((node) => node.type === type).length * 50,
         },
-        data: { label: `New ${type}` },
+        data: { label },
       };
       setNodes((nds) => [...nds, newNode]);
       setTimeout(() => {
         setSelectedNode(newNode);
         setSelectedEdge(null);
       }, 0);
+      return true;
     },
     [nodes]
   );
 
-  const handleUpdateNode = useCallback((id: string, data: any) => {
-    setNodes((nds) => {
-      const updatedNodes = nds.map((node) => {
-        if (node.id === id) {
-          const updatedNode = { ...node, data };
-          // 선택된 노드도 동시에 업데이트
-          setTimeout(() => setSelectedNode(updatedNode), 0);
-          return updatedNode;
-        }
-        return node;
+  const handleUpdateNode = useCallback(
+    (id: string, newId: string, data: any) => {
+      const nodeId = newId || id;
+
+      if (id !== nodeId && nodes.some((node) => node.id === nodeId)) {
+        alert("이미 사용 중인 ID입니다.");
+        return false;
+      }
+
+      setNodes((nds) => {
+        const updatedNodes = nds.map((node) => {
+          if (node.id === id) {
+            const updatedNode = {
+              ...node,
+              id: nodeId,
+              data,
+            };
+            setTimeout(() => setSelectedNode(updatedNode), 0);
+            return updatedNode;
+          }
+          return node;
+        });
+        return updatedNodes;
       });
-      return updatedNodes;
-    });
-  }, []);
+
+      if (id !== nodeId) {
+        setEdges((eds) =>
+          eds.map((edge) => ({
+            ...edge,
+            source: edge.source === id ? nodeId : edge.source,
+            target: edge.target === id ? nodeId : edge.target,
+          }))
+        );
+      }
+      return true;
+    },
+    [nodes]
+  );
 
   const handleDeleteNode = useCallback((id: string) => {
     setNodes((nds) => nds.filter((node) => node.id !== id));

@@ -11,34 +11,26 @@ import {
   ActionButton,
   InputField,
 } from "./common/Panel";
+import { useFlow } from "../hooks/useFlow";
 
 interface CRUDPanelProps {
-  onAddNode: (type: "classNode" | "instanceNode") => void;
-  onUpdateNode: (id: string, data: any) => void;
-  onDeleteNode: (id: string) => void;
-  onUpdateEdge: (id: string, label: string) => void;
-  onDeleteEdge: (id: string) => void;
-  selectedNode?: any;
-  selectedEdge?: any;
-  nodes: any[];
-  edges: any[];
-  allSourceNodes: Array<{ node: any; edge: any }>;
-  allTargetNodes: Array<{ node: any; edge: any }>;
+  flowController: ReturnType<typeof useFlow>;
 }
 
-const CRUDPanel = ({
-  onAddNode,
-  onUpdateNode,
-  onDeleteNode,
-  onUpdateEdge,
-  onDeleteEdge,
-  selectedNode,
-  selectedEdge,
-  nodes,
-  edges,
-  allSourceNodes,
-  allTargetNodes,
-}: CRUDPanelProps) => {
+const CRUDPanel = ({ flowController }: CRUDPanelProps) => {
+  const {
+    handleAddNode: onAddNode,
+    handleUpdateNode: onUpdateNode,
+    handleDeleteNode: onDeleteNode,
+    handleUpdateEdge: onUpdateEdge,
+    handleDeleteEdge: onDeleteEdge,
+    selectedNode,
+    selectedEdge,
+    nodes,
+    edges,
+    allSourceNodes,
+    allTargetNodes,
+  } = flowController;
   const [isExpanded, setIsExpanded] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);

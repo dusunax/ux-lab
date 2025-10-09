@@ -11,9 +11,11 @@ import CRUDPanel from "./CRUDPanel";
 import { ClassNode, InstanceNode } from "./CustomNodes";
 import { useFlow } from "../hooks/useFlow";
 
-const FlowComponent = () => {
-  const flowController = useFlow();
+interface FlowComponentProps {
+  flowController: ReturnType<typeof useFlow>;
+}
 
+const FlowComponent = ({ flowController }: FlowComponentProps) => {
   const nodeTypes = {
     classNode: ClassNode,
     instanceNode: InstanceNode,
@@ -43,19 +45,7 @@ const FlowComponent = () => {
           <MiniMap className="border-2 border-gray-300 shadow-lg rounded-md" />
         </ReactFlow>
       )}
-      <CRUDPanel
-        onAddNode={flowController.handleAddNode}
-        onUpdateNode={flowController.handleUpdateNode}
-        onDeleteNode={flowController.handleDeleteNode}
-        onUpdateEdge={flowController.handleUpdateEdge}
-        onDeleteEdge={flowController.handleDeleteEdge}
-        selectedNode={flowController.selectedNode}
-        selectedEdge={flowController.selectedEdge}
-        nodes={flowController.nodes}
-        edges={flowController.edges}
-        allSourceNodes={flowController.allSourceNodes}
-        allTargetNodes={flowController.allTargetNodes}
-      />
+      <CRUDPanel flowController={flowController} />
     </div>
   );
 };
