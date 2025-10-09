@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useMemo, useRef } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import { useFlowData } from "./useFlowData";
 import {
   Node,
@@ -20,6 +20,20 @@ export const useFlow = (flowId: string = "default") => {
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [isAddNodeModalOpen, setIsAddNodeModalOpen] = useState(false);
+  const [pendingNodeType, setPendingNodeType] = useState<
+    "classNode" | "instanceNode" | null
+  >(null);
+  const [pendingNodeId, setPendingNodeId] = useState("");
+  const [pendingNodeLabel, setPendingNodeLabel] = useState("");
+
+  const handleAddNodeClick = useCallback(
+    (type: "classNode" | "instanceNode") => {
+      setPendingNodeType(type);
+      setIsAddNodeModalOpen(true);
+    },
+    []
+  );
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
@@ -136,16 +150,16 @@ export const useFlow = (flowId: string = "default") => {
     setSelectedEdge(null);
   }, []);
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
     setSelectedEdge(null);
   }, []);
 
-  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+  const onEdgeClick = useCallback((_event: React.MouseEvent, edge: Edge) => {
     setSelectedEdge(edge);
   }, []);
 
-  const onDeleteEdge = useCallback((id: string) => {
+  const onDeleteEdge = useCallback(() => {
     setSelectedEdge(null);
   }, []);
 
@@ -227,20 +241,9 @@ export const useFlow = (flowId: string = "default") => {
     await saveFlow(flowId, nodes, edges);
   }, [flowId, nodes, edges, saveFlow, isFirstLoad]);
 
-  const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const debouncedSave = useCallback(() => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(handleSaveChanges, 3000);
+  const handleSaveOnBlur = useCallback(() => {
+    handleSaveChanges();
   }, [handleSaveChanges]);
-
-  useEffect(() => {
-    debouncedSave();
-    return () => saveTimerRef.current && clearTimeout(saveTimerRef.current);
-  }, [
-    nodes.map((n) => `${n.id}-${n.type}-${JSON.stringify(n.data)}`).join("|"),
-    edges.map((e) => `${e.id}-${e.source}-${e.target}-${e.label}`).join("|"),
-    debouncedSave,
-  ]);
 
   return {
     nodes,
@@ -261,5 +264,14 @@ export const useFlow = (flowId: string = "default") => {
     handleDeleteEdge,
     allSourceNodes,
     allTargetNodes,
+    isAddNodeModalOpen,
+    setIsAddNodeModalOpen,
+    pendingNodeType,
+    pendingNodeId,
+    setPendingNodeId,
+    pendingNodeLabel,
+    setPendingNodeLabel,
+    handleAddNodeClick,
+    handleSaveOnBlur,
   };
 };

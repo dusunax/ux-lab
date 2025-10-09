@@ -3,15 +3,14 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import {
-  Panel,
-  PanelSection,
-  ConnectionItem,
-  EmptyMessage,
-  ActionButton,
-  InputField,
-} from "./common/Panel";
+
 import { useFlow } from "../hooks/useFlow";
+import { AddNodeModal } from "./modals/AddNodeModal";
+import { AddNodePanel } from "./panels/AddNodePanel";
+import { SelectedNodePanel } from "./panels/SelectedNodePanel";
+import { SelectedEdgePanel } from "./panels/SelectedEdgePanel";
+import { ConnectionsPanel } from "./panels/ConnectionsPanel";
+import { AllConnectionsPanel } from "./panels/AllConnectionsPanel";
 
 interface CRUDPanelProps {
   flowController: ReturnType<typeof useFlow>;
@@ -30,6 +29,15 @@ const CRUDPanel = ({ flowController }: CRUDPanelProps) => {
     edges,
     allSourceNodes,
     allTargetNodes,
+    isAddNodeModalOpen,
+    setIsAddNodeModalOpen,
+    pendingNodeType,
+    pendingNodeId,
+    setPendingNodeId,
+    pendingNodeLabel,
+    setPendingNodeLabel,
+    handleAddNodeClick,
+    handleSaveOnBlur,
   } = flowController;
   const [isExpanded, setIsExpanded] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -90,130 +98,53 @@ const CRUDPanel = ({ flowController }: CRUDPanelProps) => {
       >
         <h2 className="text-xl font-bold mb-4">Flow Editor</h2>
 
+        <AddNodeModal
+          isOpen={isAddNodeModalOpen}
+          onClose={() => setIsAddNodeModalOpen(false)}
+          pendingNodeType={pendingNodeType}
+          pendingNodeId={pendingNodeId}
+          setPendingNodeId={setPendingNodeId}
+          pendingNodeLabel={pendingNodeLabel}
+          setPendingNodeLabel={setPendingNodeLabel}
+          onAddNode={onAddNode}
+        />
+
         <div className="space-y-6">
-          {/* Add Node Section */}
-          <Panel title="Add Node">
-            <ActionButton
-              onClick={() => onAddNode("classNode")}
-              variant="primary"
-              className="bg-green-500 hover:bg-green-600"
-            >
-              Add Class Node
-            </ActionButton>
-            <ActionButton
-              onClick={() => onAddNode("instanceNode")}
-              variant="primary"
-              className="bg-blue-500 hover:bg-blue-600"
-            >
-              Add Instance Node
-            </ActionButton>
-          </Panel>
+          <AddNodePanel onAddNodeClick={handleAddNodeClick} />
 
-          {/* Selected Node Section */}
           {selectedNode && (
-            <Panel title="Selected Node">
-              <InputField
-                value={inputValue}
-                onChange={(value) => {
-                  setInputValue(value);
-                  onUpdateNode(selectedNode.id, {
-                    ...selectedNode.data,
-                    label: value,
-                  });
-                }}
-              />
-              <ActionButton
-                onClick={() => onDeleteNode(selectedNode.id)}
-                variant="danger"
-              >
-                Delete Node
-              </ActionButton>
-            </Panel>
+            <SelectedNodePanel
+              node={selectedNode}
+              onUpdateNode={onUpdateNode}
+              onDeleteNode={onDeleteNode}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              onSave={handleSaveOnBlur}
+            />
           )}
 
-          {/* Selected Edge Section */}
           {selectedEdge && (
-            <Panel title="Selected Edge">
-              <InputField
-                value={selectedEdge.label}
-                onChange={(value) => onUpdateEdge(selectedEdge.id, value)}
-                placeholder="Enter connection label..."
-                size="sm"
-              />
-              <ActionButton
-                onClick={() => onDeleteEdge(selectedEdge.id)}
-                variant="danger"
-                size="sm"
-              >
-                Delete Connection
-              </ActionButton>
-            </Panel>
+            <SelectedEdgePanel
+              edge={selectedEdge}
+              onUpdateEdge={onUpdateEdge}
+              onDeleteEdge={onDeleteEdge}
+            />
           )}
 
-          {/* Direct Connections */}
           {selectedNode && (
-            <Panel title="Direct Connections">
-              <PanelSection title="Source Connections">
-                {sourceConnections.map((conn) => (
-                  <ConnectionItem
-                    key={conn.id}
-                    sourceLabel={selectedNode.data.label}
-                    relationLabel={conn.label || "relation"}
-                    targetLabel={conn.targetNode?.data.label || "Unknown"}
-                  />
-                ))}
-                {sourceConnections.length === 0 && (
-                  <EmptyMessage message="No outgoing connections" />
-                )}
-              </PanelSection>
-
-              <PanelSection title="Target Connections">
-                {targetConnections.map((conn) => (
-                  <ConnectionItem
-                    key={conn.id}
-                    sourceLabel={conn.sourceNode?.data.label || "Unknown"}
-                    relationLabel={conn.label || "relation"}
-                    targetLabel={selectedNode.data.label}
-                  />
-                ))}
-                {targetConnections.length === 0 && (
-                  <EmptyMessage message="No incoming connections" />
-                )}
-              </PanelSection>
-            </Panel>
+            <ConnectionsPanel
+              node={selectedNode}
+              sourceConnections={sourceConnections}
+              targetConnections={targetConnections}
+            />
           )}
 
-          {/* All Connected Nodes */}
           {selectedNode && (
-            <Panel title="All Connected Nodes">
-              <PanelSection title="All Source Nodes">
-                {allSourceNodes.map(({ node, edge }) => (
-                  <ConnectionItem
-                    key={`${node.id}-${edge.id}`}
-                    sourceLabel={node.data.label}
-                    relationLabel={edge.label || "relation"}
-                    targetLabel={selectedNode.data.label}
-                  />
-                ))}
-                {allSourceNodes.length === 0 && (
-                  <EmptyMessage message="No source nodes found" />
-                )}
-              </PanelSection>
-
-              <PanelSection title="All Target Nodes">
-                {allTargetNodes.map(({ node, edge }) => (
-                  <ConnectionItem
-                    key={`${node.id}-${edge.id}`}
-                    sourceLabel={selectedNode.data.label}
-                    relationLabel={edge.label || "relation"}
-                    targetLabel={node.data.label}
-                  />
-                ))}
-                {allTargetNodes.length === 0 && (
-                  <EmptyMessage message="No target nodes found" />
-                )}
-              </PanelSection>
-            </Panel>
+            <AllConnectionsPanel
+              node={selectedNode}
+              allSourceNodes={allSourceNodes}
+              allTargetNodes={allTargetNodes}
+            />
           )}
         </div>
       </div>

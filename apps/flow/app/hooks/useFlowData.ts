@@ -56,7 +56,6 @@ export const useFlowData = () => {
 
       if (flowDoc.exists()) {
         const data = flowDoc.data();
-        console.log(flowDoc.data());
         return {
           nodes: data.nodes as Node[],
           edges: data.edges as Edge[],

@@ -96,6 +96,7 @@ export const ActionButton = ({
 interface InputFieldProps {
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   size?: "sm" | "md";
   className?: string;
@@ -106,6 +107,7 @@ interface InputFieldProps {
 export const InputField = ({
   value,
   onChange,
+  onBlur,
   placeholder,
   size = "md",
   className = "",
@@ -127,6 +129,7 @@ export const InputField = ({
         sizeStyles[size]
       } ${error ? "border-red-500" : "border-gray-300"} ${className}`}
       autoFocus={autoFocus}
+      onBlur={onBlur}
     />
   );
 };
