@@ -1,4 +1,5 @@
 "use client";
+
 import {
   ReactFlow,
   Background,
@@ -7,9 +8,8 @@ import {
   MiniMap,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import CRUDPanel from "./CRUDPanel";
-import { ClassNode, InstanceNode } from "./CustomNodes";
 import { useFlow } from "../hooks/useFlow";
+import { ClassNode, InstanceNode } from "./CustomNodes";
 
 interface FlowComponentProps {
   flowController: ReturnType<typeof useFlow>;
@@ -45,7 +45,6 @@ const FlowComponent = ({ flowController }: FlowComponentProps) => {
           <MiniMap className="border-2 border-gray-300 shadow-lg rounded-md" />
         </ReactFlow>
       )}
-      <CRUDPanel flowController={flowController} />
     </div>
   );
 };

@@ -10,6 +10,7 @@ import {
   applyEdgeChanges,
   addEdge,
 } from "@xyflow/react";
+import { sanitizeNodeLabel } from "../utils/sanitize";
 
 export const useFlow = (flowId: string = "default") => {
   const { saveFlow, loadFlow } = useFlowData();
