@@ -12,6 +12,7 @@ pnpm -w run dev:all
 # 브라우저에서 확인
 # Showcase: http://localhost:3000
 # Flow: http://localhost:3333
+# Applications: http://localhost:3334
 ```
 
 ## 🔧 환경 설정
@@ -26,7 +27,7 @@ pnpm -w run dev:all
 - **@ux-lab/ui** - 공통 UI 컴포넌트 라이브러리
 - **@ux-lab/showcase** - 컴포넌트 쇼케이스
 - **@ux-lab/flow** - UX Flow 다이어그램 에디터 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
-
+- **@ux-lab/applications** - 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md))
 
 ## 🛠️ 기술 스택
 
@@ -42,4 +43,3 @@ pnpm -w run dev:all
 ### @ux-lab/flow
 
 <img width="1375" height="917" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
-
