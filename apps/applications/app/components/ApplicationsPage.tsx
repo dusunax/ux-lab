@@ -8,6 +8,7 @@ import ApplicationList from "./ApplicationList";
 import ApplicationListByDate from "./ApplicationListByDate";
 import ApplicationModal from "./ApplicationModal";
 import DatePicker from "./DatePicker";
+import WantedCertificateParser from "./WantedCertificateParser";
 import { Button } from "@ux-lab/ui";
 import { Plus, Loader2, List, Calendar, X, Filter, Star } from "lucide-react";
 
@@ -16,6 +17,7 @@ export default function ApplicationsPage() {
     applications,
     isLoading,
     addApplication,
+    addApplications,
     updateApplication,
     deleteApplication,
   } = useApplications();
@@ -37,6 +39,12 @@ export default function ApplicationsPage() {
     setIsModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // 모달이 닫힐 때 편집 중인 항목 초기화
+    setEditingApplication(undefined);
+  };
+
   const handleEdit = (application: Application) => {
     setEditingApplication(application);
     setIsModalOpen(true);
@@ -49,6 +57,38 @@ export default function ApplicationsPage() {
       updateApplication(editingApplication.id, data);
     } else {
       addApplication(data);
+    }
+  };
+
+  const handleBulkAdd = (
+    applicationsToAdd: Omit<Application, "id" | "createdAt" | "updatedAt">[]
+  ) => {
+    // 기존 항목과 중복 체크
+    const existingApplications = applications;
+    const newApplications = applicationsToAdd.filter((newApp) => {
+      // 같은 회사명과 같은 지원일이면 중복으로 간주
+      return !existingApplications.some(
+        (existing) =>
+          existing.companyName === newApp.companyName &&
+          existing.appliedDate === newApp.appliedDate
+      );
+    });
+
+    if (newApplications.length === 0) {
+      alert("추가할 새로운 지원 내역이 없습니다. (모두 중복됨)");
+      return;
+    }
+
+    if (newApplications.length < applicationsToAdd.length) {
+      const duplicateCount = applicationsToAdd.length - newApplications.length;
+      alert(
+        `${duplicateCount}개의 중복 항목이 제외되었습니다. ${newApplications.length}개의 새로운 지원 내역이 추가됩니다.`
+      );
+    }
+
+    addApplications(newApplications);
+    if (newApplications.length === applicationsToAdd.length) {
+      alert(`${newApplications.length}개의 지원 내역이 추가되었습니다.`);
     }
   };
 
@@ -147,6 +187,11 @@ export default function ApplicationsPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 원티드 증명서 파서 */}
+        <div className="mb-6">
+          <WantedCertificateParser onParse={handleBulkAdd} />
+        </div>
+
         {/* 통계 카드 */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
           <button
@@ -363,9 +408,10 @@ export default function ApplicationsPage() {
       </main>
 
       <ApplicationModal
+        key={editingApplication?.id || "new"}
         isOpen={isModalOpen}
         application={editingApplication}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
         onSubmit={handleSubmit}
         applications={applications}
       />

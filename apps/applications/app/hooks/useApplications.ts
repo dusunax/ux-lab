@@ -45,6 +45,21 @@ export function useApplications() {
     return newApp;
   };
 
+  const addApplications = (
+    applicationsToAdd: Omit<Application, "id" | "createdAt" | "updatedAt">[]
+  ) => {
+    const now = Date.now();
+    const newApps: Application[] = applicationsToAdd.map((app, index) => ({
+      ...app,
+      id: `${now}-${index}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+    const updated = [...applications, ...newApps];
+    saveToStorage(updated);
+    return newApps;
+  };
+
   const updateApplication = (id: string, updates: Partial<Application>) => {
     const updated = applications.map((app) =>
       app.id === id
@@ -170,6 +185,7 @@ export function useApplications() {
     applications,
     isLoading,
     addApplication,
+    addApplications,
     updateApplication,
     deleteApplication,
     generateDummyData,

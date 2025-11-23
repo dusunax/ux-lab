@@ -25,8 +25,8 @@ export default function PDFUploader({ onExtract }: PDFUploaderProps) {
 
     const pdfjsLib = await import("pdfjs-dist");
 
-    // Worker 설정 - CDN에서 worker 로드
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+    // Worker 설정 - public 폴더의 worker 파일 사용
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
