@@ -8,6 +8,7 @@ import {
 } from "../types/application";
 import { Button } from "@ux-lab/ui";
 import DatePicker from "./DatePicker";
+import PDFUploader from "./PDFUploader";
 
 interface ApplicationFormProps {
   application?: Application;
@@ -57,8 +58,28 @@ export default function ApplicationForm({
     onSubmit(formData);
   };
 
+  const handlePDFExtract = (data: {
+    companyName?: string;
+    position?: string;
+    notes?: string;
+  }) => {
+    setFormData((prev) => ({
+      ...prev,
+      companyName: data.companyName || prev.companyName,
+      position: data.position || prev.position,
+      notes: data.notes
+        ? prev.notes
+          ? `${prev.notes}\n\n[PDF 내용]\n${data.notes}`
+          : `[PDF 내용]\n${data.notes}`
+        : prev.notes,
+    }));
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+      {/* PDF 업로더 */}
+      <PDFUploader onExtract={handlePDFExtract} />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 왼쪽: 기본 정보 */}
         <div className="space-y-4">
