@@ -37,8 +37,14 @@ pnpm -w run dev:all
 - Tailwind CSS 3.4.0
 - Firebase (@ux-lab/flow)
 - React Flow (@ux-lab/flow)
+- pdfjs-dist (PDF 파싱)(@ux-lab/applications)
 
 ## 📸 스크린샷
+
+### @ux-lab/applications
+
+<img width="1612" height="1394" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
+
 
 ### @ux-lab/flow
 
