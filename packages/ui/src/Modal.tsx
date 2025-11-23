@@ -7,6 +7,7 @@ type Props = {
   children: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
   closeOnOverlayClick?: boolean;
+  className?: string;
 };
 
 export const Modal: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const Modal: React.FC<Props> = ({
   children,
   size = "md",
   closeOnOverlayClick = true,
+  className = "",
 }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -48,13 +50,13 @@ export const Modal: React.FC<Props> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black bg-opacity-50"
+        className="absolute inset-0 bg-gradient-to-br from-soft-pink/20 via-soft-blue/20 to-soft-teal/20 backdrop-blur-sm"
         onClick={closeOnOverlayClick ? onClose : undefined}
       />
-      
+
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-lg shadow-xl w-full mx-4 ${sizeStyles[size]}`}
+        className={`relative bg-white/95 backdrop-blur-md rounded-xl shadow-soft-lg border border-soft-pink/30 w-full mx-4 ${sizeStyles[size]} ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -81,11 +83,9 @@ export const Modal: React.FC<Props> = ({
             </button>
           </div>
         )}
-        
+
         {/* Content */}
-        <div className="p-6">
-          {children}
-        </div>
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );

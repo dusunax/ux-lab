@@ -6,15 +6,17 @@
     "apps/*"
   ],
   "scripts": {
-    "dev:ui": "npm --workspace @ux-lab/ui run dev",
-    "build:ui": "npm --workspace @ux-lab/ui run build",
-    "dev:showcase": "npm --workspace @ux-lab/showcase run dev",
-    "build:showcase": "npm --workspace @ux-lab/showcase run build",
-    "dev:flow": "npm --workspace @ux-lab/flow run dev",
-    "build:flow": "npm --workspace @ux-lab/flow run build",
-    "build:all": "npm run build:ui && npm run build:showcase && npm run build:flow",
-    "dev:all": "concurrently \"npm run dev:ui\" \"npm run dev:showcase\" \"npm run dev:flow\"",
-    "install:all": "npm install"
+    "dev:ui": "pnpm --filter @ux-lab/ui run dev",
+    "build:ui": "pnpm --filter @ux-lab/ui run build",
+    "dev:showcase": "pnpm --filter @ux-lab/showcase run dev",
+    "build:showcase": "pnpm --filter @ux-lab/showcase run build",
+    "dev:flow": "pnpm --filter @ux-lab/flow run dev",
+    "build:flow": "pnpm --filter @ux-lab/flow run build",
+    "dev:applications": "pnpm --filter @ux-lab/applications run dev",
+    "build:applications": "pnpm --filter @ux-lab/applications run build",
+    "build:all": "pnpm run build:ui && pnpm run build:showcase && pnpm run build:flow && pnpm run build:applications",
+    "dev:all": "concurrently \"pnpm run dev:ui\" \"pnpm run dev:showcase\" \"pnpm run dev:flow\" \"pnpm run dev:applications\"",
+    "install:all": "pnpm install"
   },
   "devDependencies": {
     "concurrently": "^8.0.0"
