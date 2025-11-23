@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApplications } from "../hooks/useApplications";
 import { useFavoriteApplications } from "../hooks/useFavoriteApplications";
 import { Application, ApplicationStatus } from "../types/application";
@@ -10,7 +10,18 @@ import ApplicationModal from "./ApplicationModal";
 import DatePicker from "./DatePicker";
 import WantedCertificateParser from "./WantedCertificateParser";
 import { Button } from "@ux-lab/ui";
-import { Plus, Loader2, List, Calendar, X, Filter, Star } from "lucide-react";
+import {
+  Plus,
+  Loader2,
+  List,
+  Calendar,
+  X,
+  Filter,
+  Star,
+  Trash2,
+  CheckSquare,
+  Square,
+} from "lucide-react";
 
 export default function ApplicationsPage() {
   const {
@@ -20,6 +31,7 @@ export default function ApplicationsPage() {
     addApplications,
     updateApplication,
     deleteApplication,
+    deleteApplications,
   } = useApplications();
   const { favoriteApplicationIds, toggleFavorite, isFavorite } =
     useFavoriteApplications();
@@ -27,12 +39,18 @@ export default function ApplicationsPage() {
   const [editingApplication, setEditingApplication] = useState<
     Application | undefined
   >();
-  const [viewMode, setViewMode] = useState<"date" | "list">("date");
+  const [viewMode, setViewMode] = useState<"date" | "list">("list");
   const [filterDate, setFilterDate] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<
     ApplicationStatus | "today" | "all" | null
   >(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // 필터 변경 시 선택 초기화
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [filterDate, filterStatus, showFavoritesOnly]);
 
   const handleAdd = () => {
     setEditingApplication(undefined);
@@ -98,6 +116,31 @@ export default function ApplicationsPage() {
     }
   };
 
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) {
+      alert("삭제할 항목을 선택해주세요.");
+      return;
+    }
+
+    if (confirm(`선택한 ${selectedIds.size}개의 항목을 삭제하시겠습니까?`)) {
+      const idsArray = Array.from(selectedIds) as string[];
+      deleteApplications(idsArray);
+      setSelectedIds(new Set());
+    }
+  };
+
   // 오늘 날짜
   const today = new Date().toISOString().split("T")[0];
 
@@ -128,6 +171,21 @@ export default function ApplicationsPage() {
     (a, b) =>
       new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime()
   );
+
+  const handleSelectAll = () => {
+    if (
+      selectedIds.size === sortedApplications.length &&
+      sortedApplications.length > 0
+    ) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(sortedApplications.map((app) => app.id)));
+    }
+  };
+
+  const isAllSelected =
+    sortedApplications.length > 0 &&
+    selectedIds.size === sortedApplications.length;
 
   // 오늘 날짜의 지원 개수
   const todayCount = applications.filter((a) => a.appliedDate === today).length;
@@ -303,17 +361,30 @@ export default function ApplicationsPage() {
         {/* 필터 및 뷰 모드 */}
         <div className="flex items-center justify-between mb-6 gap-4 h-12">
           <div className="flex items-center gap-2 h-full">
-            <div className="flex h-full items-center gap-2 bg-white/70 backdrop-blur-sm rounded-lg border border-soft-pink/20 shadow-soft p-1">
+            {/* 전체 선택 체크박스 */}
+            {sortedApplications.length > 0 && (
               <button
-                onClick={() => setViewMode("date")}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                  viewMode === "date"
-                    ? "bg-gradient-to-r from-soft-pink/50 to-soft-blue/50 text-gray-700 shadow-soft"
-                    : "text-gray-600 hover:bg-white/50"
-                }`}
+                onClick={handleSelectAll}
+                className="h-full flex items-center gap-2 px-3 py-2 text-sm transition-all bg-white/70 backdrop-blur-sm rounded-lg border border-soft-pink/20 shadow-soft hover:bg-white/90"
+                title={isAllSelected ? "전체 해제" : "전체 선택"}
               >
-                <Calendar className="w-4 h-4" />
+                {isAllSelected ? (
+                  <CheckSquare className="w-5 h-5 text-soft-pink" />
+                ) : (
+                  <Square className="w-5 h-5 text-gray-400" />
+                )}
               </button>
+            )}
+            {selectedIds.size > 0 && (
+              <button
+                onClick={handleBulkDelete}
+                className="h-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:text-red-700 bg-white/70 backdrop-blur-sm rounded-lg border border-red-200 shadow-soft transition-all"
+              >
+                <Trash2 className="w-4 h-4" />
+                선택 삭제 ({selectedIds.size})
+              </button>
+            )}
+            <div className="flex h-full items-center gap-2 bg-white/70 backdrop-blur-sm rounded-lg border border-soft-pink/20 shadow-soft p-1">
               <button
                 onClick={() => setViewMode("list")}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
@@ -323,6 +394,16 @@ export default function ApplicationsPage() {
                 }`}
               >
                 <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("date")}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                  viewMode === "date"
+                    ? "bg-gradient-to-r from-soft-pink/50 to-soft-blue/50 text-gray-700 shadow-soft"
+                    : "text-gray-600 hover:bg-white/50"
+                }`}
+              >
+                <Calendar className="w-4 h-4" />
               </button>
             </div>
             {/* 즐겨찾기 필터 */}
@@ -395,6 +476,8 @@ export default function ApplicationsPage() {
             onDelete={handleDelete}
             onToggleFavorite={(id) => toggleFavorite(id)}
             isFavorite={(id) => isFavorite(id)}
+            selectedIds={selectedIds}
+            onToggleSelect={handleToggleSelect}
           />
         ) : (
           <ApplicationList
@@ -403,6 +486,8 @@ export default function ApplicationsPage() {
             onDelete={handleDelete}
             onToggleFavorite={(id) => toggleFavorite(id)}
             isFavorite={(id) => isFavorite(id)}
+            selectedIds={selectedIds}
+            onToggleSelect={handleToggleSelect}
           />
         )}
       </main>

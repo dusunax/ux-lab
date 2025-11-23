@@ -6,7 +6,14 @@ import {
   ApplicationSource,
 } from "../types/application";
 import { Button } from "@ux-lab/ui";
-import { Edit, Trash2, ExternalLink, Star } from "lucide-react";
+import {
+  Edit,
+  Trash2,
+  ExternalLink,
+  Star,
+  CheckSquare,
+  Square,
+} from "lucide-react";
 
 interface ApplicationListProps {
   applications: Application[];
@@ -14,6 +21,8 @@ interface ApplicationListProps {
   onDelete: (id: string) => void;
   onToggleFavorite: (applicationId: string) => void;
   isFavorite: (applicationId: string) => boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
 }
 
 const STATUS_COLORS: Record<ApplicationStatus, string> = {
@@ -48,6 +57,8 @@ export default function ApplicationList({
   onDelete,
   onToggleFavorite,
   isFavorite,
+  selectedIds = new Set(),
+  onToggleSelect,
 }: ApplicationListProps) {
   if (applications.length === 0) {
     return (
@@ -63,9 +74,28 @@ export default function ApplicationList({
       {applications.map((app) => (
         <div
           key={app.id}
-          className="bg-white/80 backdrop-blur-sm rounded-xl shadow-soft border border-soft-pink/20 p-4 hover:bg-white/90 hover:shadow-soft-lg transition-all"
+          className={`bg-white/80 backdrop-blur-sm rounded-xl shadow-soft border p-4 hover:bg-white/90 hover:shadow-soft-lg transition-all ${
+            selectedIds.has(app.id)
+              ? "border-soft-pink/50 ring-2 ring-soft-pink/30"
+              : "border-soft-pink/20"
+          }`}
         >
           <div className="flex items-start justify-between">
+            {onToggleSelect && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSelect(app.id);
+                }}
+                className="mr-3 mt-1 p-1 hover:bg-soft-pink/10 rounded transition-colors"
+              >
+                {selectedIds.has(app.id) ? (
+                  <CheckSquare className="w-5 h-5 text-soft-pink" />
+                ) : (
+                  <Square className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+            )}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <h3 className="text-lg font-semibold text-gray-900">
@@ -144,20 +174,24 @@ export default function ApplicationList({
               )}
             </div>
             <div className="flex ml-4">
-              <Button
-                variant="ghost"
-                onClick={() => onEdit(app)}
-                className="flex items-center gap-1 text-sm px-3 py-1.5"
-              >
-                <Edit className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => onDelete(app.id)}
-                className="flex items-center gap-1 text-sm px-3 py-1.5 text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-2 ml-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => onEdit(app)}
+                  className="flex items-center gap-1 text-sm px-3 py-1.5"
+                >
+                  <Edit className="w-4 h-4" />
+                  수정
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => onDelete(app.id)}
+                  className="flex items-center gap-1 text-sm px-3 py-1.5 text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  삭제
+                </Button>
+              </div>
             </div>
           </div>
         </div>

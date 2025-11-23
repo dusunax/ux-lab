@@ -15,6 +15,8 @@ import {
   Star,
   ChevronDown,
   ChevronUp,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 
 interface ApplicationListByDateProps {
@@ -23,6 +25,8 @@ interface ApplicationListByDateProps {
   onDelete: (id: string) => void;
   onToggleFavorite: (applicationId: string) => void;
   isFavorite: (applicationId: string) => boolean;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
 }
 
 const STATUS_COLORS: Record<ApplicationStatus, string> = {
@@ -57,6 +61,8 @@ export default function ApplicationListByDate({
   onDelete,
   onToggleFavorite,
   isFavorite,
+  selectedIds = new Set(),
+  onToggleSelect,
 }: ApplicationListByDateProps) {
   // 오늘 날짜 확인
   const today = new Date().toISOString().split("T")[0];
@@ -209,9 +215,28 @@ export default function ApplicationListByDate({
                 {apps.map((app) => (
                   <div
                     key={app.id}
-                    className="bg-white/80 backdrop-blur-sm rounded-xl shadow-soft border border-soft-pink/20 p-4 hover:bg-white/90 hover:shadow-soft-lg transition-all"
+                    className={`bg-white/80 backdrop-blur-sm rounded-xl shadow-soft border p-4 hover:bg-white/90 hover:shadow-soft-lg transition-all ${
+                      selectedIds.has(app.id)
+                        ? "border-soft-pink/50 ring-2 ring-soft-pink/30"
+                        : "border-soft-pink/20"
+                    }`}
                   >
                     <div className="flex items-start justify-between">
+                      {onToggleSelect && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleSelect(app.id);
+                          }}
+                          className="mr-3 mt-1 p-1 hover:bg-soft-pink/10 rounded transition-colors"
+                        >
+                          {selectedIds.has(app.id) ? (
+                            <CheckSquare className="w-5 h-5 text-soft-pink" />
+                          ) : (
+                            <Square className="w-5 h-5 text-gray-400" />
+                          )}
+                        </button>
+                      )}
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h4 className="text-base font-semibold text-gray-900">

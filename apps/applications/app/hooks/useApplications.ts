@@ -74,6 +74,12 @@ export function useApplications() {
     saveToStorage(updated);
   };
 
+  const deleteApplications = (ids: string[]) => {
+    const idsSet = new Set(ids);
+    const updated = applications.filter((app) => !idsSet.has(app.id));
+    saveToStorage(updated);
+  };
+
   const generateDummyData = () => {
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -188,6 +194,7 @@ export function useApplications() {
     addApplications,
     updateApplication,
     deleteApplication,
+    deleteApplications,
     generateDummyData,
   };
 }

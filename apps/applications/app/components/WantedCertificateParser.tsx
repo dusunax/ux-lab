@@ -86,20 +86,33 @@ export default function WantedCertificateParser({
         if (match && match[1]) {
           const candidate = match[1].trim();
           // 주소나 연락처가 아닌지 확인
+          // "주식회사"만 있는 경우 제외
+          const cleaned = candidate.replace(/\(주\)|㈜/g, "").trim();
+
+          // "주식회사" 관련 필터링 강화
+          const isOnlyJusikhoesa =
+            cleaned === "주식회사" ||
+            cleaned.match(/^주식회사$/) ||
+            cleaned.match(/^주식회사\s*$/) ||
+            (cleaned.startsWith("주식회사") && cleaned.length <= 5) ||
+            (cleaned.endsWith("주식회사") && cleaned.length <= 5);
+
           if (
-            candidate.length > 1 &&
-            candidate.length < 50 &&
-            !candidate.includes("@") &&
-            !candidate.includes("번길") &&
-            !candidate.includes("로 ") &&
-            !candidate.includes("구 ") &&
-            !candidate.includes("시 ") &&
-            !candidate.includes("동 ") &&
-            !candidate.includes("층") &&
-            !candidate.includes("호") &&
-            !candidate.match(/^\d/) // 숫자로 시작하지 않음
+            cleaned.length > 2 && // 최소 3자 이상
+            cleaned.length < 50 &&
+            !isOnlyJusikhoesa && // "주식회사"만 있거나 거의 "주식회사"만 있는 경우 제외
+            !cleaned.includes("@") &&
+            !cleaned.includes("번길") &&
+            !cleaned.includes("로 ") &&
+            !cleaned.includes("구 ") &&
+            !cleaned.includes("시 ") &&
+            !cleaned.includes("동 ") &&
+            !cleaned.includes("층") &&
+            !cleaned.includes("호") &&
+            !cleaned.match(/^\d/) && // 숫자로 시작하지 않음
+            !cleaned.match(/^[가-힣\s]*주식회사[가-힣\s]*$/) // "주식회사"만 포함된 패턴 제외
           ) {
-            companyName = candidate.replace(/\(주\)|㈜/g, "").trim();
+            companyName = cleaned;
             break;
           }
         }
@@ -126,22 +139,32 @@ export default function WantedCertificateParser({
       }
 
       // 기업명이 있고 중복이 아닌 경우에만 추가
-      if (companyName) {
-        // 중복 체크 (같은 날짜, 같은 회사명)
-        const isDuplicate = applications.some(
-          (app) =>
-            app.appliedDate === dateStr && app.companyName === companyName
-        );
+      // "주식회사"만 있는 경우 최종적으로 한 번 더 체크
+      if (companyName && companyName.trim() !== "주식회사") {
+        const finalCleaned = companyName.trim();
+        // 최종 검증: "주식회사"만 있거나 의미 없는 값인지 확인
+        if (
+          finalCleaned.length > 2 &&
+          finalCleaned !== "주식회사" &&
+          !finalCleaned.match(/^주식회사\s*$/) &&
+          !finalCleaned.match(/^[가-힣\s]*주식회사[가-힣\s]*$/)
+        ) {
+          // 중복 체크 (같은 날짜, 같은 회사명)
+          const isDuplicate = applications.some(
+            (app) =>
+              app.appliedDate === dateStr && app.companyName === companyName
+          );
 
-        if (!isDuplicate) {
-          applications.push({
-            companyName,
-            position: "", // 증명서에는 포지션이 없음
-            appliedDate: dateStr,
-            status,
-            source: "wanted",
-            notes: contact ? `연락처: ${contact}` : undefined,
-          });
+          if (!isDuplicate) {
+            applications.push({
+              companyName: finalCleaned,
+              position: "", // 증명서에는 포지션이 없음
+              appliedDate: dateStr,
+              status,
+              source: "wanted",
+              notes: contact ? `연락처: ${contact}` : undefined,
+            });
+          }
         }
       }
     }
@@ -290,7 +313,9 @@ export default function WantedCertificateParser({
           ) : (
             <>
               <Upload className="w-4 h-4 text-gray-600" />
-              <span className="text-sm text-gray-600">PDF 업로드</span>
+              <span className="text-sm text-gray-600 text-nowrap">
+                PDF 업로드
+              </span>
             </>
           )}
         </label>
