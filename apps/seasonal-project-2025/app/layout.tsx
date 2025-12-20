@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+import { AnalysisProvider } from "@features/report/model/AnalysisContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased">
-        {children}
+        <AnalysisProvider>{children}</AnalysisProvider>
         <Toaster position="top-center" />
       </body>
     </html>

@@ -1,15 +1,26 @@
 "use server";
 
 import OpenAI from "openai";
-import type { AfterglowReport, AnalysisResult } from "@/types/report";
+import type { AfterglowReport, AnalysisResult } from "@features/report/types";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 interface AnalyzePhotosParams {
-  photoBase64s: string[];
-  reports: Omit<AfterglowReport, "keywords" | "yearSentence">[];
+  reports: Array<{
+    month: string;
+    photoCount: number; // 해당 월의 사진 개수
+  }>;
+}
+
+/**
+ * File을 base64로 변환하는 헬퍼 함수
+ */
+async function fileToBase64(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString("base64");
+  return base64;
 }
 
 /**
@@ -17,21 +28,53 @@ interface AnalyzePhotosParams {
  * 키워드와 올해의 한 문장을 생성합니다.
  */
 export async function analyzePhotos(
-  params: AnalyzePhotosParams
-): Promise<AnalysisResult> {
+  formData: FormData
+): Promise<{ result: AnalysisResult; photoBase64s: string[] }> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
   }
 
-  const { photoBase64s, reports } = params;
+  // FormData에서 파일과 reports 추출
+  const files: File[] = [];
+  const fileEntries = Array.from(formData.entries()).filter(
+    ([key]) => key.startsWith("photo_")
+  );
+  
+  // 파일 순서대로 정렬
+  fileEntries
+    .sort(([a], [b]) => {
+      const indexA = parseInt(a.split("_")[1]);
+      const indexB = parseInt(b.split("_")[1]);
+      return indexA - indexB;
+    })
+    .forEach(([, value]) => {
+      if (value instanceof File) {
+        files.push(value);
+      }
+    });
+
+  // reports JSON 파싱
+  const reportsJson = formData.get("reports") as string;
+  const reports: Array<{ month: string; photoCount: number }> = JSON.parse(
+    reportsJson
+  );
+
+  // 파일을 base64로 변환 (서버에서 처리)
+  const photoBase64s = await Promise.all(files.map(fileToBase64));
 
   try {
     // 각 월별 리포트의 대표 사진 선택 (첫 번째 사진)
-    const representativePhotos = reports.map((report) => {
+    const representativePhotos = reports.map((report, index) => {
       const photoIndex = reports
-        .slice(0, reports.indexOf(report))
-        .reduce((sum, r) => sum + r.photos.length, 0);
-      return photoBase64s[photoIndex] || photoBase64s[0];
+        .slice(0, index)
+        .reduce((sum, r) => sum + r.photoCount, 0);
+      const photo = photoBase64s[photoIndex];
+      if (!photo) {
+        console.warn(
+          `월별 사진을 찾을 수 없음: ${report.month}, photoIndex: ${photoIndex}, totalPhotos: ${photoBase64s.length}`
+        );
+      }
+      return photo || photoBase64s[0] || "";
     });
 
     // Vision API 호출을 위한 이미지 URL 배열 생성
@@ -55,6 +98,7 @@ export async function analyzePhotos(
 7. 내년 당신에게 하는 조언 (올해의 경험을 바탕으로 내년을 위한 따뜻하고 격려하는 조언, 2-3문장)
 8. 내년의 행운의 아이템 (사진과 성향을 바탕으로 내년에 행운을 가져다줄 아이템, 예: "초록색 식물", "일기장", "카메라" 등)
 9. 내년에 피해야할 것 (올해의 경험과 패턴을 바탕으로 내년에 피해야 할 것, 예: "과도한 완벽주의", "무리한 약속", "밤늦은 시간" 등)
+10. 각 월별 사진들에 대한 상세 분석 (각 월의 사진들을 분석하여 3-4줄의 상세한 설명을 제공. Timeline에 표시될 내용으로, 그 달의 감정, 경험, 의미를 담아야 함)
 
 응답은 다음 JSON 형식으로 제공해주세요:
 {
@@ -90,10 +134,7 @@ export async function analyzePhotos(
       messages: [
         {
           role: "user",
-          content: [
-            { type: "text", text: prompt },
-            ...imageContents,
-          ],
+          content: [{ type: "text", text: prompt }, ...imageContents],
         },
       ],
       max_tokens: 500,
@@ -125,15 +166,24 @@ export async function analyzePhotos(
     const analyzedReports = await Promise.all(
       reports.map(async (report, index) => {
         const monthPhoto = representativePhotos[index];
-        if (!monthPhoto) return report;
+        if (!monthPhoto) {
+          console.warn(`월별 사진이 없어 분석을 건너뜁니다: ${report.month}`);
+          return {
+            month: report.month,
+            summary: `${report.month}의 특별한 순간들`,
+            mood: "기억",
+            photos: [], // 클라이언트에서 채워짐
+          };
+        }
 
         const monthPrompt = `이 사진은 ${report.month}에 찍은 사진입니다.
-이 달의 감정과 분위기를 한 단어로 표현하고, 이 달을 요약하는 짧은 문장을 작성해주세요.
+이 달의 감정과 분위기를 한 단어로 표현하고, 이 달의 사진들을 상세히 분석하여 3-4줄의 상세한 설명을 작성해주세요.
+상세 분석은 그 달의 감정, 경험, 의미를 담아 Timeline에 표시될 내용으로 작성해주세요.
 
 응답 형식:
 {
   "mood": "감정 단어 (예: nostalgic, warm, serene, cozy)",
-  "summary": "이 달을 요약하는 짧은 문장"
+  "summary": "이 달의 사진들을 분석한 상세한 설명 (3-4줄, Timeline에 표시될 내용)"
 }
 
 한국어로 응답해주세요.`;
@@ -155,27 +205,63 @@ export async function analyzePhotos(
                 ],
               },
             ],
-            max_tokens: 200,
+            max_tokens: 300,
             response_format: { type: "json_object" },
           });
 
           const monthContent = monthResponse.choices[0]?.message?.content;
           if (monthContent) {
-            const monthAnalysis = JSON.parse(monthContent) as {
-              mood: string;
-              summary: string;
-            };
-            return {
-              ...report,
-              mood: monthAnalysis.mood,
-              summary: monthAnalysis.summary,
-            };
+            try {
+              const monthAnalysis = JSON.parse(monthContent) as {
+                mood: string;
+                summary: string;
+              };
+
+              // 값이 비어있는지 확인
+              if (!monthAnalysis.mood || !monthAnalysis.summary) {
+                console.warn(
+                  `월별 분석 결과가 비어있음: ${report.month}`,
+                  monthAnalysis
+                );
+                return {
+                  month: report.month,
+                  summary:
+                    monthAnalysis.summary || `${report.month}의 특별한 순간들`,
+                  mood: monthAnalysis.mood || "기억",
+                  photos: [], // 클라이언트에서 채워짐
+                };
+              }
+
+              return {
+                month: report.month,
+                summary: monthAnalysis.summary,
+                mood: monthAnalysis.mood,
+                photos: [], // 클라이언트에서 채워짐
+              };
+            } catch (parseError) {
+              console.error(
+                `월별 분석 JSON 파싱 실패 (${report.month}):`,
+                parseError,
+                monthContent
+              );
+            }
+          } else {
+            console.warn(`월별 분석 응답이 비어있음: ${report.month}`);
           }
         } catch (error) {
           console.error(`월별 분석 실패 (${report.month}):`, error);
+          if (error instanceof Error) {
+            console.error(`에러 상세: ${error.message}`, error.stack);
+          }
         }
 
-        return report;
+        // 기본값 반환
+        return {
+          month: report.month,
+          summary: `${report.month}의 특별한 순간들`,
+          mood: "기억",
+          photos: [], // 클라이언트에서 채워짐
+        };
       })
     );
 
@@ -187,30 +273,38 @@ export async function analyzePhotos(
     ];
 
     return {
-      keywords: analysis.keywords && analysis.keywords.length > 0
-        ? analysis.keywords
-        : [
-            { text: "성장", emoji: "🌱" },
-            { text: "여행", emoji: "✈️" },
-            { text: "가족", emoji: "👨‍👩‍👧‍👦" },
-            { text: "도전", emoji: "🚀" },
-            { text: "평화", emoji: "☮️" },
-          ],
-      yearSentence: analysis.yearSentence,
-      primaryColor: analysis.primaryColor && analysis.primaryColor.length > 0
-        ? analysis.primaryColor
-        : defaultColors,
-      personality: analysis.personality,
-      favoriteThings: analysis.favoriteThings,
-      personalityType: analysis.personalityType,
-      advice: analysis.advice,
-      luckyItem: analysis.luckyItem || "행운의 아이템",
-      avoidItem: analysis.avoidItem || "피해야할 것",
-      reports: analyzedReports.map((report) => ({
-        ...report,
-        keywords: analysis.keywords.map((k) => k.text),
+      result: {
+        keywords:
+          analysis.keywords && analysis.keywords.length > 0
+            ? analysis.keywords
+            : [
+                { text: "성장", emoji: "🌱" },
+                { text: "여행", emoji: "✈️" },
+                { text: "가족", emoji: "👨‍👩‍👧‍👦" },
+                { text: "도전", emoji: "🚀" },
+                { text: "평화", emoji: "☮️" },
+              ],
         yearSentence: analysis.yearSentence,
-      })),
+        primaryColor:
+          analysis.primaryColor && analysis.primaryColor.length > 0
+            ? analysis.primaryColor
+            : defaultColors,
+        personality: analysis.personality,
+        favoriteThings: analysis.favoriteThings,
+        personalityType: analysis.personalityType,
+        advice: analysis.advice,
+        luckyItem: analysis.luckyItem || "행운의 아이템",
+        avoidItem: analysis.avoidItem || "피해야할 것",
+        reports: analyzedReports.map((analyzedReport) => ({
+          month: analyzedReport.month,
+          summary: analyzedReport.summary,
+          mood: analyzedReport.mood,
+          photos: [], // 클라이언트에서 복원됨
+          keywords: analysis.keywords.map((k) => k.text),
+          yearSentence: analysis.yearSentence,
+        })),
+      },
+      photoBase64s,
     };
   } catch (error) {
     console.error("사진 분석 실패:", error);

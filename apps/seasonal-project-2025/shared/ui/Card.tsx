@@ -2,7 +2,7 @@
 
 import { motion, MotionProps } from "framer-motion";
 import { ReactNode } from "react";
-import { cn } from "@utils/cn";
+import { cn } from "@shared/lib/cn";
 
 interface CardProps extends MotionProps {
   children: ReactNode;

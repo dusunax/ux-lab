@@ -1,4 +1,4 @@
-import type { AfterglowReport } from "@/types/report";
+import type { AfterglowReport } from "@features/report/types";
 
 export const mockReports: AfterglowReport[] = [
   {

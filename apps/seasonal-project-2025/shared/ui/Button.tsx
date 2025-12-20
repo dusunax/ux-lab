@@ -2,7 +2,7 @@
 
 import { motion, MotionProps } from "framer-motion";
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import { cn } from "@utils/cn";
+import { cn } from "@shared/lib/cn";
 
 interface ButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof MotionProps>,

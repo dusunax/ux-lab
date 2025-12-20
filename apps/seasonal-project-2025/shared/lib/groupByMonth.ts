@@ -1,4 +1,4 @@
-import type { PhotoWithMetadata, AfterglowReport } from "@/types/report";
+import type { PhotoWithMetadata, AfterglowReport } from "@features/report/types";
 
 /**
  * 사진들을 월별로 그룹화합니다.

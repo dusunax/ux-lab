@@ -16,10 +16,9 @@
     "baseUrl": ".",
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@utils/*": ["./app/utils/*"],
-      "@components/*": ["./app/components/*"],
-      "@data/*": ["./app/data/*"],
-      "@actions/*": ["./app/actions/*"],
+      "@shared/*": ["./shared/*"],
+      "@entities/*": ["./entities/*"],
+      "@features/*": ["./features/*"],
       "@/*": ["./app/*"]
     }
   },

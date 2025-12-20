@@ -3,8 +3,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Upload, X } from "lucide-react";
-import { Button } from "@components/common/Button";
-import { resizeImage } from "@utils/imageResize";
+import { Button } from "@shared/ui/Button";
 
 interface PhotoUploaderProps {
   onPhotosSelected?: (photos: File[]) => void;
@@ -21,28 +20,12 @@ export function PhotoUploader({ onPhotosSelected, maxPhotos = 30 }: PhotoUploade
     if (!files) return;
 
     const fileArray = Array.from(files).slice(0, maxPhotos - photos.length);
-    const resizedFiles: File[] = [];
+    const imageFiles = fileArray.filter((file) => file.type.startsWith("image/"));
 
-    for (const file of fileArray) {
-      if (file.type.startsWith("image/")) {
-        try {
-          const resizedFile = await resizeImage(file, {
-            maxWidth: 1920,
-            maxHeight: 1920,
-            quality: 0.85,
-          });
-          resizedFiles.push(resizedFile);
-        } catch (error) {
-          console.error("이미지 리사이징 실패:", error);
-          resizedFiles.push(file);
-        }
-      }
-    }
-
-    const newPhotos = [...photos, ...resizedFiles];
+    const newPhotos = [...photos, ...imageFiles];
     setPhotos(newPhotos);
 
-    const newPreviews = resizedFiles.map((file) => URL.createObjectURL(file));
+    const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
     setPreviews([...previews, ...newPreviews]);
 
     onPhotosSelected?.(newPhotos);
@@ -82,7 +65,7 @@ export function PhotoUploader({ onPhotosSelected, maxPhotos = 30 }: PhotoUploade
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`
-          relative rounded-3xl border-2 border-dashed transition-colors duration-200
+          relative rounded-3xl border-2 border-dashed transition-colors duration-200 min-h-[200px]
           ${
             isDragging
               ? "border-warmGray-400 bg-beige-50"
@@ -107,9 +90,14 @@ export function PhotoUploader({ onPhotosSelected, maxPhotos = 30 }: PhotoUploade
             <p className="mb-1 text-lg font-medium text-warmGray-900">
               사진을 드래그하거나 클릭하여 업로드
             </p>
-            <p className="text-sm text-warmGray-600">최대 {maxPhotos}장까지 업로드 가능합니다</p>
+            <p className="text-sm text-warmGray-600">
+              최대 {maxPhotos}장까지 업로드 가능합니다
+            </p>
           </div>
-          <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
+          <Button
+            variant="secondary"
+            onClick={() => fileInputRef.current?.click()}
+          >
             파일 선택
           </Button>
         </div>
@@ -128,9 +116,13 @@ export function PhotoUploader({ onPhotosSelected, maxPhotos = 30 }: PhotoUploade
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="group relative aspect-square overflow-hidden rounded-2xl bg-warmGray-100"
+              className="group relative overflow-hidden rounded-2xl bg-warmGray-100"
             >
-              <img src={preview} alt={`Preview ${index + 1}`} className="h-full w-full object-cover" />
+              <img
+                src={preview}
+                alt={`Preview ${index + 1}`}
+                className="h-full w-full object-cover max-h-[200px]"
+              />
               <button
                 onClick={() => handleRemovePhoto(index)}
                 className="absolute right-2 top-2 rounded-full bg-black/50 p-1.5 opacity-0 transition-opacity group-hover:opacity-100"

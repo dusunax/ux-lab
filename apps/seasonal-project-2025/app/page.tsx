@@ -1,35 +1,39 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Sparkles, Copy } from "lucide-react";
+import { Sparkles, Copy, PlayIcon, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
-import { Card } from "@components/common/Card";
-import { Badge } from "@components/common/Badge";
-import { PhotoUploader } from "@components/photo/PhotoUploader";
-import { ProcessingOverlay } from "@components/common/ProcessingOverlay";
-import { mockReports } from "@data/mockReports";
-import { extractExifData } from "@utils/exifExtractor";
-import { groupPhotosByMonth } from "@utils/groupByMonth";
-import { fileToBase64 } from "@utils/fileToBase64";
-import { analyzePhotos } from "@/actions/analyze";
+import { Card } from "@shared/ui/Card";
+import { Badge } from "@shared/ui/Badge";
+import { PhotoUploader } from "@shared/ui/PhotoUploader";
+import { ProcessingOverlay } from "@shared/ui/ProcessingOverlay";
+import { mockReports } from "@features/report/data/mockReports";
+import { extractExifData } from "@shared/lib/exifExtractor";
+import { groupPhotosByMonth } from "@shared/lib/groupByMonth";
+import { analyzePhotos } from "@features/report/api/analyze";
+import { useAnalysis } from "@features/report/model/AnalysisContext";
 import type {
   PhotoWithMetadata,
-  AnalysisResult,
   AfterglowReport,
-} from "@/types/report";
+} from "@features/report/types";
 
 export default function Home() {
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
-  const [uploadedPhotoPreviews, setUploadedPhotoPreviews] = useState<string[]>(
-    []
-  );
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
-    null
-  );
   const [displayReports, setDisplayReports] =
     useState<AfterglowReport[]>(mockReports);
+  const {
+    analysisResult,
+    setAnalysisResult,
+    uploadedPhotos,
+    setUploadedPhotos,
+    uploadedPhotoPreviews,
+    setUploadedPhotoPreviews,
+    setPhotoBase64s,
+    clearAnalysisData,
+  } = useAnalysis();
 
   const handlePhotosSelected = async (photos: File[]) => {
     setUploadedPhotos(photos);
@@ -73,19 +77,51 @@ export default function Home() {
       // 2. 월별로 그룹화
       const groupedReports = groupPhotosByMonth(photosWithMetadata);
 
-      // 3. 파일을 base64로 변환
-      const photoBase64s = await Promise.all(
-        uploadedPhotos.map((file) => fileToBase64(file))
-      );
+      // 3. Server Action에 전달할 reports 단순화 (blob URL 제거)
+      const simplifiedReports = groupedReports.map((report) => ({
+        month: report.month,
+        photoCount: report.photos.length,
+      }));
 
-      // 4. Server Action 호출하여 분석
-      const result = await analyzePhotos({
-        photoBase64s,
-        reports: groupedReports,
+      // 4. FormData로 파일 전달
+      const formData = new FormData();
+      uploadedPhotos.forEach((file, index) => {
+        formData.append(`photo_${index}`, file);
       });
+      formData.append("reports", JSON.stringify(simplifiedReports));
 
-      setAnalysisResult(result);
-      setDisplayReports(result.reports);
+      // 5. Server Action 호출하여 분석 (서버에서 base64 변환)
+      const { result, photoBase64s } = await analyzePhotos(formData);
+
+      // 6. 결과에 base64 photos 배열 복원
+      const resultWithPhotos = {
+        ...result,
+        reports: result.reports.map((analyzedReport, index) => {
+          const startIndex = simplifiedReports
+            .slice(0, index)
+            .reduce((sum, r) => sum + r.photoCount, 0);
+          const photoCount = simplifiedReports[index].photoCount;
+          const base64Photos = photoBase64s.slice(
+            startIndex,
+            startIndex + photoCount
+          );
+          return {
+            ...analyzedReport,
+            photos: base64Photos,
+          };
+        }),
+      };
+
+      // 7. Context에 저장 (분석 완료 직후)
+      console.log("Context에 분석 결과 저장 중...", {
+        hasReports: resultWithPhotos.reports.length > 0,
+        reportsCount: resultWithPhotos.reports.length,
+        firstReportPhotos: resultWithPhotos.reports[0]?.photos?.length || 0,
+      });
+      setAnalysisResult(resultWithPhotos);
+      setPhotoBase64s(photoBase64s);
+      setDisplayReports(resultWithPhotos.reports);
+      console.log("Context에 분석 결과 저장 완료");
     } catch (error) {
       console.error("분석 실패:", error);
       alert("분석 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -141,9 +177,41 @@ export default function Home() {
                   : analysisResult.primaryColor[0]?.hexCode || "#8B7355",
             }}
           >
-            {/* 배경 오버레이로 텍스트 가독성 향상 */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/20" />
+            {/* 결과 리포트 상세 보기 버튼 */}
+            <div className="w-full flex items-center gap-3 mb-8 z-10 relative">
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                onClick={() => {
+                  router.push("/report");
+                }}
+                type="button"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-warmGray-900 text-white text-lg font-semibold hover:bg-warmGray-800 transition-colors duration-200 shadow-lg cursor-pointer"
+              >
+                <PlayIcon className="w-6 h-6" />
+                플레이
+              </motion.button>
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                onClick={() => {
+                  clearAnalysisData();
+                  setDisplayReports(mockReports);
+                }}
+                type="button"
+                className="w-12 h-12 flex items-center justify-center rounded-2xl bg-warmGray-400 text-white hover:bg-warmGray-500 transition-colors duration-200 shadow-lg cursor-pointer"
+                title="다시 하기"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </motion.button>
+            </div>
 
+            {/* 배경 오버레이로 텍스트 가독성 향상 */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/20 pointer-events-none" />
+
+            {/* 결과 리포트 카드 */}
             <div className="relative space-y-8">
               {/* 업로드한 사진 콜라주 */}
               {uploadedPhotoPreviews.length > 0 && (
@@ -356,7 +424,7 @@ export default function Home() {
                   className="group relative overflow-hidden rounded-3xl border border-beige-200 bg-beige-50/60"
                 >
                   {/* 콜라주 형태의 사진 그리드 */}
-                  <div className="aspect-video w-full">
+                  {/* <div className="aspect-video w-full">
                     {report.photos.length === 1 ? (
                       <div className="h-full w-full overflow-hidden bg-warmGray-100">
                         <img
@@ -412,10 +480,10 @@ export default function Home() {
                         )}
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* 텍스트 오버레이 */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-6 flex flex-col justify-end">
+                  {/* <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent p-6 flex flex-col justify-end">
                     <div className="mb-2 text-xs font-semibold text-white/80">
                       {report.month}
                     </div>
@@ -425,7 +493,7 @@ export default function Home() {
                     <p className="text-sm text-white/90 leading-relaxed">
                       {report.summary}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>

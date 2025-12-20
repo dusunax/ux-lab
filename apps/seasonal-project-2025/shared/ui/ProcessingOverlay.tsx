@@ -8,9 +8,10 @@ const messages = [
   "2025년의 조각들을 모으고 있습니다...",
   "따뜻한 순간들을 꺼내는 중이에요...",
   "빛바랜 사진에 숨은 감정을 감싸는 중...",
-  "회고를 작성하는 중...",
   "기억 조각들을 모으고 있습니다...",
+  "성취감을 느끼는 중...",
   "여정을 한 편의 이야기로 엮고 있어요...",
+  "회고를 작성하는 중...",
 ];
 
 interface ProcessingOverlayProps {
@@ -42,7 +43,7 @@ export function ProcessingOverlay({ active }: ProcessingOverlayProps) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="mx-4 flex max-w-md flex-col items-center gap-4 rounded-3xl bg-white/90 p-8 shadow-xl"
+            className="mx-4 flex max-w-md flex-col items-center gap-4 border-2 border-warmGray-300 rounded-3xl p-8 shadow-xl bg-white/90"
           >
             <div className="flex items-center gap-3 text-warmGray-800">
               <Loader2 className="h-5 w-5 animate-spin text-warmGray-700" />
