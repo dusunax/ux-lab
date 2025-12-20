@@ -18,6 +18,7 @@
     "paths": {
       "@utils/*": ["./app/utils/*"],
       "@components/*": ["./app/components/*"],
+      "@data/*": ["./app/data/*"],
       "@/*": ["./app/*"]
     }
   },
