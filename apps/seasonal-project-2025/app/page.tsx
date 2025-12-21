@@ -154,20 +154,20 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="mb-6 inline-flex items-center gap-2 rounded-3xl bg-beige-100 px-6 py-3"
+            className="mb-6 inline-flex items-center gap-2 rounded-3xl bg-beige-100 px-6 py-2"
           >
             <Sparkles className="h-5 w-5 text-warmGray-600" />
             <span className="text-sm font-medium text-warmGray-700">
-              AI 기반 연말 회고
+              AI 연말 회고
             </span>
           </motion.div>
 
           <h1 className="mb-4 text-4xl font-bold tracking-tight text-warmGray-900 md:text-5xl lg:text-6xl">
             Project Afterglow
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-warmGray-600 md:text-xl">
-            올해의 소중한 순간들을 AI와 함께 되돌아보며, 따뜻한 회고를
-            만들어보세요.
+          <p className="mx-auto max-w-2xl mt-8 text-lg text-warmGray-600 md:text-xl">
+            올해의 소중한 순간들을 AI와 함께 되돌아보며,
+            <br /> 따뜻한 회고를 만들어보세요.
           </p>
         </motion.div>
 
@@ -213,7 +213,7 @@ export default function Home() {
 
         <Card className="space-y-10" padding="lg">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-2 text-left">
+            <div className="space-y-2 text-center md:text-left">
               <h2 className="text-2xl font-semibold text-warmGray-900">
                 사진 업로드
               </h2>
@@ -221,7 +221,7 @@ export default function Home() {
                 최대 24장까지 업로드하고 AI 분석을 시작하세요.
               </p>
             </div>
-            <div className="relative group">
+            <div className="relative group text-center md:text-left">
               <button
                 className="rounded-2xl bg-warmGray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-warmGray-800 active:bg-warmGray-700 disabled:opacity-50 disabled:cursor-default"
                 onClick={handleAnalyze}

@@ -31,7 +31,7 @@ export function ExampleModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm !mt-0"
           />
           {/* Modal */}
           <motion.div
@@ -39,11 +39,11 @@ export function ExampleModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+            className="fixed !mt-0 inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
-            <div className="relative w-full max-w-4xl pointer-events-auto">
+            <div className="relative w-full md:max-w-4xl pointer-events-auto">
               {/* Content */}
-              <div className=" rounded-3xl scale-75 relative overflow-hidden">
+              <div className="rounded-3xl md:scale-75 relative overflow-hidden">
                 {/* Close Button */}
                 <button
                   onClick={onClose}

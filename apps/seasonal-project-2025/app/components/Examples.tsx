@@ -1,18 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { mockAnalysisResult } from "@features/report/data/mockAnalysisResults";
 import { ExampleModal } from "./ExampleModal";
 import { Base64Image } from "@shared/ui/Base64Image";
 import type { AnalysisResult } from "@features/report/types";
 
 export function Examples() {
+  const router = useRouter();
   const [selectedExample, setSelectedExample] = useState<AnalysisResult | null>(
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleExampleClick = (example: AnalysisResult) => {
+    // md 이하(모바일)에서는 모달 대신 바로 이동
+    if (window.innerWidth < 768) {
+      router.push("/report?example=" + example.id);
+      return;
+    }
+    // md 이상에서는 모달 표시
     setSelectedExample(example);
     setIsModalOpen(true);
   };
@@ -28,7 +36,7 @@ export function Examples() {
         <div className="flex items-center gap-3">
           <div className="h-2 w-2 rounded-full bg-warmGray-400" />
           <p className="text-sm text-warmGray-600">
-            분석 전, 아래 예시 카드를 참고하여 회고를 설계하세요.
+            분석 전, 아래 예시 카드 결과를 참고하세요.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -59,8 +67,12 @@ interface ExampleCardProps {
 }
 
 function ExampleCard({ example, index, onClick }: ExampleCardProps) {
-  // 첫 번째 리포트의 사진들을 사용하여 미리보기 생성
-  const previewPhotos = example.monthlyReports[0]?.photos || [];
+  // 모든 월별 리포트의 사진들을 합쳐서 전체 이미지 중에서 선택
+  const allPhotos = example.monthlyReports.flatMap(
+    (report) => report.photos || []
+  );
+  // 썸네일로 사용할 이미지 선택 (최대 4개)
+  const previewPhotos = allPhotos.slice(0, 4);
 
   return (
     <button
