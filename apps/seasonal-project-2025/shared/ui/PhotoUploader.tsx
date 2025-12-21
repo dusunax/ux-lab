@@ -10,7 +10,10 @@ interface PhotoUploaderProps {
   maxPhotos?: number;
 }
 
-export function PhotoUploader({ onPhotosSelected, maxPhotos = 24 }: PhotoUploaderProps) {
+export function PhotoUploader({
+  onPhotosSelected,
+  maxPhotos = 24,
+}: PhotoUploaderProps) {
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -20,7 +23,9 @@ export function PhotoUploader({ onPhotosSelected, maxPhotos = 24 }: PhotoUploade
     if (!files) return;
 
     const fileArray = Array.from(files).slice(0, maxPhotos - photos.length);
-    const imageFiles = fileArray.filter((file) => file.type.startsWith("image/"));
+    const imageFiles = fileArray.filter((file) =>
+      file.type.startsWith("image/")
+    );
 
     const newPhotos = [...photos, ...imageFiles];
     setPhotos(newPhotos);
@@ -125,7 +130,7 @@ export function PhotoUploader({ onPhotosSelected, maxPhotos = 24 }: PhotoUploade
               />
               <button
                 onClick={() => handleRemovePhoto(index)}
-                className="absolute right-2 top-2 rounded-full bg-black/50 p-1.5 opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-2 top-2 rounded-full bg-black/50 p-1.5"
               >
                 <X className="h-4 w-4 text-white" />
               </button>

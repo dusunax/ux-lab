@@ -32,7 +32,7 @@ export function Examples() {
 
   return (
     <>
-      <div className="space-y-4 mt-10">
+      <div className="space-y-4 mt-16">
         <div className="flex items-center gap-3">
           <div className="h-2 w-2 rounded-full bg-warmGray-400" />
           <p className="text-sm text-warmGray-600">

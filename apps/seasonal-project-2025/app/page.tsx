@@ -141,7 +141,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
+    <main className="break-keep min-h-screen px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
       <ProcessingOverlay active={isProcessing} />
       <div className="mx-auto max-w-7xl space-y-10">
         <motion.div
@@ -166,7 +166,8 @@ export default function Home() {
             Project Afterglow
           </h1>
           <p className="mx-auto max-w-2xl mt-8 text-lg text-warmGray-600 md:text-xl">
-            올해의 소중한 순간들을 AI와 함께 되돌아보며,
+            올해의 소중한 순간들을
+            <br className="block md:hidden " /> AI와 함께 되돌아보며,
             <br /> 따뜻한 회고를 만들어보세요.
           </p>
         </motion.div>
@@ -214,10 +215,10 @@ export default function Home() {
         <Card className="space-y-10" padding="lg">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2 text-center md:text-left">
-              <h2 className="text-2xl font-semibold text-warmGray-900">
+              <h2 className="text-2xl font-semibold text-warmGray-900 break-keep">
                 사진 업로드
               </h2>
-              <p className="text-warmGray-600">
+              <p className="text-warmGray-600 break-keep">
                 최대 24장까지 업로드하고 AI 분석을 시작하세요.
               </p>
             </div>
