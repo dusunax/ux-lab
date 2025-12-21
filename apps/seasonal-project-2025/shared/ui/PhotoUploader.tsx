@@ -10,7 +10,7 @@ interface PhotoUploaderProps {
   maxPhotos?: number;
 }
 
-export function PhotoUploader({ onPhotosSelected, maxPhotos = 30 }: PhotoUploaderProps) {
+export function PhotoUploader({ onPhotosSelected, maxPhotos = 24 }: PhotoUploaderProps) {
   const [photos, setPhotos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);

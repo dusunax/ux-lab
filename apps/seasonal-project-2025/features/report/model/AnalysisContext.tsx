@@ -65,10 +65,8 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
 export function useAnalysis() {
   const context = useContext(AnalysisContext);
 
-  console.log("context", context);
   if (context === undefined) {
     throw new Error("useAnalysis must be used within an AnalysisProvider");
   }
   return context;
 }
-

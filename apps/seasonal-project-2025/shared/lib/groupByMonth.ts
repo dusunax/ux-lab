@@ -1,4 +1,4 @@
-import type { PhotoWithMetadata, AfterglowReport } from "@features/report/types";
+import type { PhotoWithMetadata, MonthlyReport } from "@features/report/types";
 
 /**
  * 사진들을 월별로 그룹화합니다.
@@ -7,7 +7,7 @@ import type { PhotoWithMetadata, AfterglowReport } from "@features/report/types"
  */
 export function groupPhotosByMonth(
   photos: PhotoWithMetadata[]
-): Omit<AfterglowReport, "keywords" | "yearSentence">[] {
+): Omit<MonthlyReport, "summary" | "mood">[] {
   // 월별로 그룹화
   const grouped = photos.reduce(
     (acc, photo) => {
@@ -22,13 +22,11 @@ export function groupPhotosByMonth(
   );
 
   // 리포트 배열로 변환
-  const reports: Omit<AfterglowReport, "keywords" | "yearSentence">[] = Object.entries(
+  const reports: Omit<MonthlyReport, "summary" | "mood">[] = Object.entries(
     grouped
   )
     .map(([month, photoUrls]) => ({
       month,
-      summary: "", // AI 분석 후 채워짐
-      mood: "", // AI 분석 후 채워짐
       photos: photoUrls,
     }))
     .sort((a, b) => a.month.localeCompare(b.month)); // 월순으로 정렬
