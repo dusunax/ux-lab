@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ReportView } from "@features/report/ui/ReportView";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { mockAnalysisResult } from "@features/report/data/mockAnalysisResults";
 
-export default function ReportPage() {
+function ReportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { analysisResult } = useAnalysis();
@@ -30,4 +30,12 @@ export default function ReportPage() {
   }
 
   return <ReportView analysisResult={result} />;
+}
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={null}>
+      <ReportContent />
+    </Suspense>
+  );
 }
