@@ -65,7 +65,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   const gradientColors = getGradientColors(analysisResult.primaryColor);
 
   return (
-    <div className="relative min-h-screen scrollbar-hide">
+    <div className="break-keep relative min-h-screen scrollbar-hide">
       <div style={{ height: `${totalScrollHeight}vh` }} className="bg-black" />
 
       <TitleSection
