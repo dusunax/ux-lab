@@ -14,6 +14,7 @@ import { analyzePhotos } from "@features/report/api/analyze";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { Examples } from "./components/Examples";
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
+import { RateLimitBadge } from "./components/RateLimitBadge";
 import { trackAnalysisComplete, trackAnalysisError } from "@shared/lib/gtag";
 import type { PhotoWithMetadata } from "@features/report/types";
 
@@ -134,6 +135,9 @@ export default function Home() {
         resultWithPhotos.monthlyReports.length
       );
 
+      // Rate limit 상태 갱신을 위한 이벤트 발생
+      window.dispatchEvent(new Event("analysisComplete"));
+
       // 분석 성공 후 맨 위로 스크롤
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
@@ -152,6 +156,7 @@ export default function Home() {
 
   return (
     <main className="break-keep min-h-screen px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
+      <RateLimitBadge />
       <ProcessingOverlay active={isProcessing} />
       <div className="mx-auto max-w-7xl space-y-10">
         <motion.div
