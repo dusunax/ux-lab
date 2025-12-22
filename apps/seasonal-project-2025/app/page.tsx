@@ -14,6 +14,11 @@ import { analyzePhotos } from "@features/report/api/analyze";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { Examples } from "./components/Examples";
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
+import {
+  trackButtonClick,
+  trackAnalysisComplete,
+  trackAnalysisError,
+} from "@shared/lib/gtag";
 import type { PhotoWithMetadata, MonthlyReport } from "@features/report/types";
 
 export default function Home() {
@@ -130,10 +135,22 @@ export default function Home() {
       setPhotoBase64s(photoBase64s);
       setDisplayReports(resultWithPhotos.monthlyReports);
 
+      // 분석 완료 이벤트 추적
+      trackAnalysisComplete(
+        uploadedPhotos.length,
+        resultWithPhotos.monthlyReports.length
+      );
+
       // 분석 성공 후 맨 위로 스크롤
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error("분석 실패:", error);
+
+      // 분석 실패 이벤트 추적
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      trackAnalysisError(errorMessage);
+
       alert("분석 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setIsProcessing(false);
@@ -185,6 +202,7 @@ export default function Home() {
                   router.push("/report");
                 }}
                 type="button"
+                data-ga-label="결과 플레이"
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-warmGray-900 text-white text-lg font-semibold hover:bg-warmGray-800 transition-colors duration-200 shadow-lg cursor-pointer"
               >
                 <PlayIcon className="w-6 h-6" />
@@ -199,6 +217,7 @@ export default function Home() {
                   setDisplayReports([]);
                 }}
                 type="button"
+                data-ga-label="다시 하기"
                 className="w-12 h-12 flex items-center justify-center rounded-2xl bg-warmGray-400 text-white hover:bg-warmGray-500 transition-colors duration-200 shadow-lg cursor-pointer"
                 title="다시 하기"
               >
@@ -227,6 +246,7 @@ export default function Home() {
                 className="rounded-2xl bg-warmGray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-warmGray-800 active:bg-warmGray-700 disabled:opacity-50 disabled:cursor-default"
                 onClick={handleAnalyze}
                 disabled={isProcessing || uploadedPhotos.length === 0}
+                data-ga-label="AI 분석 시작"
               >
                 {isProcessing ? "분석 중..." : "AI 분석 시작"}
               </button>

@@ -77,6 +77,7 @@ function ExampleCard({ example, index, onClick }: ExampleCardProps) {
   return (
     <button
       onClick={onClick}
+      data-ga-label="예시 카드 클릭"
       className="group relative overflow-hidden rounded-3xl border border-beige-200 bg-beige-50/60 transition-all duration-200 hover:border-beige-300 hover:bg-beige-50 hover:shadow-md cursor-pointer text-left w-full"
     >
       {/* 콜라주 형태의 사진 그리드 */}

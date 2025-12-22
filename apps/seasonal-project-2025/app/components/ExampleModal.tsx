@@ -47,6 +47,7 @@ export function ExampleModal({
                 {/* Close Button */}
                 <button
                   onClick={onClose}
+                  data-ga-label="예시 모달 닫기"
                   className="absolute top-4 right-4 z-[11] w-10 h-10 flex items-center justify-center rounded-full bg-warmGray-100 hover:bg-warmGray-200 transition-colors duration-200 shadow-md"
                   aria-label="닫기"
                 >
@@ -64,6 +65,7 @@ export function ExampleModal({
                     onClick={() => {
                       router.push("/report?example=" + analysisResult.id);
                     }}
+                    data-ga-label="예시 리포트 보기"
                     className="absolute z-10 w-full h-full flex items-center justify-center pointer-events-auto"
                   >
                     <PlayIcon className="w-20 h-20 text-white animate-pulse" />

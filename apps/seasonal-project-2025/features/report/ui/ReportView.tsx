@@ -126,6 +126,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
               variant="secondary"
               size="lg"
               onClick={() => router.push("/")}
+              data-ga-label="리포트에서 돌아가기"
               className="flex items-center gap-2"
             >
               <RotateCcw className="w-5 h-5" />
