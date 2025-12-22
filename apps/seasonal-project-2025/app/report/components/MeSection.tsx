@@ -1,39 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Badge } from "@shared/ui/Badge";
-import type { MotionValue } from "framer-motion";
+import type { SectionId } from "@/report/hooks/useReportSections";
 import type { PersonalityType, Keyword } from "@features/report/types";
+import { AnimatedSection } from "./AnimatedSection";
 
 interface MeSectionProps {
-  opacity: MotionValue<number>;
-  y: MotionValue<number>;
+  onSectionChange: (section: SectionId) => void;
+  sectionId: SectionId;
   personalityType: PersonalityType;
   favoriteThings: Keyword[];
+  registerSection?: (id: SectionId, ref: React.RefObject<HTMLElement>) => void;
 }
 
 export function MeSection({
-  opacity,
-  y,
+  onSectionChange,
+  sectionId,
   personalityType,
   favoriteThings,
+  registerSection,
 }: MeSectionProps) {
   return (
-    <motion.div
-      style={{
-        opacity,
-        y,
-      }}
-      className="fixed inset-0 z-10 flex items-center justify-center bg-black"
-    >
-      <div className="max-w-4xl mx-auto px-4 w-full">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6"
-        >
+    <AnimatedSection sectionId={sectionId} registerSection={registerSection}>
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4">
+        <div className="space-y-6">
           <h2 className="text-section-sm font-bold text-white text-center mb-8">
             Me at 2025
           </h2>
@@ -71,9 +61,8 @@ export function MeSection({
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </AnimatedSection>
   );
 }
-

@@ -1,27 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Badge } from "@shared/ui/Badge";
 import { toast } from "sonner";
-import type { MotionValue } from "framer-motion";
+import type { SectionId } from "@/report/hooks/useReportSections";
 import type { Keyword, PrimaryColor } from "@features/report/types";
+import { AnimatedSection } from "./AnimatedSection";
 
 interface MoodSectionProps {
-  opacity: MotionValue<number>;
-  y: MotionValue<number>;
+  onSectionChange: (section: SectionId) => void;
+  sectionId: SectionId;
   keywords: Keyword[];
   primaryColor: PrimaryColor[];
   gradientColors: string | React.CSSProperties["background"];
   isCurrentSection: boolean;
+  registerSection?: (id: SectionId, ref: React.RefObject<HTMLElement>) => void;
 }
 
 export function MoodSection({
-  opacity,
-  y,
+  onSectionChange,
+  sectionId,
   keywords,
   primaryColor,
   gradientColors,
   isCurrentSection,
+  registerSection,
 }: MoodSectionProps) {
   const handleColorClick = (color: PrimaryColor) => {
     if (!isCurrentSection) return;
@@ -33,23 +35,17 @@ export function MoodSection({
   };
 
   return (
-    <motion.div
-      style={{
-        opacity,
-        y,
+    <AnimatedSection
+      sectionId={sectionId}
+      registerSection={registerSection}
+      backgroundStyle={{
         background: gradientColors || primaryColor?.[0]?.hexCode || "#8B7355",
       }}
-      className="fixed inset-0 z-10 flex items-center justify-center"
+      backgroundClassName=""
     >
-      <div className="absolute -top-[1px] left-0 h-2 w-full bg-gradient-to-b from-black to-transparent pointer-events-none" />
-      <div className="max-w-6xl mx-auto px-4 w-full text-black">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6"
-        >
+      <div className="absolute -top-[1px] left-0 h-2 w-full bg-gradient-to-b from-black to-transparent pointer-events-none z-20" />
+      <div className="relative z-10 max-w-6xl mx-auto px-4 w-full text-black">
+        <div className="space-y-6">
           {/* 배경 흰색 원형 그라데이션 */}
           <div
             aria-hidden
@@ -109,9 +105,9 @@ export function MoodSection({
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
-      <div className="absolute bottom-0 left-0 h-2 w-full bg-gradient-to-t from-black to-transparent pointer-events-none" />
-    </motion.div>
+      <div className="absolute bottom-0 left-0 h-2 w-full bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
+    </AnimatedSection>
   );
 }

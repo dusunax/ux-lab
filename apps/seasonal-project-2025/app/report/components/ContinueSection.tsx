@@ -1,39 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
-import type { MotionValue } from "framer-motion";
+import type { SectionId } from "@/report/hooks/useReportSections";
+import { AnimatedSection } from "./AnimatedSection";
 
 interface ContinueSectionProps {
-  opacity: MotionValue<number>;
-  y: MotionValue<number>;
+  onSectionChange: (section: SectionId) => void;
+  sectionId: SectionId;
   advice: string;
   luckyItem: string;
   avoidItem: string;
+  registerSection?: (id: SectionId, ref: React.RefObject<HTMLElement>) => void;
 }
 
 export function ContinueSection({
-  opacity,
-  y,
+  onSectionChange,
+  sectionId,
   advice,
   luckyItem,
   avoidItem,
+  registerSection,
 }: ContinueSectionProps) {
   return (
-    <motion.div
-      style={{
-        opacity,
-        y,
-      }}
-      className="fixed inset-0 z-10 flex items-center justify-center bg-black"
-    >
-      <div className="mx-auto px-4 w-full max-w-4xl">
-        <motion.div
-          initial={{ opacity: 1, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6"
-        >
+    <AnimatedSection sectionId={sectionId} registerSection={registerSection}>
+      <div className="relative z-10 mx-auto px-4 w-full max-w-4xl">
+        <div className="space-y-6">
           <h2 className="text-section-sm font-bold text-white text-center mb-8">
             In 2026
           </h2>
@@ -71,8 +61,8 @@ export function ContinueSection({
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </AnimatedSection>
   );
 }

@@ -1,32 +1,28 @@
 "use client";
 
-import { motion } from "framer-motion";
-import type { MotionValue } from "framer-motion";
+import type { SectionId } from "@/report/hooks/useReportSections";
+import { AnimatedSection } from "./AnimatedSection";
 
 interface TitleSectionProps {
-  opacity: MotionValue<number>;
-  scale: MotionValue<number>;
-  y: MotionValue<number>;
+  onSectionChange: (section: SectionId) => void;
+  sectionId: SectionId;
+  registerSection?: (id: SectionId, ref: React.RefObject<HTMLElement>) => void;
 }
 
-export function TitleSection({ opacity, scale, y }: TitleSectionProps) {
+export function TitleSection({
+  onSectionChange,
+  sectionId,
+  registerSection,
+}: TitleSectionProps) {
   return (
-    <motion.div
-      style={{
-        opacity,
-        scale,
-        y,
-      }}
-      className="fixed inset-0 z-10 flex items-center justify-center bg-black"
+    <AnimatedSection
+      sectionId={sectionId}
+      registerSection={registerSection}
+      hasScale={true}
     >
-      <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 text-hero font-bold text-white text-center"
-      >
+      <h1 className="relative z-10 text-hero font-bold text-white text-center">
         Your 2025
-      </motion.h1>
-    </motion.div>
+      </h1>
+    </AnimatedSection>
   );
 }

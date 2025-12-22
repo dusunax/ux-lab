@@ -1,38 +1,34 @@
 "use client";
 
-import { motion } from "framer-motion";
-import type { MotionValue } from "framer-motion";
+import type { SectionId } from "@/report/hooks/useReportSections";
+import { AnimatedSection } from "./AnimatedSection";
 
 interface PersonalitySectionProps {
-  opacity: MotionValue<number>;
-  y: MotionValue<number>;
+  onSectionChange: (section: SectionId) => void;
+  sectionId: SectionId;
   personality: string;
+  registerSection?: (id: SectionId, ref: React.RefObject<HTMLElement>) => void;
 }
 
 export function PersonalitySection({
-  opacity,
-  y,
+  onSectionChange,
+  sectionId,
   personality,
+  registerSection,
 }: PersonalitySectionProps) {
   return (
-    <motion.div
-      style={{
-        opacity,
-        y,
-      }}
-      className="fixed inset-0 z-10 flex items-center justify-center bg-black"
+    <AnimatedSection
+      sectionId={sectionId}
+      registerSection={registerSection}
     >
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 text-center max-w-4xl mx-auto px-4"
-      >
-        <h2 className="text-section-lg font-bold text-white mb-6">본인은...</h2>
+      <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+        <h2 className="text-section-lg font-bold text-white mb-6">
+          본인은...
+        </h2>
         <p className="text-xl md:text-3xl text-white/90 leading-relaxed">
           {personality}
         </p>
-      </motion.div>
-    </motion.div>
+      </div>
+    </AnimatedSection>
   );
 }

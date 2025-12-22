@@ -20,7 +20,8 @@ interface ReportViewProps {
 
 export function ReportView({ analysisResult }: ReportViewProps) {
   const router = useRouter();
-  const { currentSection, totalScrollHeight, animations } = useReportSections();
+  const { currentSection, setCurrentSection, registerSection } =
+    useReportSections();
 
   // 배경 그라데이션 생성 (percentage 반영, 자연스러운 전환)
   const getGradientColors = (colors: typeof analysisResult.primaryColor) => {
@@ -66,48 +67,51 @@ export function ReportView({ analysisResult }: ReportViewProps) {
 
   return (
     <div className="break-keep relative min-h-screen scrollbar-hide">
-      <div style={{ height: `${totalScrollHeight}vh` }} className="bg-black" />
-
       <TitleSection
-        opacity={animations.title.opacity}
-        scale={animations.title.scale}
-        y={animations.title.y}
+        onSectionChange={setCurrentSection}
+        sectionId="title"
+        registerSection={registerSection}
       />
 
       <SentenceSection
-        opacity={animations.sentence.opacity}
-        y={animations.sentence.y}
+        onSectionChange={setCurrentSection}
+        sectionId="sentence"
         yearSentence={analysisResult.yearSentence}
+        registerSection={registerSection}
       />
 
       <PersonalitySection
-        opacity={animations.personality.opacity}
-        y={animations.personality.y}
+        onSectionChange={setCurrentSection}
+        sectionId="personality"
         personality={analysisResult.personality}
+        registerSection={registerSection}
       />
 
       <MeSection
-        opacity={animations.me.opacity}
-        y={animations.me.y}
+        onSectionChange={setCurrentSection}
+        sectionId="me"
         personalityType={analysisResult.personalityType}
         favoriteThings={analysisResult.favoriteThings}
+        registerSection={registerSection}
       />
 
       <MoodSection
-        opacity={animations.mood.opacity}
-        y={animations.mood.y}
+        onSectionChange={setCurrentSection}
+        sectionId="mood"
         keywords={analysisResult.keywords}
         primaryColor={analysisResult.primaryColor}
         gradientColors={gradientColors}
         isCurrentSection={currentSection === "mood"}
+        registerSection={registerSection}
       />
 
       <ContinueSection
-        opacity={animations.continue.opacity}
-        y={animations.continue.y}
+        onSectionChange={setCurrentSection}
+        sectionId="continue"
         advice={analysisResult.advice}
         luckyItem={analysisResult.luckyItem}
         avoidItem={analysisResult.avoidItem}
+        registerSection={registerSection}
       />
 
       <Timeline reports={analysisResult.monthlyReports} />
