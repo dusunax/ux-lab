@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@shared/ui/Badge";
-import type { SectionId } from "@/report/hooks/useReportSections";
+import type { SectionId } from "@features/report/hooks/useReportSections";
 import type { PersonalityType, Keyword } from "@features/report/types";
 import { AnimatedSection } from "./AnimatedSection";
 

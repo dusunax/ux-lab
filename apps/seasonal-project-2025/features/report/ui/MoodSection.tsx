@@ -2,7 +2,7 @@
 
 import { Badge } from "@shared/ui/Badge";
 import { toast } from "sonner";
-import type { SectionId } from "@/report/hooks/useReportSections";
+import type { SectionId } from "@features/report/hooks/useReportSections";
 import type { Keyword, PrimaryColor } from "@features/report/types";
 import { AnimatedSection } from "./AnimatedSection";
 

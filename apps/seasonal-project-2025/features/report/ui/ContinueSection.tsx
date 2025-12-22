@@ -1,6 +1,6 @@
 "use client";
 
-import type { SectionId } from "@/report/hooks/useReportSections";
+import type { SectionId } from "@features/report/hooks/useReportSections";
 import { AnimatedSection } from "./AnimatedSection";
 
 interface ContinueSectionProps {

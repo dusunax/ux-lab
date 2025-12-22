@@ -1,32 +1,29 @@
 "use client";
 
-import type { SectionId } from "@/report/hooks/useReportSections";
+import type { SectionId } from "@features/report/hooks/useReportSections";
 import { AnimatedSection } from "./AnimatedSection";
 
-interface PersonalitySectionProps {
+interface SentenceSectionProps {
   onSectionChange: (section: SectionId) => void;
   sectionId: SectionId;
-  personality: string;
+  yearSentence: string;
   registerSection?: (id: SectionId, ref: React.RefObject<HTMLElement>) => void;
 }
 
-export function PersonalitySection({
+export function SentenceSection({
   onSectionChange,
   sectionId,
-  personality,
+  yearSentence,
   registerSection,
-}: PersonalitySectionProps) {
+}: SentenceSectionProps) {
   return (
-    <AnimatedSection
-      sectionId={sectionId}
-      registerSection={registerSection}
-    >
+    <AnimatedSection sectionId={sectionId} registerSection={registerSection}>
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
         <h2 className="text-section-lg font-bold text-white mb-6">
-          본인은...
+          2025년은...
         </h2>
         <p className="text-xl md:text-3xl text-white/90 leading-relaxed">
-          {personality}
+          {yearSentence}
         </p>
       </div>
     </AnimatedSection>

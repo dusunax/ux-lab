@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@shared/ui/Button";
-import { Timeline } from "@features/report/ui/Timeline";
-import { useReportSections } from "@/report/hooks/useReportSections";
-import { TitleSection } from "@/report/components/TitleSection";
-import { SentenceSection } from "@/report/components/SentenceSection";
-import { PersonalitySection } from "@/report/components/PersonalitySection";
-import { MeSection } from "@/report/components/MeSection";
-import { MoodSection } from "@/report/components/MoodSection";
-import { ContinueSection } from "@/report/components/ContinueSection";
+import { Timeline } from "@features/report/ui/TimelineSection";
+import { useReportSections } from "@features/report/hooks/useReportSections";
+import { TitleSection } from "@features/report/ui/TitleSection";
+import { SentenceSection } from "@features/report/ui/SentenceSection";
+import { PersonalitySection } from "@features/report/ui/PersonalitySection";
+import { MeSection } from "@features/report/ui/MeSection";
+import { MoodSection } from "@features/report/ui/MoodSection";
+import { ContinueSection } from "@features/report/ui/ContinueSection";
 import type { AnalysisResult } from "@features/report/types";
 
 interface ReportViewProps {

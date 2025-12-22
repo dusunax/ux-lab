@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, ReactNode } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import type { SectionId } from "@/report/hooks/useReportSections";
+import type { SectionId } from "@features/report/hooks/useReportSections";
 
 interface AnimatedSectionProps {
   sectionId: SectionId;
