@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 import { AnalysisProvider } from "@features/report/model/AnalysisContext";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
@@ -25,7 +26,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body className="antialiased">
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <AnalysisProvider>{children}</AnalysisProvider>
         <Toaster position="top-center" />
       </body>

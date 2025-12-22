@@ -85,11 +85,19 @@ export function GoogleAnalytics() {
       }
 
       // Google Analytics 이벤트 전송
-      window.gtag("event", "button_click", {
+      const eventParams = {
+        event_name: "button_click",
         event_category: "engagement",
         event_label: buttonLabel,
         page_path: window.location.pathname + window.location.search,
-      });
+      };
+
+      // 디버깅용 로그 (개발 환경에서만)
+      if (process.env.NODE_ENV === "development") {
+        console.log("GA Button Click:", eventParams);
+      }
+
+      window.gtag("event", "button_click", eventParams);
     };
 
     document.addEventListener("click", handleButtonClick, true);

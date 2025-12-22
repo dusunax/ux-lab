@@ -37,9 +37,17 @@ export function trackEvent(action: string, params?: GAEventParams) {
     return;
   }
 
-  window.gtag("event", action, {
+  const eventParams = {
+    event_name: action,
     ...params,
-  });
+  };
+
+  // 디버깅용 로그 (개발 환경에서만)
+  if (process.env.NODE_ENV === "development") {
+    console.log("GA Event:", action, eventParams);
+  }
+
+  window.gtag("event", action, eventParams);
 }
 
 /**
