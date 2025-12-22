@@ -28,14 +28,11 @@ export function PersonalitySection({
         transition={{ duration: 0.8 }}
         className="relative z-10 text-center max-w-4xl mx-auto px-4"
       >
-        <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-          본인은...
-        </h2>
-        <p className="text-2xl md:text-3xl text-white/90 leading-relaxed">
+        <h2 className="text-section-lg font-bold text-white mb-6">본인은...</h2>
+        <p className="text-xl md:text-3xl text-white/90 leading-relaxed">
           {personality}
         </p>
       </motion.div>
     </motion.div>
   );
 }
-

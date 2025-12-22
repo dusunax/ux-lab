@@ -34,7 +34,7 @@ export function MeSection({
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-8">
+          <h2 className="text-section-sm font-bold text-white text-center mb-8">
             Me at 2025
           </h2>
           <div className="flex flex-col gap-6">

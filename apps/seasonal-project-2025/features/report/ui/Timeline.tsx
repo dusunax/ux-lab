@@ -17,7 +17,7 @@ export function Timeline({ reports }: TimelineProps) {
         <div className="bg-white">
           <div className=" max-w-4xl mx-auto px-4 py-20">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-warmGray-900 mb-4">
+              <h2 className="text-section-md font-bold text-warmGray-900 mb-4">
                 Timeline
               </h2>
               <p className="text-warmGray-600 text-lg">
@@ -94,7 +94,7 @@ export function Timeline({ reports }: TimelineProps) {
                       {/* 월별 정보 (분석 문장) */}
                       <div className="flex-1 w-full space-y-4">
                         <div className="flex items-center gap-3">
-                          <h3 className="text-3xl font-bold text-warmGray-900">
+                          <h3 className="text-subsection font-bold text-warmGray-900">
                             {report.month}
                           </h3>
                           <span className="px-3 py-1 rounded-full bg-beige-200/60 text-warmGray-700 text-sm font-medium flex items-center gap-1.5">

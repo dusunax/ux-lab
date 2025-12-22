@@ -67,7 +67,7 @@ export function MoodSection({
               }}
             ></div>
           </div>
-          <h2 className="relative z-10 text-3xl md:text-4xl font-bold text-center mb-8">
+          <h2 className="relative z-10 text-section-sm font-bold text-center mb-8">
             Mood at 2025
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

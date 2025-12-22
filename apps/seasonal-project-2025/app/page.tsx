@@ -14,17 +14,12 @@ import { analyzePhotos } from "@features/report/api/analyze";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { Examples } from "./components/Examples";
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
-import {
-  trackButtonClick,
-  trackAnalysisComplete,
-  trackAnalysisError,
-} from "@shared/lib/gtag";
-import type { PhotoWithMetadata, MonthlyReport } from "@features/report/types";
+import { trackAnalysisComplete, trackAnalysisError } from "@shared/lib/gtag";
+import type { PhotoWithMetadata } from "@features/report/types";
 
 export default function Home() {
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [displayReports, setDisplayReports] = useState<MonthlyReport[]>([]);
   const {
     analysisResult,
     setAnalysisResult,
@@ -45,7 +40,6 @@ export default function Home() {
     setUploadedPhotoPreviews(previews);
 
     if (photos.length === 0) {
-      setDisplayReports([]);
       setAnalysisResult(null);
       setUploadedPhotoPreviews([]);
       return;
@@ -133,7 +127,6 @@ export default function Home() {
       // 9. Context에 저장 (분석 완료 직후)
       setAnalysisResult(resultWithPhotos);
       setPhotoBase64s(photoBase64s);
-      setDisplayReports(resultWithPhotos.monthlyReports);
 
       // 분석 완료 이벤트 추적
       trackAnalysisComplete(
@@ -179,10 +172,10 @@ export default function Home() {
             </span>
           </motion.div>
 
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-warmGray-900 md:text-5xl lg:text-6xl">
+          <h1 className="mb-4 text-title-main font-bold tracking-tight text-warmGray-900">
             Project Afterglow
           </h1>
-          <p className="mx-auto max-w-2xl mt-8 text-lg text-warmGray-600 md:text-xl">
+          <p className="mx-auto max-w-2xl mt-8 text-warmGray-600 md:text-xl">
             올해의 소중한 순간들을
             <br className="block md:hidden " /> AI와 함께 되돌아보며,
             <br /> 따뜻한 회고를 만들어보세요.
@@ -214,7 +207,6 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 onClick={() => {
                   clearAnalysisData();
-                  setDisplayReports([]);
                 }}
                 type="button"
                 data-ga-label="다시 하기"

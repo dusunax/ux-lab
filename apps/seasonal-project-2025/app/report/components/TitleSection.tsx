@@ -23,11 +23,10 @@ export function TitleSection({ opacity, scale, y }: TitleSectionProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 text-6xl md:text-8xl font-bold text-white text-center"
+        className="relative z-10 text-hero font-bold text-white text-center"
       >
         Your 2025
       </motion.h1>
     </motion.div>
   );
 }
-
