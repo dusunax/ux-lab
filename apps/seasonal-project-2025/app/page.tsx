@@ -155,10 +155,10 @@ export default function Home() {
   };
 
   return (
-    <main className="break-keep min-h-screen px-4 py-12 md:px-8 md:py-16 lg:px-12 lg:py-20">
+    <main className="break-keep min-h-[dvh] pt-24 sm:pt-8 px-4 py-8 md:px-8 md:py-16 lg:px-12 lg:py-20">
       <RateLimitBadge />
       <ProcessingOverlay active={isProcessing} />
-      <div className="mx-auto max-w-7xl space-y-10">
+      <div className="mx-auto max-w-7xl space-y-6 md:space-y-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -169,7 +169,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="mb-6 inline-flex items-center gap-2 rounded-3xl bg-beige-100 px-6 py-2"
+            className="mb-4 md:mb-6 inline-flex items-center gap-2 rounded-3xl bg-beige-100 px-4 py-1.5 md:px-6 md:py-2"
           >
             <Sparkles className="h-5 w-5 text-warmGray-600" />
             <span className="text-sm font-medium text-warmGray-700">
@@ -177,10 +177,10 @@ export default function Home() {
             </span>
           </motion.div>
 
-          <h1 className="mb-4 text-title-main font-bold tracking-tight text-warmGray-900">
+          <h1 className="mb-3 md:mb-4 text-title-main font-bold tracking-tight text-warmGray-900">
             Project Afterglow
           </h1>
-          <p className="mx-auto max-w-2xl mt-8 text-warmGray-600 md:text-xl">
+          <p className="mx-auto max-w-2xl mt-4 md:mt-8 text-warmGray-600 md:text-xl">
             올해의 소중한 순간들을
             <br className="block md:hidden " /> AI와 함께 되돌아보며,
             <br /> 따뜻한 회고를 만들어보세요.
@@ -191,7 +191,7 @@ export default function Home() {
         {analysisResult && (
           <div>
             {/* 결과 리포트 상세 보기 버튼 */}
-            <div className="w-full flex items-center gap-3 mb-6 z-10 relative">
+            <div className="w-full flex items-center gap-2 md:gap-3 mb-4 md:mb-6 z-10 relative">
               <motion.button
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -201,7 +201,7 @@ export default function Home() {
                 }}
                 type="button"
                 data-ga-label="결과 플레이"
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-warmGray-900 text-white text-lg font-semibold hover:bg-warmGray-800 transition-colors duration-200 shadow-lg cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 md:px-6 md:py-4 rounded-2xl bg-warmGray-900 text-white text-base md:text-lg font-semibold hover:bg-warmGray-800 transition-colors duration-200 shadow-lg cursor-pointer"
               >
                 <PlayIcon className="w-6 h-6" />
                 결과 플레이
@@ -229,13 +229,14 @@ export default function Home() {
         )}
 
         <Card className="space-y-10" padding="lg">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-4 md:gap-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2 text-center md:text-left">
               <h2 className="text-2xl font-semibold text-warmGray-900 break-keep">
                 사진 업로드
               </h2>
               <p className="text-warmGray-600 break-keep">
-                최대 24장까지 업로드하고 AI 분석을 시작하세요.
+                최대 24장까지 업로드하고 <br className="block sm:hidden " />
+                AI 분석을 시작하세요.
               </p>
             </div>
             <div className="relative group text-center md:text-left">

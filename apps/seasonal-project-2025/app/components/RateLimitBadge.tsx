@@ -53,7 +53,7 @@ export function RateLimitBadge() {
   const isLow = status.remaining <= 1;
 
   return (
-    <div className="fixed top-6 right-6 z-50 md:top-8 md:right-8">
+    <div className="fixed top-4 right-4 z-50 md:top-6 md:right-6">
       <div
         className={`relative px-3 py-2.5 md:px-4 md:py-3 rounded-2xl backdrop-blur-xl border shadow-lg ${
           isLow

@@ -15,16 +15,16 @@ export function Timeline({ reports }: TimelineProps) {
         {/* 상단 그라데이션 오버레이 */}
         <div className="absolute -top-[10vh] left-0 right-0 h-[10vh] bg-gradient-to-b from-transparent via-white/50 to-white pointer-events-none" />
         <div className="bg-white">
-          <div className=" max-w-4xl mx-auto px-4 py-20">
-            <div className="text-center mb-16">
-              <h2 className="text-section-md font-bold text-warmGray-900 mb-4">
+          <div className=" max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="text-section-md font-bold text-warmGray-900 mb-3 md:mb-4">
                 Timeline
               </h2>
-              <p className="text-warmGray-600 text-lg">
+              <p className="text-warmGray-600 text-base md:text-lg">
                 올해의 순간들을 되돌아봅니다
               </p>
             </div>
-            <div className="space-y-24">
+            <div className="space-y-16 md:space-y-24">
               {reports.map((report, index) => {
                 // 짝수 인덱스는 사진이 왼쪽, 홀수 인덱스는 사진이 오른쪽
                 const isEven = index % 2 === 0;

@@ -22,13 +22,13 @@ export function MeSection({
 }: MeSectionProps) {
   return (
     <AnimatedSection sectionId={sectionId} registerSection={registerSection}>
-      <div className="relative z-10 w-full max-w-4xl mx-auto px-4">
-        <div className="space-y-6">
-          <h2 className="text-section-sm font-bold text-white text-center mb-8">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 md:px-6">
+        <div className="space-y-4 md:space-y-6">
+          <h2 className="text-section-sm font-bold text-white text-center mb-6 md:mb-8">
             Me at 2025
           </h2>
-          <div className="flex flex-col gap-6">
-            <div className="w-full bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 text-center">
+          <div className="flex flex-col gap-4 md:gap-6">
+            <div className="w-full bg-white/10 backdrop-blur-xl rounded-3xl p-4 md:p-6 border border-white/20 text-center">
               <h3 className="text-lg font-semibold text-white mb-3">
                 심리 타입
               </h3>

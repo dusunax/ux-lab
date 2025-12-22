@@ -117,8 +117,8 @@ export function ReportView({ analysisResult }: ReportViewProps) {
       <Timeline reports={analysisResult.monthlyReports} />
 
       {/* Footer */}
-      <div className="relative z-20 bg-warmGray-50 py-16">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="relative z-20 bg-warmGray-50 py-12 md:py-16">
+        <div className="max-w-4xl mx-auto px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

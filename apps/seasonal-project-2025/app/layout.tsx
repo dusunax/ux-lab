@@ -1,10 +1,29 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
+import { Noto_Sans_KR } from "next/font/google";
 import { Toaster } from "sonner";
 import { AnalysisProvider } from "@features/report/model/AnalysisContext";
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import "./globals.css";
+
+const notoSansKR = Noto_Sans_KR({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-noto-sans-kr",
+  fallback: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "system-ui",
+    "Roboto",
+    "Helvetica Neue",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    "sans-serif",
+  ],
+});
 
 export const metadata: Metadata = {
   title: "Project Afterglow",
@@ -24,8 +43,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ko">
-      <body className="antialiased">
+    <html lang="ko" className={notoSansKR.variable}>
+      <body className={`${notoSansKR.className} antialiased`}>
         <Suspense fallback={null}>
           <GoogleAnalytics />
         </Suspense>

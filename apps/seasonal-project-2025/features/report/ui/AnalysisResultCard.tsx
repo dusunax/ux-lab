@@ -20,7 +20,7 @@ export function AnalysisResultCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="rounded-3xl p-8 border border-beige-200 relative overflow-hidden"
+      className="rounded-3xl p-4 md:p-8 border border-beige-200 relative overflow-hidden"
       style={{
         background: (() => {
           const colors = analysisResult.primaryColor.slice(0, 3); // 최대 3개로 제한
@@ -76,8 +76,8 @@ export function AnalysisResultCard({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2 lg:col-span-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2 lg:col-span-3">
             <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
               올해의 한 문장
             </h3>
@@ -86,8 +86,8 @@ export function AnalysisResultCard({
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2 lg:col-span-3">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2 lg:col-span-3">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               성향
             </h3>
             <p className="text-base text-warmGray-800 leading-relaxed">
@@ -95,8 +95,8 @@ export function AnalysisResultCard({
             </p>
           </div>
 
-          <div className="rounded-3xl md:col-span-2 lg:col-span-1 bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl md:col-span-2 lg:col-span-1 bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               핵심 키워드
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -109,8 +109,8 @@ export function AnalysisResultCard({
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               올해의 컬러
             </h3>
             <div className="flex flex-wrap gap-1">
@@ -152,8 +152,8 @@ export function AnalysisResultCard({
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               심리 타입
             </h3>
             <div className="space-y-3">
@@ -176,8 +176,8 @@ export function AnalysisResultCard({
             </div>
           </div>
 
-          <div className="rounded-3xl md:col-span-2 lg:col-span-1 bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl md:col-span-2 lg:col-span-1 bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               당신이 좋아하는 것
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -190,8 +190,8 @@ export function AnalysisResultCard({
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2 lg:col-span-3">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border border-white/50 shadow-lg shadow-black/5 md:col-span-2 lg:col-span-3">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               내년 당신에게 하는 조언
             </h3>
             <p className="text-base text-warmGray-800 leading-relaxed">
@@ -199,8 +199,8 @@ export function AnalysisResultCard({
             </p>
           </div>
 
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border-2 border-white/60 shadow-lg shadow-black/5 md:col-span-1 lg:col-span-1">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border-2 border-white/60 shadow-lg shadow-black/5 md:col-span-1 lg:col-span-1">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               내년의 행운의 아이템
             </h3>
             <div className="flex items-center gap-3">
@@ -213,8 +213,8 @@ export function AnalysisResultCard({
             </div>
           </div>
 
-          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-6 border-2 border-red-200/50 shadow-lg shadow-red-200/10 md:col-span-1 lg:col-span-2">
-            <h3 className="mb-3 text-sm font-semibold text-warmGray-900">
+          <div className="rounded-3xl bg-white/40 backdrop-blur-xl p-4 md:p-6 border-2 border-red-200/50 shadow-lg shadow-red-200/10 md:col-span-1 lg:col-span-2">
+            <h3 className="mb-2 md:mb-3 text-sm font-semibold text-warmGray-900">
               내년에 피해야할 것
             </h3>
             <div className="flex items-center gap-3">

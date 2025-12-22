@@ -70,7 +70,7 @@ export function PhotoUploader({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`
-          relative rounded-3xl border-2 border-dashed transition-colors duration-200 min-h-[200px]
+          relative rounded-3xl border-2 border-dashed transition-colors duration-200 
           ${
             isDragging
               ? "border-warmGray-400 bg-beige-50"
@@ -87,13 +87,15 @@ export function PhotoUploader({
           className="hidden"
         />
 
-        <div className="flex flex-col items-center justify-center gap-4 p-12 text-center">
-          <div className="rounded-3xl bg-white p-4">
+        <div className="flex flex-col items-center justify-center gap-4 px-10 py-6 md:px-12 md:py-12 text-center">
+          <div className="rounded-3xl bg-white p-4 sm:block hidden">
             <Upload className="h-8 w-8 text-warmGray-500" />
           </div>
           <div>
             <p className="mb-1 text-lg font-medium text-warmGray-900">
-              사진을 드래그하거나 클릭하여 업로드
+              <span className="sm:block hidden">
+                사진을 드래그하거나 클릭하여 업로드
+              </span>
             </p>
             <p className="text-sm text-warmGray-600">
               최대 {maxPhotos}장까지 업로드 가능합니다

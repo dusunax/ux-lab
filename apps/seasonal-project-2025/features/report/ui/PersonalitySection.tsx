@@ -18,7 +18,7 @@ export function PersonalitySection({
 }: PersonalitySectionProps) {
   return (
     <AnimatedSection sectionId={sectionId} registerSection={registerSection}>
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+      <div className="relative z-10 text-center max-w-4xl mx-auto px-4 md:px-6">
         <h2 className="text-section-lg font-bold text-white mb-6">본인은...</h2>
         <p className="text-xl md:text-3xl text-white/90 leading-relaxed">
           {personality}
