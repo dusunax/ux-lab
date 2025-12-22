@@ -8,6 +8,7 @@ import type {
   PersonalityType,
   MonthlyReport,
 } from "@features/report/types";
+import { checkRateLimit } from "@shared/lib/rateLimit";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -223,6 +224,14 @@ export async function analyzePhotos(
 ): Promise<{ result: AnalysisResult; photoBase64s: string[] }> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
+  }
+
+  // IP 기반 일일 요청 제한 체크
+  const rateLimitResult = await checkRateLimit();
+  if (!rateLimitResult.allowed) {
+    throw new Error(
+      `하루 최대 5회까지만 요청할 수 있습니다. 내일 다시 시도해주세요.`
+    );
   }
 
   // FormData에서 파일과 reports 추출

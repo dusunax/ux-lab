@@ -11,6 +11,7 @@
     "@ux-lab/ui": "file:../../packages/ui",
     "clsx": "^2.1.1",
     "exifr": "^7.1.3",
+    "firebase-admin": "^13.0.0",
     "framer-motion": "^11.11.0",
     "lucide-react": "^0.400.0",
     "next": "15.3.8",
