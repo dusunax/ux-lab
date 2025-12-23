@@ -83,6 +83,7 @@ export default function Home() {
             preview,
             dateTaken: exifData.dateTaken,
             month: exifData.month,
+            location: exifData.location,
           };
         }
       );
@@ -102,6 +103,17 @@ export default function Home() {
         formData.append(`photo_${index}`, file);
       });
       formData.append("reports", JSON.stringify(simplifiedReports));
+      
+      // 위치 데이터 전달 (있는 경우만)
+      const locationData = photosWithMetadata
+        .map((photo, index) => ({
+          index,
+          location: photo.location,
+        }))
+        .filter((item) => item.location !== undefined);
+      if (locationData.length > 0) {
+        formData.append("locations", JSON.stringify(locationData));
+      }
 
       // 7. Server Action 호출하여 분석 (서버에서 base64 변환)
       const { result, photoBase64s } = await analyzePhotos(formData);

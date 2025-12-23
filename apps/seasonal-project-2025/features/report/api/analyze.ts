@@ -258,6 +258,13 @@ export async function analyzePhotos(
   const reports: Array<{ month: string; photoCount: number }> =
     JSON.parse(reportsJson);
 
+  // 위치 데이터 파싱 (있는 경우만)
+  const locationsJson = formData.get("locations") as string | null;
+  const locations: Array<{
+    index: number;
+    location: { latitude: number; longitude: number; address?: string };
+  }> = locationsJson ? JSON.parse(locationsJson) : [];
+
   // 파일을 base64로 변환 (서버에서 처리)
   const photoBase64s = await Promise.all(files.map(fileToBase64));
 
@@ -284,12 +291,24 @@ export async function analyzePhotos(
       })
       .join("\n");
 
+    // 위치 정보를 프롬프트에 포함 (있는 경우만)
+    let locationInfo = "";
+    if (locations.length > 0) {
+      const locationDetails = locations
+        .map((loc) => {
+          const { latitude, longitude } = loc.location;
+          return `사진 ${loc.index + 1}번: 위도 ${latitude.toFixed(6)}, 경도 ${longitude.toFixed(6)}`;
+        })
+        .join("\n");
+      locationInfo = `\n\n다음 사진들에는 촬영 위치 정보(GPS 좌표)가 포함되어 있습니다:\n${locationDetails}\n\n위치 정보가 있는 사진들을 분석할 때는 해당 위치를 고려하여 분석해주세요. 예를 들어, 특정 지역이나 장소에서 촬영된 사진이라면 그 지역의 특성이나 의미를 반영하여 분석해주세요.`;
+    }
+
     // 전체 분석 프롬프트
     const overallPrompt = `당신은 연말 회고를 위한 사진 분석 전문가이자 심리 분석가입니다. 
 사용자가 올해 찍은 대표 사진들을 분석하여 다음을 제공해주세요:
 
 사진은 다음과 같이 월별로 구분되어 있습니다:
-${monthDetails}
+${monthDetails}${locationInfo}
 
 1. 전체 사진들을 관통하는 5가지 핵심 키워드와 각 키워드에 어울리는 이모지 (예: {"text": "성장", "emoji": "🌱"}, {"text": "여행", "emoji": "✈️"})
 2. 올해를 한 문장으로 요약하는 문장 (예: "새로운 도전과 따뜻한 만남이 어우러진 한 해였다")

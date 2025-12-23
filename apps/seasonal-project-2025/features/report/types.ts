@@ -3,6 +3,11 @@ export interface PhotoWithMetadata {
   preview: string;
   dateTaken?: Date;
   month?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
 }
 
 export interface PersonalityType {
