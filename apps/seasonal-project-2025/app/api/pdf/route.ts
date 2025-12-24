@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { chromium } from "playwright-core";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
+import { existsSync } from "fs";
 
-// Vercel 환경에서 Chromium 실행 경로 가져오기
-let chromiumExecutablePath: string | undefined;
-
-try {
-  // @playwright/browser-chromium이 설치되어 있으면 사용
-  const chromiumPkg = require("@playwright/browser-chromium");
-  chromiumExecutablePath = chromiumPkg.executablePath?.();
-} catch {
-  // 설치되지 않았으면 기본 경로 사용
-  chromiumExecutablePath = undefined;
-}
+// 로컬 개발 환경 감지
+const isProduction = process.env.NODE_ENV === "production";
+const isVercel = process.env.VERCEL === "1";
 
 export const runtime = "nodejs";
 export const maxDuration = 60; // Vercel Pro 플랜의 최대 실행 시간
@@ -28,13 +22,104 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Vercel serverless 환경에서 Chromium 실행 경로 지정
-    const executablePath =
-      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || chromiumExecutablePath;
+    // Vercel 환경과 로컬 환경 구분
+    let executablePath: string | undefined;
+    let launchArgs: string[];
+    let defaultViewport: { width: number; height: number } | null;
 
-    const launchOptions: Parameters<typeof chromium.launch>[0] = {
-      headless: true,
-      args: [
+    if (isVercel) {
+      // Vercel 환경: @sparticuz/chromium 사용
+      executablePath = await chromium.executablePath(
+        process.env.CHROMIUM_PATH || undefined
+      );
+      launchArgs = chromium.args;
+      defaultViewport = chromium.defaultViewport;
+    } else {
+      // 로컬 개발 환경: 시스템에 설치된 Chrome/Chromium/Edge 사용
+      // Windows: Chrome 및 Edge 설치 경로
+      const localAppData = process.env.LOCALAPPDATA || "";
+      const programFiles = process.env["ProgramFiles"] || "C:\\Program Files";
+      const programFilesX86 =
+        process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
+
+      // Windows에서 Chrome/Edge 경로 찾기 (where 명령어 사용)
+      let foundBrowserPath: string | undefined;
+      try {
+        const { execSync } = require("child_process");
+        // Chrome 찾기
+        try {
+          const chromePath = execSync("where chrome", {
+            encoding: "utf-8",
+            stdio: "pipe",
+          }).trim();
+          if (chromePath && existsSync(chromePath)) {
+            foundBrowserPath = chromePath;
+          }
+        } catch {
+          // Chrome을 찾지 못함
+        }
+
+        // Edge 찾기 (Chrome을 찾지 못한 경우)
+        if (!foundBrowserPath) {
+          try {
+            const edgePath = execSync("where msedge", {
+              encoding: "utf-8",
+              stdio: "pipe",
+            }).trim();
+            if (edgePath && existsSync(edgePath)) {
+              foundBrowserPath = edgePath;
+            }
+          } catch {
+            // Edge를 찾지 못함
+          }
+        }
+      } catch {
+        // where 명령어 실패 시 무시
+      }
+
+      const possiblePaths = [
+        process.env.PUPPETEER_EXECUTABLE_PATH,
+        // where 명령어로 찾은 브라우저 경로
+        foundBrowserPath,
+        // Chrome 경로
+        `${programFiles}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${programFilesX86}\\Google\\Chrome\\Application\\chrome.exe`,
+        `${localAppData}\\Google\\Chrome\\Application\\chrome.exe`,
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        // Edge 경로 (Chrome 기반이므로 사용 가능)
+        `${programFiles}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        `${programFilesX86}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        `${localAppData}\\Microsoft\\Edge\\Application\\msedge.exe`,
+        "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        // Edge Beta/Dev/Canary
+        `${localAppData}\\Microsoft\\Edge Beta\\Application\\msedge.exe`,
+        `${localAppData}\\Microsoft\\Edge Dev\\Application\\msedge.exe`,
+        `${localAppData}\\Microsoft\\Edge Canary\\Application\\msedge.exe`,
+      ].filter(Boolean) as string[];
+
+      executablePath = possiblePaths.find((path) => {
+        try {
+          return existsSync(path);
+        } catch {
+          return false;
+        }
+      });
+
+      if (!executablePath) {
+        console.error(
+          "Chrome/Edge를 찾을 수 없습니다. 시도한 경로:",
+          possiblePaths
+        );
+        throw new Error(
+          "로컬 개발 환경에서 Chrome 또는 Edge를 찾을 수 없습니다. Chrome 또는 Edge를 설치하거나 PUPPETEER_EXECUTABLE_PATH 환경 변수를 설정해주세요."
+        );
+      }
+
+      console.log("사용할 브라우저 경로:", executablePath);
+
+      launchArgs = [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
@@ -42,30 +127,41 @@ export async function POST(request: NextRequest) {
         "--no-first-run",
         "--no-zygote",
         "--disable-gpu",
-      ],
-    };
-
-    if (executablePath) {
-      launchOptions.executablePath = executablePath;
+      ];
+      defaultViewport = { width: 1920, height: 1080 };
     }
 
-    browser = await chromium.launch(launchOptions);
+    try {
+      browser = await puppeteer.launch({
+        args: launchArgs,
+        defaultViewport: defaultViewport || undefined,
+        executablePath,
+        headless: true,
+      });
+    } catch (launchError) {
+      console.error("Chromium launch failed:", launchError);
+      throw new Error(
+        `Chromium 실행 실패: ${
+          launchError instanceof Error
+            ? launchError.message
+            : String(launchError)
+        }`
+      );
+    }
 
-    const page = await browser.newPage({
-      viewport: { width: 1920, height: 1080 },
-    });
+    const page = await browser.newPage();
 
     // A4 가로형 크기 설정 (297mm x 210mm)
-    await page.setViewportSize({ width: 1123, height: 794 });
+    await page.setViewport({ width: 1123, height: 794 });
 
     // HTML 내용을 직접 로드
     await page.setContent(htmlContent, {
-      waitUntil: "networkidle",
+      waitUntil: "networkidle0",
       timeout: 30000,
     });
 
     // 페이지가 완전히 로드될 때까지 대기
-    await page.waitForTimeout(2000);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // CSS override - exportToPdfServer.ts와 동일한 CSS 적용
     const pdfCss = `
@@ -302,7 +398,83 @@ export async function POST(request: NextRequest) {
 
     await page.addStyleTag({ content: pdfCss });
 
-    await page.waitForTimeout(1000);
+    // CSS 적용 대기
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // lazy loading 이미지를 강제로 로드
+    await page.evaluate(() => {
+      // 모든 이미지의 loading 속성을 제거하고 즉시 로드
+      const images = Array.from(document.images);
+      images.forEach((img) => {
+        img.loading = "eager";
+        // 이미지가 아직 로드되지 않았으면 강제로 로드
+        if (!img.complete) {
+          const src = img.src;
+          img.src = "";
+          img.src = src;
+        }
+      });
+    });
+
+    // 모든 이미지가 로드될 때까지 대기
+    await page.evaluate(() => {
+      return Promise.all(
+        Array.from(document.images).map((img) => {
+          if (img.complete && img.naturalWidth > 0) {
+            return Promise.resolve();
+          }
+          return new Promise<void>((resolve) => {
+            const timeout = setTimeout(() => {
+              resolve(); // 타임아웃 시에도 계속 진행
+            }, 10000);
+
+            img.addEventListener("load", () => {
+              clearTimeout(timeout);
+              resolve();
+            });
+            img.addEventListener("error", () => {
+              clearTimeout(timeout);
+              resolve(); // 에러가 나도 계속 진행
+            });
+          });
+        })
+      );
+    });
+
+    // 추가 대기 (이미지 렌더링 완료)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // 이미지가 실제로 렌더링되었는지 확인
+    const imagesLoaded = await page.evaluate(() => {
+      const images = Array.from(document.images);
+      const loadedImages = images.filter(
+        (img) => img.complete && img.naturalWidth > 0 && img.naturalHeight > 0
+      );
+      return {
+        total: images.length,
+        loaded: loadedImages.length,
+        hasDataUrls: images.some((img) => img.src.startsWith("data:")),
+        imageInfo: images.map((img) => ({
+          src: img.src.substring(0, 50),
+          complete: img.complete,
+          naturalWidth: img.naturalWidth,
+          naturalHeight: img.naturalHeight,
+        })),
+      };
+    });
+
+    console.log("이미지 로딩 상태:", {
+      total: imagesLoaded.total,
+      loaded: imagesLoaded.loaded,
+      hasDataUrls: imagesLoaded.hasDataUrls,
+    });
+
+    // 이미지가 로드되지 않았으면 추가 대기
+    if (imagesLoaded.loaded < imagesLoaded.total && imagesLoaded.total > 0) {
+      console.log("일부 이미지가 로드되지 않았습니다. 추가 대기 중...");
+      console.log("이미지 상세 정보:", imagesLoaded.imageInfo);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
 
     // PDF 생성
     const pdfBuffer = await page.pdf({
@@ -340,11 +512,14 @@ export async function POST(request: NextRequest) {
 
     const errorMessage = error instanceof Error ? error.message : String(error);
 
+    // 개발 환경에서는 상세 에러 정보 제공
+    const isDevelopment = process.env.NODE_ENV === "development";
+
     return NextResponse.json(
       {
         error: "PDF 생성에 실패했습니다.",
-        details:
-          process.env.NODE_ENV === "development" ? errorMessage : undefined,
+        details: isDevelopment ? errorMessage : undefined,
+        message: errorMessage,
       },
       { status: 500 }
     );

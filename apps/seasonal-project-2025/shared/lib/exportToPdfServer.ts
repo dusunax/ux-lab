@@ -1,6 +1,7 @@
 "use server";
 
-import { chromium } from "playwright-core";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 
 // Vercel 환경에서 Chromium 실행 경로 가져오기
 let chromiumExecutablePath: string | undefined;
@@ -26,7 +27,7 @@ export async function exportToPdfServer(htmlContent: string): Promise<Buffer> {
     const executablePath =
       process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || chromiumExecutablePath;
 
-    const launchOptions: Parameters<typeof chromium.launch>[0] = {
+    const launchOptions: Parameters<typeof puppeteer.launch>[0] = {
       headless: true,
       args: [
         "--no-sandbox",
@@ -43,7 +44,7 @@ export async function exportToPdfServer(htmlContent: string): Promise<Buffer> {
       launchOptions.executablePath = executablePath;
     }
 
-    browser = await chromium.launch(launchOptions);
+    browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage({
       viewport: { width: 1920, height: 1080 },

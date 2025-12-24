@@ -13,7 +13,7 @@ import { PersonalitySection } from "@features/report/ui/PersonalitySection";
 import { MeSection } from "@features/report/ui/MeSection";
 import { MoodSection } from "@features/report/ui/MoodSection";
 import { ContinueSection } from "@features/report/ui/ContinueSection";
-import { exportToPdfServer } from "@shared/lib/exportToPdfServer";
+// Server Action 대신 API Route 사용
 import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
 import type { AnalysisResult } from "@features/report/types";
@@ -74,11 +74,40 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   const gradientColors = getGradientColors(analysisResult.primaryColor);
 
   // HTML 콘텐츠 생성 함수
-  const generateHtmlContent = () => {
+  const generateHtmlContent = async () => {
     const reportElement = document.getElementById("report-content");
     if (!reportElement) {
       throw new Error("리포트 요소를 찾을 수 없습니다.");
     }
+
+    // 모든 이미지가 로드될 때까지 대기
+    const images = Array.from(
+      reportElement.querySelectorAll("img")
+    ) as HTMLImageElement[];
+
+    await Promise.all(
+      images.map((img) => {
+        if (img.complete && img.naturalWidth > 0) {
+          return Promise.resolve();
+        }
+        // lazy loading 이미지를 즉시 로드
+        img.loading = "eager";
+        return new Promise<void>((resolve) => {
+          const timeout = setTimeout(() => resolve(), 5000);
+          img.addEventListener("load", () => {
+            clearTimeout(timeout);
+            resolve();
+          });
+          img.addEventListener("error", () => {
+            clearTimeout(timeout);
+            resolve(); // 에러가 나도 계속 진행
+          });
+        });
+      })
+    );
+
+    // 추가 대기 (이미지 렌더링 완료)
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 모든 스타일시트 링크 수집
     const stylesheetLinks = Array.from(
@@ -113,7 +142,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
     `;
   };
 
-  // PDF 미리 생성
+  // PDF 미리 생성 (API Route 사용)
   useEffect(() => {
     const generatePdf = async () => {
       // DOM이 완전히 로드될 때까지 대기
@@ -121,13 +150,26 @@ export function ReportView({ analysisResult }: ReportViewProps) {
 
       try {
         setIsGeneratingPdf(true);
-        const htmlContent = generateHtmlContent();
+        const htmlContent = await generateHtmlContent();
 
-        // 서버로 전송하여 PDF 생성
-        const pdfBuffer = await exportToPdfServer(htmlContent);
+        // API Route로 PDF 생성
+        const response = await fetch("/api/pdf", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ htmlContent }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "PDF 생성에 실패했습니다.");
+        }
+
+        const pdfArrayBuffer = await response.arrayBuffer();
 
         // Blob으로 변환하여 저장
-        const blob = new Blob([new Uint8Array(pdfBuffer)], {
+        const blob = new Blob([new Uint8Array(pdfArrayBuffer)], {
           type: "application/pdf",
         });
 
@@ -176,45 +218,29 @@ export function ReportView({ analysisResult }: ReportViewProps) {
         return;
       }
 
-      // 미리 생성된 PDF가 없으면 새로 생성
-      const htmlContent = generateHtmlContent();
+      // 미리 생성된 PDF가 없으면 새로 생성 (API Route 사용)
+      const htmlContent = await generateHtmlContent();
 
-      let pdfBuffer: Buffer | ArrayBuffer;
-      try {
-        // Server Action 시도
-        pdfBuffer = await exportToPdfServer(htmlContent);
-      } catch (serverError) {
-        console.warn("Server Action 실패, API Route로 재시도:", serverError);
-        // API Route로 fallback
-        const response = await fetch("/api/pdf", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ htmlContent }),
-        });
+      const response = await fetch("/api/pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ htmlContent }),
+      });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || "PDF 생성에 실패했습니다.");
-        }
-
-        pdfBuffer = await response.arrayBuffer();
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.message || errorData.error || "PDF 생성에 실패했습니다.";
+        console.error("PDF 생성 API 에러:", errorData);
+        throw new Error(errorMessage);
       }
 
-      // Blob으로 변환하여 다운로드
-      const pdfArray =
-        pdfBuffer instanceof Buffer
-          ? new Uint8Array(
-              pdfBuffer.buffer,
-              pdfBuffer.byteOffset,
-              pdfBuffer.byteLength
-            )
-          : pdfBuffer instanceof ArrayBuffer
-          ? new Uint8Array(pdfBuffer)
-          : new Uint8Array(pdfBuffer);
+      const pdfArrayBuffer = await response.arrayBuffer();
 
-      const blob = new Blob([pdfArray as BlobPart], {
+      // Blob으로 변환하여 다운로드
+      const blob = new Blob([new Uint8Array(pdfArrayBuffer)], {
         type: "application/pdf",
       });
       const url = URL.createObjectURL(blob);
