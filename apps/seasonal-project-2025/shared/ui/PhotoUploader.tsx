@@ -109,6 +109,10 @@ export function PhotoUploader({
           </Button>
         </div>
       </motion.div>
+      <p className="text-center text-sm text-warmGray-600">
+        * 업로드한 사진은 저장되지 않습니다. <br />
+        AI 분석과 PDF 생성을 위한 용도 외에는 사용되지 않습니다.
+      </p>
 
       {previews.length > 0 && (
         <motion.div

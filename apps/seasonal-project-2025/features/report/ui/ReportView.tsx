@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Download } from "lucide-react";
 import { Button } from "@shared/ui/Button";
 import { Timeline } from "@features/report/ui/TimelineSection";
 import { useReportSections } from "@features/report/hooks/useReportSections";
@@ -12,6 +13,9 @@ import { PersonalitySection } from "@features/report/ui/PersonalitySection";
 import { MeSection } from "@features/report/ui/MeSection";
 import { MoodSection } from "@features/report/ui/MoodSection";
 import { ContinueSection } from "@features/report/ui/ContinueSection";
+import { exportToPdfServer } from "@shared/lib/exportToPdfServer";
+import { toast } from "sonner";
+import { Footer } from "@/components/Footer";
 import type { AnalysisResult } from "@features/report/types";
 
 interface ReportViewProps {
@@ -20,6 +24,10 @@ interface ReportViewProps {
 
 export function ReportView({ analysisResult }: ReportViewProps) {
   const router = useRouter();
+  const [isExporting, setIsExporting] = useState(false);
+  const [isPdfReady, setIsPdfReady] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfBlobUrlRef = useRef<string | null>(null);
   const { currentSection, setCurrentSection, registerSection } =
     useReportSections();
 
@@ -65,8 +73,142 @@ export function ReportView({ analysisResult }: ReportViewProps) {
 
   const gradientColors = getGradientColors(analysisResult.primaryColor);
 
+  // HTML 콘텐츠 생성 함수
+  const generateHtmlContent = () => {
+    const reportElement = document.getElementById("report-content");
+    if (!reportElement) {
+      throw new Error("리포트 요소를 찾을 수 없습니다.");
+    }
+
+    // 모든 스타일시트 링크 수집
+    const stylesheetLinks = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"]')
+    )
+      .map((link) => (link as HTMLLinkElement).href)
+      .filter((href) => href && !href.startsWith("data:"));
+
+    // 모든 인라인 스타일 수집
+    const inlineStyles = Array.from(document.querySelectorAll("style"))
+      .map((style) => style.textContent)
+      .filter(Boolean)
+      .join("\n");
+
+    // 전체 HTML 문서 생성 (스타일 포함)
+    return `
+      <!DOCTYPE html>
+      <html lang="ko">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          ${stylesheetLinks
+            .map((href) => `<link rel="stylesheet" href="${href}">`)
+            .join("\n")}
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+          ${inlineStyles ? `<style>${inlineStyles}</style>` : ""}
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #faf9f7;">
+          ${reportElement.outerHTML}
+        </body>
+      </html>
+    `;
+  };
+
+  // PDF 미리 생성
+  useEffect(() => {
+    const generatePdf = async () => {
+      // DOM이 완전히 로드될 때까지 대기
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      try {
+        setIsGeneratingPdf(true);
+        const htmlContent = generateHtmlContent();
+
+        // 서버로 전송하여 PDF 생성
+        const pdfBuffer = await exportToPdfServer(htmlContent);
+
+        // Blob으로 변환하여 저장
+        const blob = new Blob([new Uint8Array(pdfBuffer)], {
+          type: "application/pdf",
+        });
+
+        // 이전 Blob URL이 있으면 해제
+        if (pdfBlobUrlRef.current) {
+          URL.revokeObjectURL(pdfBlobUrlRef.current);
+        }
+
+        // 새로운 Blob URL 생성 및 저장
+        pdfBlobUrlRef.current = URL.createObjectURL(blob);
+        setIsPdfReady(true);
+      } catch (error) {
+        console.error("PDF 미리 생성 실패:", error);
+        // 에러가 발생해도 사용자에게는 알리지 않음 (다운로드 시 재시도)
+      } finally {
+        setIsGeneratingPdf(false);
+      }
+    };
+
+    generatePdf();
+
+    // 컴포넌트 언마운트 시 Blob URL 정리
+    return () => {
+      if (pdfBlobUrlRef.current) {
+        URL.revokeObjectURL(pdfBlobUrlRef.current);
+        pdfBlobUrlRef.current = null;
+      }
+    };
+  }, [analysisResult]); // analysisResult가 변경되면 PDF 재생성
+
+  const handleExportPdf = async () => {
+    try {
+      setIsExporting(true);
+
+      // 미리 생성된 PDF가 있으면 바로 다운로드
+      if (pdfBlobUrlRef.current && isPdfReady) {
+        const link = document.createElement("a");
+        link.href = pdfBlobUrlRef.current;
+        link.download = `Project-Afterglow-2025-${
+          new Date().toISOString().split("T")[0]
+        }.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("PDF 저장이 시작되었습니다!");
+        return;
+      }
+
+      // 미리 생성된 PDF가 없으면 새로 생성
+      const htmlContent = generateHtmlContent();
+      const pdfBuffer = await exportToPdfServer(htmlContent);
+
+      // Blob으로 변환하여 다운로드
+      const blob = new Blob([new Uint8Array(pdfBuffer)], {
+        type: "application/pdf",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Project-Afterglow-2025-${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("PDF 저장이 시작되었습니다!");
+    } catch (error) {
+      console.error("PDF 저장 실패:", error);
+      toast.error("PDF 저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <div className="break-keep relative min-h-screen scrollbar-hide">
+    <div
+      id="report-content"
+      className="break-keep relative min-h-screen scrollbar-hide"
+    >
       <TitleSection
         onSectionChange={setCurrentSection}
         sectionId="title"
@@ -116,16 +258,35 @@ export function ReportView({ analysisResult }: ReportViewProps) {
 
       <Timeline reports={analysisResult.monthlyReports} />
 
-      {/* Footer */}
-      <div className="relative z-20 bg-warmGray-50 py-12 md:py-16">
+      {/* Action Buttons */}
+      <footer className="report-footer relative z-20 bg-warmGray-50 py-12 md:py-16">
         <div className="max-w-4xl mx-auto px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
           >
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handleExportPdf}
+              disabled={isExporting || isGeneratingPdf}
+              data-ga-label="PDF 저장"
+              className={`flex items-center gap-2 ${
+                isGeneratingPdf || isExporting ? "animate-pulse" : ""
+              }`}
+            >
+              <Download className="w-5 h-5" />
+              {isGeneratingPdf
+                ? "PDF 생성 중..."
+                : isExporting
+                ? "PDF 생성 중..."
+                : isPdfReady
+                ? "PDF 저장"
+                : "PDF 저장"}
+            </Button>
             <Button
               variant="secondary"
               size="lg"
@@ -137,8 +298,9 @@ export function ReportView({ analysisResult }: ReportViewProps) {
               돌아가기
             </Button>
           </motion.div>
+          <Footer />
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

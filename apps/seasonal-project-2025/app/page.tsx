@@ -15,6 +15,7 @@ import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { Examples } from "./components/Examples";
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
 import { RateLimitBadge } from "./components/RateLimitBadge";
+import { Footer } from "./components/Footer";
 import { trackAnalysisComplete, trackAnalysisError } from "@shared/lib/gtag";
 import type { PhotoWithMetadata } from "@features/report/types";
 
@@ -275,6 +276,7 @@ export default function Home() {
           <Examples />
         </Card>
       </div>
+      <Footer />
     </main>
   );
 }

@@ -10,13 +10,13 @@ interface TimelineProps {
 
 export function Timeline({ reports }: TimelineProps) {
   return (
-    <div className="relative bg-transparent  z-[100] ">
+    <section id="timeline" className="relative bg-transparent z-[100] ">
       <div className="relative">
         {/* 상단 그라데이션 오버레이 */}
-        <div className="absolute -top-[10vh] left-0 right-0 h-[10vh] bg-gradient-to-b from-transparent via-white/50 to-white pointer-events-none" />
+        <div className="timeline-top-gradient absolute -top-[10vh] left-0 right-0 h-[10vh] bg-gradient-to-b from-transparent via-white/50 to-white pointer-events-none" />
         <div className="bg-white">
-          <div className=" max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
-            <div className="text-center mb-12 md:mb-16">
+          <div className="timeline-content max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-20">
+            <div className="timeline-header text-center mb-12 md:mb-16">
               <h2 className="text-section-md font-bold text-warmGray-900 mb-3 md:mb-4">
                 Timeline
               </h2>
@@ -24,23 +24,23 @@ export function Timeline({ reports }: TimelineProps) {
                 올해의 순간들을 되돌아봅니다
               </p>
             </div>
-            <div className="space-y-16 md:space-y-24">
+            <ul className="timeline-list space-y-16 md:space-y-24">
               {reports.map((report, index) => {
                 // 짝수 인덱스는 사진이 왼쪽, 홀수 인덱스는 사진이 오른쪽
                 const isEven = index % 2 === 0;
 
                 return (
-                  <motion.div
+                  <motion.li
                     key={index}
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    transition={{ duration: 0.2, delay: index * 0.1 }}
                     className="relative"
                   >
                     <div
-                      className={`flex flex-col md:flex-row gap-8 items-center ${
+                      className={`flex flex-col md:flex-row gap-8 items-center justify-center ${
                         !isEven ? "md:flex-row-reverse" : ""
                       }`}
                     >
@@ -49,12 +49,12 @@ export function Timeline({ reports }: TimelineProps) {
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="flex-1 w-full"
+                        transition={{ duration: 0.2 }}
+                        className="flex-1 w-full image-grid-container"
                       >
                         {report.photos && report.photos.length > 0 ? (
                           <div
-                            className={`grid gap-2 ${
+                            className={`image-grid grid gap-2 ${
                               report.photos.length === 1
                                 ? "grid-cols-1"
                                 : report.photos.length === 2
@@ -69,7 +69,7 @@ export function Timeline({ reports }: TimelineProps) {
                                   key={photoIndex}
                                   viewport={{ once: true }}
                                   transition={{
-                                    duration: 0.4,
+                                    duration: 0.2,
                                     delay: photoIndex * 0.1,
                                   }}
                                   className="relative overflow-hidden rounded-2xl aspect-square bg-warmGray-200"
@@ -92,8 +92,8 @@ export function Timeline({ reports }: TimelineProps) {
                       </motion.div>
 
                       {/* 월별 정보 (분석 문장) */}
-                      <div className="flex-1 w-full space-y-4">
-                        <div className="flex items-center gap-3">
+                      <div className={`flex-1 w-full space-y-4`}>
+                        <div className={`flex items-center gap-3 `}>
                           <h3 className="text-subsection font-bold text-warmGray-900">
                             {report.month}
                           </h3>
@@ -107,13 +107,13 @@ export function Timeline({ reports }: TimelineProps) {
                         </p>
                       </div>
                     </div>
-                  </motion.div>
+                  </motion.li>
                 );
               })}
-            </div>
+            </ul>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

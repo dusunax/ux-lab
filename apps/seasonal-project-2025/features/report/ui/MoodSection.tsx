@@ -44,12 +44,12 @@ export function MoodSection({
       backgroundClassName=""
     >
       <div className="absolute -top-[1px] left-0 h-2 w-full bg-gradient-to-b from-black to-transparent pointer-events-none z-20" />
-      <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6 w-full text-black">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 w-full text-black">
         <div className="space-y-4 md:space-y-6">
           {/* 배경 흰색 원형 그라데이션 */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 flex items-center justify-center z-0"
+            className="mood-gradient-overlay pointer-events-none absolute inset-0 flex items-center justify-center z-0"
           >
             <div
               className="w-[600px] h-[600px] rounded-full bg-warmGray-50 opacity-40 blur-2xl"
@@ -68,7 +68,9 @@ export function MoodSection({
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div className="w-full bg-white/50 backdrop-blur-xl rounded-3xl p-4 md:p-6 border border-white shadow-md">
-              <h3 className="text-lg font-semibold mb-3 md:mb-4">핵심 키워드</h3>
+              <h3 className="text-lg font-semibold mb-3 md:mb-4">
+                핵심 키워드
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {keywords?.map((keyword, idx) => (
                   <Badge key={idx} className="border border-black/50">
@@ -78,7 +80,9 @@ export function MoodSection({
               </div>
             </div>
             <div className="w-full bg-white/50 backdrop-blur-xl rounded-3xl p-4 md:p-6 border border-white shadow-md">
-              <h3 className="text-lg font-semibold mb-3 md:mb-4">올해의 컬러</h3>
+              <h3 className="text-lg font-semibold mb-3 md:mb-4">
+                올해의 컬러
+              </h3>
               <div className="space-y-2 md:space-y-3">
                 {primaryColor?.map((color, idx) => (
                   <div
