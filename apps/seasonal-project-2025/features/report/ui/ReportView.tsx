@@ -178,10 +178,43 @@ export function ReportView({ analysisResult }: ReportViewProps) {
 
       // 미리 생성된 PDF가 없으면 새로 생성
       const htmlContent = generateHtmlContent();
-      const pdfBuffer = await exportToPdfServer(htmlContent);
+
+      let pdfBuffer: Buffer | ArrayBuffer;
+      try {
+        // Server Action 시도
+        pdfBuffer = await exportToPdfServer(htmlContent);
+      } catch (serverError) {
+        console.warn("Server Action 실패, API Route로 재시도:", serverError);
+        // API Route로 fallback
+        const response = await fetch("/api/pdf", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ htmlContent }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "PDF 생성에 실패했습니다.");
+        }
+
+        pdfBuffer = await response.arrayBuffer();
+      }
 
       // Blob으로 변환하여 다운로드
-      const blob = new Blob([new Uint8Array(pdfBuffer)], {
+      const pdfArray =
+        pdfBuffer instanceof Buffer
+          ? new Uint8Array(
+              pdfBuffer.buffer,
+              pdfBuffer.byteOffset,
+              pdfBuffer.byteLength
+            )
+          : pdfBuffer instanceof ArrayBuffer
+          ? new Uint8Array(pdfBuffer)
+          : new Uint8Array(pdfBuffer);
+
+      const blob = new Blob([pdfArray as BlobPart], {
         type: "application/pdf",
       });
       const url = URL.createObjectURL(blob);

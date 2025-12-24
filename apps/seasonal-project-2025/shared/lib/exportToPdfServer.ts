@@ -1,6 +1,18 @@
 "use server";
 
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
+
+// Vercel 환경에서 Chromium 실행 경로 가져오기
+let chromiumExecutablePath: string | undefined;
+
+try {
+  // @playwright/browser-chromium이 설치되어 있으면 사용
+  const chromiumPkg = require("@playwright/browser-chromium");
+  chromiumExecutablePath = chromiumPkg.executablePath?.();
+} catch {
+  // 설치되지 않았으면 기본 경로 사용
+  chromiumExecutablePath = undefined;
+}
 
 /**
  * Playwright를 사용하여 리포트를 PDF로 내보내기 (서버 사이드)
@@ -10,9 +22,28 @@ import { chromium } from "playwright";
 export async function exportToPdfServer(htmlContent: string): Promise<Buffer> {
   let browser;
   try {
-    browser = await chromium.launch({
+    // Vercel serverless 환경에서 Chromium 실행 경로 지정
+    const executablePath =
+      process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || chromiumExecutablePath;
+
+    const launchOptions: Parameters<typeof chromium.launch>[0] = {
       headless: true,
-    });
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+        "--disable-gpu",
+      ],
+    };
+
+    if (executablePath) {
+      launchOptions.executablePath = executablePath;
+    }
+
+    browser = await chromium.launch(launchOptions);
 
     const page = await browser.newPage({
       viewport: { width: 1920, height: 1080 },
@@ -298,10 +329,28 @@ export async function exportToPdfServer(htmlContent: string): Promise<Buffer> {
     return Buffer.from(pdfBuffer);
   } catch (error) {
     console.error("PDF 생성 실패:", error);
-    throw error;
+
+    // Vercel 환경에서의 에러를 더 명확하게 전달
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isVercelError =
+      errorMessage.includes("chromium") ||
+      errorMessage.includes("executable") ||
+      errorMessage.includes("browser");
+
+    if (isVercelError) {
+      throw new Error(
+        "PDF 생성에 실패했습니다. Vercel 환경에서는 Playwright 실행에 제한이 있을 수 있습니다. 잠시 후 다시 시도해주세요."
+      );
+    }
+
+    throw new Error(`PDF 생성 실패: ${errorMessage}`);
   } finally {
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (closeError) {
+        console.error("브라우저 종료 실패:", closeError);
+      }
     }
   }
 }
