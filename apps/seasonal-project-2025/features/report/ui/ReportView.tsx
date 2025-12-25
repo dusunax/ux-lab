@@ -122,6 +122,30 @@ export function ReportView({ analysisResult }: ReportViewProps) {
       .filter(Boolean)
       .join("\n");
 
+    // 외부 CSS를 fetch해서 인라인으로 포함
+    const fetchedStyles = await Promise.all(
+      stylesheetLinks.map(async (href) => {
+        try {
+          // 절대 URL인 경우에만 fetch
+          if (href.startsWith("http://") || href.startsWith("https://")) {
+            const response = await fetch(href);
+            if (response.ok) {
+              return await response.text();
+            }
+          }
+          // 상대 경로나 로컬 URL인 경우 빈 문자열 반환
+          return "";
+        } catch (error) {
+          console.warn(`Failed to fetch CSS from ${href}:`, error);
+          return "";
+        }
+      })
+    );
+
+    const allStyles = [...fetchedStyles.filter(Boolean), inlineStyles].join(
+      "\n"
+    );
+
     // 전체 HTML 문서 생성 (스타일 포함)
     return `
       <!DOCTYPE html>
@@ -129,11 +153,8 @@ export function ReportView({ analysisResult }: ReportViewProps) {
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          ${stylesheetLinks
-            .map((href) => `<link rel="stylesheet" href="${href}">`)
-            .join("\n")}
           <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-          ${inlineStyles ? `<style>${inlineStyles}</style>` : ""}
+          ${allStyles ? `<style>${allStyles}</style>` : ""}
         </head>
         <body style="margin: 0; padding: 0; background-color: #faf9f7;">
           ${reportElement.outerHTML}
