@@ -9,6 +9,9 @@ import { ProcessingOverlay } from "@shared/ui/ProcessingOverlay";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { extractExifData } from "@shared/lib/exifExtractor";
 import { Examples } from "./components/Examples";
+
+const createFileKey = (file: File) =>
+  `${file.name}_${file.size}_${file.lastModified}`;
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
 import { RateLimitBadge } from "./components/RateLimitBadge";
 import { Footer } from "./components/Footer";
@@ -46,9 +49,15 @@ export default function Home() {
     // EXIF 데이터 추출 (1회만 수행, 이후 재사용)
     const exifDataArray = await Promise.all(
       photos.map(async (file) => {
-        return await extractExifData(file);
+        const exifData = await extractExifData(file);
+        const fileKey = createFileKey(file);
+        return {
+          ...exifData,
+          fileKey,
+        };
       })
     );
+
     setExifDataArray(exifDataArray);
   };
 

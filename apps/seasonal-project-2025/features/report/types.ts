@@ -1,7 +1,7 @@
 export interface PhotoWithMetadata {
   file: File;
   preview: string;
-  dateTaken?: Date;
+  createdAt?: Date;
   month?: string;
   location?: {
     latitude: number;

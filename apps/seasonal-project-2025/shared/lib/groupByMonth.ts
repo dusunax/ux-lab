@@ -16,10 +16,9 @@ export interface MonthlyGroup {
  */
 export function groupPhotosByMonth(photos: PhotoWithMetadata[]): MonthlyGroup[] {
   // 월별로 그룹화 (카운트만 저장)
-  const grouped = photos.reduce((acc, photo, index) => {
+  const grouped = photos.reduce((acc, photo) => {
     const month = photo.month || MonthStatus.UNKNOWN;
     if (!photo.file) {
-      console.warn(`파일이 없는 사진 발견 (인덱스 ${index})`);
       return acc;
     }
     // unknown인 경우도 그룹화에 포함 (사용자에게 알람 없이 Timeline에서만 표시)
@@ -42,15 +41,6 @@ export function groupPhotosByMonth(photos: PhotoWithMetadata[]): MonthlyGroup[] 
       if (b.month === MonthStatus.UNKNOWN) return -1;
       return a.month.localeCompare(b.month);
     }); // 월순으로 정렬
-
-  // 디버깅 로그
-  console.log("월별 그룹화 결과:", {
-    totalPhotos: photos.length,
-    reports: reports.map((r) => ({
-      month: r.month,
-      photoCount: r.photoCount,
-    })),
-  });
 
   return reports;
 }

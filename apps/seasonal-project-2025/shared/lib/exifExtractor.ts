@@ -1,14 +1,10 @@
-/**
- * EXIF 데이터 추출 유틸리티
- * 브라우저 단에서 이미지의 EXIF 메타데이터를 추출합니다.
- */
-
 export enum MonthStatus {
   UNKNOWN = "unknown",
 }
 
 export interface ExifData {
-  dateTaken?: Date;
+  fileKey?: string;
+  createdAt?: Date;
   month?: string;
   location?: {
     latitude: number;
@@ -16,47 +12,98 @@ export interface ExifData {
     address?: string;
   };
 }
-
-/**
- * 이미지 파일에서 EXIF 데이터를 추출합니다.
- * @param file 이미지 파일
- * @returns EXIF 데이터 (날짜 정보)
- */
 export async function extractExifData(file: File): Promise<ExifData> {
   try {
-    // exifr 라이브러리를 동적으로 import
     const exifr = await import("exifr");
 
-    const exifData = await exifr.parse(file, {
-      pick: [
-        "DateTimeOriginal",
-        "CreateDate",
-        "ModifyDate",
-        "GPSLatitude",
-        "GPSLongitude",
-        "GPSLatitudeRef",
-        "GPSLongitudeRef",
-      ],
-      translateKeys: false,
-      translateValues: false,
-    });
-
-    let dateTaken: Date | undefined;
-
-    // 날짜 정보 추출 (우선순위: DateTimeOriginal > CreateDate > ModifyDate)
-    if (exifData?.DateTimeOriginal) {
-      dateTaken = new Date(exifData.DateTimeOriginal);
-    } else if (exifData?.CreateDate) {
-      dateTaken = new Date(exifData.CreateDate);
-    } else if (exifData?.ModifyDate) {
-      dateTaken = new Date(exifData.ModifyDate);
+    let exifData;
+    try {
+      exifData = await exifr.parse(file, {
+        pick: [
+          "DateTimeOriginal",
+          "CreateDate",
+          "ModifyDate",
+          "DateTime",
+          "DateTimeDigitized",
+          "GPSLatitude",
+          "GPSLongitude",
+          "GPSLatitudeRef",
+          "GPSLongitudeRef",
+        ],
+        translateKeys: true,
+        translateValues: false,
+        reviveValues: true,
+      });
+    } catch (parseError) {
+      console.warn(`EXIF 파싱 실패: ${file.name}`, parseError);
+      exifData = null;
     }
-    // EXIF 데이터가 없으면 UNKNOWN 반환 (file.lastModified 사용하지 않음)
 
-    // EXIF 데이터가 없거나 유효한 날짜인지 확인
-    if (!dateTaken || isNaN(dateTaken.getTime())) {
-      // EXIF 데이터가 없거나 유효하지 않은 날짜인 경우 날짜 알 수 없음으로 처리
-      // 위치 정보는 추출 시도
+    let createdAt: Date | undefined;
+
+    const parseExifDate = (dateValue: any): Date | undefined => {
+      if (!dateValue) return undefined;
+
+      if (dateValue instanceof Date) {
+        return isNaN(dateValue.getTime()) ? undefined : dateValue;
+      }
+
+      if (typeof dateValue === "string") {
+        const exifDatePattern =
+          /^(\d{4}):(\d{2}):(\d{2})\s+(\d{2}):(\d{2}):(\d{2})$/;
+        const match = dateValue.match(exifDatePattern);
+        if (match) {
+          const [, year, month, day, hour, minute, second] = match;
+          const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+          const date = new Date(isoString);
+          return isNaN(date.getTime()) ? undefined : date;
+        }
+        const date = new Date(dateValue);
+        return isNaN(date.getTime()) ? undefined : date;
+      }
+
+      if (typeof dateValue === "number") {
+        const date = new Date(dateValue);
+        return isNaN(date.getTime()) ? undefined : date;
+      }
+
+      return undefined;
+    };
+
+    if (exifData?.DateTimeOriginal) {
+      createdAt = parseExifDate(exifData.DateTimeOriginal);
+    } else if (exifData?.["36867"]) {
+      createdAt = parseExifDate(exifData["36867"]);
+    }
+
+    if (!createdAt && exifData?.CreateDate) {
+      createdAt = parseExifDate(exifData.CreateDate);
+    }
+
+    if (!createdAt && exifData?.DateTimeDigitized) {
+      createdAt = parseExifDate(exifData.DateTimeDigitized);
+    } else if (!createdAt && exifData?.["36868"]) {
+      createdAt = parseExifDate(exifData["36868"]);
+    }
+
+    if (!createdAt && exifData?.DateTime) {
+      createdAt = parseExifDate(exifData.DateTime);
+    } else if (!createdAt && exifData?.["306"]) {
+      createdAt = parseExifDate(exifData["306"]);
+    }
+
+    if (!createdAt && exifData?.ModifyDate) {
+      createdAt = parseExifDate(exifData.ModifyDate);
+    }
+
+    if (!createdAt || isNaN(createdAt.getTime())) {
+      createdAt = new Date(file.lastModified);
+      if (isNaN(createdAt.getTime())) {
+        createdAt = undefined;
+      }
+    }
+
+    if (!createdAt || isNaN(createdAt.getTime())) {
       let location: ExifData["location"] | undefined;
       if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
         try {
@@ -106,27 +153,19 @@ export async function extractExifData(file: File): Promise<ExifData> {
       }
 
       return {
-        dateTaken: undefined,
+        createdAt: undefined,
         month: MonthStatus.UNKNOWN,
         location,
       };
     }
 
-    // 월 정보 추출 (YYYY-MM 형식)
-    const month = `${dateTaken.getFullYear()}-${String(
-      dateTaken.getMonth() + 1
+    const month = `${createdAt.getFullYear()}-${String(
+      createdAt.getMonth() + 1
     ).padStart(2, "0")}`;
 
-    // 월 정보가 없으면 알 수 없음으로 처리 (조용히 처리, Timeline에서만 표시)
-
-    // 위치 정보 추출 (GPS 좌표)
-    // GPSLatitude, GPSLongitude는 [도, 분, 초] 배열 형태
-    // GPSLatitudeRef: "N" (북위) 또는 "S" (남위)
-    // GPSLongitudeRef: "E" (동경) 또는 "W" (서경)
     let location: ExifData["location"] | undefined;
     if (exifData?.GPSLatitude && exifData?.GPSLongitude) {
       try {
-        // GPSLatitude와 GPSLongitude는 배열 [도, 분, 초] 또는 숫자일 수 있음
         const latArray = Array.isArray(exifData.GPSLatitude)
           ? exifData.GPSLatitude
           : [exifData.GPSLatitude];
@@ -134,7 +173,6 @@ export async function extractExifData(file: File): Promise<ExifData> {
           ? exifData.GPSLongitude
           : [exifData.GPSLongitude];
 
-        // 도/분/초를 십진수로 변환
         const latDegrees = latArray[0] || 0;
         const latMinutes = latArray[1] || 0;
         const latSeconds = latArray[2] || 0;
@@ -145,7 +183,6 @@ export async function extractExifData(file: File): Promise<ExifData> {
         const lonSeconds = lonArray[2] || 0;
         let longitude = lonDegrees + lonMinutes / 60 + lonSeconds / 3600;
 
-        // 방향에 따라 부호 조정
         const latRef = exifData.GPSLatitudeRef;
         if (latRef === "S") {
           latitude = -latitude;
@@ -155,8 +192,6 @@ export async function extractExifData(file: File): Promise<ExifData> {
         if (lonRef === "W") {
           longitude = -longitude;
         }
-
-        // 유효성 검증
         if (
           !isNaN(latitude) &&
           !isNaN(longitude) &&
@@ -176,29 +211,31 @@ export async function extractExifData(file: File): Promise<ExifData> {
     }
 
     return {
-      dateTaken,
+      createdAt,
       month,
       location,
     };
   } catch (error) {
     console.warn(`EXIF 데이터 추출 실패: ${file.name}`, error);
-    // EXIF 추출 실패 시 날짜 알 수 없음으로 처리
+    const createdAt = new Date(file.lastModified);
+    if (isNaN(createdAt.getTime())) {
+      return {
+        createdAt: undefined,
+        month: MonthStatus.UNKNOWN,
+        location: undefined,
+      };
+    }
+    const month = `${createdAt.getFullYear()}-${String(
+      createdAt.getMonth() + 1
+    ).padStart(2, "0")}`;
     return {
-      dateTaken: undefined,
-      month: MonthStatus.UNKNOWN,
+      createdAt,
+      month,
       location: undefined,
     };
   }
 }
 
-/**
- * 여러 이미지 파일에서 EXIF 데이터를 일괄 추출합니다.
- * @param files 이미지 파일 배열
- * @returns EXIF 데이터 배열
- */
-export async function extractExifDataBatch(
-  files: File[]
-): Promise<ExifData[]> {
+export async function extractExifDataBatch(files: File[]): Promise<ExifData[]> {
   return Promise.all(files.map((file) => extractExifData(file)));
 }
-
