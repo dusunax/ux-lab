@@ -109,10 +109,33 @@ export function PhotoUploader({
           </Button>
         </div>
       </motion.div>
-      <p className="text-center text-sm text-warmGray-600">
-        * 업로드한 사진은 저장되지 않습니다. <br />
-        AI 분석과 PDF 생성을 위한 용도 외에는 사용되지 않습니다.
-      </p>
+
+      <div className="space-y-2">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="rounded-2xl bg-beige-50/80 border border-beige-200 px-4 py-3"
+        >
+          <p className="text-sm text-warmGray-600 leading-relaxed">
+            <span className="font-medium text-warmGray-700">💡 안내:</span> 사진
+            편집 프로그램을 사용했거나, 메신저를 통해 공유한 파일은 촬영 날짜가
+            다를 수 있습니다.
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="rounded-2xl bg-beige-50/80 border border-beige-200 px-4 py-3"
+        >
+          <p className="text-sm text-warmGray-600 leading-relaxed">
+            <span className="font-medium text-warmGray-700">🔒 사진:</span>{" "}
+            업로드한 사진은 저장되지 않습니다. AI 분석과 PDF 생성을 위한 용도
+            외에는 사용되지 않습니다.
+          </p>
+        </motion.div>
+      </div>
 
       {previews.length > 0 && (
         <motion.div

@@ -22,7 +22,21 @@ export async function getRateLimitStatus(): Promise<RateLimitStatus> {
   const today = getKoreaDate();
 
   try {
-    const db = getDb();
+    // Firebase 초기화 실패 시 기본값 반환
+    let db;
+    try {
+      db = getDb();
+    } catch (dbError) {
+      console.error("Firebase DB 초기화 실패, 기본값 반환:", dbError);
+      // Firebase 초기화 실패 시 기본값 반환
+      return {
+        remaining: MAX_REQUESTS_PER_DAY,
+        used: 0,
+        total: MAX_REQUESTS_PER_DAY,
+        resetDate: today,
+      };
+    }
+
     const docId = `${ip}_${today}`;
     const docRef = db.collection("rateLimits").doc(docId);
     const doc = await docRef.get();

@@ -1,34 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, PlayIcon, RotateCcw } from "lucide-react";
 import { Card } from "@shared/ui/Card";
 import { PhotoUploader } from "@shared/ui/PhotoUploader";
 import { ProcessingOverlay } from "@shared/ui/ProcessingOverlay";
-import { extractExifData } from "@shared/lib/exifExtractor";
-import { groupPhotosByMonth } from "@shared/lib/groupByMonth";
-import { resizeImages } from "@shared/lib/imageResize";
-import { analyzePhotos } from "@features/report/api/analyze";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
+import { extractExifData } from "@shared/lib/exifExtractor";
 import { Examples } from "./components/Examples";
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
 import { RateLimitBadge } from "./components/RateLimitBadge";
 import { Footer } from "./components/Footer";
-import { trackAnalysisComplete, trackAnalysisError } from "@shared/lib/gtag";
-import type { PhotoWithMetadata } from "@features/report/types";
 
 export default function Home() {
   const router = useRouter();
-  const [isProcessing, setIsProcessing] = useState(false);
   const {
     analysisResult,
-    setAnalysisResult,
     uploadedPhotos,
-    setUploadedPhotos,
     uploadedPhotoPreviews,
+    isProcessing,
+    handleAnalyze,
+    setUploadedPhotos,
     setUploadedPhotoPreviews,
+    setAnalysisResult,
+    setExifDataArray,
     clearAnalysisData,
   } = useAnalysis();
 
@@ -43,142 +39,17 @@ export default function Home() {
     if (photos.length === 0) {
       setAnalysisResult(null);
       setUploadedPhotoPreviews([]);
-      return;
-    }
-  };
-
-  const handleAnalyze = async () => {
-    if (uploadedPhotos.length === 0) {
-      alert("분석할 사진을 먼저 업로드해주세요.");
+      setExifDataArray([]);
       return;
     }
 
-    setIsProcessing(true);
-
-    try {
-      // 1. 원본 파일에서 EXIF 데이터 먼저 추출 (리사이징 전에 추출해야 EXIF 데이터 보존)
-      const exifDataArray = await Promise.all(
-        uploadedPhotos.map(async (file) => {
-          const exifData = await extractExifData(file);
-          return { file, exifData };
-        })
-      );
-
-      // 2. 원본 이미지를 base64로 변환
-      const originalBase64s = await Promise.all(
-        uploadedPhotos.map(async (file) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => {
-              const result = reader.result as string;
-              resolve(result);
-            };
-            reader.onerror = () => reject(new Error("파일 읽기 실패"));
-            reader.readAsDataURL(file);
-          });
-        })
-      );
-
-      // 3. 이미지 리사이징 및 압축 (Vision API 전송)
-      const resizedPhotos = await resizeImages(uploadedPhotos, {
-        maxWidth: 512,
-        maxHeight: 512,
-        quality: 0.9,
-        format: "image/jpeg",
-        maxSizeMB: 1,
-      });
-
-      // 4. 리사이징된 파일과 EXIF 데이터 매핑
-      const photosWithMetadata: PhotoWithMetadata[] = resizedPhotos.map(
-        (resizedFile, index) => {
-          const { exifData } = exifDataArray[index];
-          const preview = URL.createObjectURL(resizedFile);
-          return {
-            file: resizedFile,
-            preview,
-            dateTaken: exifData.dateTaken,
-            month: exifData.month,
-            location: exifData.location,
-          };
-        }
-      );
-
-      // 5. 월별로 그룹화
-      const groupedReports = groupPhotosByMonth(photosWithMetadata);
-
-      // 6. Server Action에 전달할 reports 단순화 (blob URL 제거)
-      const simplifiedReports = groupedReports.map((report) => ({
-        month: report.month,
-        photoCount: report.photos.length,
-      }));
-
-      // 7. FormData로 파일 전달 (리사이징된 이미지 사용 - Vision API용)
-      const formData = new FormData();
-      resizedPhotos.forEach((file, index) => {
-        formData.append(`photo_${index}`, file);
-      });
-      formData.append("reports", JSON.stringify(simplifiedReports));
-
-      // 위치 데이터 전달 (있는 경우만)
-      const locationData = photosWithMetadata
-        .map((photo, index) => ({
-          index,
-          location: photo.location,
-        }))
-        .filter((item) => item.location !== undefined);
-      if (locationData.length > 0) {
-        formData.append("locations", JSON.stringify(locationData));
-      }
-
-      // 8. Server Action 호출하여 분석
-      const { result } = await analyzePhotos(formData);
-
-      // 9. 결과에 원본 base64 photos 배열 복원
-      const resultWithPhotos = {
-        ...result,
-        monthlyReports: result.monthlyReports.map((analyzedReport, index) => {
-          const startIndex = simplifiedReports
-            .slice(0, index)
-            .reduce((sum, r) => sum + r.photoCount, 0);
-          const photoCount = simplifiedReports[index].photoCount;
-          // 원본 base64 이미지 사용 (화면 표시용, 고해상도)
-          const originalBase64Photos = originalBase64s.slice(
-            startIndex,
-            startIndex + photoCount
-          );
-          return {
-            ...analyzedReport,
-            photos: originalBase64Photos,
-          };
-        }),
-      };
-
-      // 10. Context에 저장
-      setAnalysisResult(resultWithPhotos);
-
-      // 분석 완료 이벤트 추적
-      trackAnalysisComplete(
-        uploadedPhotos.length,
-        resultWithPhotos.monthlyReports.length
-      );
-
-      // Rate limit 상태 갱신을 위한 이벤트 발생
-      window.dispatchEvent(new Event("analysisComplete"));
-
-      // 분석 성공 후 맨 위로 스크롤
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (error) {
-      console.error("분석 실패:", error);
-
-      // 분석 실패 이벤트 추적
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      trackAnalysisError(errorMessage);
-
-      alert("분석 중 오류가 발생했습니다. 다시 시도해주세요.");
-    } finally {
-      setIsProcessing(false);
-    }
+    // EXIF 데이터 추출 (1회만 수행, 이후 재사용)
+    const exifDataArray = await Promise.all(
+      photos.map(async (file) => {
+        return await extractExifData(file);
+      })
+    );
+    setExifDataArray(exifDataArray);
   };
 
   return (

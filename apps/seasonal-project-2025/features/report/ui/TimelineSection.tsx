@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Base64Image } from "@shared/ui/Base64Image";
+import { MonthStatus } from "@shared/lib/exifExtractor";
 import type { MonthlyReport } from "@features/report/types";
 
 interface TimelineProps {
@@ -95,7 +96,9 @@ export function Timeline({ reports }: TimelineProps) {
                       <div className={`flex-1 w-full space-y-4`}>
                         <div className={`flex items-center gap-3 `}>
                           <h3 className="text-subsection font-bold text-warmGray-900">
-                            {report.month}
+                            {report.month === MonthStatus.UNKNOWN
+                              ? "날짜 알 수 없음"
+                              : report.month}
                           </h3>
                           <span className="px-3 py-1 rounded-full bg-beige-200/60 text-warmGray-700 text-sm font-medium flex items-center gap-1.5">
                             <span>{report.mood.emoji}</span>

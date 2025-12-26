@@ -8,7 +8,7 @@ import type {
   PersonalityType,
   MonthlyReport,
 } from "@features/report/types";
-import { checkRateLimit } from "@shared/lib/rateLimit";
+import { checkRateLimit, incrementRateLimit } from "@shared/lib/rateLimit";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -74,7 +74,7 @@ async function callOpenAI(
   const imageContents = images.map((base64) => ({
     type: "image_url" as const,
     image_url: {
-      url: `data:image/jpeg;base64,${base64}`
+      url: `data:image/jpeg;base64,${base64}`,
     },
   }));
 
@@ -255,18 +255,43 @@ export async function analyzePhotos(
 
   // reports JSON 파싱
   const reportsJson = formData.get("reports") as string;
-  const reports: Array<{ month: string; photoCount: number }> =
-    JSON.parse(reportsJson);
+  if (!reportsJson) {
+    throw new Error("reports 데이터가 전달되지 않았습니다.");
+  }
+  let reports: Array<{ month: string; photoCount: number }>;
+  try {
+    reports = JSON.parse(reportsJson);
+  } catch (error) {
+    console.error("reports JSON 파싱 실패:", reportsJson);
+    throw new Error("reports 데이터 파싱에 실패했습니다.");
+  }
 
   // 위치 데이터 파싱 (있는 경우만)
   const locationsJson = formData.get("locations") as string | null;
-  const locations: Array<{
+  let locations: Array<{
     index: number;
     location: { latitude: number; longitude: number; address?: string };
-  }> = locationsJson ? JSON.parse(locationsJson) : [];
+  }> = [];
+  if (locationsJson) {
+    try {
+      locations = JSON.parse(locationsJson);
+    } catch (error) {
+      console.warn("locations JSON 파싱 실패:", error);
+      // 위치 데이터 파싱 실패는 치명적이지 않으므로 경고만
+    }
+  }
+
+  // 파일 검증
+  if (files.length === 0) {
+    throw new Error("업로드된 파일이 없습니다.");
+  }
 
   // 파일을 base64로 변환 (서버에서 처리)
   const photoBase64s = await Promise.all(files.map(fileToBase64));
+
+  if (photoBase64s.length === 0) {
+    throw new Error("파일을 base64로 변환하는데 실패했습니다.");
+  }
 
   try {
     // 각 월별 리포트의 대표 사진 선택 (첫 번째 사진)
@@ -305,11 +330,16 @@ export async function analyzePhotos(
       locationInfo = `\n\n다음 사진들에는 촬영 위치 정보(GPS 좌표)가 포함되어 있습니다:\n${locationDetails}\n\n위치 정보가 있는 사진들을 분석할 때는 해당 위치를 고려하여 분석해주세요. 예를 들어, 특정 지역이나 장소에서 촬영된 사진이라면 그 지역의 특성이나 의미를 반영하여 분석해주세요.`;
     }
 
+    console.log(reports);
+
     // 전체 분석 프롬프트
+    const totalMonths = reports.length;
     const overallPrompt = `당신은 연말 회고를 위한 사진 분석 전문가이자 심리 분석가입니다. 
 사용자가 올해 찍은 대표 사진들을 분석하여 다음을 제공해주세요:
 
-사진은 다음과 같이 월별로 구분되어 있습니다:
+**중요: 월별 리포트는 정확히 ${totalMonths}개만 생성해야 합니다. 입력받은 월 개수와 정확히 일치해야 합니다.**
+
+사진은 다음과 같이 월별로 구분되어 있습니다 (총 ${totalMonths}개월):
 ${monthDetails}${locationInfo}
 
 1. 전체 사진들을 관통하는 5가지 핵심 키워드와 각 키워드에 어울리는 이모지 (예: {"text": "성장", "emoji": "🌱"}, {"text": "여행", "emoji": "✈️"})
@@ -357,13 +387,19 @@ ${monthDetails}${locationInfo}
   "luckyItem": "내년의 행운의 아이템",
   "avoidItem": "내년에 피해야할 것",
   "monthlyReports": [
-    {
-      "month": "월 이름 (반드시 입력받은 월 형식과 동일하게 작성해야 합니다. 예: 2025-12, 2024-03 등. 각 월의 순서대로 정확히 작성해주세요)",
+    ${reports
+      .map(
+        (r, index) => `{
+      "month": "${r.month}",
       "mood": {"text": "감정 단어 (예: 추억, 따뜻함, 평화로움, 활기참)", "emoji": "이모지"},
       "summary": "이 달의 사진들을 분석한 상세한 설명 (총 2문단의 9-10줄, Timeline에 표시될 내용이며, 그 달의 감정, 경험, 의미를 담아야 함. summary는 1번째 문단을 2-3줄, 2번째 문단을 7-8줄로 한다.)"
-    }
+    }`
+      )
+      .join(",\n    ")}
   ]
 }
+
+**중요: monthlyReports 배열에는 정확히 ${totalMonths}개의 객체만 포함되어야 합니다. 위에 나열된 ${totalMonths}개월에 대해서만 분석해주세요.**
 
 한국어로 응답해주세요. JSON 형식으로 응답해주세요:`;
 
@@ -404,9 +440,21 @@ ${monthDetails}${locationInfo}
       throw new Error("월별 분석 결과가 없습니다.");
     }
 
+    // 월별 리포트 개수 검증 (디버깅 정보 포함)
     if (analysis.monthlyReports.length !== reports.length) {
+      console.error("월별 리포트 개수 불일치:", {
+        expected: reports.length,
+        actual: analysis.monthlyReports.length,
+        expectedMonths: reports.map((r) => r.month),
+        actualMonths: analysis.monthlyReports.map((r) => r.month),
+        monthDetails,
+      });
       throw new Error(
-        `월별 분석 결과 개수가 일치하지 않습니다. 예상: ${reports.length}, 실제: ${analysis.monthlyReports.length}`
+        `월별 분석 결과 개수가 일치하지 않습니다. 예상: ${
+          reports.length
+        }개월 (${reports.map((r) => r.month).join(", ")}), 실제: ${
+          analysis.monthlyReports.length
+        }개월 (${analysis.monthlyReports.map((r) => r.month).join(", ")})`
       );
     }
 
@@ -454,6 +502,9 @@ ${monthDetails}${locationInfo}
     };
     validateAnalysisResult(analysisForValidation);
 
+    // 분석 성공 시에만 rate limit 카운트 증가
+    await incrementRateLimit();
+
     return {
       result: {
         keywords: analysis.keywords,
@@ -470,6 +521,15 @@ ${monthDetails}${locationInfo}
     };
   } catch (error) {
     console.error("사진 분석 실패:", error);
-    throw new Error("사진 분석 중 오류가 발생했습니다.");
+    // 원본 에러 메시지를 포함하여 더 자세한 정보 제공
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("에러 상세:", {
+      message: errorMessage,
+      stack: error instanceof Error ? error.stack : undefined,
+      filesCount: files.length,
+      reportsCount: reports.length,
+    });
+    throw new Error(`사진 분석 중 오류가 발생했습니다: ${errorMessage}`);
   }
 }
