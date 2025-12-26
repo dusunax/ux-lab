@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, PlayIcon, RotateCcw } from "lucide-react";
 import { Card } from "@shared/ui/Card";
@@ -9,12 +10,14 @@ import { ProcessingOverlay } from "@shared/ui/ProcessingOverlay";
 import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { extractExifData } from "@shared/lib/exifExtractor";
 import { Examples } from "./components/Examples";
+import { getRateLimitStatus } from "@shared/lib/getRateLimitStatus";
 
-const createFileKey = (file: File) =>
-  `${file.name}_${file.size}_${file.lastModified}`;
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
 import { RateLimitBadge } from "./components/RateLimitBadge";
 import { Footer } from "./components/Footer";
+
+const createFileKey = (file: File) =>
+  `${file.name}_${file.size}_${file.lastModified}`;
 
 export default function Home() {
   const router = useRouter();
@@ -30,6 +33,43 @@ export default function Home() {
     setExifDataArray,
     clearAnalysisData,
   } = useAnalysis();
+
+  const [rateLimitStatus, setRateLimitStatus] = useState<{
+    remaining: number;
+    used: number;
+    total: number;
+  } | null>(null);
+
+  const fetchRateLimitStatus = async () => {
+    try {
+      const result = await getRateLimitStatus();
+      setRateLimitStatus({
+        remaining: result.remaining,
+        used: result.used,
+        total: result.total,
+      });
+    } catch (error) {
+      console.error("Rate limit 상태 조회 실패:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRateLimitStatus();
+    // 5초마다 상태 갱신
+    const interval = setInterval(fetchRateLimitStatus, 5000);
+
+    // 분석 완료 이벤트 리스너
+    const handleAnalysisComplete = () => {
+      setTimeout(fetchRateLimitStatus, 1000);
+    };
+
+    window.addEventListener("analysisComplete", handleAnalysisComplete);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("analysisComplete", handleAnalysisComplete);
+    };
+  }, []);
 
   const handlePhotosSelected = async (photos: File[]) => {
     setUploadedPhotos(photos);
@@ -148,9 +188,19 @@ export default function Home() {
             </div>
             <div className="relative group text-center md:text-left">
               <button
-                className="rounded-2xl bg-warmGray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-warmGray-800 active:bg-warmGray-700 disabled:opacity-50 disabled:cursor-default"
+                className={`rounded-2xl bg-warmGray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-warmGray-800 active:bg-warmGray-700 disabled:opacity-50 disabled:cursor-default ${
+                  uploadedPhotos.length > 0 &&
+                  !isProcessing &&
+                  (rateLimitStatus?.remaining ?? 0) > 0
+                    ? "animate-bounce"
+                    : ""
+                }`}
                 onClick={handleAnalyze}
-                disabled={isProcessing || uploadedPhotos.length === 0}
+                disabled={
+                  isProcessing ||
+                  uploadedPhotos.length === 0 ||
+                  (rateLimitStatus?.remaining ?? 0) === 0
+                }
                 data-ga-label="AI 분석 시작"
               >
                 {isProcessing ? "분석 중..." : "AI 분석 시작"}
@@ -161,6 +211,15 @@ export default function Home() {
                   <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-warmGray-900"></div>
                 </div>
               )}
+              {uploadedPhotos.length > 0 &&
+                !isProcessing &&
+                (rateLimitStatus?.remaining ?? 0) === 0 && (
+                  <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-red-600 text-white text-xs font-medium rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                    오늘의 요청 한도를 모두 사용했습니다. 내일 다시
+                    시도해주세요.
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-red-600"></div>
+                  </div>
+                )}
             </div>
           </div>
           <PhotoUploader
