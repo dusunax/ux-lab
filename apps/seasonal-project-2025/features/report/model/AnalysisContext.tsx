@@ -16,8 +16,6 @@ interface AnalysisContextType {
   setUploadedPhotos: (photos: File[]) => void;
   uploadedPhotoPreviews: string[];
   setUploadedPhotoPreviews: (previews: string[]) => void;
-  photoBase64s: string[];
-  setPhotoBase64s: (base64s: string[]) => void;
   clearAnalysisData: () => void;
 }
 
@@ -33,14 +31,12 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [uploadedPhotoPreviews, setUploadedPhotoPreviews] = useState<string[]>(
     []
   );
-  const [photoBase64s, setPhotoBase64s] = useState<string[]>([]);
 
   const clearAnalysisData = useCallback(() => {
     setAnalysisResult(null);
     setUploadedPhotos([]);
     uploadedPhotoPreviews.forEach((url) => URL.revokeObjectURL(url));
     setUploadedPhotoPreviews([]);
-    setPhotoBase64s([]);
   }, [uploadedPhotoPreviews]);
 
   return (
@@ -52,8 +48,6 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         setUploadedPhotos,
         uploadedPhotoPreviews,
         setUploadedPhotoPreviews,
-        photoBase64s,
-        setPhotoBase64s,
         clearAnalysisData,
       }}
     >

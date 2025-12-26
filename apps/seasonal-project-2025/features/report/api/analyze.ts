@@ -74,8 +74,7 @@ async function callOpenAI(
   const imageContents = images.map((base64) => ({
     type: "image_url" as const,
     image_url: {
-      url: `data:image/jpeg;base64,${base64}`,
-      detail: "low" as const,
+      url: `data:image/jpeg;base64,${base64}`
     },
   }));
 
@@ -222,7 +221,7 @@ function validateAnalysisResult(
  */
 export async function analyzePhotos(
   formData: FormData
-): Promise<{ result: AnalysisResult; photoBase64s: string[] }> {
+): Promise<{ result: AnalysisResult }> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
   }
@@ -298,7 +297,9 @@ export async function analyzePhotos(
       const locationDetails = locations
         .map((loc) => {
           const { latitude, longitude } = loc.location;
-          return `사진 ${loc.index + 1}번: 위도 ${latitude.toFixed(6)}, 경도 ${longitude.toFixed(6)}`;
+          return `사진 ${loc.index + 1}번: 위도 ${latitude.toFixed(
+            6
+          )}, 경도 ${longitude.toFixed(6)}`;
         })
         .join("\n");
       locationInfo = `\n\n다음 사진들에는 촬영 위치 정보(GPS 좌표)가 포함되어 있습니다:\n${locationDetails}\n\n위치 정보가 있는 사진들을 분석할 때는 해당 위치를 고려하여 분석해주세요. 예를 들어, 특정 지역이나 장소에서 촬영된 사진이라면 그 지역의 특성이나 의미를 반영하여 분석해주세요.`;
@@ -466,7 +467,6 @@ ${monthDetails}${locationInfo}
         avoidItem: analysis.avoidItem,
         monthlyReports: analyzedReports,
       },
-      photoBase64s,
     };
   } catch (error) {
     console.error("사진 분석 실패:", error);

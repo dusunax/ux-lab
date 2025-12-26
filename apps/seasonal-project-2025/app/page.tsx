@@ -29,7 +29,6 @@ export default function Home() {
     setUploadedPhotos,
     uploadedPhotoPreviews,
     setUploadedPhotoPreviews,
-    setPhotoBase64s,
     clearAnalysisData,
   } = useAnalysis();
 
@@ -65,7 +64,22 @@ export default function Home() {
         })
       );
 
-      // 2. 이미지 리사이징 및 압축
+      // 2. 원본 이미지를 base64로 변환
+      const originalBase64s = await Promise.all(
+        uploadedPhotos.map(async (file) => {
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result as string;
+              resolve(result);
+            };
+            reader.onerror = () => reject(new Error("파일 읽기 실패"));
+            reader.readAsDataURL(file);
+          });
+        })
+      );
+
+      // 3. 이미지 리사이징 및 압축 (Vision API 전송)
       const resizedPhotos = await resizeImages(uploadedPhotos, {
         maxWidth: 512,
         maxHeight: 512,
@@ -74,7 +88,7 @@ export default function Home() {
         maxSizeMB: 1,
       });
 
-      // 3. 리사이징된 파일과 EXIF 데이터 매핑
+      // 4. 리사이징된 파일과 EXIF 데이터 매핑
       const photosWithMetadata: PhotoWithMetadata[] = resizedPhotos.map(
         (resizedFile, index) => {
           const { exifData } = exifDataArray[index];
@@ -89,16 +103,16 @@ export default function Home() {
         }
       );
 
-      // 4. 월별로 그룹화
+      // 5. 월별로 그룹화
       const groupedReports = groupPhotosByMonth(photosWithMetadata);
 
-      // 5. Server Action에 전달할 reports 단순화 (blob URL 제거)
+      // 6. Server Action에 전달할 reports 단순화 (blob URL 제거)
       const simplifiedReports = groupedReports.map((report) => ({
         month: report.month,
         photoCount: report.photos.length,
       }));
 
-      // 6. FormData로 파일 전달 (리사이징된 이미지 사용)
+      // 7. FormData로 파일 전달 (리사이징된 이미지 사용 - Vision API용)
       const formData = new FormData();
       resizedPhotos.forEach((file, index) => {
         formData.append(`photo_${index}`, file);
@@ -116,10 +130,10 @@ export default function Home() {
         formData.append("locations", JSON.stringify(locationData));
       }
 
-      // 7. Server Action 호출하여 분석 (서버에서 base64 변환)
-      const { result, photoBase64s } = await analyzePhotos(formData);
+      // 8. Server Action 호출하여 분석
+      const { result } = await analyzePhotos(formData);
 
-      // 8. 결과에 base64 photos 배열 복원
+      // 9. 결과에 원본 base64 photos 배열 복원
       const resultWithPhotos = {
         ...result,
         monthlyReports: result.monthlyReports.map((analyzedReport, index) => {
@@ -127,20 +141,20 @@ export default function Home() {
             .slice(0, index)
             .reduce((sum, r) => sum + r.photoCount, 0);
           const photoCount = simplifiedReports[index].photoCount;
-          const base64Photos = photoBase64s.slice(
+          // 원본 base64 이미지 사용 (화면 표시용, 고해상도)
+          const originalBase64Photos = originalBase64s.slice(
             startIndex,
             startIndex + photoCount
           );
           return {
             ...analyzedReport,
-            photos: base64Photos,
+            photos: originalBase64Photos,
           };
         }),
       };
 
-      // 9. Context에 저장 (분석 완료 직후)
+      // 10. Context에 저장
       setAnalysisResult(resultWithPhotos);
-      setPhotoBase64s(photoBase64s);
 
       // 분석 완료 이벤트 추적
       trackAnalysisComplete(
