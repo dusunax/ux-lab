@@ -13,6 +13,7 @@ pnpm -w run dev:all
 # Showcase: http://localhost:3000
 # Flow: http://localhost:3333
 # Applications: http://localhost:3334
+# Project Afterglow: http://localhost:3335
 ```
 
 ## 🔧 환경 설정
@@ -28,6 +29,9 @@ pnpm -w run dev:all
 - **@ux-lab/showcase** - 컴포넌트 쇼케이스
 - **@ux-lab/flow** - UX Flow 다이어그램 에디터 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
 - **@ux-lab/applications** - 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md))
+- **@ux-lab/seasonal-project-2025** - AI 기반 연말 사진 회고 웹 서비스 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
+ ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white)
+
 
 ## 🛠️ 기술 스택
 
@@ -35,9 +39,12 @@ pnpm -w run dev:all
 - Next.js 15.5.2
 - TypeScript 5.0+
 - Tailwind CSS 3.4.0
-- Firebase (@ux-lab/flow)
+- Firebase (@ux-lab/flow, @ux-lab/seasonal-project-2025)
+- OpenAI API (@ux-lab/seasonal-project-2025)
+- Framer Motion (@ux-lab/seasonal-project-2025)
 - React Flow (@ux-lab/flow)
 - pdfjs-dist (PDF 파싱)(@ux-lab/applications)
+- EXIF 데이터 추출 (exifr) (@ux-lab/seasonal-project-2025)
 
 ## 📸 스크린샷
 

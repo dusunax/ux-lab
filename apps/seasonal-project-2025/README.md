@@ -78,7 +78,7 @@ pnpm dev:afterglow
 pnpm dev
 ```
 
-개발 서버: http://localhost:3334
+개발 서버: http://localhost:3335
 
 ## 경로 별칭
 
