@@ -56,7 +56,28 @@ export async function resizeImage(file: File, options: ResizeOptions = {}): Prom
         ctx.drawImage(img, 0, 0, width, height);
 
         // 파일 크기가 목표 크기 이하가 될 때까지 퀄리티를 낮춰가며 압축
-        const compress = (currentQuality: number): void => {
+        const compress = (currentQuality: number, attempt: number = 0): void => {
+          // 최대 시도 횟수 제한 (무한 루프 방지)
+          if (attempt > 20) {
+            // 최소 크기로라도 저장
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) {
+                  reject(new Error("이미지 변환에 실패했습니다."));
+                  return;
+                }
+                const resizedFile = new File([blob], file.name, {
+                  type: format,
+                  lastModified: Date.now(),
+                });
+                resolve(resizedFile);
+              },
+              format,
+              0.1
+            );
+            return;
+          }
+
           canvas.toBlob(
             (blob) => {
               if (!blob) {
@@ -74,9 +95,11 @@ export async function resizeImage(file: File, options: ResizeOptions = {}): Prom
                 return;
               }
 
-              // 파일 크기가 목표보다 크면 퀄리티를 낮춰서 다시 압축
-              const newQuality = Math.max(0.1, currentQuality - 0.1);
-              compress(newQuality);
+              // 파일 크기가 목표보다 크면 퀄리티를 더 빠르게 낮춰서 다시 압축
+              // 0.1씩 낮추되, 0.3 이하에서는 0.05씩 낮춤
+              const step = currentQuality > 0.3 ? 0.1 : 0.05;
+              const newQuality = Math.max(0.1, currentQuality - step);
+              compress(newQuality, attempt + 1);
             },
             format,
             currentQuality

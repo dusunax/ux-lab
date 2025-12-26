@@ -75,6 +75,7 @@ async function callOpenAI(
     type: "image_url" as const,
     image_url: {
       url: `data:image/jpeg;base64,${base64}`,
+      detail: "low" as const,
     },
   }));
 

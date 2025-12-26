@@ -65,13 +65,13 @@ export default function Home() {
         })
       );
 
-      // 2. 이미지 리사이징 및 압축 (24개 이미지 지원을 위해 2MB 이하로 압축)
+      // 2. 이미지 리사이징 및 압축
       const resizedPhotos = await resizeImages(uploadedPhotos, {
-        maxWidth: 1920,
-        maxHeight: 1920,
-        quality: 0.8,
+        maxWidth: 512,
+        maxHeight: 512,
+        quality: 0.9,
         format: "image/jpeg",
-        maxSizeMB: 2, // 각 이미지를 2MB 이하로 압축
+        maxSizeMB: 1,
       });
 
       // 3. 리사이징된 파일과 EXIF 데이터 매핑
@@ -104,7 +104,7 @@ export default function Home() {
         formData.append(`photo_${index}`, file);
       });
       formData.append("reports", JSON.stringify(simplifiedReports));
-      
+
       // 위치 데이터 전달 (있는 경우만)
       const locationData = photosWithMetadata
         .map((photo, index) => ({
