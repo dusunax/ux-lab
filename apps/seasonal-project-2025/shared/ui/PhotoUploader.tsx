@@ -240,8 +240,20 @@ export function PhotoUploader({
         >
           <p className="text-sm text-warmGray-600 leading-relaxed">
             <span className="font-medium text-warmGray-700">🔒 사진:</span>{" "}
-            업로드한 사진은 저장되지 않습니다. AI 분석과 PDF 생성을 위한 용도
-            외에는 사용되지 않습니다.
+            업로드한 사진은 저장하지 않습니다. AI 분석과 PDF 생성을 위한
+            용도로만 사용됩니다.
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="rounded-2xl bg-beige-50/80 border border-beige-200 px-4 py-3"
+        >
+          <p className="text-sm text-warmGray-600 leading-relaxed">
+            <span className="font-medium text-warmGray-700">📄 PDF:</span> PDF
+            생성 시간은 약 1-2분 정도 소요될 수 있습니다. 카카오톡으로
+            접속하셨다면 다운로드가 진행되지 않을 수 있습니다.
           </p>
         </motion.div>
       </div>

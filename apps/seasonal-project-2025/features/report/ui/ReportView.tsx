@@ -28,6 +28,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [isPdfReady, setIsPdfReady] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const pdfBlobUrlRef = useRef<string | null>(null);
   const { currentSection, setCurrentSection, registerSection } =
     useReportSections();
@@ -164,7 +165,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
     `;
   };
 
-  // PDF 미리 생성 (API Route 사용)
+  // PDF 미리 생성 (페이지 접근 시 즉시 생성)
   useEffect(() => {
     const generatePdf = async () => {
       // DOM이 완전히 로드될 때까지 대기
@@ -172,28 +173,86 @@ export function ReportView({ analysisResult }: ReportViewProps) {
 
       try {
         setIsGeneratingPdf(true);
-        const htmlContent = await generateHtmlContent();
+        setPdfError(null);
+        setIsPdfReady(false);
 
-        // API Route로 PDF 생성
-        const response = await fetch("/api/pdf", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ htmlContent }),
-        });
+        let htmlContent: string;
+        try {
+          htmlContent = await generateHtmlContent();
+        } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : "알 수 없는 오류";
+          throw new Error(`HTML 콘텐츠 생성 실패: ${errorMessage}`);
+        }
+
+        let response: Response;
+        try {
+          response = await fetch("/api/pdf", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ htmlContent }),
+          });
+        } catch (error) {
+          if (error instanceof TypeError && error.message.includes("fetch")) {
+            throw new Error(
+              "네트워크 연결을 확인할 수 없습니다. 인터넷 연결을 확인해주세요."
+            );
+          }
+          throw new Error(
+            `PDF 생성 서버 요청 실패: ${
+              error instanceof Error ? error.message : "알 수 없는 오류"
+            }`
+          );
+        }
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || "PDF 생성에 실패했습니다.");
+          const errorMessage =
+            errorData.message ||
+            errorData.error ||
+            errorData.details ||
+            `PDF 생성에 실패했습니다. (상태 코드: ${response.status})`;
+
+          if (response.status === 400) {
+            throw new Error(
+              "요청 형식이 올바르지 않습니다. 페이지를 새로고침 후 다시 시도해주세요."
+            );
+          } else if (response.status === 500) {
+            throw new Error(
+              errorData.details
+                ? `서버 오류: ${errorData.details}`
+                : "PDF 생성 서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+            );
+          } else if (response.status === 503) {
+            throw new Error(
+              "PDF 생성 서비스가 일시적으로 사용할 수 없습니다. 잠시 후 다시 시도해주세요."
+            );
+          } else {
+            throw new Error(errorMessage);
+          }
         }
 
-        const pdfArrayBuffer = await response.arrayBuffer();
+        let pdfArrayBuffer: ArrayBuffer;
+        try {
+          pdfArrayBuffer = await response.arrayBuffer();
+        } catch (error) {
+          throw new Error(
+            `PDF 데이터를 받아오는 중 오류가 발생했습니다: ${
+              error instanceof Error ? error.message : "알 수 없는 오류"
+            }`
+          );
+        }
 
         // Blob으로 변환하여 저장
         const blob = new Blob([new Uint8Array(pdfArrayBuffer)], {
           type: "application/pdf",
         });
+
+        if (blob.size === 0) {
+          throw new Error("생성된 PDF 파일이 비어있습니다.");
+        }
 
         // 이전 Blob URL이 있으면 해제
         if (pdfBlobUrlRef.current) {
@@ -203,9 +262,16 @@ export function ReportView({ analysisResult }: ReportViewProps) {
         // 새로운 Blob URL 생성 및 저장
         pdfBlobUrlRef.current = URL.createObjectURL(blob);
         setIsPdfReady(true);
+        setPdfError(null);
       } catch (error) {
-        console.error("PDF 미리 생성 실패:", error);
-        // 에러가 발생해도 사용자에게는 알리지 않음 (다운로드 시 재시도)
+        console.error("PDF 생성 실패:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "알 수 없는 오류";
+        setPdfError(errorMessage);
+        setIsPdfReady(false);
+        toast.error(`PDF 생성 실패: ${errorMessage}`, {
+          duration: 5000,
+        });
       } finally {
         setIsGeneratingPdf(false);
       }
@@ -223,79 +289,49 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   }, [analysisResult]); // analysisResult가 변경되면 PDF 재생성
 
   const handleExportPdf = async () => {
+    // PDF가 준비되지 않았으면 다운로드 불가
+    if (!pdfBlobUrlRef.current || !isPdfReady) {
+      if (isGeneratingPdf) {
+        toast.error("PDF가 아직 생성 중입니다. 잠시 후 다시 시도해주세요.");
+      } else if (pdfError) {
+        toast.error(`PDF 생성 실패: ${pdfError}`, {
+          duration: 5000,
+        });
+      } else {
+        toast.error("PDF가 준비되지 않았습니다. 페이지를 새로고침해주세요.");
+      }
+      return;
+    }
+
     try {
       setIsExporting(true);
 
-      // 미리 생성된 PDF가 있으면 바로 다운로드
-      if (pdfBlobUrlRef.current && isPdfReady) {
-        const link = document.createElement("a");
-        link.href = pdfBlobUrlRef.current;
-        link.download = `Project-Afterglow-2025-${
-          new Date().toISOString().split("T")[0]
-        }.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast.success("PDF 저장이 시작되었습니다!");
-        
-        // PDF 다운로드 완료 이벤트 발생
-        trackPdfDownload();
-        window.dispatchEvent(new Event("pdfDownloadComplete"));
-        return;
-      }
-
-      // 미리 생성된 PDF가 없으면 새로 생성 (API Route 사용)
-      const htmlContent = await generateHtmlContent();
-
-      const response = await fetch("/api/pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ htmlContent }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage =
-          errorData.message || errorData.error || "PDF 생성에 실패했습니다.";
-        console.error("PDF 생성 API 에러:", errorData);
-        throw new Error(errorMessage);
-      }
-
-      const pdfArrayBuffer = await response.arrayBuffer();
-
-      // Blob으로 변환하여 다운로드
-      const blob = new Blob([new Uint8Array(pdfArrayBuffer)], {
-        type: "application/pdf",
-      });
-      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = url;
+      link.href = pdfBlobUrlRef.current;
       link.download = `Project-Afterglow-2025-${
         new Date().toISOString().split("T")[0]
       }.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(url);
 
       toast.success("PDF 저장이 시작되었습니다!");
-      
+
       // PDF 다운로드 완료 이벤트 발생
       trackPdfDownload();
       window.dispatchEvent(new Event("pdfDownloadComplete"));
     } catch (error) {
-      console.error("PDF 저장 실패:", error);
-      toast.error("PDF 저장 중 오류가 발생했습니다.");
-      
-      // PDF 다운로드 실패 이벤트 발생
+      console.error("PDF 다운로드 실패:", error);
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+        error instanceof Error ? error.message : "알 수 없는 오류";
       trackPdfDownloadError(errorMessage);
       window.dispatchEvent(
         new CustomEvent("pdfDownloadError", { detail: { error: errorMessage } })
       );
+
+      toast.error(`PDF 다운로드 실패: ${errorMessage}`, {
+        duration: 5000,
+      });
     } finally {
       setIsExporting(false);
     }
@@ -365,25 +401,34 @@ export function ReportView({ analysisResult }: ReportViewProps) {
             transition={{ duration: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
           >
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={handleExportPdf}
-              disabled={isExporting || isGeneratingPdf}
-              data-ga-label="PDF 저장"
-              className={`flex items-center gap-2 ${
-                isGeneratingPdf || isExporting ? "animate-pulse" : ""
-              }`}
-            >
-              <Download className="w-5 h-5" />
-              {isGeneratingPdf
-                ? "PDF 생성 중..."
-                : isExporting
-                ? "PDF 생성 중..."
-                : isPdfReady
-                ? "PDF 저장"
-                : "PDF 저장"}
-            </Button>
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                variant={isPdfReady ? "primary" : "secondary"}
+                size="lg"
+                onClick={handleExportPdf}
+                disabled={!isPdfReady || isExporting || isGeneratingPdf}
+                data-ga-label="PDF 저장"
+                className={`flex items-center gap-2 ${
+                  isGeneratingPdf ? "animate-pulse" : ""
+                }`}
+              >
+                <Download className="w-5 h-5" />
+                {isGeneratingPdf
+                  ? "PDF 생성 중..."
+                  : isExporting
+                  ? "PDF 다운로드 중..."
+                  : isPdfReady
+                  ? "PDF 저장"
+                  : pdfError
+                  ? "PDF 생성 실패"
+                  : "PDF 준비 중..."}
+              </Button>
+              {pdfError && (
+                <p className="text-sm text-red-600 text-center max-w-md">
+                  {pdfError}
+                </p>
+              )}
+            </div>
             <Button
               variant="secondary"
               size="lg"
