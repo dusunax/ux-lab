@@ -2,6 +2,10 @@
 
 AI 기반 연말 사진 회고 웹 서비스
 
+## 서비스 주소
+
+- https://project-afterglow-2025.vercel.app/
+
 ## 기술 스택
 
 - Next.js 15 (App Router)
