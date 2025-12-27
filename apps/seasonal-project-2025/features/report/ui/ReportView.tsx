@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
 import type { AnalysisResult } from "@features/report/types";
 import { trackPdfDownload, trackPdfDownloadError } from "@shared/lib/gtag";
+import { useKakaoInApp } from "@shared/hooks/useKakaoInApp";
+import { KakaoInAppModal } from "../../../app/components/KakaoInAppModal";
 
 interface ReportViewProps {
   analysisResult: AnalysisResult;
@@ -32,6 +34,8 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   const pdfBlobUrlRef = useRef<string | null>(null);
   const { currentSection, setCurrentSection, registerSection } =
     useReportSections();
+
+  const { showModal, closeModal } = useKakaoInApp();
 
   // 배경 그라데이션 생성 (percentage 반영, 자연스러운 전환)
   const getGradientColors = (colors: typeof analysisResult.primaryColor) => {
@@ -344,7 +348,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
         console.error("=== PDF 생성 예외 발생 (클라이언트) ===");
         console.error("에러:", error);
         console.error("User-Agent:", userAgent);
-        
+
         const errorMessage =
           error instanceof Error ? error.message : "알 수 없는 오류";
         setPdfError(errorMessage);
@@ -418,111 +422,115 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   };
 
   return (
-    <div
-      id="report-content"
-      className="break-keep relative min-h-screen scrollbar-hide"
-    >
-      <TitleSection
-        onSectionChange={setCurrentSection}
-        sectionId="title"
-        registerSection={registerSection}
-      />
+    <>
+      <KakaoInAppModal isOpen={showModal} onClose={closeModal} />
+      <div
+        id="report-content"
+        className="break-keep relative min-h-screen scrollbar-hide"
+      >
+        <TitleSection
+          onSectionChange={setCurrentSection}
+          sectionId="title"
+          registerSection={registerSection}
+        />
 
-      <SentenceSection
-        onSectionChange={setCurrentSection}
-        sectionId="sentence"
-        yearSentence={analysisResult.yearSentence}
-        registerSection={registerSection}
-      />
+        <SentenceSection
+          onSectionChange={setCurrentSection}
+          sectionId="sentence"
+          yearSentence={analysisResult.yearSentence}
+          registerSection={registerSection}
+        />
 
-      <PersonalitySection
-        onSectionChange={setCurrentSection}
-        sectionId="personality"
-        personality={analysisResult.personality}
-        registerSection={registerSection}
-      />
+        <PersonalitySection
+          onSectionChange={setCurrentSection}
+          sectionId="personality"
+          personality={analysisResult.personality}
+          registerSection={registerSection}
+        />
 
-      <MeSection
-        onSectionChange={setCurrentSection}
-        sectionId="me"
-        personalityType={analysisResult.personalityType}
-        favoriteThings={analysisResult.favoriteThings}
-        registerSection={registerSection}
-      />
+        <MeSection
+          onSectionChange={setCurrentSection}
+          sectionId="me"
+          personalityType={analysisResult.personalityType}
+          favoriteThings={analysisResult.favoriteThings}
+          registerSection={registerSection}
+        />
 
-      <MoodSection
-        onSectionChange={setCurrentSection}
-        sectionId="mood"
-        keywords={analysisResult.keywords}
-        primaryColor={analysisResult.primaryColor}
-        gradientColors={gradientColors}
-        isCurrentSection={currentSection === "mood"}
-        registerSection={registerSection}
-      />
+        <MoodSection
+          onSectionChange={setCurrentSection}
+          sectionId="mood"
+          keywords={analysisResult.keywords}
+          primaryColor={analysisResult.primaryColor}
+          gradientColors={gradientColors}
+          isCurrentSection={currentSection === "mood"}
+          registerSection={registerSection}
+        />
 
-      <ContinueSection
-        onSectionChange={setCurrentSection}
-        sectionId="continue"
-        advice={analysisResult.advice}
-        luckyItem={analysisResult.luckyItem}
-        avoidItem={analysisResult.avoidItem}
-        registerSection={registerSection}
-      />
+        <ContinueSection
+          onSectionChange={setCurrentSection}
+          sectionId="continue"
+          advice={analysisResult.advice}
+          luckyItem={analysisResult.luckyItem}
+          avoidItem={analysisResult.avoidItem}
+          registerSection={registerSection}
+        />
 
-      <Timeline reports={analysisResult.monthlyReports} />
+        <Timeline reports={analysisResult.monthlyReports} />
 
-      {/* Action Buttons */}
-      <footer className="report-footer relative z-20 bg-warmGray-50 py-12 md:py-16">
-        <div className="max-w-4xl mx-auto px-4 md:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
-          >
-            <div className="flex flex-col items-center gap-2">
-              <Button
-                variant={isPdfReady ? "primary" : "secondary"}
-                size="lg"
-                onClick={handleExportPdf}
-                disabled={!isPdfReady || isExporting || isGeneratingPdf}
-                data-ga-label="PDF 저장"
-                className={`flex items-center gap-2 ${
-                  isGeneratingPdf ? "animate-pulse" : ""
-                }`}
-              >
-                <Download className="w-5 h-5" />
-                {isGeneratingPdf
-                  ? "PDF 생성 중..."
-                  : isExporting
-                  ? "PDF 다운로드 중..."
-                  : isPdfReady
-                  ? "PDF 저장"
-                  : pdfError
-                  ? "PDF 생성 실패"
-                  : "PDF 준비 중..."}
-              </Button>
-              {pdfError && (
-                <p className="text-sm text-red-600 text-center max-w-md">
-                  {pdfError}
-                </p>
-              )}
-            </div>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => router.push("/")}
-              data-ga-label="리포트에서 돌아가기"
-              className="flex items-center gap-2"
+        {/* Action Buttons */}
+        <footer className="report-footer relative z-20 bg-warmGray-50 py-12 md:py-16">
+          <div className="max-w-4xl mx-auto px-4 md:px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
             >
-              <RotateCcw className="w-5 h-5" />
-              돌아가기
-            </Button>
-          </motion.div>
-          <Footer />
-        </div>
-      </footer>
-    </div>
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  variant={isPdfReady ? "primary" : "secondary"}
+                  size="lg"
+                  onClick={handleExportPdf}
+                  disabled={!isPdfReady || isExporting || isGeneratingPdf}
+                  data-ga-label="PDF 저장"
+                  className={`flex items-center gap-2 ${
+                    isGeneratingPdf ? "animate-pulse" : ""
+                  }`}
+                >
+                  <Download className="w-5 h-5" />
+                  {isGeneratingPdf
+                    ? "PDF 생성 중..."
+                    : isExporting
+                    ? "PDF 다운로드 중..."
+                    : isPdfReady
+                    ? "PDF 저장"
+                    : pdfError
+                    ? "PDF 생성 실패"
+                    : "PDF 준비 중..."}
+                </Button>
+                {pdfError && (
+                  <p className="text-sm text-red-600 text-center max-w-md">
+                    {pdfError}
+                  </p>
+                )}
+              </div>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => router.push("/")}
+                data-ga-label="리포트에서 돌아가기"
+                className="flex items-center gap-2"
+              >
+                <RotateCcw className="w-5 h-5" />
+                돌아가기
+              </Button>
+            </motion.div>
+
+            <Footer />
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
