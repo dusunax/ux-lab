@@ -2,39 +2,40 @@
 
 import { useState, useEffect } from "react";
 
-/**
- * 카카오톡 인앱 브라우저 감지
- */
 function detectKakaoInApp(): boolean {
   if (typeof window === "undefined") return false;
-
-  const ua = navigator.userAgent;
-  return ua.includes("KakaoTalk") || ua.includes("KAKAO");
+  return navigator.userAgent.includes("KakaoTalk");
 }
 
-/**
- * 카카오톡 인앱 브라우저 감지 훅
- */
 export function useKakaoInApp() {
   const [isKakaoInApp, setIsKakaoInApp] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const isKakao = detectKakaoInApp();
-    setIsKakaoInApp(isKakao);
-
-    if (isKakao) {
+    // 1차 체크 UA
+    const firstCheck = detectKakaoInApp();
+    if (firstCheck) {
+      setIsKakaoInApp(true);
       setShowModal(true);
+      return;
     }
-  }, []);
 
-  const openModal = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
+    // 2차 체크 (카카오 링크 프리뷰 → 실제 WebView 전환 대응)
+    const timer = setTimeout(() => {
+      const secondCheck = detectKakaoInApp();
+      if (secondCheck) {
+        setIsKakaoInApp(true);
+        setShowModal(true);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return {
     isKakaoInApp,
     showModal,
-    openModal,
-    closeModal,
+    openModal: () => setShowModal(true),
+    closeModal: () => setShowModal(false),
   };
 }

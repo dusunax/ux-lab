@@ -35,7 +35,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
   const { currentSection, setCurrentSection, registerSection } =
     useReportSections();
 
-  const { showModal, closeModal } = useKakaoInApp();
+  const { isKakaoInApp, showModal, closeModal } = useKakaoInApp();
 
   // 배경 그라데이션 생성 (percentage 반영, 자연스러운 전환)
   const getGradientColors = (colors: typeof analysisResult.primaryColor) => {
@@ -485,7 +485,7 @@ export function ReportView({ analysisResult }: ReportViewProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4"
             >
               <div className="flex flex-col items-center gap-2">
                 <Button
@@ -526,6 +526,17 @@ export function ReportView({ analysisResult }: ReportViewProps) {
                 돌아가기
               </Button>
             </motion.div>
+
+            {/* 카카오톡 인앱 브라우저 안내 */}
+            <div className="mb-4">
+              <div className="rounded-xl bg-white border border-beige-200 px-4 py-3">
+                <p className="text-xs text-warmGray-900 leading-relaxed">
+                  <span className="font-medium">💡 안내:</span> 카카오톡 인앱
+                  브라우저에서는 PDF 다운로드가 제한될 수 있습니다. 외부
+                  브라우저(Chrome, Safari 등)에서 열어주세요.
+                </p>
+              </div>
+            </div>
 
             <Footer />
           </div>
