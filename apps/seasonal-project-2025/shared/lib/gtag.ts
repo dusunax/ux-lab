@@ -100,3 +100,29 @@ export function trackAnalysisError(errorMessage?: string) {
     error_message: errorMessage || "Unknown error",
   });
 }
+
+/**
+ * PDF 다운로드 완료 이벤트 추적
+ * @example
+ * trackPdfDownload()
+ */
+export function trackPdfDownload() {
+  trackEvent("pdf_download", {
+    event_category: "conversion",
+    event_label: "PDF 다운로드 완료",
+  });
+}
+
+/**
+ * PDF 다운로드 실패 이벤트 추적
+ * @param errorMessage 에러 메시지
+ * @example
+ * trackPdfDownloadError("PDF 생성 실패")
+ */
+export function trackPdfDownloadError(errorMessage?: string) {
+  trackEvent("pdf_download_error", {
+    event_category: "error",
+    event_label: "PDF 다운로드 실패",
+    error_message: errorMessage || "Unknown error",
+  });
+}

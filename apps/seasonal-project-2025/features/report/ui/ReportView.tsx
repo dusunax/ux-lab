@@ -17,6 +17,7 @@ import { ContinueSection } from "@features/report/ui/ContinueSection";
 import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
 import type { AnalysisResult } from "@features/report/types";
+import { trackPdfDownload, trackPdfDownloadError } from "@shared/lib/gtag";
 
 interface ReportViewProps {
   analysisResult: AnalysisResult;
@@ -236,6 +237,10 @@ export function ReportView({ analysisResult }: ReportViewProps) {
         link.click();
         document.body.removeChild(link);
         toast.success("PDF 저장이 시작되었습니다!");
+        
+        // PDF 다운로드 완료 이벤트 발생
+        trackPdfDownload();
+        window.dispatchEvent(new Event("pdfDownloadComplete"));
         return;
       }
 
@@ -276,9 +281,21 @@ export function ReportView({ analysisResult }: ReportViewProps) {
       URL.revokeObjectURL(url);
 
       toast.success("PDF 저장이 시작되었습니다!");
+      
+      // PDF 다운로드 완료 이벤트 발생
+      trackPdfDownload();
+      window.dispatchEvent(new Event("pdfDownloadComplete"));
     } catch (error) {
       console.error("PDF 저장 실패:", error);
       toast.error("PDF 저장 중 오류가 발생했습니다.");
+      
+      // PDF 다운로드 실패 이벤트 발생
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      trackPdfDownloadError(errorMessage);
+      window.dispatchEvent(
+        new CustomEvent("pdfDownloadError", { detail: { error: errorMessage } })
+      );
     } finally {
       setIsExporting(false);
     }
