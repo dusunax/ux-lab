@@ -119,7 +119,10 @@ app.post("/api/pdf", async (req: Request, res: Response) => {
         try {
           const href = link.href;
           // 절대 URL인 경우에만 fetch
-          if (href && (href.startsWith("http://") || href.startsWith("https://"))) {
+          if (
+            href &&
+            (href.startsWith("http://") || href.startsWith("https://"))
+          ) {
             const response = await fetch(href);
             if (response.ok) {
               const cssText = await response.text();
@@ -460,7 +463,7 @@ app.post("/api/pdf", async (req: Request, res: Response) => {
       await new Promise((resolve) => setTimeout(resolve, 3000));
     }
 
-    // PDF 생성
+    // PDF 생성 (크기 최적화를 위해 scale 조정)
     const pdfBuffer = await page.pdf({
       format: "A4",
       landscape: true,
@@ -473,8 +476,14 @@ app.post("/api/pdf", async (req: Request, res: Response) => {
       },
       preferCSSPageSize: false,
       displayHeaderFooter: false,
-      scale: 1.0,
+      scale: 0.85, // 1.0에서 0.85로 낮춰서 파일 크기 감소 (품질은 여전히 양호)
     });
+
+    // PDF 크기 로깅
+    const pdfSizeMB = (pdfBuffer.length / (1024 * 1024)).toFixed(2);
+    console.log(
+      `생성된 PDF 크기: ${pdfSizeMB} MB (${pdfBuffer.length.toLocaleString()} bytes)`
+    );
 
     await browser.close();
 
