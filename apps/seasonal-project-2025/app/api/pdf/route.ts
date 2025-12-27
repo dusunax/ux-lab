@@ -8,6 +8,9 @@ export const maxDuration = 60; // Vercel Pro 플랜의 최대 실행 시간
 
 export async function POST(request: NextRequest) {
   try {
+    const userAgent = request.headers.get("user-agent") || "unknown";
+    const htmlContentSize = request.headers.get("content-length");
+
     const { htmlContent } = await request.json();
 
     if (!htmlContent) {
@@ -16,6 +19,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // HTML 콘텐츠 크기 계산 (바이트)
+    const htmlContentBytes = new TextEncoder().encode(htmlContent).length;
+    const htmlContentMB = (htmlContentBytes / (1024 * 1024)).toFixed(2);
+
+    console.log("=== PDF 생성 요청 정보 ===");
+    console.log("User-Agent:", userAgent);
+    console.log(
+      "HTML 콘텐츠 크기:",
+      `${htmlContentMB} MB (${htmlContentBytes.toLocaleString()} bytes)`
+    );
+    console.log("Content-Length 헤더:", htmlContentSize || "없음");
 
     if (!PUPPETEER_API_URL) {
       return NextResponse.json(
@@ -38,12 +53,31 @@ export async function POST(request: NextRequest) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage =
         errorData.error || `Puppeteer API 요청 실패: ${response.status}`;
-      console.error("Puppeteer API 요청 실패:", errorMessage);
+
+      console.error("=== PDF 생성 실패 ===");
+      console.error("상태 코드:", response.status);
+      console.error("에러 메시지:", errorMessage);
+      console.error("User-Agent:", userAgent);
+      console.error(
+        "HTML 콘텐츠 크기:",
+        `${htmlContentMB} MB (${htmlContentBytes.toLocaleString()} bytes)`
+      );
+
+      // 413 에러인 경우 추가 정보 제공
+      if (response.status === 413) {
+        console.error("⚠️ 413 에러: 요청 본문이 너무 큽니다.");
+        console.error("디바이스:", userAgent);
+        console.error("HTML 크기:", `${htmlContentMB} MB`);
+      }
 
       return NextResponse.json(
         {
           error: "PDF 생성에 실패했습니다.",
           details: errorMessage,
+          message:
+            response.status === 413
+              ? `PDF 생성에 실패했습니다. (상태 코드: 413) - 요청 크기: ${htmlContentMB} MB`
+              : errorMessage,
         },
         { status: response.status }
       );
@@ -57,7 +91,11 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("PDF 생성 실패:", error);
+    const userAgent = request.headers.get("user-agent") || "unknown";
+
+    console.error("=== PDF 생성 예외 발생 ===");
+    console.error("에러:", error);
+    console.error("User-Agent:", userAgent);
 
     const errorMessage = error instanceof Error ? error.message : String(error);
 

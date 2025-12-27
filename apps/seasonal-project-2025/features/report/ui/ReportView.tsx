@@ -111,6 +111,51 @@ export function ReportView({ analysisResult }: ReportViewProps) {
     // 추가 대기 (이미지 렌더링 완료)
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    // 이미지 압축: PDF 생성을 위해 이미지 리사이징
+    await Promise.all(
+      images.map(async (img) => {
+        // data URL이거나 외부 URL인 경우에만 처리
+        if (img.src.startsWith("data:") || img.src.startsWith("http")) {
+          try {
+            // Canvas를 사용하여 이미지 압축
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
+
+            // 최대 크기 제한 (PDF용으로 적절한 크기)
+            const maxWidth = 800;
+            const maxHeight = 800;
+
+            let width = img.naturalWidth || img.width;
+            let height = img.naturalHeight || img.height;
+
+            // 비율 유지하며 크기 조정
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width = width * ratio;
+              height = height * ratio;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // 이미지 그리기
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // JPEG로 압축 (품질 0.75로 설정하여 크기 최적화)
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+            img.src = compressedDataUrl;
+          } catch (error) {
+            console.warn("이미지 압축 실패:", error);
+            // 압축 실패 시 원본 유지
+          }
+        }
+      })
+    );
+
+    // 이미지 압축 후 추가 대기
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
     // 모든 스타일시트 링크 수집
     const stylesheetLinks = Array.from(
       document.querySelectorAll('link[rel="stylesheet"]')
@@ -185,6 +230,18 @@ export function ReportView({ analysisResult }: ReportViewProps) {
           throw new Error(`HTML 콘텐츠 생성 실패: ${errorMessage}`);
         }
 
+        // HTML 콘텐츠 크기 계산 및 디바이스 정보 수집
+        const htmlContentBytes = new TextEncoder().encode(htmlContent).length;
+        const htmlContentMB = (htmlContentBytes / (1024 * 1024)).toFixed(2);
+        const userAgent = navigator.userAgent;
+
+        console.log("=== PDF 생성 요청 (클라이언트) ===");
+        console.log("User-Agent:", userAgent);
+        console.log(
+          "HTML 콘텐츠 크기:",
+          `${htmlContentMB} MB (${htmlContentBytes.toLocaleString()} bytes)`
+        );
+
         let response: Response;
         try {
           response = await fetch("/api/pdf", {
@@ -215,9 +272,28 @@ export function ReportView({ analysisResult }: ReportViewProps) {
             errorData.details ||
             `PDF 생성에 실패했습니다. (상태 코드: ${response.status})`;
 
+          // 에러 발생 시 디바이스 정보와 함께 로깅
+          console.error("=== PDF 생성 실패 (클라이언트) ===");
+          console.error("상태 코드:", response.status);
+          console.error("에러 메시지:", errorMessage);
+          console.error("User-Agent:", userAgent);
+          console.error(
+            "HTML 콘텐츠 크기:",
+            `${htmlContentMB} MB (${htmlContentBytes.toLocaleString()} bytes)`
+          );
+
           if (response.status === 400) {
             throw new Error(
               "요청 형식이 올바르지 않습니다. 페이지를 새로고침 후 다시 시도해주세요."
+            );
+          } else if (response.status === 413) {
+            // 413 에러: Payload Too Large
+            console.error("⚠️ 413 에러: 요청 본문이 너무 큽니다.");
+            console.error("디바이스:", userAgent);
+            console.error("HTML 크기:", `${htmlContentMB} MB`);
+            throw new Error(
+              errorData.message ||
+                `PDF 생성에 실패했습니다. (상태 코드: 413) - 요청 크기가 너무 큽니다.`
             );
           } else if (response.status === 500) {
             throw new Error(
@@ -264,7 +340,11 @@ export function ReportView({ analysisResult }: ReportViewProps) {
         setIsPdfReady(true);
         setPdfError(null);
       } catch (error) {
-        console.error("PDF 생성 실패:", error);
+        const userAgent = navigator.userAgent;
+        console.error("=== PDF 생성 예외 발생 (클라이언트) ===");
+        console.error("에러:", error);
+        console.error("User-Agent:", userAgent);
+        
         const errorMessage =
           error instanceof Error ? error.message : "알 수 없는 오류";
         setPdfError(errorMessage);
