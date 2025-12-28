@@ -114,13 +114,18 @@ export function KakaoInAppModal({ isOpen, onClose }: KakaoInAppModalProps) {
                   PDF 다운로드
                 </p>
               </div>
-              <p className="text-sm text-warmGray-600 leading-relaxed text-center">
+              <button
+                className="text-sm text-center w-full text-warmGray-600 leading-relaxed"
+                onClick={() =>
+                  (location.href =
+                    "kakaotalk://web/openExternal?url=" + currentUrl)
+                }
+              >
                 완벽한 경험을 위해 주소를 복사하여
-                <br />
-                외부 브라우저에서 열어주세요.
+                <br /> 외부 브라우저에서 열어주세요.
                 <br />
                 (Chrome, Safari 등)
-              </p>
+              </button>
             </div>
 
             {/* URL 표시 및 복사 */}
