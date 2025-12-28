@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, X } from "lucide-react";
+import { Copy, ExternalLink, X } from "lucide-react";
 import { Button } from "@shared/ui/Button";
 import { toast } from "sonner";
 import { trackButtonClick } from "@shared/lib/gtag";
@@ -143,7 +143,7 @@ export function KakaoInAppModal({ isOpen, onClose }: KakaoInAppModalProps) {
                 </div>
               </div>
               {isCopied && (
-                <p className="text-xs text-green-600 text-center">
+                <p className="text-xs text-green-600 text-center pb-2">
                   ✓ 복사되었습니다
                 </p>
               )}
@@ -155,13 +155,14 @@ export function KakaoInAppModal({ isOpen, onClose }: KakaoInAppModalProps) {
                 variant="primary"
                 size="md"
                 data-ga-label="카카오톡 모달 - 외부 브라우저 열기 버튼"
-                className="w-full"
+                className="w-full flex items-center justify-center"
                 onClick={() =>
                   (location.href =
                     "kakaotalk://web/openExternal?url=" + currentUrl)
                 }
               >
-                외부 브라우저 열기
+                <ExternalLink className="w-4 h-4 mr-2" />
+                외부 브라우저에서 열기
               </Button>
               <Button
                 variant="ghost"
