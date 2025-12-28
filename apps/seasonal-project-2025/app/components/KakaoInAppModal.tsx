@@ -114,23 +114,16 @@ export function KakaoInAppModal({ isOpen, onClose }: KakaoInAppModalProps) {
                   PDF 다운로드
                 </p>
               </div>
-              <button
-                className="text-sm text-center w-full text-warmGray-600 leading-relaxed"
-                onClick={() =>
-                  (location.href =
-                    "kakaotalk://web/openExternal?url=" + currentUrl)
-                }
-              >
-                완벽한 경험을 위해 주소를 복사하여
-                <br /> 외부 브라우저에서 열어주세요.
+              <p className="text-sm text-center text-warmGray-600">
+                완벽한 경험을 위해 외부 브라우저에서 열어주세요.
                 <br />
                 (Chrome, Safari 등)
-              </button>
+              </p>
             </div>
 
             {/* URL 표시 및 복사 */}
-            <div className="mb-6">
-              <div className="bg-warmGray-50 border border-warmGray-200 rounded-xl p-4 mb-3">
+            <div className="mb-2">
+              <div className="bg-warmGray-50 border border-warmGray-200 rounded-xl px-4 py-2 mb-3">
                 <div className="flex items-center gap-2">
                   <p className="flex-1 text-xs text-warmGray-700 break-all select-text">
                     {currentUrl}
@@ -158,6 +151,18 @@ export function KakaoInAppModal({ isOpen, onClose }: KakaoInAppModalProps) {
 
             {/* 버튼 */}
             <div className="flex flex-col gap-3">
+              <Button
+                variant="primary"
+                size="md"
+                data-ga-label="카카오톡 모달 - 외부 브라우저 열기 버튼"
+                className="w-full"
+                onClick={() =>
+                  (location.href =
+                    "kakaotalk://web/openExternal?url=" + currentUrl)
+                }
+              >
+                외부 브라우저 열기
+              </Button>
               <Button
                 variant="ghost"
                 size="md"
