@@ -11,6 +11,7 @@ import { useAnalysis } from "@features/report/model/AnalysisContext";
 import { extractExifData } from "@shared/lib/exifExtractor";
 import { Examples } from "./components/Examples";
 import { getRateLimitStatus } from "@shared/lib/getRateLimitStatus";
+import { UserCountBadge } from "./components/UserCountBadge";
 
 import { AnalysisResultCard } from "@features/report/ui/AnalysisResultCard";
 import { RateLimitBadge } from "./components/RateLimitBadge";
@@ -41,7 +42,7 @@ export default function Home() {
     used: number;
     total: number;
   } | null>(null);
-  
+
   const { showModal, closeModal } = useKakaoInApp();
 
   const fetchRateLimitStatus = async () => {
@@ -138,6 +139,7 @@ export default function Home() {
               <br className="block md:hidden " /> AI와 함께 되돌아보며,
               <br /> 따뜻한 회고를 만들어보세요.
             </p>
+            <UserCountBadge />
           </motion.div>
 
           {/* 분석 결과: 키워드와 올해의 한 문장 */}

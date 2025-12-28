@@ -251,9 +251,10 @@ export function PhotoUploader({
           className="rounded-2xl bg-beige-50/80 border border-beige-200 px-4 py-3"
         >
           <p className="text-sm text-warmGray-600 leading-relaxed">
-            <span className="font-medium text-warmGray-700">📄 PDF:</span> PDF
-            생성 시간은 약 1-2분 정도 소요될 수 있습니다. 카카오톡으로
-            접속하셨다면 다운로드가 진행되지 않을 수 있습니다.
+            <span className="font-medium text-warmGray-700">📄 PDF:</span> 파일
+            생성은 자동으로 시작되며, 소요 시간은 약 1-2분 정도 걸릴 수
+            있습니다. 카카오톡 인앱 브라우저에서는 다운로드가 진행되지 않을 수
+            있습니다.
           </p>
         </motion.div>
       </div>
