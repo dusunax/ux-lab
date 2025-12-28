@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 
 function detectKakaoInApp(): boolean {
   if (typeof window === "undefined") return false;
-  return navigator.userAgent.includes("KakaoTalk");
+  const userAgent = navigator.userAgent.toLowerCase();
+  return userAgent.includes("kakao") || userAgent.includes("wv");
 }
 
 export function useKakaoInApp() {
