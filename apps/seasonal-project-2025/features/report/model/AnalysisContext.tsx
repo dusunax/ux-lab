@@ -68,17 +68,23 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       });
 
       /* --------------------------------------------------
-       * 2. 원본 이미지 base64 변환 (화면 표시용)
+       * 2. 원본 이미지 base64 변환 (화면 표시용) - 인덱스 추적
        * -------------------------------------------------- */
-      const originalBase64s = await Promise.all(
+      const originalBase64sWithIndex = await Promise.all(
         uploadedPhotos.map(
-          (file) =>
-            new Promise<string>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result as string);
-              reader.onerror = () => reject(new Error("파일 읽기 실패"));
-              reader.readAsDataURL(file);
-            })
+          (file, index) =>
+            new Promise<{ base64: string; originalIndex: number }>(
+              (resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () =>
+                  resolve({
+                    base64: reader.result as string,
+                    originalIndex: index,
+                  });
+                reader.onerror = () => reject(new Error("파일 읽기 실패"));
+                reader.readAsDataURL(file);
+              }
+            )
         )
       );
 
@@ -113,20 +119,48 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       );
 
       /* --------------------------------------------------
-       * 5. 월별 그룹화
+       * 5. 월별로 정렬 (Timeline에서 올바른 순서로 표시하기 위해)
        * -------------------------------------------------- */
-      const groupedReports = groupPhotosByMonth(photosWithMetadata);
+      // 원본 인덱스를 포함하여 정렬
+      const photosWithOriginalIndex = photosWithMetadata.map(
+        (photo, index) => ({
+          ...photo,
+          originalIndex: index,
+        })
+      );
+
+      const sortedPhotos = [...photosWithOriginalIndex].sort((a, b) => {
+        // UNKNOWN은 마지막에
+        if (a.month === MonthStatus.UNKNOWN) return 1;
+        if (b.month === MonthStatus.UNKNOWN) return -1;
+        // 월순으로 정렬
+        return a.month.localeCompare(b.month);
+      });
+
+      // 정렬된 순서에 맞게 base64 배열 재구성
+      const sortedBase64s = sortedPhotos.map(
+        (photo) =>
+          originalBase64sWithIndex.find(
+            (item) => item.originalIndex === photo.originalIndex
+          )?.base64 || ""
+      );
 
       /* --------------------------------------------------
-       * 6. 서버 전송 데이터 구성
+       * 6. 월별 그룹화
+       * -------------------------------------------------- */
+      const groupedReports = groupPhotosByMonth(sortedPhotos);
+
+      /* --------------------------------------------------
+       * 7. 서버 전송 데이터 구성 (정렬된 순서로)
        * -------------------------------------------------- */
       const formData = new FormData();
-      resizedPhotos.forEach((file, index) => {
-        formData.append(`photo_${index}`, file);
+      // 정렬된 순서로 파일 추가
+      sortedPhotos.forEach((photoWithMetadata, index) => {
+        formData.append(`photo_${index}`, photoWithMetadata.file);
       });
       formData.append("reports", JSON.stringify(groupedReports));
 
-      const locationData = photosWithMetadata
+      const locationData = sortedPhotos
         .map((photo, index) => ({
           index,
           location: photo.location,
@@ -157,7 +191,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
           return {
             ...report,
             month: clientMonth ?? MonthStatus.UNKNOWN,
-            photos: originalBase64s.slice(startIndex, startIndex + photoCount),
+            photos: sortedBase64s.slice(startIndex, startIndex + photoCount),
           };
         }),
       };
