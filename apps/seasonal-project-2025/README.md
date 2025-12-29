@@ -5,6 +5,8 @@
 > **AI 기반 연말 사진 회고 웹 서비스**  
 > Project Afterglow는 올해의 소중한 순간들을 AI와 함께 되돌아보는 연말 회고 서비스입니다. 사용자가 올해 찍은 사진들을 업로드하면, AI가 사진을 분석하여 월별 감정, 성향, 키워드, 그리고 한 해를 요약하는 리포트를 생성합니다.
 
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/94bff9ff-033d-4a78-a524-47e14d4f0c06" />
+
 ## 📖 프로젝트
 
 ### 주요 특징
@@ -20,28 +22,43 @@
 ### 1. 사진 업로드 및 EXIF 데이터 추출
 
 - 최대 24장의 사진 업로드 (이미지 리사이징)
+  - 관련 레퍼런스 포함 이슈: _[#1](https://github.com/dusunax/ux-lab/issues/1#issuecomment-3692096162)_
 - 날짜 자동 추출 (우선 순위: EXIF 촬영 날짜 > 파일 수정 날짜 > 날짜 알 수 없음 표기)
 - 월별 사진 그룹화
 - 드래그 앤 드롭 지원
 
+<img width="490" height="248" alt="image" src="https://github.com/user-attachments/assets/c71c09b4-a07d-4da9-8f13-734eac0804bb" />
+
 ### 2. AI 기반 분석 및 리포트 생성
 
-- OpenAI GPT-4 Vision을 활용한 사진 분석
+- OpenAI GPT-4 Vision을 활용한 사진 분석 (gpt-4o-mini)
+
+https://github.com/dusunax/ux-lab/blob/6226eed41fe14979fa2aa45a4a98ec9aff14fffd/apps/seasonal-project-2025/features/report/api/analyze.ts#L222
 
 ### 3. 인터랙티브 리포트 뷰
 
 - 반응형 원페이지 스크롤 인터랙션
-- 섹션별 스크롤 애니메이션
+- 스크롤 애니메이션 섹션 래퍼
+
+https://github.com/user-attachments/assets/4a22e0b3-06fa-49c6-bec5-a5ee0d22a819
 
 ### 4. PDF 다운로드
 
 - 리포트를 PDF로 변환하여 다운로드 (Puppeteer 기반 서버 사이드 PDF 생성)
 - 카카오톡 인앱 브라우저 감지 및 안내
 
+<img width="1000" alt="image" src="https://github.com/user-attachments/assets/e2a23663-80ae-4854-a0d2-7194d5e085b2" />
+
 ### 5. 사용자 통계
 
-- 실시간 총 사용 횟수 표시 (Firebase 통계 집계 - IP+날짜 조합 일일제한 컬렉션)
-- 카운트업 애니메이션
+- Firebase 통계 집계
+  - IP+날짜 조합으로 해싱한 값으로 사용자 구분
+    - 일일 요청 제한
+      
+      <img width="162" height="78" alt="image" src="https://github.com/user-attachments/assets/4a9077c9-fe7e-44b3-b269-6b1df7e1f4cf" />
+    - 현재 요청한 횟수 합계
+      
+      <img width="268" height="43" alt="image" src="https://github.com/user-attachments/assets/aede91f5-7cf5-4a70-ae66-faaef2bd443a" />
 
 ## 🛠️ 기술 소개
 
