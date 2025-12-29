@@ -3,6 +3,7 @@
 import { getDb } from "./firebase-admin";
 import { getClientIp } from "./getClientIp";
 import { getKoreaDate } from "./getKoreaDate";
+import { hashIpAndDate } from "./hashIdentifier";
 
 const MAX_REQUESTS_PER_DAY = 5;
 
@@ -37,7 +38,7 @@ export async function getRateLimitStatus(): Promise<RateLimitStatus> {
       };
     }
 
-    const docId = `${ip}_${today}`;
+    const docId = hashIpAndDate(ip, today);
     const docRef = db.collection("rateLimits").doc(docId);
     const doc = await docRef.get();
 
