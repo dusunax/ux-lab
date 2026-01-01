@@ -15,6 +15,7 @@
 - 🤖 **AI 분석**: OpenAI GPT-4 Vision을 활용한 사진 분석 및 리포트 생성
 - 📄 **PDF 다운로드**: 생성된 리포트를 PDF로 저장하여 소장 가능 (데이터 스토리지 보관 x)
 - 📊 **사용자 통계**: 실시간 참여 횟수 표시(Firestore) 및 이벤트 성공/실패 통계(Google Analytics, 주요 이벤트-사진 분석, PDF 생성)
+  - [[apps/project-afterglow-2025] Docs: 사용자 행동 데이터 분석 리포트 (12/22~12/31)](https://github.com/dusunax/ux-lab/issues/9)
 - 🎨 **디자인**: 프로젝트 감성에 맞는 베이지, 웜 그레이 톤의 따뜻한 UI/UX
 
 ## ✨ 기능
