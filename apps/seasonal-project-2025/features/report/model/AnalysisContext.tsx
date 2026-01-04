@@ -13,7 +13,11 @@ import { MonthStatus } from "@shared/lib/exifExtractor";
 import { groupPhotosByMonth } from "@shared/lib/groupByMonth";
 import { resizeImages } from "@shared/lib/imageResize";
 import { analyzePhotos } from "@features/report/api/analyze";
-import { trackAnalysisComplete, trackAnalysisError } from "@shared/lib/gtag";
+import {
+  trackAnalysisStart,
+  trackAnalysisComplete,
+  trackAnalysisError,
+} from "@shared/lib/gtag";
 
 interface AnalysisContextType {
   analysisResult: AnalysisResult | null;
@@ -55,6 +59,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     }
 
     setIsProcessing(true);
+    trackAnalysisStart(uploadedPhotos.length);
 
     try {
       /* --------------------------------------------------

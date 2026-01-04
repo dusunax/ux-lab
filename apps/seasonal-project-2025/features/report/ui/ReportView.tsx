@@ -17,7 +17,11 @@ import { ContinueSection } from "@features/report/ui/ContinueSection";
 import { toast } from "sonner";
 import { Footer } from "@/components/Footer";
 import type { AnalysisResult } from "@features/report/types";
-import { trackPdfDownload, trackPdfDownloadError } from "@shared/lib/gtag";
+import {
+  trackPdfDownloadStart,
+  trackPdfDownload,
+  trackPdfDownloadError,
+} from "@shared/lib/gtag";
 import { useKakaoInApp } from "@shared/hooks/useKakaoInApp";
 import { KakaoInAppModal } from "../../../app/components/KakaoInAppModal";
 
@@ -379,6 +383,8 @@ export function ReportView({ analysisResult }: ReportViewProps) {
       }
       return;
     }
+
+    trackPdfDownloadStart();
 
     try {
       setIsExporting(true);
