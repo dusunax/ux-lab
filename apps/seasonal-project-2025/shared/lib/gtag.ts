@@ -150,36 +150,54 @@ export function trackPdfDownloadError(errorMessage?: string) {
 }
 
 /**
+ * 버튼 이름을 소문자와 언더스코어로 정규화
+ * @param label 원본 라벨
+ * @returns 정규화된 라벨
+ */
+function normalizeButtonLabel(label: string): string {
+  return label
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+}
+
+/**
  * 버튼에서 라벨 추출
  * @param button 버튼 요소
- * @returns 버튼 라벨
+ * @returns 정규화된 버튼 라벨 (소문자, 언더스코어 구분)
  */
 function extractButtonLabel(button: Element): string {
+  let label = "";
+
   // 1. data-ga-label 속성 우선
   const dataLabel = button.getAttribute("data-ga-label");
   if (dataLabel) {
-    return dataLabel;
+    label = dataLabel;
+  } else {
+    // 2. aria-label
+    const ariaLabel = button.getAttribute("aria-label");
+    if (ariaLabel) {
+      label = ariaLabel;
+    } else {
+      // 3. 버튼 내부 텍스트
+      const textContent = button.textContent?.trim();
+      if (textContent) {
+        label = textContent;
+      } else {
+        // 4. title 속성
+        const title = button.getAttribute("title");
+        if (title) {
+          label = title;
+        } else {
+          label = "Unknown Button";
+        }
+      }
+    }
   }
 
-  // 2. aria-label
-  const ariaLabel = button.getAttribute("aria-label");
-  if (ariaLabel) {
-    return ariaLabel;
-  }
-
-  // 3. 버튼 내부 텍스트
-  const textContent = button.textContent?.trim();
-  if (textContent) {
-    return textContent;
-  }
-
-  // 4. title 속성
-  const title = button.getAttribute("title");
-  if (title) {
-    return title;
-  }
-
-  return "Unknown Button";
+  return normalizeButtonLabel(label);
 }
 
 /**
