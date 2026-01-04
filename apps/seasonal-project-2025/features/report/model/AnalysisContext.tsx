@@ -68,23 +68,17 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       });
 
       /* --------------------------------------------------
-       * 2. 원본 이미지 base64 변환 (화면 표시용) - 인덱스 추적
+       * 2. 원본 이미지 base64 변환 (화면 표시용)
        * -------------------------------------------------- */
-      const originalBase64sWithIndex = await Promise.all(
+      const originalBase64s = await Promise.all(
         uploadedPhotos.map(
-          (file, index) =>
-            new Promise<{ base64: string; originalIndex: number }>(
-              (resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () =>
-                  resolve({
-                    base64: reader.result as string,
-                    originalIndex: index,
-                  });
-                reader.onerror = () => reject(new Error("파일 읽기 실패"));
-                reader.readAsDataURL(file);
-              }
-            )
+          (file) =>
+            new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = () => reject(new Error("파일 읽기 실패"));
+              reader.readAsDataURL(file);
+            })
         )
       );
 
@@ -119,44 +113,34 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       );
 
       /* --------------------------------------------------
-       * 5. 월별로 정렬 (Timeline에서 올바른 순서로 표시하기 위해)
+       * 5. 월별로 정렬 (사진과 base64 함께 정렬)
        * -------------------------------------------------- */
-      // 원본 인덱스를 포함하여 정렬
-      const photosWithOriginalIndex = photosWithMetadata.map(
-        (photo, index) => ({
-          ...photo,
-          originalIndex: index,
-        })
-      );
+      // 사진과 base64를 함께 정렬하기 위한 배열 생성
+      const photosWithBase64 = photosWithMetadata.map((photo, index) => ({
+        photo,
+        base64: originalBase64s[index],
+      }));
 
-      const sortedPhotos = [...photosWithOriginalIndex].sort((a, b) => {
-        // UNKNOWN은 마지막에
-        if (a.month === MonthStatus.UNKNOWN) return 1;
-        if (b.month === MonthStatus.UNKNOWN) return -1;
-        // 월순으로 정렬
-        return a.month.localeCompare(b.month);
+      // 월별로 정렬
+      const sortedPhotosWithBase64 = [...photosWithBase64].sort((a, b) => {
+        if (a.photo.month === MonthStatus.UNKNOWN) return 1;
+        if (b.photo.month === MonthStatus.UNKNOWN) return -1;
+        return a.photo.month.localeCompare(b.photo.month);
       });
 
-      // 정렬된 순서에 맞게 base64 배열 재구성
-      const sortedBase64s = sortedPhotos.map(
-        (photo) =>
-          originalBase64sWithIndex.find(
-            (item) => item.originalIndex === photo.originalIndex
-          )?.base64 || ""
-      );
+      // 정렬된 사진과 base64 분리
+      const sortedPhotos = sortedPhotosWithBase64.map((item) => item.photo);
+      const sortedBase64s = sortedPhotosWithBase64.map((item) => item.base64);
 
-      /* --------------------------------------------------
-       * 6. 월별 그룹화
-       * -------------------------------------------------- */
+      // 월별 그룹화 (사진 분석용)
       const groupedReports = groupPhotosByMonth(sortedPhotos);
 
       /* --------------------------------------------------
-       * 7. 서버 전송 데이터 구성 (정렬된 순서로)
+       * 6. 서버 전송 데이터 구성
        * -------------------------------------------------- */
       const formData = new FormData();
-      // 정렬된 순서로 파일 추가
-      sortedPhotos.forEach((photoWithMetadata, index) => {
-        formData.append(`photo_${index}`, photoWithMetadata.file);
+      sortedPhotos.forEach((photo, index) => {
+        formData.append(`photo_${index}`, photo.file);
       });
       formData.append("reports", JSON.stringify(groupedReports));
 
@@ -177,23 +161,26 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       const { result } = await analyzePhotos(formData);
 
       /* --------------------------------------------------
-       * 8. 결과 + 원본 이미지 복원
+       * 8. 결과에 사진 매핑 (분석 결과의 month 필드 사용)
        * -------------------------------------------------- */
+      // 월별 사진 인덱스 맵 생성
+      const monthPhotoMap = new Map<string, string[]>();
+      let currentIndex = 0;
+      for (const report of groupedReports) {
+        monthPhotoMap.set(
+          report.month,
+          sortedBase64s.slice(currentIndex, currentIndex + report.photoCount)
+        );
+        currentIndex += report.photoCount;
+      }
+
+      // 분석 결과에 사진 매핑
       const resultWithPhotos = {
         ...result,
-        monthlyReports: result.monthlyReports.map((report, index) => {
-          const clientMonth = groupedReports[index]?.month;
-          const startIndex = groupedReports
-            .slice(0, index)
-            .reduce((sum, r) => sum + r.photoCount, 0);
-          const photoCount = groupedReports[index].photoCount;
-
-          return {
-            ...report,
-            month: clientMonth ?? MonthStatus.UNKNOWN,
-            photos: sortedBase64s.slice(startIndex, startIndex + photoCount),
-          };
-        }),
+        monthlyReports: result.monthlyReports.map((report) => ({
+          ...report,
+          photos: monthPhotoMap.get(report.month) || [],
+        })),
       };
 
       setAnalysisResult(resultWithPhotos);

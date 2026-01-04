@@ -234,17 +234,10 @@ export function ReportView({ analysisResult }: ReportViewProps) {
           throw new Error(`HTML 콘텐츠 생성 실패: ${errorMessage}`);
         }
 
-        // HTML 콘텐츠 크기 계산 및 디바이스 정보 수집
+        // HTML 콘텐츠 크기 계산 및 디바이스 정보 수집 (에러 로깅용)
         const htmlContentBytes = new TextEncoder().encode(htmlContent).length;
         const htmlContentMB = (htmlContentBytes / (1024 * 1024)).toFixed(2);
         const userAgent = navigator.userAgent;
-
-        console.log("=== PDF 생성 요청 (클라이언트) ===");
-        console.log("User-Agent:", userAgent);
-        console.log(
-          "HTML 콘텐츠 크기:",
-          `${htmlContentMB} MB (${htmlContentBytes.toLocaleString()} bytes)`
-        );
 
         let response: Response;
         try {

@@ -294,26 +294,27 @@ export async function analyzePhotos(
   }
 
   try {
-    // 각 월별 리포트의 대표 사진 선택 (첫 번째 사진)
-    const representativePhotos = reports.map((report, index) => {
-      const photoIndex = reports
+    // 각 월별로 사진 인덱스 범위 계산
+    const monthPhotoRanges = reports.map((report, index) => {
+      const startIndex = reports
         .slice(0, index)
         .reduce((sum, r) => sum + r.photoCount, 0);
-      const photo = photoBase64s[photoIndex];
-      return photo || photoBase64s[0] || "";
+      return {
+        month: report.month,
+        startIndex,
+        endIndex: startIndex + report.photoCount,
+        photos: photoBase64s.slice(startIndex, startIndex + report.photoCount),
+      };
     });
 
-    // 월별 정보를 프롬프트에 포함
-    const monthList = reports.map((r) => r.month).join(", ");
-    const monthDetails = reports
-      .map((r, index) => {
-        const photoIndex = reports
-          .slice(0, index)
-          .reduce((sum, r) => sum + r.photoCount, 0);
-        return `${r.month} (사진 ${photoIndex + 1}번째부터 ${
-          photoIndex + r.photoCount
-        }번째까지)`;
-      })
+    // 월별 정보를 프롬프트에 포함 (각 월의 사진 인덱스 명시)
+    const monthDetails = monthPhotoRanges
+      .map(
+        (range) =>
+          `${range.month} (사진 ${range.startIndex + 1}번부터 ${
+            range.endIndex
+          }번까지, 총 ${range.photos.length}장)`
+      )
       .join("\n");
 
     // 위치 정보를 프롬프트에 포함 (있는 경우만)
@@ -334,13 +335,31 @@ export async function analyzePhotos(
 
     // 전체 분석 프롬프트
     const totalMonths = reports.length;
+    const totalPhotos = photoBase64s.length;
+
+    // 각 월별 사진을 명확히 라벨링하여 프롬프트에 포함
+    const monthlyPhotoLabels = monthPhotoRanges
+      .map((range, rangeIndex) => {
+        const photoLabels = range.photos
+          .map(
+            (_, photoIndex) =>
+              `[${range.month} - 사진 ${range.startIndex + photoIndex + 1}번]`
+          )
+          .join(", ");
+        return `${range.month}월 사진들 (${range.photos.length}장): ${photoLabels}`;
+      })
+      .join("\n");
+
     const overallPrompt = `당신은 연말 회고를 위한 사진 분석 전문가이자 심리 분석가입니다. 
-사용자가 올해 찍은 대표 사진들을 분석하여 다음을 제공해주세요:
+사용자가 올해 찍은 사진 ${totalPhotos}장을 분석하여 다음을 제공해주세요:
 
 **중요: 월별 리포트는 정확히 ${totalMonths}개만 생성해야 합니다. 입력받은 월 개수와 정확히 일치해야 합니다.**
 
-사진은 다음과 같이 월별로 구분되어 있습니다 (총 ${totalMonths}개월):
-${monthDetails}${locationInfo}
+사진은 다음과 같이 월별로 구분되어 있습니다 (총 ${totalMonths}개월, ${totalPhotos}장):
+${monthDetails}
+
+각 월별 사진 인덱스:
+${monthlyPhotoLabels}${locationInfo}
 
 1. 전체 사진들을 관통하는 5가지 핵심 키워드와 각 키워드에 어울리는 이모지 (예: {"text": "성장", "emoji": "🌱"}, {"text": "여행", "emoji": "✈️"})
 2. 올해를 한 문장으로 요약하는 문장 (예: "새로운 도전과 따뜻한 만남이 어우러진 한 해였다")
@@ -351,7 +370,7 @@ ${monthDetails}${locationInfo}
 7. 내년 당신에게 하는 조언 (올해의 경험을 바탕으로 내년을 위한 따뜻하고 격려하는 조언, 2-3문장)
 8. 내년의 행운의 아이템 (사진과 성향을 바탕으로 내년에 행운을 가져다줄 아이템, 예: "초록색 식물", "일기장", "카메라" 등)
 9. 내년에 피해야할 것 (올해의 경험과 패턴을 바탕으로 내년에 피해야 할 것, 예: "과도한 완벽주의", "무리한 약속", "밤늦은 시간" 등)
-10. 각 월별 사진들에 대한 상세 분석 (각 월의 사진들을 분석하여 각 월마다 mood와 summary를 제공. summary는 해당되는 월별 사진들의 객체를 분석하여 객체의 위치, 갯수, 색상을 설명한다. 다만 사진에 없는 요소는 추측하지 않는다. mood는 그 달의 감정과 분위기를 한 단어로 표현하고 어울리는 이모지를 포함한 객체 형태로 제공하며, summary는 총 2문단의 9-10줄의 상세한 설명으로 Timeline에 표시될 내용이며, 그 달의 감정, 경험, 의미를 담아야 함. summary는 1번째 문단을 2-3줄, 2번째 문단을 7-8줄로 한다.)
+10. 각 월별 사진들에 대한 상세 분석 (각 월의 사진들을 분석하여 각 월마다 mood와 summary를 제공. **중요: 각 월의 리포트는 반드시 해당 월의 사진들만 분석해야 합니다. 위에 명시된 월별 사진 인덱스를 정확히 확인하고, 해당 월의 사진들만 분석하여 리포트를 작성하세요.** summary는 해당되는 월별 사진들의 객체를 분석하여 객체의 위치, 갯수, 색상을 설명한다. 다만 사진에 없는 요소는 추측하지 않는다. mood는 그 달의 감정과 분위기를 한 단어로 표현하고 어울리는 이모지를 포함한 객체 형태로 제공하며, summary는 총 2문단의 9-10줄의 상세한 설명으로 Timeline에 표시될 내용이며, 그 달의 감정, 경험, 의미를 담아야 함. summary는 1번째 문단을 2-3줄, 2번째 문단을 7-8줄로 한다.)
 
 응답은 다음 JSON 형식으로 제공해주세요:
 {
@@ -389,7 +408,7 @@ ${monthDetails}${locationInfo}
   "monthlyReports": [
     ${reports
       .map(
-        (r, index) => `{
+        (r) => `{
       "month": "${r.month}",
       "mood": {"text": "감정 단어 (예: 추억, 따뜻함, 평화로움, 활기참)", "emoji": "이모지"},
       "summary": "이 달의 사진들을 분석한 상세한 설명 (총 2문단의 9-10줄, Timeline에 표시될 내용이며, 그 달의 감정, 경험, 의미를 담아야 함. summary는 1번째 문단을 2-3줄, 2번째 문단을 7-8줄로 한다.)"
@@ -403,10 +422,10 @@ ${monthDetails}${locationInfo}
 
 한국어로 응답해주세요. JSON 형식으로 응답해주세요:`;
 
-    // 전체 분석 API 호출 (월별 분석 포함)
+    // 전체 분석 API 호출 (모든 사진 전송)
     const overallContent = await callOpenAI(
       overallPrompt,
-      representativePhotos.filter((p) => p !== ""),
+      photoBase64s.filter((p) => p !== ""),
       2000 // 월별 분석이 추가되므로 토큰 수 증가
     );
 
@@ -458,16 +477,26 @@ ${monthDetails}${locationInfo}
       );
     }
 
-    // 월별 리포트를 reports 순서에 맞게 매핑
-    // 인덱스 기반으로 매핑 (순서가 동일하다고 가정)
-    // 원본 report.month를 항상 사용하여 실제 달을 반영
-    const analyzedReports = reports.map((report, index) => {
-      // 인덱스로 매핑 (순서가 동일하다고 가정)
-      const monthlyReport = analysis.monthlyReports[index];
+    // 월별 리포트를 reports 순서대로 매핑 (OpenAI 응답의 month 필드 신뢰하지 않음)
+    // OpenAI가 반환한 순서가 reports 순서와 다를 수 있으므로, reports 순서를 우선시
+    const analyzedReports = reports.map((report, reportIndex) => {
+      // 먼저 reports 순서대로 매핑 시도 (인덱스 기반)
+      let monthlyReport = analysis.monthlyReports[reportIndex];
+
+      // 인덱스 기반 매핑이 실패하면 month 필드로 찾기 (fallback)
+      if (!monthlyReport || monthlyReport.month !== report.month) {
+        monthlyReport = analysis.monthlyReports.find(
+          (mr) => mr.month === report.month
+        );
+      }
 
       if (!monthlyReport) {
         throw new Error(
-          `월별 분석 결과를 찾을 수 없습니다: ${report.month} (인덱스: ${index})`
+          `월별 분석 결과를 찾을 수 없습니다: ${
+            report.month
+          } (인덱스: ${reportIndex}). 사용 가능한 월: ${analysis.monthlyReports
+            .map((mr) => mr.month)
+            .join(", ")}`
         );
       }
 
@@ -483,7 +512,6 @@ ${monthDetails}${locationInfo}
         );
       }
 
-      // 원본 report.month를 항상 사용하여 실제 달을 반영
       return {
         month: report.month,
         summary: monthlyReport.summary.trim(),
