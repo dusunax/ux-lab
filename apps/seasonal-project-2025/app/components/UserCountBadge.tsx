@@ -9,9 +9,19 @@ export function UserCountBadge() {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    getTotalUserCount()
-      .then(setCount)
-      .catch((e) => console.error("총 사용자 수 조회 실패:", e));
+    const fetchUserCount = () => {
+      getTotalUserCount()
+        .then(setCount)
+        .catch((e) => console.error("총 사용자 수 조회 실패:", e));
+    };
+
+    fetchUserCount();
+
+    window.addEventListener("analysisComplete", fetchUserCount);
+
+    return () => {
+      window.removeEventListener("analysisComplete", fetchUserCount);
+    };
   }, []);
 
   useEffect(() => {
