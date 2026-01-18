@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 기본 색상 -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- 배경 색상 -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_dark">#1A1A1A</color>
+
+    <!-- 텍스트 색상 -->
+    <color name="text_primary_light">#1A1A1A</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_muted">#888888</color>
+    <color name="text_light">#999999</color>
+
+    <!-- 강조 색상 -->
+    <color name="accent_red">#E53935</color>
+    <color name="accent_blue">#1976D2</color>
+
+    <!-- 카드 색상 -->
+    <color name="card_light">#FFFFFF</color>
+    <color name="card_dark">#2D2D2D</color>
+</resources>

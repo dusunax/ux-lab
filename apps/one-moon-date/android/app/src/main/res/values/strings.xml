@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">달력한칸</string>
+    <string name="widget_description">오늘의 음력 날짜를 달력 한 칸처럼 보여줍니다</string>
+    <string name="widget_name">음력 위젯</string>
+</resources>

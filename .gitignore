@@ -50,3 +50,47 @@ next-env.d.ts
 # lock files (keep one, ignore others)
 package-lock.json
 yarn.lock
+
+# React Native
+.bundle/
+*.jsbundle
+.metro-health-check*
+
+# Android
+*.keystore
+!**/debug.keystore
+key.properties
+local.properties
+.gradle/
+*.iml
+.cxx/
+.externalNativeBuild/
+*.hprof
+
+# iOS / Xcode
+Pods/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.hmap
+*.ipa
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.xccheckout
+**/.xcode.env.local
+
+# fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Ruby / CocoaPods
+/vendor/bundle/
