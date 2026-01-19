@@ -3,6 +3,25 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 /**
+ * Read version from package.json
+ */
+def getVersionFromPackageJson() {
+    def packageJsonFile = file("../../package.json")
+    def packageJson = new groovy.json.JsonSlurper().parseText(packageJsonFile.text)
+    return packageJson.version
+}
+
+def getVersionCodeFromVersion(version) {
+    def (major, minor, patch) = version.split("\\.").collect { it.toInteger() }
+    // versionCode: Major * 10000 + Minor * 100 + Patch
+    // 예: 0.5.0 -> 500, 1.2.3 -> 10203, 2.10.15 -> 21015
+    return major * 10000 + minor * 100 + patch
+}
+
+def appVersion = getVersionFromPackageJson()
+def appVersionCode = getVersionCodeFromVersion(appVersion)
+
+/**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
@@ -82,8 +101,9 @@ android {
         applicationId "com.onemoondate"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        // versionCode와 versionName을 package.json에서 자동으로 읽어옴
+        versionCode appVersionCode
+        versionName appVersion
     }
     
     def keystorePropertiesFile = rootProject.file("key.properties")
