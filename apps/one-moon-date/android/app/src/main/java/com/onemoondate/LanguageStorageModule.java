@@ -29,14 +29,23 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
             SharedPreferences prefs = getReactApplicationContext()
                 .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             prefs.edit().putString(KEY_LANGUAGE, language).apply();
-            
+
+            // 기본 위젯 업데이트
             android.content.Intent intent = new android.content.Intent(
                 getReactApplicationContext(),
                 com.onemoondate.widget.LunarWidgetProvider.class
             );
             intent.setAction("com.onemoondate.ACTION_UPDATE_WIDGET");
             getReactApplicationContext().sendBroadcast(intent);
-            
+
+            // 큰 위젯 업데이트
+            android.content.Intent intentLarge = new android.content.Intent(
+                getReactApplicationContext(),
+                com.onemoondate.widget.LunarWidgetLargeProvider.class
+            );
+            intentLarge.setAction("com.onemoondate.ACTION_UPDATE_WIDGET_LARGE");
+            getReactApplicationContext().sendBroadcast(intentLarge);
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject("SET_LANGUAGE_ERROR", e.getMessage());
@@ -49,14 +58,23 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
             SharedPreferences prefs = getReactApplicationContext()
                 .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             prefs.edit().putBoolean(KEY_DARK_MODE, isDark).apply();
-            
+
+            // 기본 위젯 업데이트
             android.content.Intent intent = new android.content.Intent(
                 getReactApplicationContext(),
                 com.onemoondate.widget.LunarWidgetProvider.class
             );
             intent.setAction("com.onemoondate.ACTION_UPDATE_WIDGET");
             getReactApplicationContext().sendBroadcast(intent);
-            
+
+            // 큰 위젯 업데이트
+            android.content.Intent intentLarge = new android.content.Intent(
+                getReactApplicationContext(),
+                com.onemoondate.widget.LunarWidgetLargeProvider.class
+            );
+            intentLarge.setAction("com.onemoondate.ACTION_UPDATE_WIDGET_LARGE");
+            getReactApplicationContext().sendBroadcast(intentLarge);
+
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject("SET_DARK_MODE_ERROR", e.getMessage());

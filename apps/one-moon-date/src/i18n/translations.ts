@@ -40,7 +40,7 @@ export const translations: Translations = {
     weekDayFormat: '{weekDay}, {month}/{day}',
     monthFormat: 'M{month}',
     lunarDate: 'Lunar: {year}/{month}/{day}',
-    solarLabel: 'Solar',
+    solarLabel: 'Solar:',
     ganZhiFormat: '{ganZhi} Year ({zodiac})',
     solarToLunar: 'Solar → Lunar',
     year: 'Year',
