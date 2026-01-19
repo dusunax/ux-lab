@@ -26,7 +26,7 @@
         </intent-filter>
       </activity>
 
-      <!-- 음력 위젯 프로바이더 -->
+      <!-- 음력 위젯 프로바이더 (1x1) -->
       <receiver
         android:name=".widget.LunarWidgetProvider"
         android:exported="true"
@@ -42,6 +42,24 @@
         <meta-data
           android:name="android.appwidget.provider"
           android:resource="@xml/widget_info" />
+      </receiver>
+
+      <!-- 음력 위젯 프로바이더 (2x2 대형) -->
+      <receiver
+        android:name=".widget.LunarWidgetLargeProvider"
+        android:exported="true"
+        android:label="@string/widget_large_name">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+          <action android:name="android.intent.action.TIME_SET" />
+          <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+          <action android:name="android.intent.action.DATE_CHANGED" />
+          <action android:name="android.intent.action.BOOT_COMPLETED" />
+          <action android:name="com.onemoondate.ACTION_UPDATE_WIDGET_LARGE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/widget_info_large" />
       </receiver>
     </application>
 </manifest>
