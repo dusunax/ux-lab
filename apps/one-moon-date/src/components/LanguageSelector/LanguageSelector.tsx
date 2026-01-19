@@ -9,22 +9,20 @@ import {
 import {Colors} from '../../constants/colors';
 import {useI18n} from '../../i18n';
 import {useDarkMode} from '../../contexts/DarkModeContext';
+import type {Language} from '../../types';
 
-const LANGUAGE_LABELS = {
+const LANGUAGE_LABELS: Record<Language, string> = {
   ko: '한국어',
   en: 'English',
   ja: '日本語',
 };
 
-/**
- * 언어 선택 컴포넌트
- */
 export const LanguageSelector = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const {darkMode: isDarkMode} = useDarkMode();
   const {language, changeLanguage, availableLanguages} = useI18n();
 
-  const handleLanguageChange = (lang) => {
+  const handleLanguageChange = (lang: Language) => {
     try {
       setModalVisible(false);
       changeLanguage(lang).catch((error) => {
@@ -36,7 +34,7 @@ export const LanguageSelector = () => {
     }
   };
 
-  const getLanguageLabel = (lang) => {
+  const getLanguageLabel = (lang: Language): string => {
     return LANGUAGE_LABELS[lang] || lang.toUpperCase();
   };
 

@@ -12,24 +12,22 @@ import {DarkModeToggle} from '../components/DarkModeToggle/DarkModeToggle';
 import {LunarDateDisplay} from '../components/LunarDateDisplay';
 import {DateConverter} from '../components/DateConverter';
 import {lunarToSolar} from '../utils/lunarCalendar';
+import type {LunarDate} from '../types';
 
-/**
- * 메인 화면 컴포넌트
- */
 export const MainScreen = () => {
   const {darkMode: isDarkMode} = useDarkMode();
   const {t, isLoading: i18nLoading} = useI18n();
   const {lunar: defaultLunar, refreshing, onRefresh} = useLunarDate();
-  const [converterLunar, setConverterLunar] = useState(null);
+  const [converterLunar, setConverterLunar] = useState<LunarDate | null>(null);
   
-  const handleLunarChange = useCallback((lunarData) => {
+  const handleLunarChange = useCallback((lunarData: LunarDate) => {
     setConverterLunar(lunarData);
   }, []);
   
   const converter = useDateConverter(t, handleLunarChange);
   const displayLunar = converterLunar || defaultLunar;
 
-  const handleLunarDateSelect = useCallback((lunarYear, lunarMonth, lunarDay, isLeapMonth) => {
+  const handleLunarDateSelect = useCallback((lunarYear: number, lunarMonth: number, lunarDay: number, isLeapMonth: boolean) => {
     try {
       const solarDate = lunarToSolar(lunarYear, lunarMonth, lunarDay, isLeapMonth);
       converter.setSolarDate(
@@ -77,7 +75,7 @@ export const MainScreen = () => {
         <DateConverter {...converter} />
         <View style={styles.copyrightContainer}>
           <Text style={[styles.copyrightText, isDarkMode && styles.copyrightTextDark]}>
-            © 2026 All Rights Reserved by one-moon-date
+            © 2026 All Rights Reserved
           </Text>
         </View>
       </ScrollView>

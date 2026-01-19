@@ -1,16 +1,18 @@
-import React, {createContext, useContext, useState, useEffect, useCallback} from 'react';
+import React, {createContext, useContext, useState, useEffect, useCallback, ReactNode} from 'react';
 import {Appearance, useColorScheme} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {saveDarkMode} from '../utils/storage';
+import type {DarkModeContextValue} from '../types';
 
 const DARK_MODE_STORAGE_KEY = '@onemoondate:darkMode';
 
-const DarkModeContext = createContext();
+const DarkModeContext = createContext<DarkModeContextValue | undefined>(undefined);
 
-/**
- * 다크모드 Context Provider
- */
-export const DarkModeProvider = ({children}) => {
+interface DarkModeProviderProps {
+  children: ReactNode;
+}
+
+export const DarkModeProvider = ({children}: DarkModeProviderProps) => {
   const systemColorScheme = useColorScheme();
   const [darkMode, setDarkMode] = useState(systemColorScheme === 'dark');
   const [isLoading, setIsLoading] = useState(true);
@@ -56,9 +58,6 @@ export const DarkModeProvider = ({children}) => {
     return () => subscription.remove();
   }, []);
 
-  /**
-   * 다크모드 전환
-   */
   const toggleDarkMode = useCallback(async () => {
     try {
       const newMode = !darkMode;
@@ -72,17 +71,20 @@ export const DarkModeProvider = ({children}) => {
     }
   }, [darkMode]);
 
+  const value: DarkModeContextValue = {
+    darkMode,
+    isLoading,
+    toggleDarkMode,
+  };
+
   return (
-    <DarkModeContext.Provider value={{darkMode, isLoading, toggleDarkMode}}>
+    <DarkModeContext.Provider value={value}>
       {children}
     </DarkModeContext.Provider>
   );
 };
 
-/**
- * 다크모드 Context를 사용하는 훅
- */
-export const useDarkMode = () => {
+export const useDarkMode = (): DarkModeContextValue => {
   const context = useContext(DarkModeContext);
   if (!context) {
     throw new Error('useDarkMode must be used within DarkModeProvider');

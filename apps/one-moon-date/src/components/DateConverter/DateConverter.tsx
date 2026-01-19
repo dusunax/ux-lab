@@ -5,11 +5,19 @@ import {useI18n} from '../../i18n';
 import {useDarkMode} from '../../contexts/DarkModeContext';
 import {PickerSelect} from '../PickerSelect';
 
-/**
- * 날짜 변환기 컴포넌트
- * 양력 => 음력 변환만 지원하며, 실시간으로 상단에 반영됩니다
- * @param {Object} converter - 변환기 훅에서 반환된 객체
- */
+interface DateConverterProps {
+  selectedYear: number;
+  selectedMonth: number;
+  selectedDay: number;
+  convertError: string;
+  yearOptions: number[];
+  monthOptions: number[];
+  dayOptions: number[];
+  setSelectedYear: (year: number) => void;
+  setSelectedMonth: (month: number) => void;
+  setSelectedDay: (day: number) => void;
+}
+
 export const DateConverter = ({
   selectedYear,
   selectedMonth,
@@ -21,7 +29,7 @@ export const DateConverter = ({
   setSelectedYear,
   setSelectedMonth,
   setSelectedDay,
-}) => {
+}: DateConverterProps) => {
   const {darkMode: isDarkMode} = useDarkMode();
   const {t} = useI18n();
 

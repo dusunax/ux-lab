@@ -5,9 +5,6 @@ import {Colors} from '../../constants/colors';
 import {useI18n} from '../../i18n';
 import {useDarkMode} from '../../contexts/DarkModeContext';
 
-/**
- * 로딩 화면 컴포넌트
- */
 export const LoadingScreen = () => {
   const {darkMode: isDarkMode} = useDarkMode();
   const {t} = useI18n();

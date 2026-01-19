@@ -1,0 +1,1 @@
+export {useDarkMode} from '../contexts/DarkModeContext';

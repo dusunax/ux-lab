@@ -1,11 +1,7 @@
 import React from 'react';
 import {Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {Colors} from '../../constants/colors';
 import {useDarkMode} from '../../contexts/DarkModeContext';
 
-/**
- * 다크모드 전환 버튼 컴포넌트
- */
 export const DarkModeToggle = () => {
   const {darkMode, toggleDarkMode} = useDarkMode();
   const isDarkMode = darkMode;

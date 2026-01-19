@@ -1,4 +1,6 @@
-export const translations = {
+import type {Translations} from '../types';
+
+export const translations: Translations = {
   ko: {
     loading: '불러오는 중...',
     weekDays: ['일', '월', '화', '수', '목', '금', '토'],
@@ -100,7 +102,10 @@ export const translations = {
   },
 };
 
-export const getZodiacKey = (index) => {
-  const keys = ['monkey', 'rooster', 'dog', 'pig', 'rat', 'ox', 'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'goat'];
+export const getZodiacKey = (index: number): keyof Translations['ko']['zodiac'] => {
+  const keys: Array<keyof Translations['ko']['zodiac']> = [
+    'monkey', 'rooster', 'dog', 'pig', 'rat', 'ox',
+    'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'goat',
+  ];
   return keys[index % 12];
 };

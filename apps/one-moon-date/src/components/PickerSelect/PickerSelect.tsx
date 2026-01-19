@@ -2,18 +2,18 @@ import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Modal, FlatList, StyleSheet} from 'react-native';
 import {Colors} from '../../constants/colors';
 
-/**
- * 선택 피커 컴포넌트
- * @param {any} value - 현재 선택된 값
- * @param {any[]} options - 선택 가능한 옵션 배열
- * @param {Function} onSelect - 선택 시 호출되는 콜백 함수
- * @param {string} label - 라벨 텍스트
- * @param {boolean} isDarkMode - 다크 모드 여부
- */
-export const PickerSelect = ({value, options, onSelect, label, isDarkMode}) => {
+interface PickerSelectProps {
+  value: number | string;
+  options: (number | string)[];
+  onSelect: (value: number | string) => void;
+  label: string;
+  isDarkMode: boolean;
+}
+
+export const PickerSelect = ({value, options, onSelect, label, isDarkMode}: PickerSelectProps) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleSelect = (item) => {
+  const handleSelect = (item: number | string) => {
     onSelect(item);
     setModalVisible(false);
   };

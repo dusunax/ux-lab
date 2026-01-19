@@ -6,15 +6,31 @@ import {
   generateDayOptions,
 } from '../utils/dateOptions';
 import {useI18n} from '../i18n';
+import type {LunarDate, Translation} from '../types';
 
-/**
- * 날짜 변환 기능을 관리하는 커스텀 훅
- * 양력 => 음력 변환만 지원하며, 실시간으로 변환 결과를 계산합니다
- * @param {Object} t - 번역 객체
- * @param {Function} onLunarChange - 음력 날짜가 변경될 때 호출되는 콜백
- * @returns {Object} 변환 관련 상태 및 함수들
- */
-export const useDateConverter = (t, onLunarChange) => {
+interface UseDateConverterProps {
+  t?: Translation;
+  onLunarChange?: (lunarData: LunarDate) => void;
+}
+
+interface UseDateConverterReturn {
+  selectedYear: number;
+  selectedMonth: number;
+  selectedDay: number;
+  convertError: string;
+  yearOptions: number[];
+  monthOptions: number[];
+  dayOptions: number[];
+  setSelectedYear: (year: number) => void;
+  setSelectedMonth: (month: number) => void;
+  setSelectedDay: (day: number) => void;
+  setSolarDate: (year: number, month: number, day: number) => void;
+}
+
+export const useDateConverter = (
+  t?: Translation,
+  onLunarChange?: (lunarData: LunarDate) => void,
+): UseDateConverterReturn => {
   const {getGanZhi} = useI18n();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -38,7 +54,7 @@ export const useDateConverter = (t, onLunarChange) => {
       const result = solarToLunar(new Date(selectedYear, selectedMonth - 1, selectedDay));
       if (result) {
         const ganZhi = getGanZhi(result.year);
-        const lunarData = {
+        const lunarData: LunarDate = {
           ...result,
           ...ganZhi,
           solarDate: new Date(selectedYear, selectedMonth - 1, selectedDay),
@@ -53,17 +69,14 @@ export const useDateConverter = (t, onLunarChange) => {
     }
   }, [selectedYear, selectedMonth, selectedDay, onLunarChange, t, getGanZhi]);
 
-  /**
-   * 월 선택 시 일이 범위를 벗어나면 초기화합니다
-   */
-  const handleMonthSelect = (month) => {
+  const handleMonthSelect = (month: number) => {
     setSelectedMonth(month);
     if (selectedDay > dayOptions.length) {
       setSelectedDay(1);
     }
   };
 
-  const setSolarDate = useCallback((year, month, day) => {
+  const setSolarDate = useCallback((year: number, month: number, day: number) => {
     setSelectedYear(year);
     setSelectedMonth(month);
     setSelectedDay(day);

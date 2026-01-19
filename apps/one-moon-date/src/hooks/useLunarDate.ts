@@ -1,19 +1,19 @@
 import {useState, useEffect, useCallback} from 'react';
 import {getTodayLunar} from '../utils/lunarCalendar';
 import {useI18n} from '../i18n';
+import type {LunarDate} from '../types';
 
-/**
- * 음력 날짜를 관리하는 커스텀 훅
- * @returns {Object} 음력 날짜 상태 및 업데이트 함수
- */
-export const useLunarDate = () => {
-  const [lunar, setLunar] = useState(null);
+interface UseLunarDateReturn {
+  lunar: LunarDate | null;
+  refreshing: boolean;
+  onRefresh: () => void;
+}
+
+export const useLunarDate = (): UseLunarDateReturn => {
+  const [lunar, setLunar] = useState<LunarDate | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const {getGanZhi} = useI18n();
 
-  /**
-   * 음력 날짜 정보를 업데이트합니다
-   */
   const updateLunarDate = useCallback(() => {
     const today = new Date();
     const lunarDate = getTodayLunar();
@@ -26,9 +26,6 @@ export const useLunarDate = () => {
     });
   }, [getGanZhi]);
 
-  /**
-   * Pull-to-refresh 핸들러
-   */
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     updateLunarDate();
@@ -37,9 +34,6 @@ export const useLunarDate = () => {
     }, 500);
   }, [updateLunarDate]);
 
-  /**
-   * 컴포넌트 마운트 시 및 자정에 날짜 업데이트
-   */
   useEffect(() => {
     updateLunarDate();
 
@@ -52,7 +46,7 @@ export const useLunarDate = () => {
       0,
       0,
     );
-    const msUntilMidnight = midnight - now;
+    const msUntilMidnight = midnight.getTime() - now.getTime();
 
     const timer = setTimeout(() => {
       updateLunarDate();

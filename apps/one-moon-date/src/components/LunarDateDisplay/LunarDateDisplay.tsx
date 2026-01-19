@@ -12,13 +12,14 @@ import {
 } from '../../utils/dateFormatters';
 import {generateYearOptions, generateDayOptions} from '../../utils/dateOptions';
 import {getLunarMonthDays, getLeapMonthOfYear} from '../../utils/lunarCalendar';
+import type {LunarDate} from '../../types';
 
-/**
- * 음력 날짜 표시 컴포넌트
- * @param {Object} lunar - 음력 날짜 정보
- * @param {Function} onLunarDateSelect - 음력 날짜 선택 시 호출되는 콜백 (lunarYear, lunarMonth, lunarDay, isLeapMonth)
- */
-export const LunarDateDisplay = ({lunar, onLunarDateSelect}) => {
+interface LunarDateDisplayProps {
+  lunar: LunarDate | null;
+  onLunarDateSelect?: (lunarYear: number, lunarMonth: number, lunarDay: number, isLeapMonth: boolean) => void;
+}
+
+export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayProps) => {
   const {darkMode: isDarkMode} = useDarkMode();
   const {t, formatString, getZodiac, getGanZhi} = useI18n();
   const [yearModalVisible, setYearModalVisible] = useState(false);
@@ -34,8 +35,8 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}) => {
   const solarDay = lunar.solarDate.getDate();
   const zodiacText = getZodiac(lunar.year % 12);
   
-  const getZodiacIcon = (yearIndex) => {
-    const icons = {
+  const getZodiacIcon = (yearIndex: number): string => {
+    const icons: Record<string, string> = {
       monkey: '🐵',
       rooster: '🐔',
       dog: '🐶',
@@ -94,7 +95,7 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}) => {
   const monthOptions = Array.from({length: 12}, (_, i) => i + 1);
   const dayOptions = generateDayOptions(lunar.year, lunar.month, 'lunarToSolar', lunar.isLeapMonth);
 
-  const handleYearSelect = (year) => {
+  const handleYearSelect = (year: number) => {
     setYearModalVisible(false);
     if (onLunarDateSelect) {
       const newLeapMonth = getLeapMonthOfYear(year);
@@ -104,7 +105,7 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}) => {
     }
   };
 
-  const handleMonthSelect = (month) => {
+  const handleMonthSelect = (month: number) => {
     setMonthModalVisible(false);
     if (onLunarDateSelect) {
       const newLeapMonth = getLeapMonthOfYear(lunar.year);
@@ -114,14 +115,21 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}) => {
     }
   };
 
-  const handleDaySelect = (day) => {
+  const handleDaySelect = (day: number) => {
     setDayModalVisible(false);
     if (onLunarDateSelect) {
       onLunarDateSelect(lunar.year, lunar.month, day, lunar.isLeapMonth);
     }
   };
 
-  const renderPickerModal = (visible, setVisible, options, selectedValue, onSelect, title) => {
+  const renderPickerModal = (
+    visible: boolean,
+    setVisible: (visible: boolean) => void,
+    options: number[],
+    selectedValue: number,
+    onSelect: (value: number) => void,
+    title: string,
+  ) => {
     const initialScrollIndex = Math.max(0, options.indexOf(selectedValue) - 3);
     return (
       <Modal

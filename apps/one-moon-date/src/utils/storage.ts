@@ -1,18 +1,11 @@
-/**
- * 언어 및 설정 저장 유틸리티
- * React Native와 Android 위젯 간 동기화를 위한 공통 저장소
- */
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NativeModules, Platform} from 'react-native';
+import type {Language} from '../types';
 
 const LANGUAGE_STORAGE_KEY = '@onemoondate:language';
 const DARK_MODE_STORAGE_KEY = '@onemoondate:darkMode';
 
-/**
- * 언어 저장 (React Native와 Android SharedPreferences 동기화)
- */
-export const saveLanguage = async (language) => {
+export const saveLanguage = async (language: Language): Promise<boolean> => {
   try {
     await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     
@@ -34,10 +27,7 @@ export const saveLanguage = async (language) => {
   }
 };
 
-/**
- * 언어 불러오기
- */
-export const loadLanguage = async () => {
+export const loadLanguage = async (): Promise<Language | null> => {
   try {
     if (Platform.OS === 'android') {
       try {
@@ -46,25 +36,23 @@ export const loadLanguage = async () => {
           const nativeLang = await LanguageStorage.getLanguage();
           if (nativeLang) {
             await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, nativeLang);
-            return nativeLang;
+            return nativeLang as Language;
           }
         }
       } catch (e) {
+        // Ignore
       }
     }
     
     const language = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return language || null;
+    return (language as Language) || null;
   } catch (error) {
     console.error('언어 불러오기 실패:', error);
     return null;
   }
 };
 
-/**
- * 다크모드 저장 (React Native와 Android 위젯 동기화)
- */
-export const saveDarkMode = async (isDark) => {
+export const saveDarkMode = async (isDark: boolean): Promise<boolean> => {
   try {
     const modeToSave = isDark ? 'dark' : 'light';
     await AsyncStorage.setItem(DARK_MODE_STORAGE_KEY, modeToSave);
