@@ -108,15 +108,40 @@
             text-decoration: underline;
         }
         
+        .lang-selector {
+            text-align: right;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .lang-selector a {
+            color: #3498db;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 0.9em;
+        }
+
+        .lang-selector a:hover {
+            text-decoration: underline;
+        }
+
+        .lang-selector span {
+            color: #2c3e50;
+            font-weight: bold;
+            margin-left: 15px;
+            font-size: 0.9em;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
             }
-            
+
             h1 {
                 font-size: 1.5em;
             }
-            
+
             h2 {
                 font-size: 1.3em;
             }
@@ -125,6 +150,11 @@
 </head>
 <body>
     <div class="container">
+        <div class="lang-selector">
+            <a href="privacy-policy-ko.html">한국어</a>
+            <span>English</span>
+            <a href="privacy-policy-ja.html">日本語</a>
+        </div>
         <h1>Privacy Policy</h1>
         <p class="subtitle">One Moon Date</p>
         
