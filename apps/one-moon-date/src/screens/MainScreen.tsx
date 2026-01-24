@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from 'react';
-import {ScrollView, StatusBar, RefreshControl, StyleSheet, View, Text} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {ScrollView, StatusBar, RefreshControl, StyleSheet, View} from 'react-native';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Colors} from '../constants/colors';
 import {useLunarDate} from '../hooks/useLunarDate';
 import {useDateConverter} from '../hooks/useDateConverter';
@@ -15,6 +15,7 @@ import {lunarToSolar} from '../utils/lunarCalendar';
 import type {LunarDate} from '../types';
 
 export const MainScreen = () => {
+  const insets = useSafeAreaInsets();
   const {darkMode: isDarkMode} = useDarkMode();
   const {t, isLoading: i18nLoading} = useI18n();
   const {lunar: defaultLunar, refreshing, onRefresh} = useLunarDate();
@@ -51,7 +52,7 @@ export const MainScreen = () => {
         backgroundColor={isDarkMode ? Colors.background.dark : Colors.background.light}
       />
       
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer, {paddingTop: insets.top + 8}]}>
         <LanguageSelector />
         <View style={styles.darkModeContainer}>
           <DarkModeToggle />
@@ -73,11 +74,6 @@ export const MainScreen = () => {
         }>
         <LunarDateDisplay lunar={displayLunar} onLunarDateSelect={handleLunarDateSelect} />
         <DateConverter {...converter} />
-        <View style={styles.copyrightContainer}>
-          <Text style={[styles.copyrightText, isDarkMode && styles.copyrightTextDark]}>
-            © 2026 All Rights Reserved
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -98,7 +94,6 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 8,
     paddingRight: 16,
     gap: 12,
   },
@@ -108,26 +103,5 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: 40,
     paddingBottom: 0,
-  },
-  copyrightContainer: {
-    alignItems: 'center',
-    paddingBottom: 12,
-  },
-  copyrightText: {
-    fontSize: 10,
-    color: Colors.text.muted,
-    fontWeight: '500',
-  },
-  copyrightTextDark: {
-    color: Colors.text.muted,
-  },
-  copyrightSubtext: {
-    fontSize: 11,
-    color: Colors.text.muted,
-    marginTop: 4,
-    opacity: 0.8,
-  },
-  copyrightSubtextDark: {
-    color: Colors.text.muted,
   },
 });
