@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">月暦カレンダー</string>
+    <string name="widget_description">今日の旧暦をカレンダーの一マスのように表示します</string>
+    <string name="widget_name">旧暦ウィジェット</string>
+    <string name="widget_large_description">今日の旧暦を大きく表示します (2x2)</string>
+    <string name="widget_large_name">大きな旧暦</string>
+</resources>

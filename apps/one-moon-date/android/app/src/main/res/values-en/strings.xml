@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">One Moon Date</string>
+    <string name="widget_description">Shows today\'s lunar date like a calendar cell</string>
+    <string name="widget_name">Lunar Cell</string>
+    <string name="widget_large_description">Shows today\'s lunar date in a larger format (2x2)</string>
+    <string name="widget_large_name">Large Lunar Cell</string>
+</resources>
