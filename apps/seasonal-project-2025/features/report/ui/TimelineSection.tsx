@@ -60,11 +60,17 @@ export function Timeline({ reports }: TimelineProps) {
                                 ? "grid-cols-1"
                                 : report.photos.length === 2
                                 ? "grid-cols-2"
-                                : "grid-cols-2"
+                                : report.photos.length <= 4
+                                ? "grid-cols-2"
+                                : report.photos.length <= 9
+                                ? "grid-cols-3"
+                                : report.photos.length <= 16
+                                ? "grid-cols-4"
+                                : "grid-cols-5"
                             }`}
                           >
                             {report.photos
-                              .slice(0, 4)
+                              .slice(0, 25)
                               .map((photo, photoIndex) => (
                                 <motion.div
                                   key={photoIndex}
