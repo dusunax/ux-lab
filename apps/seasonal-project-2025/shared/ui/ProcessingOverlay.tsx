@@ -79,7 +79,7 @@ export function ProcessingOverlay({ active, progress = 0, stage = "" }: Processi
                 transition={{ duration: 0.35, ease: "easeOut" }}
                 className="text-center text-lg font-semibold text-warmGray-900"
               >
-                {messages[index]}
+                {stage || messages[index]}
               </motion.p>
             </AnimatePresence>
           </motion.div>

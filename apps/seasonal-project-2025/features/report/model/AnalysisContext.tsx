@@ -45,6 +45,10 @@ const AnalysisContext = createContext<AnalysisContextType | undefined>(
 const createFileKey = (file: File) =>
   `${file.name}_${file.size}_${file.lastModified}`;
 
+// Progress calculation constants
+const AI_ANALYSIS_START_PROGRESS = 30;
+const AI_ANALYSIS_PROGRESS_RANGE = 0.6; // 30% to 90%
+
 export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
@@ -179,7 +183,7 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       setProgressStage("AI 분석 중");
       const { result } = await analyzePhotos(formData, (stage: string, progress: number) => {
         setProgressStage(stage);
-        setProgress(30 + (progress * 0.6)); // 30% ~ 90%
+        setProgress(AI_ANALYSIS_START_PROGRESS + (progress * AI_ANALYSIS_PROGRESS_RANGE));
       });
 
       /* --------------------------------------------------
@@ -227,9 +231,12 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
 
       alert(`분석 중 오류가 발생했습니다: ${errorMessage}`);
     } finally {
-      setIsProcessing(false);
-      setProgress(0);
-      setProgressStage("");
+      // Wait briefly to let users see the completion state before resetting
+      setTimeout(() => {
+        setIsProcessing(false);
+        setProgress(0);
+        setProgressStage("");
+      }, 800);
     }
   }, [uploadedPhotos, exifDataArray]);
 
