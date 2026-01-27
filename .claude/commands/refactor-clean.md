@@ -26,8 +26,8 @@ Safely identify and remove dead code.
    - DANGER: Config files, entry points, providers
 
 3. **Before each deletion**
-   - Run tests: `pnpm test` (if available)
-   - Run build: `pnpm build`
+   - Run tests (if available in workspace): `pnpm --filter <workspace> test`
+   - Run build: `pnpm run build:all` or specific workspace build
    - Verify no errors
    - Delete only if safe
 

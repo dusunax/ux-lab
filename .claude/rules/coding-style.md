@@ -2,16 +2,17 @@
 
 ## Immutability
 
-Always create new objects, never mutate:
+Prefer immutable patterns for state and props:
 
 ```typescript
-// WRONG
-user.name = newName
-array.push(item)
-
-// CORRECT
+// Prefer immutable for state/props
 const updated = { ...user, name: newName }
 const newArray = [...array, item]
+
+// Mutation acceptable for:
+// - Local temporary arrays during construction
+// - Performance-critical loops
+// - Builder patterns
 ```
 
 ## File Size
@@ -43,11 +44,12 @@ try {
 - Components: `PascalCase`
 - Functions/variables: `camelCase`
 - Constants: `UPPER_SNAKE_CASE`
-- Files: `kebab-case.ts` or `PascalCase.tsx`
+- Files: `camelCase.ts` or `PascalCase.tsx`
 
 ## Before Completion
 
-- [ ] No console.log (except errors)
+- [ ] No console.log in client-side production code
+- [ ] Server-side/dev console.log is acceptable for debugging
 - [ ] No TODO without ticket/issue
 - [ ] No magic numbers
 - [ ] Error handling in place
