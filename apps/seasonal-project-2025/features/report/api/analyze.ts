@@ -1,6 +1,5 @@
 "use server";
 
-import OpenAI from "openai";
 import type {
   AnalysisResult,
   Keyword,
@@ -9,10 +8,7 @@ import type {
   MonthlyReport,
 } from "@features/report/types";
 import { checkRateLimit, incrementRateLimit } from "@shared/lib/rateLimit";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { getDefaultProvider, type LLMProvider } from "@shared/lib/llm";
 
 type AnalysisResultKey = keyof Omit<AnalysisResult, "id">;
 
@@ -64,33 +60,29 @@ function parseJsonResponse<T>(content: string, errorContext: string): T | null {
 }
 
 /**
- * OpenAI API 호출 헬퍼 함수
+ * LLM API 호출 헬퍼 함수
  */
-async function callOpenAI(
+async function callLLM(
   prompt: string,
   images: string[],
-  maxTokens: number = 500
-) {
-  const imageContents = images.map((base64) => ({
-    type: "image_url" as const,
-    image_url: {
-      url: `data:image/jpeg;base64,${base64}`,
-    },
+  maxTokens: number = 500,
+  provider?: LLMProvider
+): Promise<string> {
+  const llmProvider = provider || getDefaultProvider();
+
+  const imageParts = images.map((base64) => ({
+    base64,
+    mimeType: "image/jpeg",
   }));
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "user",
-        content: [{ type: "text", text: prompt }, ...imageContents],
-      },
-    ],
-    max_tokens: maxTokens,
-    response_format: { type: "json_object" },
+  const response = await llmProvider.generate({
+    prompt,
+    images: imageParts,
+    maxTokens,
+    responseFormat: "json",
   });
 
-  return response.choices[0]?.message?.content;
+  return response;
 }
 
 /**
@@ -216,14 +208,14 @@ function validateAnalysisResult(
 }
 
 /**
- * OpenAI Vision API를 사용하여 사진들을 분석하고
+ * Gemini Vision API를 사용하여 사진들을 분석하고
  * 키워드와 올해의 한 문장을 생성합니다.
  */
 export async function analyzePhotos(
   formData: FormData
 ): Promise<{ result: AnalysisResult }> {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
+  if (!process.env.GEMINI_API_Key) {
+    throw new Error("GEMINI_API_Key가 설정되지 않았습니다.");
   }
 
   // IP 기반 일일 요청 제한 체크
@@ -423,10 +415,10 @@ ${monthlyPhotoLabels}${locationInfo}
 한국어로 응답해주세요. JSON 형식으로 응답해주세요:`;
 
     // 전체 분석 API 호출 (모든 사진 전송)
-    const overallContent = await callOpenAI(
+    const overallContent = await callLLM(
       overallPrompt,
       photoBase64s.filter((p) => p !== ""),
-      2000 // 월별 분석이 추가되므로 토큰 수 증가
+      4000
     );
 
     if (!overallContent) {
@@ -477,8 +469,8 @@ ${monthlyPhotoLabels}${locationInfo}
       );
     }
 
-    // 월별 리포트를 reports 순서대로 매핑 (OpenAI 응답의 month 필드 신뢰하지 않음)
-    // OpenAI가 반환한 순서가 reports 순서와 다를 수 있으므로, reports 순서를 우선시
+    // 월별 리포트를 reports 순서대로 매핑 (Gemini 응답의 month 필드 신뢰하지 않음)
+    // Gemini가 반환한 순서가 reports 순서와 다를 수 있으므로, reports 순서를 우선시
     const analyzedReports = reports.map((report, reportIndex) => {
       // 먼저 reports 순서대로 매핑 시도 (인덱스 기반)
       let monthlyReport = analysis.monthlyReports[reportIndex];
