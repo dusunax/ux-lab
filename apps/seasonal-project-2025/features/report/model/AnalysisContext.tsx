@@ -30,6 +30,10 @@ interface AnalysisContextType {
   setExifDataArray: (exifData: ExifData[]) => void;
   isProcessing: boolean;
   setIsProcessing: (isProcessing: boolean) => void;
+  progress: number;
+  setProgress: (progress: number) => void;
+  progressStage: string;
+  setProgressStage: (stage: string) => void;
   handleAnalyze: () => Promise<void>;
   clearAnalysisData: () => void;
 }
@@ -51,6 +55,8 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   );
   const [exifDataArray, setExifDataArray] = useState<ExifData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressStage, setProgressStage] = useState("");
 
   const handleAnalyze = useCallback(async () => {
     if (uploadedPhotos.length === 0) {
@@ -59,6 +65,8 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     }
 
     setIsProcessing(true);
+    setProgress(0);
+    setProgressStage("업로드 준비 중");
     trackAnalysisStart(uploadedPhotos.length);
 
     try {
@@ -75,6 +83,8 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       /* --------------------------------------------------
        * 2. 원본 이미지 base64 변환 (화면 표시용)
        * -------------------------------------------------- */
+      setProgress(10);
+      setProgressStage("이미지 처리 중");
       const originalBase64s = await Promise.all(
         uploadedPhotos.map(
           (file) =>
@@ -90,6 +100,8 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       /* --------------------------------------------------
        * 3. 이미지 리사이징 (Vision API용)
        * -------------------------------------------------- */
+      setProgress(20);
+      setProgressStage("이미지 최적화 중");
       const resizedPhotos = await resizeImages(uploadedPhotos, {
         maxWidth: 512,
         maxHeight: 512,
@@ -163,7 +175,12 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       /* --------------------------------------------------
        * 7. 분석 요청
        * -------------------------------------------------- */
-      const { result } = await analyzePhotos(formData);
+      setProgress(30);
+      setProgressStage("AI 분석 중");
+      const { result } = await analyzePhotos(formData, (stage: string, progress: number) => {
+        setProgressStage(stage);
+        setProgress(30 + (progress * 0.6)); // 30% ~ 90%
+      });
 
       /* --------------------------------------------------
        * 8. 결과에 사진 매핑 (분석 결과의 month 필드 사용)
@@ -188,8 +205,12 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         })),
       };
 
+      setProgress(95);
+      setProgressStage("결과 생성 중");
       setAnalysisResult(resultWithPhotos);
 
+      setProgress(100);
+      setProgressStage("완료");
       trackAnalysisComplete(
         uploadedPhotos.length,
         resultWithPhotos.monthlyReports.length
@@ -207,6 +228,8 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
       alert(`분석 중 오류가 발생했습니다: ${errorMessage}`);
     } finally {
       setIsProcessing(false);
+      setProgress(0);
+      setProgressStage("");
     }
   }, [uploadedPhotos, exifDataArray]);
 
@@ -231,6 +254,10 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
         setExifDataArray,
         isProcessing,
         setIsProcessing,
+        progress,
+        setProgress,
+        progressStage,
+        setProgressStage,
         handleAnalyze,
         clearAnalysisData,
       }}

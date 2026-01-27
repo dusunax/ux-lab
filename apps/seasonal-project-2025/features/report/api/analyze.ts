@@ -220,13 +220,15 @@ function validateAnalysisResult(
  * 키워드와 올해의 한 문장을 생성합니다.
  */
 export async function analyzePhotos(
-  formData: FormData
+  formData: FormData,
+  onProgress?: (stage: string, progress: number) => void
 ): Promise<{ result: AnalysisResult }> {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
   }
 
   // IP 기반 일일 요청 제한 체크
+  onProgress?.("요청 제한 확인 중", 0);
   const rateLimitResult = await checkRateLimit();
   if (!rateLimitResult.allowed) {
     throw new Error(
@@ -287,6 +289,7 @@ export async function analyzePhotos(
   }
 
   // 파일을 base64로 변환 (서버에서 처리)
+  onProgress?.("사진 업로드 중", 0.1);
   const photoBase64s = await Promise.all(files.map(fileToBase64));
 
   if (photoBase64s.length === 0) {
@@ -295,6 +298,7 @@ export async function analyzePhotos(
 
   try {
     // 각 월별로 사진 인덱스 범위 계산
+    onProgress?.("월별 사진 분석 준비 중", 0.15);
     const monthPhotoRanges = reports.map((report, index) => {
       const startIndex = reports
         .slice(0, index)
@@ -423,6 +427,7 @@ ${monthlyPhotoLabels}${locationInfo}
 한국어로 응답해주세요. JSON 형식으로 응답해주세요:`;
 
     // 전체 분석 API 호출 (모든 사진 전송)
+    onProgress?.("AI가 사진을 분석하고 있습니다", 0.3);
     const overallContent = await callOpenAI(
       overallPrompt,
       photoBase64s.filter((p) => p !== ""),
@@ -433,6 +438,7 @@ ${monthlyPhotoLabels}${locationInfo}
       throw new Error("전체 분석 응답이 비어있습니다.");
     }
 
+    onProgress?.("분석 결과 처리 중", 0.7);
     const analysis = parseJsonResponse<{
       keywords: Keyword[];
       yearSentence: string;
@@ -524,6 +530,7 @@ ${monthlyPhotoLabels}${locationInfo}
     });
 
     // 필수 필드 검증
+    onProgress?.("결과 검증 중", 0.85);
     const analysisForValidation: Partial<AnalysisResult> = {
       ...analysis,
       monthlyReports: analyzedReports,
@@ -531,6 +538,7 @@ ${monthlyPhotoLabels}${locationInfo}
     validateAnalysisResult(analysisForValidation);
 
     // 분석 성공 시에만 rate limit 카운트 증가
+    onProgress?.("완료", 1.0);
     await incrementRateLimit();
 
     return {

@@ -16,9 +16,11 @@ const messages = [
 
 interface ProcessingOverlayProps {
   active: boolean;
+  progress?: number;
+  stage?: string;
 }
 
-export function ProcessingOverlay({ active }: ProcessingOverlayProps) {
+export function ProcessingOverlay({ active, progress = 0, stage = "" }: ProcessingOverlayProps) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export function ProcessingOverlay({ active }: ProcessingOverlayProps) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="mx-4 flex max-w-md flex-col items-center gap-4 border-2 border-warmGray-300 rounded-3xl p-8 shadow-xl bg-white/90"
+            className="mx-4 flex w-full max-w-md flex-col items-center gap-4 border-2 border-warmGray-300 rounded-3xl p-8 shadow-xl bg-white/90"
           >
             <div className="flex items-center gap-3 text-warmGray-800">
               <Loader2 className="h-5 w-5 animate-spin text-warmGray-700" />
@@ -51,9 +53,26 @@ export function ProcessingOverlay({ active }: ProcessingOverlayProps) {
                 AI가 당신의 한 해를 정리하는 중
               </span>
             </div>
+            
+            {/* Progress Bar */}
+            <div className="w-full space-y-2">
+              <div className="flex items-center justify-between text-xs text-warmGray-600">
+                <span>{stage || messages[index]}</span>
+                <span className="font-medium">{Math.round(progress)}%</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-warmGray-200">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-warmGray-600 to-warmGray-800"
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+
             <AnimatePresence mode="wait">
               <motion.p
-                key={index}
+                key={stage || index}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}

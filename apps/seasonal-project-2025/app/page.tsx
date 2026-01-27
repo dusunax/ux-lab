@@ -29,6 +29,8 @@ export default function Home() {
     uploadedPhotos,
     uploadedPhotoPreviews,
     isProcessing,
+    progress,
+    progressStage,
     handleAnalyze,
     setUploadedPhotos,
     setUploadedPhotoPreviews,
@@ -111,7 +113,7 @@ export default function Home() {
       <KakaoInAppModal isOpen={showModal} onClose={closeModal} />
       <main className="break-keep min-h-[dvh] pt-24 sm:pt-8 px-4 py-8 md:px-8 md:py-16 lg:px-12 lg:py-20">
         <RateLimitBadge />
-        <ProcessingOverlay active={isProcessing} />
+        <ProcessingOverlay active={isProcessing} progress={progress} stage={progressStage} />
         <div className="mx-auto max-w-7xl space-y-6 md:space-y-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
