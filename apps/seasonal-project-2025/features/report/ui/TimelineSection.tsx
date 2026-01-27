@@ -16,7 +16,6 @@ interface TimelineProps {
  */
 function getGridColumnClass(photoCount: number): string {
   if (photoCount === 1) return "grid-cols-1";
-  if (photoCount === 2) return "grid-cols-2";
   if (photoCount <= 4) return "grid-cols-2";
   if (photoCount <= 9) return "grid-cols-3";
   if (photoCount <= 16) return "grid-cols-4";
