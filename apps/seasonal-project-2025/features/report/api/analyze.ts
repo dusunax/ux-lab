@@ -214,8 +214,8 @@ function validateAnalysisResult(
 export async function analyzePhotos(
   formData: FormData
 ): Promise<{ result: AnalysisResult }> {
-  if (!process.env.GEMINI_API_Key) {
-    throw new Error("GEMINI_API_Key가 설정되지 않았습니다.");
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY가 설정되지 않았습니다.");
   }
 
   // IP 기반 일일 요청 제한 체크
