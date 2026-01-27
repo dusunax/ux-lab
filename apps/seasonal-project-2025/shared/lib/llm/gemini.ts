@@ -9,9 +9,9 @@ export class GeminiProvider implements LLMProvider {
   private modelName: string;
 
   constructor(apiKey?: string, modelName: string = DEFAULT_MODEL) {
-    const key = apiKey || process.env.GEMINI_API_Key;
+    const key = apiKey || process.env.GEMINI_API_KEY;
     if (!key) {
-      throw new Error("GEMINI_API_Key가 설정되지 않았습니다.");
+      throw new Error("GEMINI_API_KEY가 설정되지 않았습니다.");
     }
     this.genAI = new GoogleGenerativeAI(key);
     this.modelName = modelName;
