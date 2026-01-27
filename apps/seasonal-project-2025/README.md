@@ -12,7 +12,7 @@
 ### 주요 특징
 
 - 📸 **사진 기반 회고**: EXIF 데이터를 활용한 자동 월별 그룹화
-- 🤖 **AI 분석**: OpenAI GPT-4 Vision을 활용한 사진 분석 및 리포트 생성
+- 🤖 **AI 분석**: Gemini API를 활용한 사진 분석 및 리포트 생성
   - [[apps/project-afterglow-2025] Docs: AI 활용 및 인프라 운영 비용 분석 리포트 (12/22~12/31)](https://github.com/dusunax/ux-lab/issues/11)
 - 📄 **PDF 다운로드**: 생성된 리포트를 PDF로 저장하여 소장 가능 (데이터 스토리지 보관 x)
 - 📊 **사용자 통계**: 실시간 참여 횟수 표시(Firestore) 및 이벤트 성공/실패 통계(Google Analytics, 주요 이벤트-사진 분석, PDF 생성)
@@ -33,7 +33,7 @@
 
 ### 2. AI 기반 분석 및 리포트 생성
 
-- OpenAI GPT-4 Vision을 활용한 사진 분석 (gpt-4o-mini)
+- Gemini API를 활용한 사진 분석 (gemini-2.0-flash-lite)
 
 https://github.com/dusunax/ux-lab/blob/6226eed41fe14979fa2aa45a4a98ec9aff14fffd/apps/seasonal-project-2025/features/report/api/analyze.ts#L222
 
@@ -75,7 +75,7 @@ https://github.com/user-attachments/assets/4a22e0b3-06fa-49c6-bec5-a5ee0d22a819
 ### BE & Platform
 
 - **Firestore, Firebase Admin SDK** - IP 기반 일일 요청 제한 및 통계 저장
-- **OpenAI GPT-4 Vision** - 사진 분석 및 리포트 생성
+- **Gemini API** - 사진 분석 및 리포트 생성 (`shared/lib/llm/`)
 - **Google Analytics** - 사용자 행동 분석
 
 ### 이미지 처리 & PDF 생성
@@ -110,6 +110,10 @@ https://github.com/user-attachments/assets/4a22e0b3-06fa-49c6-bec5-a5ee0d22a819
 │
 └── shared/                       # 공유 모듈
     ├── lib/                      # 유틸리티 함수
+    │   ├── llm/                  # LLM Provider 추상화
+    │   │   ├── types.ts          # LLMProvider 인터페이스
+    │   │   ├── gemini.ts         # Gemini 구현체
+    │   │   └── index.ts          # Provider factory
     │   ├── exifExtractor.ts      # EXIF 데이터 추출
     │   ├── imageResize.ts        # 이미지 리사이징
     │   ├── firebase-admin.ts     # Firebase Admin
@@ -133,7 +137,7 @@ https://github.com/user-attachments/assets/4a22e0b3-06fa-49c6-bec5-a5ee0d22a819
    ↓
 4. 월별 그룹화
    ↓
-5. OpenAI API 호출 (서버)
+5. Gemini API 호출 (서버)
    ↓
 6. 분석 결과 + 원본 이미지 매핑
    ↓
@@ -166,8 +170,8 @@ pnpm install
 `.env.local` 파일을 생성하고 다음 변수들을 설정하세요:
 
 ```env
-# OpenAI API Key
-OPENAI_API_KEY=your_openai_api_key_here
+# Gemini API Key
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # Firebase Admin SDK
 # Firebase Console > Project Settings > Service Accounts에서 JSON 키 다운로드 후
