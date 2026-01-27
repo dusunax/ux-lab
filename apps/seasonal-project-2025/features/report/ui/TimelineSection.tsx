@@ -9,6 +9,20 @@ interface TimelineProps {
   reports: MonthlyReport[];
 }
 
+/**
+ * Get the grid column class based on the number of photos
+ * @param photoCount - Number of photos in the report
+ * @returns Tailwind grid column class
+ */
+function getGridColumnClass(photoCount: number): string {
+  if (photoCount === 1) return "grid-cols-1";
+  if (photoCount === 2) return "grid-cols-2";
+  if (photoCount <= 4) return "grid-cols-2";
+  if (photoCount <= 9) return "grid-cols-3";
+  if (photoCount <= 16) return "grid-cols-4";
+  return "grid-cols-5";
+}
+
 export function Timeline({ reports }: TimelineProps) {
   return (
     <section id="timeline" className="relative bg-transparent z-[100] ">
@@ -55,19 +69,9 @@ export function Timeline({ reports }: TimelineProps) {
                       >
                         {report.photos && report.photos.length > 0 ? (
                           <div
-                            className={`image-grid grid gap-2 ${
-                              report.photos.length === 1
-                                ? "grid-cols-1"
-                                : report.photos.length === 2
-                                ? "grid-cols-2"
-                                : report.photos.length <= 4
-                                ? "grid-cols-2"
-                                : report.photos.length <= 9
-                                ? "grid-cols-3"
-                                : report.photos.length <= 16
-                                ? "grid-cols-4"
-                                : "grid-cols-5"
-                            }`}
+                            className={`image-grid grid gap-2 ${getGridColumnClass(
+                              report.photos.length
+                            )}`}
                           >
                             {report.photos
                               .slice(0, 25)
