@@ -35,8 +35,9 @@ const schema = z.object({
 
 const data = schema.parse(userInput)
 
-// Alternative: Manual validation
-if (!email || !email.includes('@')) {
+// Alternative: Basic validation with regex
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+if (!emailRegex.test(email)) {
   throw new Error('Invalid email')
 }
 ```
