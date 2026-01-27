@@ -17,7 +17,7 @@ if (!apiKey) throw new Error('API_KEY not configured')
 
 - [ ] No hardcoded API keys, passwords, tokens
 - [ ] No .env files committed
-- [ ] User inputs validated (use zod)
+- [ ] User inputs validated (zod recommended)
 - [ ] SQL/NoSQL queries parameterized
 - [ ] HTML outputs sanitized (XSS prevention)
 - [ ] Error messages don't expose internals
@@ -25,6 +25,7 @@ if (!apiKey) throw new Error('API_KEY not configured')
 ## Input Validation
 
 ```typescript
+// Recommended: Use validation library like zod
 import { z } from 'zod'
 
 const schema = z.object({
@@ -33,6 +34,11 @@ const schema = z.object({
 })
 
 const data = schema.parse(userInput)
+
+// Alternative: Manual validation
+if (!email || !email.includes('@')) {
+  throw new Error('Invalid email')
+}
 ```
 
 ## If Security Issue Found

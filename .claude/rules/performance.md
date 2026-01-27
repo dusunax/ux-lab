@@ -5,6 +5,8 @@
 ### Avoid Unnecessary Re-renders
 
 ```typescript
+import { memo, useCallback, useMemo } from 'react'
+
 // Use memo for expensive components
 const ExpensiveList = memo(function ExpensiveList({ items }) {
   return items.map(item => <Item key={item.id} {...item} />)
@@ -50,6 +52,8 @@ const sorted = useMemo(() =>
 - Lazy load below-the-fold content
 
 ```typescript
+import dynamic from 'next/dynamic'
+
 // Dynamic import
 const HeavyChart = dynamic(() => import('./Chart'), {
   loading: () => <Skeleton />
