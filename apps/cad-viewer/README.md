@@ -33,3 +33,10 @@ pnpm run dev:cad
 - 우클릭 드래그: 패닝 이동
 - 가운데 버튼 드래그: 패닝 이동
 - 트랙패드: 두 손가락 드래그 패닝, 핀치 줌
+
+## 이미지 
+
+<img width="200" alt="character" src="https://github.com/user-attachments/assets/c8f2ea8b-efee-41ab-b9a2-bb200be246ca" />  
+<img width="250" alt="tools" src="https://github.com/user-attachments/assets/d6c22e7c-fc95-4274-8991-beb2d4a49a24" />
+<img width="300" alt="tools2" src="https://github.com/user-attachments/assets/5ec1077c-438a-4e0a-b341-475d2b8093b1" />  
+
