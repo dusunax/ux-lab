@@ -1,5 +1,48 @@
 # UX Lab
 
+## 📦 패키지/앱
+
+| 패키지/앱 | 설명 | 기술 스택 |
+| --- | --- | --- |
+| **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
+| **@ux-lab/seasonal-project-2025** | AI 기반 연말 사진 회고 웹 서비스 | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) |
+| **@ux-lab/flow** | UX Flow 다이어그램 에디터 | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) |
+| **@ux-lab/applications** | 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md)) | - |
+| **@ux-lab/ui** | 공통 UI 컴포넌트 라이브러리 | - |
+| **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - |
+
+## 📸 스크린샷
+
+### 📍 @ux-lab/cad-viewer
+
+- DXF 도면 업로드 및 2D 뷰어
+- 마우스/트랙패드 기반 확대/이동 조작
+
+<img width="800" src="https://github.com/user-attachments/assets/e88a0589-a42e-4a06-8861-057717419d39" />
+
+### 📍 @ux-lab/seasonal-project-2025
+
+- 사진 분석 요청
+- 원페이지 스크롤 이벤트
+- PDF 저장
+- Firebase 기반 일일 요청 횟수 제한
+
+<img width="800" height="2072" alt="image" src="https://github.com/user-attachments/assets/b147b4f0-2df6-46c0-8a1e-d955069c99e4" />
+
+<img width="800" height="877" alt="image" src="https://github.com/user-attachments/assets/565b7146-3047-40f3-b80a-7a8855fb0b5d" />
+
+### 📍 @ux-lab/applications
+
+- 원티드 PDF 파싱 후 리스트 생성
+- 로컬 스토리지 기반 리스트 데이터 관리
+
+<img width="800" height="1394" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
+
+### 📍 @ux-lab/flow
+
+<img width="800" height="917" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
+
+
 ## 🚀 시작하기
 
 ```bash
@@ -23,18 +66,6 @@ pnpm -w run dev:all
 1. `.env.local` 파일 생성 (apps/flow/.env.example 참고)
 2. Firebase 설정 값 입력
 
-## 📦 패키지/앱
-
-
-| 패키지/앱 | 설명 | 기술 스택 |
-| --- | --- | --- |
-| **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
-| **@ux-lab/seasonal-project-2025** | AI 기반 연말 사진 회고 웹 서비스 | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) |
-| **@ux-lab/flow** | UX Flow 다이어그램 에디터 | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) |
-| **@ux-lab/applications** | 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md)) | - |
-| **@ux-lab/ui** | 공통 UI 컴포넌트 라이브러리 | - |
-| **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - |
-
 ## 🛠️ 기술 스택
 
 - React 19.1.0
@@ -49,36 +80,3 @@ pnpm -w run dev:all
 - three-dxf-viewer (DXF 렌더링)(@ux-lab/cad-viewer)
 - pdfjs-dist (PDF 파싱)(@ux-lab/applications)
 - EXIF 데이터 추출 (exifr) (@ux-lab/seasonal-project-2025)
-
-## 📸 스크린샷
-
-### @ux-lab/cad-viewer
-
-- DXF 도면 업로드 및 2D 뷰어 검수
-- 마우스/트랙패드 기반 확대/이동 조작
-
-<img width="1000" src="https://github.com/user-attachments/assets/e88a0589-a42e-4a06-8861-057717419d39" />
-
-### @ux-lab/seasonal-project-2025
-
-- 사진 분석 요청
-- 원페이지 스크롤 이벤트
-- PDF 저장
-- Firebase 기반 일일 요청 횟수 제한
-
-<img width="1200" height="2072" alt="image" src="https://github.com/user-attachments/assets/b147b4f0-2df6-46c0-8a1e-d955069c99e4" />
-
-<img width="1421" height="877" alt="image" src="https://github.com/user-attachments/assets/565b7146-3047-40f3-b80a-7a8855fb0b5d" />
-
-
-### @ux-lab/applications
-
-- 원티드 PDF 파싱 후 리스트 생성
-- 로컬 스토리지 기반 리스트 데이터 관리
-
-<img width="1612" height="1394" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
-
-
-### @ux-lab/flow
-
-<img width="1375" height="917" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
