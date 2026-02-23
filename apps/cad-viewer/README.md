@@ -2,6 +2,8 @@
 
 웹 브라우저에서 CAD 파일을 확인하기 위한 Next.js 앱입니다.
 
+<img width="1024" src="https://github.com/user-attachments/assets/9b121e4c-a600-405c-a9ab-960d75aab0ef" />
+
 ## 지원 포맷
 
 - DXF (three-dxf-viewer 2D 렌더 경로)
