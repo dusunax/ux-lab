@@ -25,12 +25,13 @@ pnpm -w run dev:all
 
 ## 📦 패키지/앱
 
-- **@ux-lab/ui** - 공통 UI 컴포넌트 라이브러리
-- **@ux-lab/showcase** - 컴포넌트 쇼케이스
+- **@ux-lab/cad-viewer** - DXF 도면 확인용 CAD 뷰어 (우드 크래프트 테마 UI)
 - **@ux-lab/flow** - UX Flow 다이어그램 에디터 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
 - **@ux-lab/applications** - 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md))
 - **@ux-lab/seasonal-project-2025** - AI 기반 연말 사진 회고 웹 서비스 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
  ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white)
+- **@ux-lab/ui** - 공통 UI 컴포넌트 라이브러리
+- **@ux-lab/showcase** - 컴포넌트 쇼케이스
 
 
 ## 🛠️ 기술 스택
@@ -43,10 +44,20 @@ pnpm -w run dev:all
 - OpenAI API (@ux-lab/seasonal-project-2025)
 - Framer Motion (@ux-lab/seasonal-project-2025)
 - React Flow (@ux-lab/flow)
+- Three.js, @react-three/fiber, @react-three/drei (@ux-lab/cad-viewer)
+- three-dxf-viewer (DXF 렌더링)(@ux-lab/cad-viewer)
 - pdfjs-dist (PDF 파싱)(@ux-lab/applications)
 - EXIF 데이터 추출 (exifr) (@ux-lab/seasonal-project-2025)
 
 ## 📸 스크린샷
+
+### @ux-lab/cad-viewer
+
+- DXF 도면 업로드 및 2D 뷰어 검수
+- 마우스/트랙패드 기반 확대/이동 조작
+
+<!-- TODO: cad-viewer screenshot -->
+<!-- <img width="1400" height="900" alt="cad-viewer screenshot" src="(screenshot-url)" /> -->
 
 ### @ux-lab/seasonal-project-2025
 
