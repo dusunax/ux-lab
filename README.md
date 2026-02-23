@@ -25,14 +25,15 @@ pnpm -w run dev:all
 
 ## 📦 패키지/앱
 
-- **@ux-lab/cad-viewer** - DXF 도면 확인용 CAD 뷰어 (우드 크래프트 테마 UI)
-- **@ux-lab/flow** - UX Flow 다이어그램 에디터 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
-- **@ux-lab/applications** - 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md))
-- **@ux-lab/seasonal-project-2025** - AI 기반 연말 사진 회고 웹 서비스 ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
- ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white)
-- **@ux-lab/ui** - 공통 UI 컴포넌트 라이브러리
-- **@ux-lab/showcase** - 컴포넌트 쇼케이스
 
+| 패키지/앱 | 설명 | 기술 스택 |
+| --- | --- | --- |
+| **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
+| **@ux-lab/seasonal-project-2025** | AI 기반 연말 사진 회고 웹 서비스 | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) |
+| **@ux-lab/flow** | UX Flow 다이어그램 에디터 | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) |
+| **@ux-lab/applications** | 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md)) | - |
+| **@ux-lab/ui** | 공통 UI 컴포넌트 라이브러리 | - |
+| **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - |
 
 ## 🛠️ 기술 스택
 
@@ -56,8 +57,7 @@ pnpm -w run dev:all
 - DXF 도면 업로드 및 2D 뷰어 검수
 - 마우스/트랙패드 기반 확대/이동 조작
 
-<!-- TODO: cad-viewer screenshot -->
-<!-- <img width="1400" height="900" alt="cad-viewer screenshot" src="(screenshot-url)" /> -->
+<img width="1000" src="https://github.com/user-attachments/assets/e88a0589-a42e-4a06-8861-057717419d39" />
 
 ### @ux-lab/seasonal-project-2025
 
