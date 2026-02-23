@@ -1,0 +1,402 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-top: #efe0c5;
+  --bg-mid: #c7a178;
+  --bg-bottom: #8f633f;
+  --panel: rgba(247, 239, 225, 0.78);
+  --panel-strong: rgba(245, 235, 219, 0.92);
+  --text-main: #2d1f14;
+  --text-sub: #5b4332;
+  --accent: #6f3f22;
+  --accent-soft: #8b522e;
+  --canvas-bg: #2a1b12;
+  --canvas-grid: rgba(243, 220, 179, 0.28);
+  --canvas-grid-strong: rgba(243, 220, 179, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text-main);
+  font-family: "Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(
+      900px 400px at 8% 0%,
+      rgba(255, 248, 228, 0.56),
+      transparent 70%
+    ),
+    radial-gradient(
+      1000px 460px at 100% 8%,
+      rgba(126, 78, 45, 0.2),
+      transparent 65%
+    ),
+    repeating-linear-gradient(
+      6deg,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 2px,
+      transparent 2px,
+      transparent 10px
+    ),
+    linear-gradient(180deg, var(--bg-top), var(--bg-mid) 48%, var(--bg-bottom));
+}
+
+.cad-mono {
+  font-family: "IBM Plex Mono", "Menlo", "SFMono-Regular", monospace;
+}
+
+.glass {
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(98, 61, 36, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 14px 30px rgba(48, 24, 15, 0.15);
+}
+
+.pulse-grid {
+  background-image:
+    linear-gradient(var(--canvas-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px),
+    linear-gradient(var(--canvas-grid-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--canvas-grid-strong) 1px, transparent 1px);
+  background-size:
+    24px 24px,
+    24px 24px,
+    96px 96px,
+    96px 96px;
+}
+
+.canvas-wood {
+  background-color: var(--canvas-bg);
+}
+
+.display-font {
+  font-family: "Rockwell", "Georgia", "Times New Roman", serif;
+  letter-spacing: 0.02em;
+}
+
+.wood-button {
+  background: linear-gradient(180deg, #7b4b2a, #5f361f);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 4px 0 #4b2815;
+}
+
+.wood-button:hover {
+  background: linear-gradient(180deg, #8a5733, #6c3d23);
+}
+
+.blueprint-sheet {
+  border: 1px solid rgba(86, 118, 151, 0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 12px 20px rgba(24, 51, 82, 0.16);
+  background:
+    linear-gradient(rgba(96, 139, 178, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 139, 178, 0.18) 1px, transparent 1px),
+    linear-gradient(180deg, #e8f2fc, #dcebf8);
+  background-size:
+    24px 24px,
+    24px 24px,
+    auto;
+}
+
+.workshop-note {
+  position: relative;
+  border: 1px solid rgba(176, 146, 104, 0.55);
+  padding-left: 2.4rem;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(103, 139, 180, 0.28) 0px,
+      rgba(103, 139, 180, 0.28) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    linear-gradient(180deg, #fbf3dd, #f5e9c9);
+  box-shadow:
+    0 14px 24px rgba(92, 62, 30, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 0 0 1px rgba(243, 229, 196, 0.85);
+}
+
+.workshop-note::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1.5rem;
+  width: 2px;
+  background: rgba(210, 90, 90, 0.62);
+}
+
+.workshop-note::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 0.52rem;
+  width: 12px;
+  background:
+    radial-gradient(circle at center, #d4c7aa 0 3px, transparent 3.2px) center top /
+      12px 22px repeat-y;
+  opacity: 0.95;
+}
+
+.sprite-piece {
+  position: absolute;
+  z-index: 10;
+  display: none;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 5px 8px rgba(28, 17, 8, 0.32));
+}
+
+@media (min-width: 1024px) {
+  .sprite-piece {
+    display: block;
+  }
+}
+
+.sprite-saw {
+  left: -0.8rem;
+  top: 13rem;
+  width: 157.36px;
+  height: 131.6px;
+  transform: rotate(-7deg);
+  background-image: url("/images/tools.png");
+  background-size: 430.08px 286.72px;
+  background-position: -7.84px -77.84px;
+}
+
+.sprite-plane {
+  right:0.4rem;
+  top: 15.2rem;
+  width: 124.24px;
+  height: 89.64px;
+  transform: rotate(8deg);
+  background-image: url("/images/tools.png");
+  background-size: 432.72px 302.48px;
+  background-position: -174.96px -104.76px;
+}
+
+.sprite-clamp {
+  left: 6rem;
+  bottom: 48.6rem;
+  width: 94.6px;
+  height: 91.52px;
+  transform: rotate(22deg);
+  background-image: url("/images/tools.png");
+  background-size: 337.92px 225.28px;
+  background-position: -235.4px -79.2px;
+}
+
+.sprite-hammer {
+  left: -10px;
+  top: 1.4rem;
+  width: 76.16px;
+  height: 83.84px;
+  transform: rotate(-30deg);
+  background-image: url("/images/tools2.png");
+  background-size: 400.36px 260.04px;
+  background-position: -13.16px -13.4px;
+}
+
+.sprite-glue {
+  right: 37.5%;
+  top: 9rem;
+  width: 56.32px;
+  height: 68.48px;
+  transform: rotate(8deg);
+  background-image: url("/images/tools2.png");
+  background-size: 471.36px 295.04px;
+  background-position: -103.04px -37.12px;
+}
+
+.sprite-pencil {
+  right: -0.5%;
+  top: 20rem;
+  width: 62.4px;
+  height: 60.6px;
+  transform: rotate(6deg);
+  background-image: url("/images/tools2.png");
+  background-size: 441.9px 276.6px;
+  background-position: -186px -203.2px;
+}
+
+.sprite-saw-2 {
+  right: -1.6rem;
+  top: 14.2rem;
+  width: 133.1px;
+  height: 79.2px;
+  transform: rotate(-5deg);
+  background-image: url("/images/tools2.png");
+  background-size: 323.06px 202.2px;
+  background-position: -137.8px -9.46px;
+}
+
+.sprite-shavings {
+  right: 3.1rem;
+  top: 7.9%;
+  width: 66.12px;
+  height: 64.8px;
+  transform: rotate(8deg);
+  background-image: url("/images/tools2.png");
+  background-size: 421.28px 263.69px;
+  background-position: -12.72px -110.28px;
+}
+
+.sprite-knife {
+  right: 29.7rem;
+  top: 10rem;
+  width: 45.76px;
+  height: 54.12px;
+  transform: rotate(18deg);
+  background-image: url("/images/tools2.png");
+  background-size: 323.06px 202.2px;
+  background-position: -69.72px -80.52px;
+}
+
+.sprite-plane-2 {
+  left: 33%;
+  bottom: -0.4rem;
+  width: 70.3px;
+  height: 44.29px;
+  transform: rotate(-11deg);
+  background-image: url("/images/tools2.png");
+  background-size: 333.37px 208.65px;
+  background-position: -138.53px -91.23px;
+}
+
+.sprite-clamp-2 {
+  right: -0.9rem;
+  bottom: 7.1rem;
+  width: 92.5px;
+  height: 78px;
+  transform: rotate(6deg);
+  background-image: url("/images/tools2.png");
+  background-size: 367.57px 230.04px;
+  background-position: -257.75px -96px;
+}
+
+.sprite-tape {
+  left: 10%;
+  bottom: -0.7rem;
+  width: 72px;
+  height: 63.36px;
+  transform: rotate(-6deg);
+  background-image: url("/images/tools2.png");
+  background-size: 423.58px 265.13px;
+  background-position: -9.79px -177.76px;
+}
+
+.sprite-square {
+  left: 24%;
+  top: 8.8rem;
+  width: 67.5px;
+  height: 51.5px;
+  transform: rotate(9deg);
+  background-image: url("/images/tools2.png");
+  background-size: 368.25px 230.46px;
+  background-position: -82.25px -169px;
+}
+
+.sprite-sandpaper {
+  right: 14%;
+  bottom: 0.2rem;
+  width: 73.87px;
+  height: 33.84px;
+  transform: rotate(10deg);
+  background-image: url("/images/tools2.png");
+  background-size: 345.16px 216px;
+  background-position: -199.11px -170.88px;
+}
+
+.sprite-goggles {
+  right: 81.8rem;
+  bottom: 2.2rem;
+  width: 80.75px;
+  height: 47.25px;
+  transform: rotate(-4deg);
+  background-image: url("/images/tools2.png");
+  background-size: 409.47px 256.32px;
+  background-position: -322.48px -193.43px;
+}
+
+.sprite-character {
+  right: 22.2rem;
+  bottom: 0.2rem;
+  width: 300px;
+  height: 300px;
+  transform: rotate(-2deg);
+  background-image: url("/images/character.png");
+  background-size: contain;
+  background-position: center;
+}
+
+.dot-bubble {
+  position: absolute;
+  right: 25rem;
+  bottom: 18.8rem;
+  z-index: 18;
+  display: none;
+  max-width: 220px;
+  padding: 10px 12px;
+  border: 3px solid #1e1b18;
+  border-radius: 8px;
+  background: #fff6d8;
+  color: #2d1f14;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  box-shadow: 0 6px 0 #8e6a43;
+  image-rendering: pixelated;
+}
+
+.dot-bubble::before {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: -12px;
+  width: 14px;
+  height: 14px;
+  border-right: 3px solid #1e1b18;
+  border-bottom: 3px solid #1e1b18;
+  background: #fff6d8;
+  transform: skewX(-20deg) rotate(45deg);
+}
+
+@media (min-width: 1024px) {
+  .dot-bubble {
+    display: block;
+  }
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.float-in {
+  animation: float-in 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
