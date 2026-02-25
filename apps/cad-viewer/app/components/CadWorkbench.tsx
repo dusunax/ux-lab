@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import DxfThreeViewer from "./DxfThreeViewer";
+import { createDXFViewer } from "./DXFViewer";
+
+const DXFViewer = createDXFViewer("three-dxf-viewer");
 
 type ModelInfo = {
   ext: string;
@@ -99,7 +101,7 @@ export default function CadWorkbench() {
 
       <section className="grid min-h-0 flex-1 gap-4 lg:grid-cols-3">
         <section className="float-in glass min-h-0 rounded-2xl p-3 lg:col-span-2">
-          <DxfThreeViewer
+          <DXFViewer
             file={file}
             onError={setError}
             onStatus={setCad2dStatus}
@@ -129,19 +131,21 @@ export default function CadWorkbench() {
               >
                 Select Blueprint
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setFile(null);
-                  setInfo(null);
-                  setError(null);
-                  setCad2dStatus("Idle");
-                  pickRandomCheer();
-                }}
-                className="rounded-md border border-[#6a7f95] bg-[#f5f9fd] px-3 py-2 text-xs font-semibold text-[#3f566e] transition hover:bg-[#e7f0f8]"
-              >
-                Clear
-              </button>
+              {file ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFile(null);
+                    setInfo(null);
+                    setError(null);
+                    setCad2dStatus("Idle");
+                    pickRandomCheer();
+                  }}
+                  className="rounded-md border border-[#6a7f95] bg-[#f5f9fd] px-3 py-2 text-xs font-semibold text-[#3f566e] transition hover:bg-[#e7f0f8]"
+                >
+                  Clear
+                </button>
+              ) : null}
             </div>
 
             <input

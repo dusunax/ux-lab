@@ -2,16 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Bounds, Grid, OrbitControls } from "@react-three/drei";
+import { Grid, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-
-type DxfThreeViewerProps = {
-  file: File | null;
-  onError: (message: string | null) => void;
-  onStatus: (status: string) => void;
-  onInfo: (value: { ext: string; vertices: number } | null) => void;
-  className?: string;
-};
+import type { DXFViewerProps } from "./types";
 
 type DxfViewerModule = {
   DXFViewer?: new () => {
@@ -23,6 +16,10 @@ type DxfViewerModule = {
 type DxfViewerCtor = new () => {
   getFromFile: (file: File, font: string) => Promise<THREE.Object3D>;
 };
+
+const DEFAULT_CAMERA_Z = 100;
+const DEFAULT_ORTHO_ZOOM = 6;
+const MAX_CAMERA_FIT_COORD = 1_000_000;
 
 async function loadDxfModule(): Promise<DxfViewerModule> {
   const runtimeImport = new Function("m", "return import(m)") as (m: string) => Promise<any>;
@@ -53,7 +50,7 @@ function resolveDxfViewerCtor(mod: DxfViewerModule): DxfViewerCtor {
   return ctor as DxfViewerCtor;
 }
 
-async function normalizeCadFileForDxfViewer(file: File): Promise<{ source: File; ext: "dxf" }> {
+async function normalizeCadFile(file: File): Promise<{ source: File; ext: "dxf" }> {
   const lowerName = file.name.toLowerCase();
 
   if (lowerName.endsWith(".dxf")) {
@@ -109,7 +106,164 @@ function disposeObject(obj: THREE.Object3D) {
   });
 }
 
-function ViewerControls() {
+function percentile(sorted: number[], p: number): number {
+  if (sorted.length === 0) return 0;
+  const idx = (sorted.length - 1) * p;
+  const low = Math.floor(idx);
+  const high = Math.ceil(idx);
+  if (low === high) return sorted[low];
+  const t = idx - low;
+  return sorted[low] * (1 - t) + sorted[high] * t;
+}
+
+function getRobustWorldBounds(root: THREE.Object3D): THREE.Box3 | null {
+  const tmp = new THREE.Vector3();
+  const xs: number[] = [];
+  const ys: number[] = [];
+  const zs: number[] = [];
+
+  root.updateWorldMatrix(true, true);
+  root.traverse((child) => {
+    const entity = child as THREE.Object3D & { geometry?: THREE.BufferGeometry };
+    const geom = entity.geometry;
+    if (!geom) return;
+
+    const pos = geom.getAttribute("position");
+    if (!pos || pos.itemSize < 3) return;
+
+    for (let i = 0; i < pos.count; i += 1) {
+      tmp.set(pos.getX(i), pos.getY(i), pos.getZ(i));
+      tmp.applyMatrix4(child.matrixWorld);
+
+      if (
+        !Number.isFinite(tmp.x) ||
+        !Number.isFinite(tmp.y) ||
+        !Number.isFinite(tmp.z) ||
+        Math.abs(tmp.x) > MAX_CAMERA_FIT_COORD ||
+        Math.abs(tmp.y) > MAX_CAMERA_FIT_COORD ||
+        Math.abs(tmp.z) > MAX_CAMERA_FIT_COORD
+      ) {
+        continue;
+      }
+      xs.push(tmp.x);
+      ys.push(tmp.y);
+      zs.push(tmp.z);
+    }
+  });
+
+  if (xs.length < 2) return null;
+
+  xs.sort((a, b) => a - b);
+  ys.sort((a, b) => a - b);
+  zs.sort((a, b) => a - b);
+
+  const qLow = 0.02;
+  const qHigh = 0.98;
+  const min = new THREE.Vector3(
+    percentile(xs, qLow),
+    percentile(ys, qLow),
+    percentile(zs, qLow)
+  );
+  const max = new THREE.Vector3(
+    percentile(xs, qHigh),
+    percentile(ys, qHigh),
+    percentile(zs, qHigh)
+  );
+
+  if (!Number.isFinite(min.x + min.y + min.z + max.x + max.y + max.z)) return null;
+  if (min.x === max.x && min.y === max.y && min.z === max.z) return null;
+
+  return new THREE.Box3(min, max);
+}
+
+function computeEntityWorldBox(entity: THREE.Object3D & { geometry?: THREE.BufferGeometry }): THREE.Box3 | null {
+  const geom = entity.geometry;
+  if (!geom) return null;
+  const pos = geom.getAttribute("position");
+  if (!pos || pos.itemSize < 3) return null;
+
+  const tmp = new THREE.Vector3();
+  const box = new THREE.Box3();
+  let has = false;
+
+  entity.updateWorldMatrix(true, false);
+  for (let i = 0; i < pos.count; i += 1) {
+    tmp.set(pos.getX(i), pos.getY(i), pos.getZ(i));
+    tmp.applyMatrix4(entity.matrixWorld);
+    if (
+      !Number.isFinite(tmp.x) ||
+      !Number.isFinite(tmp.y) ||
+      !Number.isFinite(tmp.z) ||
+      Math.abs(tmp.x) > MAX_CAMERA_FIT_COORD ||
+      Math.abs(tmp.y) > MAX_CAMERA_FIT_COORD ||
+      Math.abs(tmp.z) > MAX_CAMERA_FIT_COORD
+    ) {
+      continue;
+    }
+    if (!has) {
+      box.min.copy(tmp);
+      box.max.copy(tmp);
+      has = true;
+    } else {
+      box.expandByPoint(tmp);
+    }
+  }
+
+  return has ? box : null;
+}
+
+function filterToMainCluster(root: THREE.Object3D) {
+  const core = getRobustWorldBounds(root);
+  if (!core) return;
+
+  const size = core.getSize(new THREE.Vector3());
+  const pad = new THREE.Vector3(
+    Math.max(size.x * 0.12, 1),
+    Math.max(size.y * 0.12, 1),
+    Math.max(size.z * 0.12, 1)
+  );
+  const allowed = core.clone().expandByVector(pad);
+
+  root.updateWorldMatrix(true, true);
+  const candidates: Array<{
+    entity: THREE.Object3D & { geometry?: THREE.BufferGeometry };
+    box: THREE.Box3;
+    cy: number;
+  }> = [];
+
+  root.traverse((child) => {
+    const entity = child as THREE.Object3D & { geometry?: THREE.BufferGeometry };
+    if (!entity.geometry) return;
+
+    const entityBox = computeEntityWorldBox(entity);
+    if (!entityBox) {
+      entity.visible = false;
+      return;
+    }
+
+    if (allowed.intersectsBox(entityBox)) {
+      candidates.push({
+        entity,
+        box: entityBox,
+        cy: (entityBox.min.y + entityBox.max.y) * 0.5,
+      });
+      entity.visible = true;
+    } else {
+      entity.visible = false;
+    }
+  });
+
+  if (candidates.length < 4) return;
+
+  const ys = candidates.map((c) => c.cy).sort((a, b) => a - b);
+  const upperKeepY = percentile(ys, 0.72);
+
+  for (const c of candidates) {
+    c.entity.visible = c.cy <= upperKeepY;
+  }
+}
+
+function ViewerControls({ hasObject, sceneObject }: { hasObject: boolean; sceneObject: THREE.Object3D | null }) {
   const controlsRef = useRef<any>(null);
   const { camera, gl } = useThree();
 
@@ -123,7 +277,6 @@ function ViewerControls() {
       const looksLikeTrackpad =
         event.deltaMode === 0 && (Math.abs(event.deltaX) > 0 || Math.abs(event.deltaY) < 40);
 
-      // Keep pinch zoom behavior. For trackpad two-finger drag, prefer pan.
       if (!looksLikeTrackpad || event.ctrlKey || event.metaKey) return;
 
       event.preventDefault();
@@ -147,6 +300,67 @@ function ViewerControls() {
     };
   }, [camera, gl]);
 
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!controls || hasObject) return;
+
+    if (camera instanceof THREE.OrthographicCamera) {
+      camera.position.set(0, 0, DEFAULT_CAMERA_Z);
+      camera.zoom = DEFAULT_ORTHO_ZOOM;
+      camera.updateProjectionMatrix();
+    }
+    controls.target.set(0, 0, 0);
+    controls.update();
+  }, [camera, hasObject]);
+
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!controls || !sceneObject || !(camera instanceof THREE.OrthographicCamera)) return;
+
+    const box = getRobustWorldBounds(sceneObject);
+    if (!box || box.isEmpty()) return;
+
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const safeX = Math.max(size.x, 1e-6);
+    const safeY = Math.max(size.y, 1e-6);
+    const safeZ = Math.max(size.z, 1e-6);
+
+    const lookAxis: "x" | "y" | "z" =
+      safeX <= safeY && safeX <= safeZ
+        ? "x"
+        : safeY <= safeX && safeY <= safeZ
+          ? "y"
+          : "z";
+
+    const spanX = lookAxis === "x" ? safeY : safeX;
+    const spanY = lookAxis === "z" ? safeY : safeZ;
+
+    const w = Math.max(gl.domElement.clientWidth, 1);
+    const h = Math.max(gl.domElement.clientHeight, 1);
+    const fitZoom = 0.9 * Math.min(w / Math.max(spanX, 1), h / Math.max(spanY, 1));
+    camera.zoom = Number.isFinite(fitZoom) ? Math.max(Math.min(fitZoom, 300), 0.1) : camera.zoom;
+
+    const dist = Math.max(size.x, size.y, size.z, 1) * 2;
+    if (lookAxis === "z") {
+      camera.position.set(center.x, center.y, center.z + dist);
+      camera.up.set(0, 1, 0);
+    } else if (lookAxis === "y") {
+      camera.position.set(center.x, center.y + dist, center.z);
+      camera.up.set(0, 0, 1);
+    } else {
+      camera.position.set(center.x + dist, center.y, center.z);
+      camera.up.set(0, 0, 1);
+    }
+
+    camera.lookAt(center);
+    camera.near = 0.01;
+    camera.far = Math.max(10000, dist * 20);
+    camera.updateProjectionMatrix();
+    controls.target.copy(center);
+    controls.update();
+  }, [camera, gl, sceneObject]);
+
   return (
     <OrbitControls
       ref={controlsRef}
@@ -164,7 +378,7 @@ function ViewerControls() {
   );
 }
 
-export default function DxfThreeViewer({ file, onError, onStatus, onInfo, className }: DxfThreeViewerProps) {
+export function DXFViewerWithThree({ file, onError, onStatus, onInfo, className }: DXFViewerProps) {
   const [object, setObject] = useState<THREE.Object3D | null>(null);
 
   useEffect(() => {
@@ -200,7 +414,7 @@ export default function DxfThreeViewer({ file, onError, onStatus, onInfo, classN
         const mod = await loadDxfModule();
         if (cancelled) return;
 
-        const normalized = await normalizeCadFileForDxfViewer(file);
+        const normalized = await normalizeCadFile(file);
         if (cancelled) return;
 
         onStatus("Parsing DXF");
@@ -209,6 +423,8 @@ export default function DxfThreeViewer({ file, onError, onStatus, onInfo, classN
         const fontUrl = "https://unpkg.com/three@0.181.2/examples/fonts/helvetiker_regular.typeface.json";
         const nextObject = await viewer.getFromFile(normalized.source, fontUrl);
         normalizeMaterialColorsForDarkCanvas(nextObject);
+        filterToMainCluster(nextObject);
+        console.log("[CAD Viewer] Render object loaded:", nextObject);
 
         if (cancelled) {
           disposeObject(nextObject);
@@ -250,7 +466,10 @@ export default function DxfThreeViewer({ file, onError, onStatus, onInfo, classN
     <div
       className={`canvas-wood relative h-full min-h-[280px] w-full overflow-hidden rounded-2xl border border-[#9b7358]/70 shadow-inner ${className ?? ""}`}
     >
-      <Canvas orthographic camera={{ position: [0, 0, 100], zoom: 80, near: 0.1, far: 10000 }}>
+      <Canvas
+        orthographic
+        camera={{ position: [0, 0, DEFAULT_CAMERA_Z], zoom: DEFAULT_ORTHO_ZOOM, near: 0.1, far: 10000 }}
+      >
         <color attach="background" args={["#2a1b12"]} />
         <ambientLight intensity={1} />
 
@@ -269,11 +488,9 @@ export default function DxfThreeViewer({ file, onError, onStatus, onInfo, classN
           infiniteGrid
         />
 
-        <Bounds fit clip observe margin={1.2}>
-          {primitive}
-        </Bounds>
+        {primitive}
 
-        <ViewerControls />
+        <ViewerControls hasObject={Boolean(primitive)} sceneObject={object} />
       </Canvas>
     </div>
   );
