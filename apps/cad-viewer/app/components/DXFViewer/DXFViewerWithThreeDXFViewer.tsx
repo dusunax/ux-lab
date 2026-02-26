@@ -414,13 +414,20 @@ export function DXFViewerWithThreeDXFViewer({ file, onError, onStatus, onInfo, c
 
   return (
     <div
-      className={`canvas-wood relative h-full min-h-[280px] w-full overflow-hidden rounded-2xl border border-[#9b7358]/70 ${className ?? ""}`}
+      className={`canvas-wood relative h-full min-h-[280px] w-full overflow-hidden rounded-2xl border border-[#9b7358]/70 ${
+        className ?? ""
+      }`}
     >
       <Canvas
         orthographic
-        camera={{ position: [0, 0, DEFAULT_CAMERA_Z], zoom: DEFAULT_ORTHO_ZOOM, near: 0.1, far: 10000 }}
+        camera={{
+          position: [0, 0, DEFAULT_CAMERA_Z],
+          zoom: DEFAULT_ORTHO_ZOOM,
+          near: 0.1,
+          far: 10000,
+        }}
       >
-        <color attach="background" args={["#3a281c"]} />
+        <color attach='background' args={["#2b1b10"]} />
         <ambientLight intensity={1.75} />
         <hemisphereLight args={["#fff1d8", "#cfa884", 0.95]} />
         <directionalLight position={[12, 10, 8]} intensity={0.35} />
@@ -432,8 +439,8 @@ export function DXFViewerWithThreeDXFViewer({ file, onError, onStatus, onInfo, c
           args={[120, 120]}
           cellSize={2}
           sectionSize={10}
-          cellColor="#7a6652"
-          sectionColor="#a58a70"
+          cellColor='#544232'
+          sectionColor='#6c503e'
           cellThickness={0.45}
           sectionThickness={0.85}
           fadeDistance={2000}
