@@ -23,7 +23,7 @@ async function getRedisClient() {
     redisClient = createClient({
       url: redisUrl,
     });
-    redisConnectPromise = redisClient.connect();
+    redisConnectPromise = redisClient.connect().then(() => {});
   }
 
   if (redisConnectPromise) {
