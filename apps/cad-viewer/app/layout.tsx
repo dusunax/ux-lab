@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Barnwood Puzzle Workshop",
-  description: "A retro workshop viewer for checking DWG/DXF wood puzzle blueprints.",
+  description: "A retro workshop viewer for checking DXF wood puzzle blueprints.",
   icons: {
     icon: "/images/favicon.ico",
     apple: "/images/apple-touch-icon.png",

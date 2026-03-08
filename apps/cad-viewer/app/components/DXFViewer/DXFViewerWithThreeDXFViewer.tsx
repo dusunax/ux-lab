@@ -5,11 +5,30 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { Grid, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { DXFViewer as ThreeDxfViewer } from "three-dxf-viewer";
+import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import type { DXFViewerProps } from "./types";
+import { preprocessDxfText } from "./dxfTextPreprocess";
 
 const DEFAULT_CAMERA_Z = 100;
 const DEFAULT_ORTHO_ZOOM = 6;
 const MAX_CAMERA_FIT_COORD = 1_000_000;
+const BOUNDING_WARNING_SNIPPET =
+  "THREE.BufferGeometry.computeBoundingBox(): Computed min/max have NaN values.";
+
+async function suppressBoundingBoxWarnings<T>(operation: () => Promise<T>): Promise<T> {
+  const originalError = console.error;
+  console.error = (...args: unknown[]) => {
+    const first = String(args[0] ?? "");
+    if (first.includes(BOUNDING_WARNING_SNIPPET)) return;
+    originalError(...args);
+  };
+
+  try {
+    return await operation();
+  } finally {
+    console.error = originalError;
+  }
+}
 
 async function normalizeCadFile(file: File): Promise<{ source: File; ext: "dxf" }> {
   const lowerName = file.name.toLowerCase();
@@ -42,12 +61,6 @@ async function reencodeToUtf8(file: File): Promise<File> {
   return new File([updated], file.name, { type: file.type });
 }
 
-function convertDxfSpecialChars(content: string): string {
-  return content
-    .replace(/%%[Cc]/g, "Ø")
-    .replace(/%%[Dd]/g, "°")
-    .replace(/%%[Pp]/g, "±");
-}
 
 function countVertices(obj: THREE.Object3D) {
   let count = 0;
@@ -328,8 +341,24 @@ function ViewerControls({ hasObject, sceneObject }: { hasObject: boolean; sceneO
   );
 }
 
-export function DXFViewerWithThreeDXFViewer({ file, onError, onStatus, onInfo, className }: DXFViewerProps) {
+export function DXFViewerWithThreeDXFViewer({
+  file,
+  onError,
+  onStatus,
+  onInfo,
+  rotationDeg = 0,
+  className,
+}: DXFViewerProps) {
   const [object, setObject] = useState<THREE.Object3D | null>(null);
+  const rotationRad = (rotationDeg * Math.PI) / 180;
+  const rotationCenter = useMemo(() => {
+    if (!object) return new THREE.Vector3(0, 0, 0);
+
+    const box = getRobustWorldBounds(object);
+    if (!box || box.isEmpty()) return new THREE.Vector3(0, 0, 0);
+
+    return box.getCenter(new THREE.Vector3());
+  }, [object]);
 
   useEffect(() => {
     let cancelled = false;
@@ -367,15 +396,37 @@ export function DXFViewerWithThreeDXFViewer({ file, onError, onStatus, onInfo, c
         onStatus("Parsing DXF");
         const reencoded = await reencodeToUtf8(normalized.source);
         const reencodedContent = await reencoded.text();
-        const fixedContent = convertDxfSpecialChars(reencodedContent);
-        const fixedFile = new File([fixedContent], file.name, { type: file.type });
 
-        const viewer = new ThreeDxfViewer();
-        const fontUrl = "https://unpkg.com/three@0.181.2/examples/fonts/helvetiker_regular.typeface.json";
-        const nextObject = await viewer.getFromFile(fixedFile, fontUrl);
+        const parseCandidates: string[] = [
+          reencodedContent,
+          preprocessDxfText(reencodedContent),
+        ];
+
+        const typefaceRes = await fetch("/api/fonts/NanumGothic-Regular.ttf");
+        if (!typefaceRes.ok) throw new Error("Failed to load font");
+        const typefaceData = await typefaceRes.json();
+
+        let nextObject: THREE.Object3D | null = null;
+        let parseError: unknown;
+        for (const content of parseCandidates) {
+          const candidateFile = new File([content], file.name, { type: file.type });
+          const viewer = new ThreeDxfViewer();
+          try {
+            (viewer as unknown as { _font: Font })._font = new Font(typefaceData);
+            const objectCandidate = await suppressBoundingBoxWarnings(() => viewer.getFromFile(candidateFile, ""));
+            nextObject = objectCandidate;
+            break;
+          } catch (error) {
+            parseError = error;
+          }
+        }
+
+        if (!nextObject) {
+          throw parseError ?? new Error("Failed to parse DXF");
+        }
+
         normalizeMaterialColorsForDarkCanvas(nextObject);
         filterOutlierTextAboveCluster(nextObject);
-        console.log("[CAD Viewer] Render object loaded:", nextObject);
 
         if (cancelled) {
           disposeObject(nextObject);
@@ -409,8 +460,17 @@ export function DXFViewerWithThreeDXFViewer({ file, onError, onStatus, onInfo, c
 
   const primitive = useMemo(() => {
     if (!object) return null;
-    return <primitive object={object} />;
-  }, [object]);
+    const center = rotationCenter.toArray() as [number, number, number];
+    return (
+      <group position={center}>
+        <group rotation={[0, 0, rotationRad]}>
+          <group position={[-center[0], -center[1], -center[2]]}>
+            <primitive object={object} />
+          </group>
+        </group>
+      </group>
+    );
+  }, [object, rotationCenter, rotationRad]);
 
   return (
     <div
