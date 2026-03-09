@@ -42,7 +42,7 @@ export async function GET() {
   try {
     const today = getTodayKey();
     const counterKey = `${VISITOR_COUNT_PREFIX}:${today}`;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const lastVisitedDay = cookieStore.get(VISITOR_DAY_COOKIE)?.value;
 
     const redis = await getRedisClient();

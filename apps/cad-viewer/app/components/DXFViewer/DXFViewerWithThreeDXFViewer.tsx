@@ -413,7 +413,12 @@ export function DXFViewerWithThreeDXFViewer({
           const viewer = new ThreeDxfViewer();
           try {
             (viewer as unknown as { _font: Font })._font = new Font(typefaceData);
-            const objectCandidate = await suppressBoundingBoxWarnings(() => viewer.getFromFile(candidateFile, ""));
+            const objectCandidate = (await suppressBoundingBoxWarnings(() =>
+              viewer.getFromFile(candidateFile, ""),
+            )) as THREE.Object3D;
+            if (!objectCandidate || !objectCandidate.isObject3D) {
+              throw new Error("Failed to parse DXF as a 3D object");
+            }
             nextObject = objectCandidate;
             break;
           } catch (error) {
