@@ -193,8 +193,9 @@ export default function CadWorkbench() {
     }
     if (mode === "export") return null;
 
+    const canvases = Array.from(viewport.querySelectorAll("canvas")) as HTMLCanvasElement[];
     return (
-      Array.from(viewport.querySelectorAll<HTMLCanvasElement>("canvas")).find(
+      canvases.find(
         (item) => item.width > 0 && item.height > 0
       ) ?? null
     );
