@@ -165,6 +165,20 @@ export default function CadWorkbench() {
     setRotationDeg((prev) => (prev - 45 + 360) % 360);
   }, []);
 
+  const downloadCurrentBlueprint = useCallback(() => {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".dxf")) return;
+
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = file.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [file]);
+
   return (
     <main className="relative mx-auto flex h-[100dvh] w-full max-w-[1400px] flex-col gap-4 overflow-visible px-4 py-4 text-[var(--text-main)] sm:px-6">
       <div className="sprite-piece sprite-saw" aria-hidden />
@@ -227,10 +241,19 @@ export default function CadWorkbench() {
               >
                 Select Blueprint
               </button>
+              {isDxf ? (
+                <button
+                  type="button"
+                  onClick={downloadCurrentBlueprint}
+                  className="rounded-md border border-[#4d6e8f] bg-[#bbd8f2] px-3 py-2 text-xs font-semibold text-[#294562] transition hover:bg-[#c8ddf3]"
+                >
+                  Download
+                </button>
+              ) : null}
               {file ? (
                 <button
                   type="button"
-                onClick={() => {
+                  onClick={() => {
                     setFile(null);
                     setInfo(null);
                     setError(null);
