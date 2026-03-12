@@ -413,7 +413,7 @@ export default function CadWorkbench() {
   }, [file]);
 
   return (
-    <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-[1400px] max-w-full flex-col gap-4 overflow-x-hidden overflow-y-visible px-4 pb-24 pt-4 text-[var(--text-main)] sm:px-6 sm:pb-20 lg:pb-16">
+    <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col gap-4 overflow-x-hidden overflow-y-visible lg:overflow-y-hidden px-4 pb-24 pt-4 text-[var(--text-main)] sm:px-6 sm:pb-20 lg:pb-16">
       <div className="sprite-piece sprite-saw" aria-hidden />
       <div className="sprite-piece sprite-plane" aria-hidden />
       <div className="sprite-piece sprite-hammer" aria-hidden />
