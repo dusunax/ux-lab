@@ -194,7 +194,9 @@ export default function CadWorkbench() {
     if (mode === "export") return null;
 
     return (
-      Array.from(viewport.querySelectorAll("canvas")).find((item) => item.width > 0 && item.height > 0) ?? null
+      Array.from(viewport.querySelectorAll<HTMLCanvasElement>("canvas")).find(
+        (item) => item.width > 0 && item.height > 0
+      ) ?? null
     );
   }, []);
 
