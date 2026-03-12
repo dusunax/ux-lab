@@ -5,4 +5,5 @@ export type DXFViewerProps = {
   onInfo: (value: { ext: string; vertices: number } | null) => void;
   className?: string;
   rotationDeg?: number;
+  exportScale?: number;
 };

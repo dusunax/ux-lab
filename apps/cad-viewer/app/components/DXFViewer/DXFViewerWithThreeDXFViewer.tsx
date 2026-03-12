@@ -348,6 +348,7 @@ export function DXFViewerWithThreeDXFViewer({
   onInfo,
   rotationDeg = 0,
   className,
+  exportScale = 1,
 }: DXFViewerProps) {
   const [object, setObject] = useState<THREE.Object3D | null>(null);
   const rotationRad = (rotationDeg * Math.PI) / 180;
@@ -477,6 +478,25 @@ export function DXFViewerWithThreeDXFViewer({
     );
   }, [object, rotationCenter, rotationRad]);
 
+  const exportPrimitive = useMemo(() => {
+    if (!object) return null;
+    const exportObject = object.clone(true);
+    const center = rotationCenter.toArray() as [number, number, number];
+    return (
+      <group position={center}>
+        <group rotation={[0, 0, rotationRad]}>
+          <group position={[-center[0], -center[1], -center[2]]}>
+            <primitive object={exportObject} />
+          </group>
+        </group>
+      </group>
+    );
+  }, [object, rotationCenter, rotationRad]);
+
+  const normalizedExportScale = Number.isFinite(exportScale)
+    ? Math.max(1, Math.min(Math.floor(exportScale), 32))
+    : 1;
+
   return (
     <div
       className={`canvas-wood relative h-full min-h-[280px] w-full overflow-hidden rounded-2xl border border-[#9b7358]/70 ${
@@ -484,6 +504,12 @@ export function DXFViewerWithThreeDXFViewer({
       }`}
     >
       <Canvas
+        onCreated={(state) => {
+          state.gl.domElement.dataset.exportRole = "preview";
+        }}
+        gl={{
+          preserveDrawingBuffer: true,
+        }}
         orthographic
         camera={{
           position: [0, 0, DEFAULT_CAMERA_Z],
@@ -516,6 +542,56 @@ export function DXFViewerWithThreeDXFViewer({
         {primitive}
         <ViewerControls hasObject={Boolean(primitive)} sceneObject={object} />
       </Canvas>
+        {normalizedExportScale > 1 ? (
+        <Canvas
+          key={`export-canvas-${normalizedExportScale}`}
+          onCreated={(state) => {
+            state.gl.domElement.dataset.exportRole = "export";
+          }}
+          dpr={normalizedExportScale}
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0,
+            pointerEvents: "none",
+          }}
+          gl={{
+            preserveDrawingBuffer: true,
+          }}
+          orthographic
+          camera={{
+            position: [0, 0, DEFAULT_CAMERA_Z],
+            zoom: DEFAULT_ORTHO_ZOOM,
+            near: 0.1,
+            far: 10000,
+          }}
+        >
+          <color attach='background' args={["#2b1b10"]} />
+          <ambientLight intensity={1.75} />
+          <hemisphereLight args={["#fff1d8", "#cfa884", 0.95]} />
+          <directionalLight position={[12, 10, 8]} intensity={0.35} />
+          <directionalLight position={[-12, -8, 6]} intensity={0.28} />
+
+          <Grid
+            position={[0, 0, -0.06]}
+            rotation={[Math.PI / 2, 0, 0]}
+            args={[120, 120]}
+            cellSize={2}
+            sectionSize={10}
+            cellColor='#544232'
+            sectionColor='#6c503e'
+            cellThickness={0.45}
+            sectionThickness={0.85}
+            fadeDistance={2000}
+            fadeStrength={0}
+            infiniteGrid
+          />
+
+          {primitive}
+          {exportPrimitive}
+          <ViewerControls hasObject={Boolean(exportPrimitive)} sceneObject={object} />
+        </Canvas>
+      ) : null}
     </div>
   );
 }
