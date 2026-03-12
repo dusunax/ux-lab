@@ -346,24 +346,41 @@ export default function CadWorkbench() {
         }
       })();
 
+      type JsPDFConstructor = new (
+        options?: {
+          unit?: string;
+          format?: string | string[] | number[];
+          orientation?: "portrait" | "landscape" | "p" | "l";
+        }
+      ) => {
+        internal: {
+          pageSize: {
+            getWidth(): number;
+            getHeight(): number;
+          };
+        };
+        addImage: (...args: unknown[]) => void;
+        save: (filename?: string) => void;
+      };
+
       const parsedModule = module as {
-        jsPDF?: unknown;
-        default?: unknown;
+        jsPDF?: JsPDFConstructor;
+        default?: JsPDFConstructor;
+        defaultJsPDF?: JsPDFConstructor;
       };
       const JsPDF =
         parsedModule?.jsPDF ??
-        (typeof parsedModule?.default === "function" ? parsedModule.default : undefined) ??
-        (parsedModule?.default as { jsPDF?: unknown })?.jsPDF;
+        parsedModule?.default ??
+        (parsedModule as { defaultJsPDF?: JsPDFConstructor }).defaultJsPDF;
       if (typeof JsPDF !== "function") {
         throw new Error("PDF export library could not be initialized.");
       }
+      const JsPDFCtor = JsPDF as JsPDFConstructor;
 
       const snapshot = await captureExportBlueprintImage();
       if (!snapshot) return;
       const imageSrc = await stripWhiteBackgroundForPdf(snapshot.imageSrc);
 
-      // Ensure TypeScript treats JsPDF as a constructable type.
-      const JsPDFCtor = JsPDF as unknown as { new (opts?: any): any };
       const pdf = new JsPDFCtor({
         unit: "mm",
         format: "a4",
@@ -414,17 +431,21 @@ export default function CadWorkbench() {
 
   return (
     <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-[1400px] flex-col gap-4 overflow-x-hidden overflow-y-visible lg:overflow-y-hidden px-4 pb-24 pt-4 text-[var(--text-main)] sm:px-6 sm:pb-20 lg:pb-16">
-      <div className="sprite-piece sprite-saw" aria-hidden />
-      <div className="sprite-piece sprite-plane" aria-hidden />
-      <div className="sprite-piece sprite-hammer" aria-hidden />
-      <div className="sprite-piece sprite-glue" aria-hidden />
-      <div className="sprite-piece sprite-pencil" aria-hidden />
-      <div className="sprite-piece sprite-shavings" aria-hidden />
-      <div className="sprite-piece sprite-knife" aria-hidden />
-      <div className="sprite-piece sprite-goggles" aria-hidden />
-      <div className="sprite-piece sprite-character" aria-hidden />
-      <div className="dot-bubble" aria-live="polite">
-        {cheerText}
+      <div className="fixed inset-x-0 top-0 left-1/2 z-10 hidden h-full w-full max-w-[1400px] -translate-x-1/2 px-4 sm:px-6 pointer-events-none lg:block">
+        <div className="relative h-full">
+          <div className="sprite-piece sprite-saw" aria-hidden />
+          <div className="sprite-piece sprite-plane" aria-hidden />
+          <div className="sprite-piece sprite-hammer" aria-hidden />
+          <div className="sprite-piece sprite-glue" aria-hidden />
+          <div className="sprite-piece sprite-pencil" aria-hidden />
+          <div className="sprite-piece sprite-shavings" aria-hidden />
+          <div className="sprite-piece sprite-knife" aria-hidden />
+          <div className="sprite-piece sprite-goggles" aria-hidden />
+          <div className="sprite-piece sprite-character" aria-hidden />
+          <div className="dot-bubble" aria-live="polite">
+            {cheerText}
+          </div>
+        </div>
       </div>
 
       <section className="float-in glass rounded-2xl px-5 py-4">
@@ -442,7 +463,10 @@ export default function CadWorkbench() {
       </section>
 
       <section className="grid min-h-0 min-w-0 flex-1 gap-4 lg:grid-cols-3" aria-label="Workbench layout">
-        <article ref={blueprintCanvasRef} className="float-in glass min-h-[50vh] min-w-0 rounded-2xl p-3 lg:min-h-0 lg:col-span-2">
+        <article
+          ref={blueprintCanvasRef}
+          className="float-in glass h-[calc(60dvh)] min-w-0 rounded-2xl p-3 lg:h-[calc(100dvh-240px)] lg:min-h-[calc(100dvh-240px)] lg:col-span-2"
+        >
           <DXFViewer
             file={file}
             onError={setError}
