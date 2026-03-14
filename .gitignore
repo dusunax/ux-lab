@@ -72,7 +72,10 @@ local.properties
 *.hprof
 
 # local game development docs (excluded from git)
-apps/stellas-archive/docs/development/
+apps/stellas-archive/development/
+# local game development assets (excluded from git)
+development/img/
+apps/stellas-archive/public/img/
 
 # iOS / Xcode
 Pods/
