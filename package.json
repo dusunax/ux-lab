@@ -18,6 +18,8 @@
     "build:cad": "pnpm --filter @ux-lab/cad-viewer run build",
     "dev:afterglow": "pnpm --filter @ux-lab/seasonal-project-2025 run dev",
     "build:afterglow": "pnpm --filter @ux-lab/seasonal-project-2025 run build",
+    "dev:stellas": "pnpm --filter @ux-lab/stellas-archive dev",
+    "build:stellas": "pnpm --filter @ux-lab/stellas-archive build",
     "build:all": "pnpm run build:ui && pnpm run build:showcase && pnpm run build:flow && pnpm run build:applications",
     "dev:all": "concurrently \"pnpm run dev:ui\" \"pnpm run dev:showcase\" \"pnpm run dev:flow\" \"pnpm run dev:applications\"",
     "install:all": "pnpm install"

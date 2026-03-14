@@ -71,6 +71,9 @@ local.properties
 .externalNativeBuild/
 *.hprof
 
+# local game development docs (excluded from git)
+apps/stellas-archive/docs/development/
+
 # iOS / Xcode
 Pods/
 DerivedData/
