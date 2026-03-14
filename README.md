@@ -4,6 +4,7 @@
 
 | 패키지/앱 | 설명 | 기술 스택 |
 | --- | --- | --- |
+| **@ux-lab/stellas-archive** | 게임 ([개발 일지](https://github.com/dusunax/ux-lab/wiki/Development-Log#stellas-archive-game)) |  |
 | **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
 | **@ux-lab/seasonal-project-2025** | AI 기반 연말 사진 회고 웹 서비스 | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) |
 | **@ux-lab/flow** | UX Flow 다이어그램 에디터 | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) |
@@ -57,6 +58,7 @@ pnpm -w run dev:all
 # Flow: http://localhost:3333
 # Applications: http://localhost:3334
 # Project Afterglow: http://localhost:3335
+# Stella's Archive: http://localhost:3336
 ```
 
 ## 🔧 환경 설정
