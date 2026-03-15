@@ -1,6 +1,7 @@
 import { type CSSProperties, type PointerEvent, type RefObject, useMemo } from "react";
 import type { Creature, InterfaceText, Locale } from "../game/engine";
 import { getEmotionLabel } from "../game/engine";
+import { ASSET_PATHS, OBSERVER_CHAMBER_BG_IMAGES } from "../../lib/assets";
 
 type ObserverPanelProps = {
   uiText: InterfaceText;
@@ -61,9 +62,21 @@ export function ObserverPanel({
     [luminaCoreColor],
   );
 
+  const observerChamberBackgroundStyle: CSSProperties = useMemo(
+    () => ({
+      backgroundImage: `url(${ASSET_PATHS.imgs.observerChamber}), ${OBSERVER_CHAMBER_BG_IMAGES.base}, ${OBSERVER_CHAMBER_BG_IMAGES.cornerGlow}, ${OBSERVER_CHAMBER_BG_IMAGES.cornerPulse}`,
+      backgroundSize: "contain, auto, auto, auto",
+      backgroundPosition: "center, center, center, center",
+      backgroundRepeat: "no-repeat",
+      backgroundBlendMode: "normal, screen, normal, normal",
+    }),
+    [],
+  );
+
   return (
     <section
-      className="w-full h-full max-w-full rounded-none border-2 border-[var(--line)] shadow-[var(--shadow)] relative overflow-hidden px-4 py-4 bg-[url('/img/260314-2011.png'),linear-gradient(145deg,rgba(5,10,24,0.82),rgba(7,16,34,0.88)),radial-gradient(circle_at_22%_16%,rgba(132,196,255,0.12),transparent_43%),radial-gradient(circle_at_82%_82%,rgba(205,153,255,0.1),transparent_44%)] bg-[length:contain,auto,auto,auto] bg-[position:center,center,center,center] flex-col flex bg-no-repeat [background-blend-mode:normal,screen,normal,normal]"
+      className="w-full h-full max-w-full rounded-none border-2 border-[var(--line)] shadow-[var(--shadow)] relative overflow-hidden px-4 py-4 flex-col flex"
+      style={observerChamberBackgroundStyle}
     >
       <h2 className="mb-4">{uiText.observerPanel}</h2>
       <div className="my-4 flex items-center justify-between gap-2">
