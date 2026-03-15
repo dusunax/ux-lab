@@ -171,18 +171,30 @@ export default function StellaArchivePage() {
   const missionTotal = state.daily.missions.length;
   const missionRemaining = state.daily.missions.filter((mission) => !mission.completed).length;
   const remainingMissions = state.daily.missions.filter((mission) => !mission.completed);
+  const firstMission = remainingMissions[0];
   const completedMissionsCount = state.daily.missions.length - remainingMissions.length;
+  const isMissionIncomplete = missionRemaining > 0;
+  const isMissionRewardAvailable = missionTotal > 0 && missionRemaining === 0;
+  const activeMissionActions = useMemo(() => {
+    if (!isEntryPopupOpen || missionRemaining === 0) return [];
+    const actions = remainingMissions.map((mission) => mission.requiredAction);
+    return Array.from(new Set(actions));
+  }, [isEntryPopupOpen, missionRemaining, remainingMissions]);
 
-  const missionProgressPercent =
-    state.daily.missions.length === 0 ? 0 : (completedMissionsCount / state.daily.missions.length) * 100;
-  const firstMission = state.daily.missions[0];
-  const missionSummary = firstMission
-    ? firstMission.requiredAction === "feed"
-      ? missionText.feedLabel
-      : firstMission.requiredAction === "scan"
-        ? missionText.scanLabel
-        : missionText.playLabel
-    : feedback;
+  const isEntryPopupHighlighted = isMissionIncomplete || isMissionRewardAvailable;
+  const stellaComment =
+    missionTotal === 0
+      ? state.locale === "en"
+        ? "Quiet day, still active."
+        : "오늘도 평범한 하루입니다."
+      : missionRemaining > 0
+        ? state.locale === "en"
+          ? "Still working on it."
+          : "시간이 벌써 이렇게 되었네."
+        : state.locale === "en"
+          ? "All missions completed."
+          : "일일 미션 끝.";
+
   const targetStatusText = useMemo(
     () =>
       selectedCreature
@@ -543,13 +555,11 @@ export default function StellaArchivePage() {
   }, [activeModal, uiText]);
 
   const openEntryPopup = useCallback(() => {
-    setHasEntryPopupUpdate(false);
-    setIsEntryPopupOpen(true);
+    setIsEntryPopupOpen((prev) => !prev);
   }, []);
 
   const closeEntryPopup = useCallback(() => {
     setIsEntryPopupOpen(false);
-    setHasEntryPopupUpdate(false);
   }, []);
 
   return (
@@ -575,8 +585,10 @@ export default function StellaArchivePage() {
             />
             <button
               className={`absolute top-[14px] right-[14px] grid h-9 w-9 place-items-center border border-[rgba(125,210,255,0.6)] bg-[rgba(8,14,32,0.88)] text-[#e8f7ff] cursor-pointer z-[6] shadow-[0_0_12px_rgba(115,214,255,0.24)] transition-[border-color,box-shadow] hover:border-[rgba(143,245,255,1)] hover:shadow-[0_0_16px_rgba(127,232,255,0.35)] ${
-                hasEntryPopupUpdate ? "border-[rgba(255,230,120,0.96)] animate-[entry-pop_0.2s_ease-out_0s_2_alternate] shadow-[0_0_16px_rgba(127,232,255,0.35)]" : ""
-              }`}
+                isEntryPopupHighlighted
+                  ? "border-[rgba(255,230,120,0.96)] shadow-[0_0_16px_rgba(127,232,255,0.35)]"
+                  : ""
+              } ${isEntryPopupHighlighted && hasEntryPopupUpdate ? "animate-[entry-pop_0.2s_ease-out_0s_2_alternate]" : ""}`}
               onClick={openEntryPopup}
               type="button"
               aria-label={uiText.creatureDetails}
@@ -586,7 +598,7 @@ export default function StellaArchivePage() {
 
             <EntryPopup
               isOpen={isEntryPopupOpen}
-              hasUpdate={hasEntryPopupUpdate}
+              hasUpdate={isEntryPopupHighlighted || hasEntryPopupUpdate}
               uiText={uiText}
               tokens={state.tokens}
               researchObservation={state.researchData.observation}
@@ -596,7 +608,7 @@ export default function StellaArchivePage() {
               completedMissionsCount={completedMissionsCount}
               missionTotal={missionTotal}
               signalState={signalState}
-              missionSummary={missionSummary}
+              stellaComment={stellaComment}
               statusText={targetStatusText}
               missionRemaining={missionRemaining}
               missions={state.daily.missions}
@@ -624,6 +636,7 @@ export default function StellaArchivePage() {
               onOpenRoster={() => openModal("roster")}
               onOpenCreatureDetails={() => openModal("creature-details")}
               showActions={true}
+              highlightActions={activeMissionActions}
             />
           </div>
           <div className="grid grid-cols-2 gap-2 mb-2" role="tablist" aria-label="Right panel">

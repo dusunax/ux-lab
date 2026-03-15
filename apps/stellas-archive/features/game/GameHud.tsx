@@ -33,7 +33,7 @@ export function GameHud({
   const missionCompleted = missionTotal - missionRemaining;
   const missionBadge = missionTotal === 0 ? "IDLE" : missionRemaining === 0 ? "DONE" : "ACTIVE";
   const firstMission = state.daily.missions[0];
-  const missionSummary = firstMission
+  const stellaComment = firstMission
     ? firstMission.requiredAction === "feed"
       ? missionText.feedLabel
       : firstMission.requiredAction === "scan"
@@ -177,7 +177,7 @@ export function GameHud({
               style={{ ["--mission-progress" as keyof CSSProperties]: `${missionProgressPercent}%` } as CSSProperties}
             />
           </div>
-          <p className="mt-1.5 text-[13px] text-[var(--muted)]">{firstMission ? missionSummary : notice}</p>
+          <p className="mt-1.5 text-[13px] text-[var(--muted)]">{firstMission ? stellaComment : notice}</p>
         </div>
 
         <button

@@ -179,6 +179,7 @@ export type InterfaceText = {
   observerPanel: string;
   observerDescription: string;
   noObserverTarget: string;
+  stellaComment: string;
 };
 
 export type ActionText = Record<Interaction, string>;
@@ -248,6 +249,7 @@ export const INTERFACE_TEXT: Record<Locale, InterfaceText> = {
   signalRewardClaimed: "Signal resolved bonus claimed. +1 Token.",
     observerTargets: "Observer Targets",
     missionsCleared: "Daily missions cleared. +2 bonus Tokens.",
+    stellaComment: "Stella&apos;s comment",
     days: "days",
     hunger: "Hunger",
     cleanliness: "Cleanliness",
@@ -316,6 +318,7 @@ export const INTERFACE_TEXT: Record<Locale, InterfaceText> = {
   signalRewardClaimed: "해결 보상이 지급되었습니다. +1 토큰.",
     observerTargets: "관측 대상",
     missionsCleared: "일일 미션을 완료했습니다. 보너스 +2 토큰",
+    stellaComment: "스텔라의 코멘트",
     days: "일",
     hunger: "배고픔",
     cleanliness: "청결도",

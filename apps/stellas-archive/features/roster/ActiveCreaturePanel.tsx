@@ -12,6 +12,7 @@ type ActiveCreaturePanelProps = {
   onOpenRoster: () => void;
   onOpenCreatureDetails: () => void;
   showActions?: boolean;
+  highlightActions?: Interaction[];
 };
 
 function StatBarFill({
@@ -34,7 +35,13 @@ export function ActiveCreaturePanel({
   onOpenRoster,
   onOpenCreatureDetails,
   showActions = true,
+  highlightActions = [],
 }: ActiveCreaturePanelProps) {
+  const buttonClass = (action: "feed" | "clean" | "play" | "scan") =>
+    `inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed ${
+      highlightActions.includes(action) ? "border-[rgba(255,230,120,0.9)] shadow-[0_0_14px_rgba(255,231,132,0.36)]" : ""
+    }`;
+
   return (
     <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
       <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -117,7 +124,7 @@ export function ActiveCreaturePanel({
           {showActions ? (
             <div className="grid grid-cols-4 gap-2 mt-2">
               <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+                className={buttonClass("feed")}
                 disabled={token < TOKEN_COST.feed}
                 aria-label={`${actionText.feed} (${TOKEN_COST.feed})`}
                 onClick={() => performAction("feed", selectedCreature)}
@@ -128,7 +135,7 @@ export function ActiveCreaturePanel({
                 {actionText.feed} ({TOKEN_COST.feed})
               </button>
               <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+                className={buttonClass("clean")}
                 disabled={token < TOKEN_COST.clean}
                 aria-label={`${actionText.clean} (${TOKEN_COST.clean})`}
                 onClick={() => performAction("clean", selectedCreature)}
@@ -139,7 +146,7 @@ export function ActiveCreaturePanel({
                 {actionText.clean} ({TOKEN_COST.clean})
               </button>
               <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+                className={buttonClass("play")}
                 disabled={token < TOKEN_COST.play}
                 aria-label={`${actionText.play} (${TOKEN_COST.play})`}
                 onClick={() => performAction("play", selectedCreature)}
@@ -150,7 +157,7 @@ export function ActiveCreaturePanel({
                 {actionText.play} ({TOKEN_COST.play})
               </button>
               <button
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+                className={buttonClass("scan")}
                 disabled={token < TOKEN_COST.scan}
                 aria-label={`${actionText.scan} (${TOKEN_COST.scan})`}
                 onClick={() => performAction("scan", selectedCreature)}

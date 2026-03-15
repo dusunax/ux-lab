@@ -13,7 +13,7 @@ type EntryPopupProps = {
   completedMissionsCount: number;
   missionTotal: number;
   signalState: string;
-  missionSummary: string;
+  stellaComment: string;
   statusText: string;
   missionRemaining: number;
   missions: DailyMission[];
@@ -39,7 +39,7 @@ export function EntryPopup({
   completedMissionsCount,
   missionTotal,
   signalState,
-  missionSummary,
+  stellaComment,
   statusText,
   missionRemaining,
   missions,
@@ -109,6 +109,25 @@ export function EntryPopup({
           >
             {uiText.streak}: {streak} {uiText.days}
           </output>
+          <div className="my-1.5 h-px bg-[rgba(125,220,255,0.22)]" />
+          {stellaComment ? (
+            <div className="grid gap-0.5">
+              <output
+                role="status"
+                aria-label={uiText.stellaComment}
+                className="text-[11px] font-semibold tracking-[0.3px] text-[#9ed6f7]"
+              >
+                {uiText.stellaComment}
+              </output>
+              <output
+                role="status"
+                aria-label={`Stella comment ${stellaComment}`}
+                className="text-[12px] leading-tight text-[var(--muted)]"
+              >
+                {stellaComment}
+              </output>
+            </div>
+          ) : null}
           <div className="my-1.5 h-px bg-[rgba(125,220,255,0.32)]" />
           <div className="mb-0 text-[13px] leading-tight text-[#e8fbff] font-bold">
             {uiText.labStatus}
@@ -123,17 +142,13 @@ export function EntryPopup({
               {uiText.missionCompleted} {completedMissionsCount}/{missionTotal}
             </output>
             <div className="grid max-h-[84px] gap-1 overflow-auto pr-1">
-              {missions.length === 0 ? (
-                <output role="status" aria-label={missionSummary} className="text-[12px] text-[var(--muted)]">
-                  {missionSummary}
-                </output>
-              ) : (
+              {missions.length === 0 ? null : (
                 missions.map((mission, index) => (
                   <article
                     key={mission.id}
                     role="status"
                     aria-label={`Quest ${index + 1} ${mission.label}`}
-                    className="flex items-start justify-between gap-2 rounded-none border border-[rgba(130,220,255,0.35)] bg-[rgba(8,14,30,0.85)] px-1.5 py-1 text-[12px]"
+                    className="flex items-start justify-between gap-2 rounded-none border border-[rgba(130,220,255,0.35)] break-keep bg-[rgba(8,14,30,0.85)] px-1.5 py-1 text-[12px]"
                   >
                     <div className="flex-1 leading-tight text-[#d6ecff]">
                       <span
@@ -153,15 +168,6 @@ export function EntryPopup({
                 ))
               )}
             </div>
-            {missionSummary ? (
-              <output
-                role="status"
-                aria-label={`Mission hint ${missionSummary}`}
-                className="mt-1 inline-block text-[12px] text-[var(--muted)] leading-tight"
-              >
-                {missionSummary}
-              </output>
-            ) : null}
             <button
               className="mt-1.5 inline-flex h-8 min-h-8 w-full cursor-pointer items-center justify-center border border-[rgba(130,199,255,0.9)] bg-[rgba(8,14,32,0.85)] px-2 py-2.5 text-[12px] tracking-[0.2px] text-[#eaf6ff] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.24)] disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none"
               onClick={onClearCompletedMissions}
@@ -181,7 +187,7 @@ export function EntryPopup({
             >
               {signalState}
             </output>
-            <div className="mb-1 flex items-center justify-between border border-[rgba(130,220,255,0.35)] bg-[rgba(8,14,30,0.85)] px-2 py-1 text-[11px] tracking-[0.32px] text-[#95f7de]">
+            <div className="mb-1 flex items-center justify-between border border-[rgba(130,220,255,0.35)] bg-[rgba(8,14,30,0.85)] break-keep px-2 py-1 text-[11px] tracking-[0.32px] text-[#95f7de]">
               <output role="status" aria-label={`Mission status ${statusText}`}>
                 {statusText}
               </output>
@@ -199,15 +205,6 @@ export function EntryPopup({
                 {signalBadge}
               </output>
             </div>
-            {missionSummary ? (
-              <output
-                role="status"
-                aria-label={`Mission hint ${missionSummary}`}
-                className="mt-1 inline-block text-[12px] text-[var(--muted)] leading-tight"
-              >
-                {missionSummary}
-              </output>
-            ) : null}
             <button
               className="mt-1.5 inline-flex h-8 min-h-8 w-full cursor-pointer items-center justify-center border border-[rgba(130,199,255,0.9)] bg-[rgba(8,14,32,0.85)] px-2 py-2.5 text-[12px] tracking-[0.2px] text-[#eaf6ff] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.24)] disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none"
               onClick={onClaimSignalReward}
