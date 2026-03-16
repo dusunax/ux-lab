@@ -4,15 +4,12 @@ import type {
   GameState,
   InterfaceText,
   MissionText,
-  Locale,
 } from "../game/engine";
 import type { ActionText } from "../game/engine";
-import { SupportedLocale } from "../game/engine";
 
 type GameHudProps = {
   state: GameState;
   uiText: InterfaceText;
-  locale?: Locale;
   actionText: ActionText;
   missionText: MissionText;
   missionTotal: number;
@@ -26,7 +23,6 @@ type GameHudProps = {
 export function GameHud({
   state,
   uiText,
-  locale,
   missionText,
   notice,
   missionTotal,
@@ -35,13 +31,12 @@ export function GameHud({
   onOpenMissions,
   onClearCompletedMissions,
 }: GameHudProps) {
-  const activeLocale: Locale = locale ?? SupportedLocale.En;
   const missionCompleted = missionTotal - missionRemaining;
   const missionBadge = missionTotal === 0
-    ? t("missionStatusIdle", { lng: activeLocale })
+    ? t("missionStatusIdle")
     : missionRemaining === 0
-      ? t("missionStatusDone", { lng: activeLocale })
-      : t("missionStatusActive", { lng: activeLocale });
+      ? t("missionStatusDone")
+      : t("missionStatusActive");
   const missionStatusTone =
     missionTotal === 0 ? "mission-idle" : missionRemaining === 0 ? "mission-done" : "mission-active";
   const firstMission = state.daily.missions[0];
@@ -57,10 +52,10 @@ export function GameHud({
   const statusText = signal
       ? signal.resolved
         ? signal.rewardClaimed
-        ? t("signalStatusDone", { lng: activeLocale })
-        : t("signalStatusReady", { lng: activeLocale })
-      : t("signalStatusUrgent", { lng: activeLocale })
-    : t("signalStatusIdle", { lng: activeLocale });
+        ? t("signalStatusDone")
+        : t("signalStatusReady")
+      : t("signalStatusUrgent")
+    : t("signalStatusIdle");
   const statusTone = signal
     ? signal.resolved
       ? signal.rewardClaimed
@@ -72,10 +67,10 @@ export function GameHud({
   const signalBadge = signal
       ? signal.resolved
       ? signal.rewardClaimed
-      ? t("signalStatusDone", { lng: activeLocale })
-      : t("signalStatusReady", { lng: activeLocale })
-      : t("signalStatusUrgent", { lng: activeLocale })
-    : t("signalStatusIdle", { lng: activeLocale });
+      ? t("signalStatusDone")
+      : t("signalStatusReady")
+      : t("signalStatusUrgent")
+    : t("signalStatusIdle");
   const signalHint = state.daily.signal?.message ?? "";
 
   return (
@@ -117,7 +112,7 @@ export function GameHud({
           {signalHint ? (
             <output
               role="status"
-              aria-label={t("signalDetailPrefix", { detail: signalHint, lng: activeLocale })}
+              aria-label={t("signalDetailPrefix", { detail: signalHint })}
               className="mb-2 block text-[12px] leading-tight text-[var(--muted)]"
             >
               {signalHint}
@@ -168,11 +163,11 @@ export function GameHud({
                     className="text-[11px] tracking-[0.35px] text-[#95f7de]"
                     aria-label={
                         mission.completed
-                        ? `${mission.label} ${t("missionStatusCompleted", { lng: activeLocale })}`
-                        : `${mission.label} ${t("missionStatusActive", { lng: activeLocale })}`
+                        ? `${mission.label} ${t("missionStatusCompleted")}`
+                        : `${mission.label} ${t("missionStatusActive")}`
                     }
                   >
-                    {mission.completed ? t("missionStatusCompleted", { lng: activeLocale }) : t("missionStatusActive", { lng: activeLocale })}
+                    {mission.completed ? t("missionStatusCompleted") : t("missionStatusActive")}
                   </output>
                 </article>
                 ))

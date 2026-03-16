@@ -2,8 +2,6 @@ import { type CSSProperties, type PointerEvent, type RefObject, useMemo } from "
 import type { Creature, InterfaceText } from "../game/engine";
 import { getEmotionLabel } from "../game/engine";
 import { ASSET_PATHS, OBSERVER_CHAMBER_BG_IMAGES } from "../../lib/assets";
-import i18next from "i18next";
-import { normalizeLocale } from "../i18n/i18n";
 
 type ObserverPanelProps = {
   uiText: InterfaceText;
@@ -40,10 +38,9 @@ export function ObserverPanel({
   const luminaCoreColor = observerCreature
     ? `rgb(${observerCreature.rgb.r}, ${observerCreature.rgb.g}, ${observerCreature.rgb.b})`
     : "rgb(128, 210, 255)";
-  const observerLocale = normalizeLocale(i18next.resolvedLanguage || i18next.language);
   const emotionLabel = useMemo(
-    () => (observerCreature ? getEmotionLabel(observerLocale, observerCreature.emotion) : ""),
-    [observerCreature, observerLocale],
+    () => (observerCreature ? getEmotionLabel(observerCreature.emotion) : ""),
+    [observerCreature],
   );
 
   const observerOrbStyle: CSSProperties = useMemo(

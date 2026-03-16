@@ -59,6 +59,29 @@ export const ko = {
     playLabel: "가벼운 상호작용(놀아주기)으로 감정 반응을 유도하세요.",
     playOptional: "색 변화가 생기면 아카이브에 남겨보세요.",
   },
+  species: {
+    species_lumina: {
+      description: "스텔라가 처음 발견한 종족의 정서적 기준선입니다.",
+    },
+    species_mote: {
+      description: "호기심이 급증하는 입자형 생명체입니다.",
+    },
+    species_glint: {
+      description: "감정 스파이크가 빠르게 치솟는 공격적인 광학 형태입니다.",
+    },
+    species_verdant_echo: {
+      description: "지속적인 성장 톤과 안정적인 환경에서 나타납니다.",
+    },
+    species_azure_shell: {
+      description: "진정 공명을 동반하는 안정화 형태입니다.",
+    },
+    species_feral_spark: {
+      description: "감정 압박이 강해지면 적색이 지배적인 불안정 진화를 일으킵니다.",
+    },
+    species_prism_core: {
+      description: "채널 값이 거의 균등해질 때 드문 조화 상태가 됩니다.",
+    },
+  },
   interfaceText: {
     langSwitch: "한국어",
     pageTitle: "스텔라의 기록소",

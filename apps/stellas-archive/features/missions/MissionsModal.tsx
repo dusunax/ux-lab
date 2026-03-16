@@ -1,4 +1,4 @@
-import type { ActionText, DailyMission, InterfaceText, Locale } from "../game/engine";
+import type { ActionText, DailyMission, InterfaceText } from "../game/engine";
 import { t } from "i18next";
 
 type MissionsModalProps = {
@@ -6,7 +6,6 @@ type MissionsModalProps = {
   uiText: InterfaceText;
   actionText: ActionText;
   missionRemaining: number;
-  locale: Locale;
   onClearCompletedMissions: () => void;
 };
 
@@ -15,7 +14,6 @@ export function MissionsModal({
   uiText,
   actionText,
   missionRemaining,
-  locale,
   onClearCompletedMissions,
 }: MissionsModalProps) {
   const canClearMissions = missions.length > 0 && missionRemaining === 0;
@@ -52,11 +50,11 @@ export function MissionsModal({
               className="text-[11px] tracking-[0.32px] text-[#95f7de]"
               aria-label={
                 mission.completed
-                  ? `${mission.label} ${t("missionStatusCompleted", { lng: locale })}`
-                  : `${mission.label} ${t("missionStatusActive", { lng: locale })}`
+                  ? `${mission.label} ${t("missionStatusCompleted")}`
+                  : `${mission.label} ${t("missionStatusActive")}`
               }
             >
-              {mission.completed ? t("missionStatusCompleted", { lng: locale }) : t("missionStatusActive", { lng: locale })}
+              {mission.completed ? t("missionStatusCompleted") : t("missionStatusActive")}
             </output>
           </div>
           {mission.optional ? (

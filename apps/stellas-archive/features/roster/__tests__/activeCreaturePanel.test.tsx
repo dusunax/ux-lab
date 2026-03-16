@@ -33,7 +33,6 @@ describe("ActiveCreaturePanel", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         token={5}
-        locale={SupportedLocale.En}
         performAction={() => undefined}
         onOpenRoster={() => undefined}
         onOpenCreatureDetails={() => undefined}
@@ -54,7 +53,6 @@ describe("ActiveCreaturePanel", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         token={10}
-        locale={SupportedLocale.En}
         performAction={onAction}
         onOpenRoster={onOpenRoster}
         onOpenCreatureDetails={onOpenCreatureDetails}

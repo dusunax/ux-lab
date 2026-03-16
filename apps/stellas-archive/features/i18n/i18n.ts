@@ -1,6 +1,5 @@
 import i18next, { type Resource } from "i18next";
 import type { MessageCatalog } from "./messages";
-import { getI18nResourceBundle } from "./messages";
 import { en as enMessages } from "./en";
 import { ko as koMessages } from "./ko";
 
@@ -18,10 +17,15 @@ export const SUPPORTED_LOCALES = [
   SupportedLocale.Ko,
 ] as const satisfies readonly Locale[];
 
-const MESSAGE_CATALOGS: Record<Locale, MessageCatalog> = {
+export const MESSAGE_CATALOGS: Record<Locale, MessageCatalog> = {
   [SupportedLocale.En]: enMessages,
   [SupportedLocale.Ko]: koMessages,
 };
+const toI18nTranslation = (catalog: MessageCatalog): Record<string, string> => ({
+  ...catalog.ui,
+  ...catalog.page,
+  ...catalog.game,
+});
 
 export const isSupportedLocale = (value: unknown): value is Locale =>
   typeof value === "string" && value in MESSAGE_CATALOGS;
@@ -31,6 +35,9 @@ export const normalizeLocale = (
   fallback: Locale = DEFAULT_LOCALE,
 ): Locale => (isSupportedLocale(value) ? value : fallback);
 
+export const getActiveLocale = (fallback: Locale = DEFAULT_LOCALE): Locale =>
+  normalizeLocale(i18next.resolvedLanguage || i18next.language, fallback);
+
 export const getCatalog = (locale: Locale): MessageCatalog =>
   MESSAGE_CATALOGS[locale];
 
@@ -38,7 +45,7 @@ export const createI18nResources = (): Resource =>
   Object.fromEntries(
     SUPPORTED_LOCALES.map((locale) => [
       locale,
-      getI18nResourceBundle(MESSAGE_CATALOGS[locale]),
+      { translation: toI18nTranslation(MESSAGE_CATALOGS[locale]) },
     ]),
   );
 

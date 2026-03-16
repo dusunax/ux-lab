@@ -3,8 +3,9 @@ import type { CSSProperties } from "react";
 import {
   SupportedLocale,
   SUPPORTED_LOCALES,
-  getCatalog,
   normalizeLocale,
+  getActiveLocale,
+  MESSAGE_CATALOGS,
   type Locale as LocaleFromI18n,
 } from "../i18n/i18n";
 
@@ -39,7 +40,6 @@ export type Species = {
   temperament: "calm" | "curious" | "aggressive" | "harmonic" | "unstable" | "mysterious";
   rarity: "common" | "rare" | "epic" | "legendary";
   traits: string[];
-  description: Record<Locale, string>;
 };
 
 export type Creature = {
@@ -213,19 +213,21 @@ export const TOKEN_COST: Record<Interaction, number> = {
 export const ARCHIVE_PAGE_SIZE = 8;
 export const ROSTER_PAGE_SIZE = 6;
 
+const LOCALE_CATALOGS = MESSAGE_CATALOGS;
+
 export const INTERFACE_TEXT: Record<Locale, InterfaceText> = {
-  [SupportedLocale.En]: getCatalog(SupportedLocale.En).interfaceText,
-  [SupportedLocale.Ko]: getCatalog(SupportedLocale.Ko).interfaceText,
+  [SupportedLocale.En]: LOCALE_CATALOGS[SupportedLocale.En].interfaceText,
+  [SupportedLocale.Ko]: LOCALE_CATALOGS[SupportedLocale.Ko].interfaceText,
 };
 
 export const ACTION_TEXT: Record<Locale, ActionText> = {
-  [SupportedLocale.En]: getCatalog(SupportedLocale.En).actionText,
-  [SupportedLocale.Ko]: getCatalog(SupportedLocale.Ko).actionText,
+  [SupportedLocale.En]: LOCALE_CATALOGS[SupportedLocale.En].actionText,
+  [SupportedLocale.Ko]: LOCALE_CATALOGS[SupportedLocale.Ko].actionText,
 };
 
 export const MISSION_TEXT: Record<Locale, MissionText> = {
-  [SupportedLocale.En]: getCatalog(SupportedLocale.En).missionText,
-  [SupportedLocale.Ko]: getCatalog(SupportedLocale.Ko).missionText,
+  [SupportedLocale.En]: LOCALE_CATALOGS[SupportedLocale.En].missionText,
+  [SupportedLocale.Ko]: LOCALE_CATALOGS[SupportedLocale.Ko].missionText,
 };
 
 export const SPECIES: Record<string, Species> = {
@@ -237,10 +239,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "calm",
     rarity: "common",
     traits: ["glow", "stable"],
-    description: {
-      en: "Stable emotional baseline for Stella's first discovered species.",
-      ko: "스텔라가 처음 발견한 종족의 정서적 기준선입니다.",
-    },
   },
   species_mote: {
     id: "species_mote",
@@ -250,10 +248,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "curious",
     rarity: "common",
     traits: ["adaptive", "scatter"],
-    description: {
-      en: "A jittery particle life with curiosity spikes.",
-      ko: "호기심이 급증하는 입자형 생명체입니다.",
-    },
   },
   species_glint: {
     id: "species_glint",
@@ -263,10 +257,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "aggressive",
     rarity: "common",
     traits: ["volatile", "pulse"],
-    description: {
-      en: "A fierce light form with quick emotional spikes.",
-      ko: "감정 스파이크가 빠르게 치솟는 공격적인 광학 형태입니다.",
-    },
   },
   species_verdant_echo: {
     id: "species_verdant_echo",
@@ -276,10 +266,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "curious",
     rarity: "rare",
     traits: ["growth", "adaptive"],
-    description: {
-      en: "Emerges through sustained growth tone and stable conditions.",
-      ko: "지속적인 성장 톤과 안정적인 환경에서 나타납니다.",
-    },
   },
   species_azure_shell: {
     id: "species_azure_shell",
@@ -289,10 +275,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "calm",
     rarity: "rare",
     traits: ["stable", "memoryEcho"],
-    description: {
-      en: "A stabilizing form with calming resonance.",
-      ko: "진정 공명을 동반하는 안정화 형태입니다.",
-    },
   },
   species_feral_spark: {
     id: "species_feral_spark",
@@ -302,10 +284,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "aggressive",
     rarity: "rare",
     traits: ["volatile", "feral"],
-    description: {
-      en: "Unstable red-dominant evolution under emotional pressure.",
-      ko: "감정 압박이 강해지면 적색이 지배적인 불안정 진화를 일으킵니다.",
-    },
   },
   species_prism_core: {
     id: "species_prism_core",
@@ -315,10 +293,6 @@ export const SPECIES: Record<string, Species> = {
     temperament: "harmonic",
     rarity: "epic",
     traits: ["prismatic", "harmonic"],
-    description: {
-      en: "Rare harmonic balance from near-equal channels.",
-      ko: "채널 값이 거의 균등해질 때 드문 조화 상태가 됩니다.",
-    },
   },
 };
 
@@ -384,22 +358,22 @@ export function getLocaleFromBrowser(): Locale {
   return language.startsWith("ko") ? SupportedLocale.Ko : SupportedLocale.En;
 }
 
-export function getTodayText(locale: Locale, value: string) {
+export function getTodayText(value: string, locale: Locale = getActiveLocale()) {
   const date = new Date(value);
   const locales = locale === SupportedLocale.Ko ? "ko-KR" : "en-US";
   return date.toLocaleString(locales, { month: "short", day: "numeric" });
 }
 
-export function getEmotionLabel(locale: Locale, emotion: EmotionType) {
-  const emotionText = getCatalog(locale).emotionText;
+export function getEmotionLabel(emotion: EmotionType, locale: Locale = getActiveLocale()) {
+  const emotionText = LOCALE_CATALOGS[locale].emotionText;
   return emotionText[emotion] ?? emotionText.neutral;
 }
 
-export function getMissionText(locale: Locale): MissionText {
+export function getMissionText(locale: Locale = getActiveLocale()): MissionText {
   return MISSION_TEXT[locale];
 }
 
-export function getActionName(locale: Locale, action: Interaction) {
+export function getActionName(action: Interaction, locale: Locale = getActiveLocale()) {
   return ACTION_TEXT[locale][action];
 }
 
@@ -407,8 +381,8 @@ export function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-export function formatDateLabel(value: string, locale: Locale) {
-  return getTodayText(locale, value);
+export function formatDateLabel(value: string, locale: Locale = getActiveLocale()) {
+  return getTodayText(value, locale);
 }
 
 export function getTodayKey(now = new Date()) {
@@ -442,8 +416,8 @@ export function getDominantEmotion(rgb: RGB): EmotionType {
   return "neutral";
 }
 
-export function getDominantEmotionLabel(locale: Locale, emotion: EmotionType) {
-  return getEmotionLabel(locale, emotion);
+export function getDominantEmotionLabel(emotion: EmotionType, locale: Locale = getActiveLocale()) {
+  return getEmotionLabel(emotion, locale);
 }
 
 export function applyRgbDelta(current: RGB, delta: Partial<RGB>): RGB {
@@ -500,7 +474,7 @@ export function createCreature(speciesId: string, nickname: string, variantSeed?
   };
 }
 
-export function createMissionPool(locale: Locale): DailyMission[] {
+export function createMissionPool(locale: Locale = getActiveLocale()): DailyMission[] {
   const missionText = getMissionText(locale);
   return [
     {
@@ -527,7 +501,7 @@ export function createMissionPool(locale: Locale): DailyMission[] {
   ];
 }
 
-export function createDailySignal(creatures: Creature[], locale: Locale): DailySignal | null {
+export function createDailySignal(creatures: Creature[], locale: Locale = getActiveLocale()): DailySignal | null {
   if (!creatures.length) return null;
   const sorted = [...creatures].sort((a, b) => {
     const aScore = (100 - a.state.cleanliness) + (100 - a.state.hunger) + a.state.affection * -1;
@@ -538,12 +512,11 @@ export function createDailySignal(creatures: Creature[], locale: Locale): DailyS
   const target = sorted[0];
   const action: Interaction =
     target.state.hunger < 55 ? "feed" : target.state.cleanliness < 55 ? "clean" : "play";
-  const actionLabel = getActionName(locale, action);
+  const actionLabel = getActionName(action, locale);
   const message = t("targetStatusUrgent", {
     name: target.nickname,
     species: target.commonName,
     action: actionLabel,
-    lng: locale,
   });
 
   return {
@@ -555,7 +528,11 @@ export function createDailySignal(creatures: Creature[], locale: Locale): DailyS
   };
 }
 
-export function nextDayState(prev: DailyState | null, creatures: Creature[], locale: Locale): DailyState {
+export function nextDayState(
+  prev: DailyState | null,
+  creatures: Creature[],
+  locale: Locale = getActiveLocale(),
+): DailyState {
   const today = getTodayKey();
   const previousDate = prev?.lastVisitDate;
   const streak =

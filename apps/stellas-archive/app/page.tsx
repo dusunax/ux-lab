@@ -28,8 +28,6 @@ import {
   type Locale,
   ARCHIVE_PAGE_SIZE,
   ROSTER_PAGE_SIZE,
-  ACTION_TEXT,
-  INTERFACE_TEXT,
   SPECIES,
   TOKEN_COST,
   getLocaleFromBrowser,
@@ -45,7 +43,13 @@ import {
   getObserverProfile,
   getEmotionLabel,
 } from "../features/game/engine";
-import { initI18n, isSupportedLocale, normalizeLocale, SupportedLocale } from "../features/i18n/i18n";
+import {
+  initI18n,
+  isSupportedLocale,
+  normalizeLocale,
+  SupportedLocale,
+  MESSAGE_CATALOGS,
+} from "../features/i18n/i18n";
 
 const archiveSort = (entries: ArchiveEntry[]) =>
   entries
@@ -122,7 +126,7 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   const shouldSyncLocaleQuery = useRef(false);
   const [isLocaleHydrated, setIsLocaleHydrated] = useState(false);
   const [state, setState] = useState<GameState>(() => initState(initialLocale));
-  const [feedback, setFeedback] = useState<string>(INTERFACE_TEXT[initialLocale].defaultNotice);
+  const [feedback, setFeedback] = useState<string>(() => MESSAGE_CATALOGS[initialLocale].interfaceText.defaultNotice);
   const [observerYaw, setObserverYaw] = useState(42);
   const [observerPitch, setObserverPitch] = useState(52);
   const [isObserverAutoTarget, setIsObserverAutoTarget] = useState(true);
@@ -147,8 +151,9 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       setLocaleStorage(nextLocale);
       i18next.changeLanguage(nextLocale);
       const next = loadState(nextLocale);
+      const nextCatalog = MESSAGE_CATALOGS[nextLocale];
       const nextWithLocale = { ...next, locale: nextLocale };
-      setFeedback(INTERFACE_TEXT[nextWithLocale.locale].defaultNotice);
+      setFeedback(nextCatalog.interfaceText.defaultNotice);
       setState((prev) => ({
         ...nextWithLocale,
         selectedCreatureId: prev.selectedCreatureId || next.selectedCreatureId,
@@ -239,6 +244,10 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       }) as React.CSSProperties,
     [observerProfile, observerCreature],
   );
+  const localizedText = useMemo(() => MESSAGE_CATALOGS[state.locale], [state.locale]);
+  const uiText = localizedText.interfaceText;
+  const actionText = localizedText.actionText;
+  const speciesText = localizedText.species;
 
   useEffect(() => {
     const snapshot = `${state.archive.length}|${state.daily.missions.length}|${
@@ -269,8 +278,6 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     state.researchData.emotion,
   ]);
 
-  const uiText = INTERFACE_TEXT[state.locale];
-  const actionText = ACTION_TEXT[state.locale];
   const missionTotal = state.daily.missions.length;
   const missionRemaining = state.daily.missions.filter((mission) => !mission.completed).length;
   const remainingMissions = state.daily.missions.filter((mission) => !mission.completed);
@@ -286,10 +293,10 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   const isEntryPopupHighlighted = isMissionIncomplete || isMissionRewardAvailable;
   const stellaComment = missionTotal === 0
-    ? t("stellaCommentEmpty", { lng: state.locale })
+    ? t("stellaCommentEmpty")
     : missionRemaining > 0
-      ? t("stellaCommentWorking", { lng: state.locale })
-      : t("stellaCommentDone", { lng: state.locale });
+      ? t("stellaCommentWorking")
+      : t("stellaCommentDone");
 
   const targetStatusText = useMemo(
     () =>
@@ -299,25 +306,22 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
             name: selectedCreature.nickname,
             species: selectedCreature.commonName,
             action: actionText[firstMission.requiredAction],
-            lng: state.locale,
           })
           : t("targetStatusReady", {
               name: selectedCreature.nickname,
               species: selectedCreature.commonName,
-              lng: state.locale,
             })
         : "",
-    [actionText, firstMission, selectedCreature, state.locale],
+    [actionText, firstMission, selectedCreature],
   );
 
   const rightPanelTabs = useMemo(
     () => [
-      { id: "research" as const, label: t("researchLogTitle", { lng: state.locale }) },
+      { id: "research" as const, label: t("researchLogTitle") },
       { id: "archive" as const, label: uiText.archive },
     ],
-    [uiText.archive, state.locale],
+    [uiText.archive],
   );
-  const signalText = state.daily.signal?.message ?? uiText.noSignal;
   const signalState = state.daily.signal
     ? state.daily.signal.resolved
       ? state.daily.signal.rewardClaimed
@@ -396,8 +400,7 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   const performAction = useCallback((interaction: Interaction, creature: Creature) => {
     setState((prev) => {
-      const locale = prev.locale;
-      const localeText = INTERFACE_TEXT[locale];
+      const localeText = uiText;
       if (prev.tokens < TOKEN_COST[interaction]) {
         setFeedback(localeText.noToken);
         return prev;
@@ -475,12 +478,11 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
             createArchiveEntry(
               nextCreature,
               nextSpecies,
-              `${drift.rule.name} discovered (${drift.rule.message[locale]})`,
+              `${drift.rule.name} discovered (${drift.rule.message[prev.locale]})`,
             ),
           );
           archiveReason = t("mutationEvolved", {
             species: nextSpecies.commonName,
-            lng: locale,
           });
         }
 
@@ -491,7 +493,8 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
           if (archiveReason) return archiveReason;
           if (interaction === "scan") return `${nextCreature.nickname}: ${localeText.colorTracked}`;
           if (interaction === "decorate") return `${nextCreature.nickname}: ${localeText.deckResonance}`;
-          if (interaction === "play") return `${nextCreature.nickname}: ${localeText.respondedWith} ${getEmotionLabel(locale, nextEmotion)}`;
+          if (interaction === "play")
+            return `${nextCreature.nickname}: ${localeText.respondedWith} ${getEmotionLabel(nextEmotion, prev.locale)}`;
           if (interaction === "feed") return `${nextCreature.nickname}: ${localeText.recoveredHunger}`;
           return `${nextCreature.nickname}: ${localeText.careStable}`;
         })();
@@ -541,14 +544,14 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
         },
       };
     });
-  }, []);
+  }, [state.locale]);
 
   const selectCreature = useCallback((id: string) => {
     setState((prev) => ({ ...prev, selectedCreatureId: id }));
   }, []);
 
   const clearCompletedMissions = useCallback(() => {
-    const localeText = INTERFACE_TEXT[state.locale];
+    const localeText = uiText;
     const allCompleted = state.daily.missions.every((mission) => mission.completed);
     if (!allCompleted) {
       setFeedback(localeText.continueMissions);
@@ -564,10 +567,10 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       tokens: prev.tokens + 2,
     }));
     setFeedback(localeText.missionsCleared);
-  }, [state]);
+  }, [state, uiText]);
 
   const claimSignalReward = useCallback(() => {
-    const localeText = INTERFACE_TEXT[state.locale];
+    const localeText = uiText;
     const signal = state.daily.signal;
     if (!signal || !signal.resolved) {
       setFeedback(signal ? localeText.continueMissions : localeText.noSignal);
@@ -593,7 +596,7 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       tokens: prev.tokens + 1,
     }));
     setFeedback(localeText.signalRewardClaimed);
-  }, [state]);
+  }, [state, uiText]);
 
   const handleObserverPointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
@@ -644,7 +647,8 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   const setLocale = useCallback((nextLocale: Locale) => {
     setLocaleStorage(nextLocale);
-    setFeedback(INTERFACE_TEXT[nextLocale].defaultNotice);
+    const nextCatalog = MESSAGE_CATALOGS[nextLocale];
+    setFeedback(nextCatalog.interfaceText.defaultNotice);
     setState((prev) => (prev.locale === nextLocale ? prev : { ...prev, locale: nextLocale }));
   }, []);
 
@@ -674,7 +678,7 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   return (
     <main className="mx-auto flex h-[100dvh] min-h-[100dvh] w-full max-w-[1220px] flex-col overflow-x-hidden px-[clamp(14px,3vw,24px)] pb-8 pt-[22px]">
-      <GameHeader locale={state.locale} tokenCount={state.tokens} uiText={uiText} onSetLocale={setLocale} />
+      <GameHeader tokenCount={state.tokens} uiText={uiText} onSetLocale={setLocale} />
 
         <section className="grid flex-1 min-h-0 min-w-0 gap-[var(--panel-gap)] items-start overflow-x-hidden [grid-template-columns:minmax(0,1.35fr)_minmax(300px,1fr)]">
           <section className="grid min-w-0 w-full gap-3 overflow-x-hidden h-full relative">
@@ -709,7 +713,6 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
               isOpen={isEntryPopupOpen}
               hasUpdate={isEntryPopupHighlighted || hasEntryPopupUpdate}
               uiText={uiText}
-              locale={state.locale}
               tokens={state.tokens}
               researchObservation={state.researchData.observation}
               researchMutation={state.researchData.mutation}
@@ -736,15 +739,14 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
         <section className="min-w-0">
           <div className="mb-2">
-            <ActiveCreaturePanel
-              selectedCreature={selectedCreature ?? null}
-              uiText={uiText}
-              actionText={actionText}
-              token={state.tokens}
-              locale={state.locale}
-              performAction={performAction}
-              onOpenRoster={() => openModal("roster")}
-              onOpenCreatureDetails={() => openModal("creature-details")}
+              <ActiveCreaturePanel
+                selectedCreature={selectedCreature ?? null}
+                uiText={uiText}
+                actionText={actionText}
+                token={state.tokens}
+                performAction={performAction}
+                onOpenRoster={() => openModal("roster")}
+                onOpenCreatureDetails={() => openModal("creature-details")}
               showActions={true}
               highlightActions={activeMissionActions}
             />
@@ -780,7 +782,6 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
               <ResearchLogPanel
                 uiText={uiText}
                 state={state}
-                locale={state.locale}
                 onOpenLog={() => openModal("missions")}
               />
             ) : (
@@ -788,7 +789,6 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
                 uiText={uiText}
                 archiveCount={state.archive.length}
                 latestArchive={state.archive[0] ?? null}
-                locale={state.locale}
                 onOpenArchive={() => openModal("archive")}
               />
             )}
@@ -804,7 +804,6 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
               uiText={uiText}
               actionText={actionText}
               missionRemaining={missionRemaining}
-              locale={state.locale}
               onClearCompletedMissions={clearCompletedMissions}
             />
           ) : null}
@@ -812,7 +811,6 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
           {activeModal === "archive" ? (
               <ArchiveModal
                 uiText={uiText}
-                locale={state.locale}
                 archiveSpeciesTabs={archiveSpeciesTabs}
                 archiveFilter={archiveFilter}
                 filteredArchiveEntries={filteredArchiveEntries}
@@ -830,11 +828,10 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
           ) : null}
 
           {activeModal === "roster" ? (
-            <RosterModal
-              uiText={uiText}
-              locale={state.locale}
-              selectedCreatureId={selectedCreature?.id ?? ""}
-              rosterSpeciesTabs={rosterSpeciesTabs}
+              <RosterModal
+                uiText={uiText}
+                selectedCreatureId={selectedCreature?.id ?? ""}
+                rosterSpeciesTabs={rosterSpeciesTabs}
               rosterFilter={rosterFilter}
               filteredRoster={filteredRoster}
               rosterSlice={rosterSlice}
@@ -876,8 +873,8 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
               creature={selectedCreature}
               uiText={uiText}
               actionText={actionText}
-              locale={state.locale}
               token={state.tokens}
+              speciesText={speciesText}
               onAction={performAction}
               onSetObserverTarget={(creature) => {
                 setIsObserverAutoTarget(false);

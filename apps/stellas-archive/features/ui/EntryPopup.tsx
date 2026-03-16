@@ -1,12 +1,11 @@
 import { X } from "lucide-react";
-import type { Creature, DailyMission, InterfaceText, Locale } from "../game/engine";
+import type { Creature, DailyMission, InterfaceText } from "../game/engine";
 import { t } from "i18next";
 
 type EntryPopupProps = {
   isOpen: boolean;
   hasUpdate: boolean;
   uiText: InterfaceText;
-  locale: Locale;
   tokens: number;
   researchObservation: number;
   researchMutation: number;
@@ -33,7 +32,6 @@ export function EntryPopup({
   isOpen,
   hasUpdate,
   uiText,
-  locale,
   tokens,
   researchObservation,
   researchMutation,
@@ -58,18 +56,18 @@ export function EntryPopup({
   if (!isOpen) return null;
 
   const signalBadge = signalRewardClaimed
-      ? t("signalStatusDone", { lng: locale })
+      ? t("signalStatusDone")
       : signalState === uiText.resolved
-      ? t("signalStatusReady", { lng: locale })
+      ? t("signalStatusReady")
       : signalState === uiText.noSignal
-        ? t("signalStatusIdle", { lng: locale })
-        : t("signalStatusUrgent", { lng: locale });
+        ? t("signalStatusIdle")
+        : t("signalStatusUrgent");
   const isSignalRewardDisabled = !hasSignal || !signalResolved || signalRewardClaimed;
   const missionBadge = missionTotal === 0
-    ? t("missionStatusIdle", { lng: locale })
+    ? t("missionStatusIdle")
     : missionRemaining === 0
-      ? t("missionStatusDone", { lng: locale })
-      : t("missionStatusActive", { lng: locale });
+      ? t("missionStatusDone")
+      : t("missionStatusActive");
   const isMissionRewardDisabled = !(missionTotal > 0 && missionRemaining === 0);
 
   return (
@@ -169,11 +167,11 @@ export function EntryPopup({
                       className="text-[10px] tracking-[0.32px] text-[#95f7de]"
                       aria-label={
                         mission.completed
-                        ? `${mission.label} ${t("missionStatusCompleted", { lng: locale })}`
-                          : `${mission.label} ${t("missionStatusActive", { lng: locale })}`
+                        ? `${mission.label} ${t("missionStatusCompleted")}`
+                          : `${mission.label} ${t("missionStatusActive")}`
                       }
                     >
-                      {mission.completed ? t("missionStatusCompleted", { lng: locale }) : t("missionStatusActive", { lng: locale })}
+                      {mission.completed ? t("missionStatusCompleted") : t("missionStatusActive")}
                     </output>
                   </article>
                 ))

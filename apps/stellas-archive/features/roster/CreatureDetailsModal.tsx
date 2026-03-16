@@ -1,5 +1,7 @@
-import type { ActionText, Creature, InterfaceText, Locale, Interaction } from "../game/engine";
-import { barWidth, getDominantEmotionLabel, SPECIES, TOKEN_COST } from "../game/engine";
+import type { ActionText, Creature, InterfaceText, Interaction } from "../game/engine";
+import { barWidth, getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
+
+type SpeciesTextMap = Record<string, { description: string }>;
 
 function StatBarFill({ width, className }: { width: string; className: string }) {
   return <div className={`h-full border-r-[2px] border-[rgba(255,255,255,0.4)] ${className}`} style={{ width }} />;
@@ -9,8 +11,8 @@ type CreatureDetailsModalProps = {
   creature: Creature | null;
   uiText: InterfaceText;
   actionText: ActionText;
-  locale: Locale;
   token: number;
+  speciesText: SpeciesTextMap;
   onAction: (interaction: Interaction, creature: Creature) => void;
   onSetObserverTarget: (creature: Creature) => void;
 };
@@ -19,8 +21,8 @@ export function CreatureDetailsModal({
   creature,
   uiText,
   actionText,
-  locale,
   token,
+  speciesText,
   onAction,
   onSetObserverTarget,
 }: CreatureDetailsModalProps) {
@@ -49,7 +51,7 @@ export function CreatureDetailsModal({
         </button>
       </div>
       <p className="mt-2 text-[11px] text-[#95f7de] tracking-[0.3px]">
-        {uiText.emotion}: <strong>{getDominantEmotionLabel(locale, creature.emotion)}</strong> / {uiText.traits}:{" "}
+        {uiText.emotion}: <strong>{getDominantEmotionLabel(creature.emotion)}</strong> / {uiText.traits}:{" "}
         {creature.traits.join(", ")}
       </p>
       <div className="mt-2.5 grid gap-2.5">
@@ -134,7 +136,7 @@ export function CreatureDetailsModal({
           {uiText.mutationStage}: {creature.mutationStage}
         </span>
         <br />
-        {SPECIES[creature.speciesId]?.description?.[locale]}
+        {speciesText[creature.speciesId]?.description}
       </div>
       <div className="mt-2.5 grid gap-2">
         <button

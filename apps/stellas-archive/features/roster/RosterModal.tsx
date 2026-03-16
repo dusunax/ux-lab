@@ -1,10 +1,9 @@
 import type { CSSProperties } from "react";
-import type { Creature, InterfaceText, Locale } from "../game/engine";
+import type { Creature, InterfaceText } from "../game/engine";
 import { SPECIES, getDominantEmotionLabel } from "../game/engine";
 
 type RosterModalProps = {
   uiText: InterfaceText;
-  locale: Locale;
   selectedCreatureId: string;
   rosterSpeciesTabs: Array<{ id: string; label: string; count: number }>;
   rosterFilter: string;
@@ -20,7 +19,6 @@ type RosterModalProps = {
 
 export function RosterModal({
   uiText,
-  locale,
   selectedCreatureId,
   rosterSpeciesTabs,
   rosterFilter,
@@ -96,7 +94,7 @@ export function RosterModal({
                   </button>
                 </div>
                 <p className="mt-2 text-[11px] text-[#95f7de] tracking-[0.3px]">
-                  {uiText.emotion}: <strong>{getDominantEmotionLabel(locale, creature.emotion)}</strong> / {uiText.traits}:{" "}
+                  {uiText.emotion}: <strong>{getDominantEmotionLabel(creature.emotion)}</strong> / {uiText.traits}:{" "}
                   {creature.traits.join(", ")}
                 </p>
                 <p className="mt-1 text-[12px] text-[var(--muted)]">

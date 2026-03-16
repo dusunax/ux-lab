@@ -1,30 +1,29 @@
-import type { GameState, InterfaceText, Locale } from "../game/engine";
+import type { GameState, InterfaceText } from "../game/engine";
 import { t } from "i18next";
 
 export type ResearchLogPanelProps = {
   uiText: InterfaceText;
   state: GameState;
-  locale: Locale;
   onOpenLog: () => void;
 };
 
-export function ResearchLogPanel({ uiText, state, locale, onOpenLog }: ResearchLogPanelProps) {
+export function ResearchLogPanel({ uiText, state, onOpenLog }: ResearchLogPanelProps) {
   const signalText = state.daily.signal?.message ?? uiText.noSignal;
   const signal = state.daily.signal;
   const signalStatus = signal
     ? signal.resolved
-    ? signal.rewardClaimed
-      ? t("signalStatusDone", { lng: locale })
-      : t("signalStatusReady", { lng: locale })
-      : t("signalStatusUrgent", { lng: locale })
-    : t("signalStatusIdle", { lng: locale });
+      ? signal.rewardClaimed
+      ? t("signalStatusDone")
+      : t("signalStatusReady")
+      : t("signalStatusUrgent")
+    : t("signalStatusIdle");
   const signalBadge = signal
     ? signal.resolved
-    ? signal.rewardClaimed
-      ? t("signalStatusDone", { lng: locale })
-      : t("signalStatusReady", { lng: locale })
-      : t("signalStatusUrgent", { lng: locale })
-    : t("signalStatusIdle", { lng: locale });
+      ? signal.rewardClaimed
+      ? t("signalStatusDone")
+      : t("signalStatusReady")
+      : t("signalStatusUrgent")
+    : t("signalStatusIdle");
   const signalStatusTone = signal
     ? signal.resolved
       ? signal.rewardClaimed
@@ -34,10 +33,10 @@ export function ResearchLogPanel({ uiText, state, locale, onOpenLog }: ResearchL
     : "signal-idle";
   const latest = state.archive[0];
 
-  const logHeading = t("researchLogTitle", { lng: locale });
-  const signalHeading = t("signalDetected", { lng: locale });
-  const mutationHeading = t("mutationPossibility", { lng: locale });
-  const missionHeading = t("researchStatus", { lng: locale });
+  const logHeading = t("researchLogTitle");
+  const signalHeading = t("signalDetected");
+  const mutationHeading = t("mutationPossibility");
+  const missionHeading = t("researchStatus");
 
   const missionText =
     missionHeading +
@@ -45,7 +44,7 @@ export function ResearchLogPanel({ uiText, state, locale, onOpenLog }: ResearchL
 
   const mutationText = latest
     ? `${latest.name} / ${latest.species} / ${latest.reason}`
-    : t("noMutationRecorded", { lng: locale });
+    : t("noMutationRecorded");
 
   return (
     <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
@@ -66,7 +65,7 @@ export function ResearchLogPanel({ uiText, state, locale, onOpenLog }: ResearchL
             {signalText}
           </output>
           <div className="flex items-center justify-between border border-[rgba(130,220,255,0.35)] bg-[rgba(8,14,30,0.85)] px-2 py-1 text-[11px] tracking-[0.32px] text-[#95f7de]">
-        <output role="status" aria-label={`${t("signalStatusAria", { lng: locale })} ${signalStatus}`}>
+        <output role="status" aria-label={`${t("signalStatusAria")} ${signalStatus}`}>
               {signalStatus}
             </output>
             <output

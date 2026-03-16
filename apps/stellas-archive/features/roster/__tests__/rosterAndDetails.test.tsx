@@ -6,6 +6,7 @@ import { CreatureDetailsModal } from "../CreatureDetailsModal";
 import { ACTION_TEXT, INTERFACE_TEXT } from "../../game/engine";
 import type { Creature } from "../../game/engine";
 import { SupportedLocale } from "../../i18n/i18n";
+import { getCatalog } from "../../i18n/i18n";
 
 const lumina: Creature = {
   id: "c1",
@@ -55,7 +56,6 @@ describe("RosterModal", () => {
     render(
       <RosterModal
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
-        locale={SupportedLocale.En}
         selectedCreatureId="c1"
         rosterSpeciesTabs={[
           { id: "all", label: "All", count: 2 },
@@ -91,7 +91,6 @@ describe("RosterModal", () => {
     render(
       <RosterModal
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
-        locale={SupportedLocale.En}
         selectedCreatureId="c1"
         rosterSpeciesTabs={[
           { id: "all", label: "All", count: 2 },
@@ -125,8 +124,8 @@ describe("CreatureDetailsModal", () => {
         creature={null}
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
-        locale={SupportedLocale.En}
         token={10}
+        speciesText={getCatalog(SupportedLocale.En).species}
         onAction={() => undefined}
         onSetObserverTarget={() => undefined}
       />,
@@ -143,8 +142,8 @@ describe("CreatureDetailsModal", () => {
         creature={lumina}
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
-        locale={SupportedLocale.En}
         token={10}
+        speciesText={getCatalog(SupportedLocale.En).species}
         onAction={onAction}
         onSetObserverTarget={onSetObserverTarget}
       />,

@@ -1,28 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { t } from "i18next";
+import i18next from "i18next";
 import { Settings } from "lucide-react";
-import type { Locale } from "../game/engine";
 import type { InterfaceText } from "../game/engine";
-import { SupportedLocale } from "../game/engine";
+import { type Locale, normalizeLocale, SupportedLocale } from "../i18n/i18n";
 
 type GameHeaderProps = {
-  locale: Locale;
   uiText: InterfaceText;
   tokenCount: number;
   onSetLocale: (nextLocale: Locale) => void;
 };
 
-export function GameHeader({ locale, tokenCount, uiText, onSetLocale }: GameHeaderProps) {
+export function GameHeader({ tokenCount, uiText, onSetLocale }: GameHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const locale = normalizeLocale(i18next.resolvedLanguage || i18next.language);
   const isEnglishLocale = locale === SupportedLocale.En;
   const languageFallback = locale === SupportedLocale.En ? "Language" : "언어";
   const englishFallback = "English";
   const koreanFallback = "한국어";
-  const languageLabel = t("language", { lng: locale }) || languageFallback;
-  const englishLabel = t("languageEnglish", { lng: locale }) || englishFallback;
-  const koreanLabel = t("languageKorean", { lng: locale }) || koreanFallback;
+  const languageLabel = t("language") || languageFallback;
+  const englishLabel = t("languageEnglish") || englishFallback;
+  const koreanLabel = t("languageKorean") || koreanFallback;
 
   useEffect(() => {
     if (!isMenuOpen) return;

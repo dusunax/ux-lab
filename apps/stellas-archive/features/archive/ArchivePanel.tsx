@@ -1,15 +1,14 @@
-import type { ArchiveEntry, InterfaceText, Locale } from "../game/engine";
+import type { ArchiveEntry, InterfaceText } from "../game/engine";
 import { formatDateLabel, getEmotionLabel } from "../game/engine";
 
 type ArchivePanelProps = {
   uiText: InterfaceText;
   archiveCount: number;
   latestArchive: ArchiveEntry | null;
-  locale: Locale;
   onOpenArchive: () => void;
 };
 
-export function ArchivePanel({ uiText, archiveCount, latestArchive, locale, onOpenArchive }: ArchivePanelProps) {
+export function ArchivePanel({ uiText, archiveCount, latestArchive, onOpenArchive }: ArchivePanelProps) {
   return (
     <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
       <div className="flex items-center justify-between gap-2 mb-2">
@@ -40,11 +39,11 @@ export function ArchivePanel({ uiText, archiveCount, latestArchive, locale, onOp
               최근 기록: {latestArchive.name} - <strong>{latestArchive.species}</strong>
             </output>
             <div className="text-[13px] text-[var(--muted)]">
-              {formatDateLabel(latestArchive.time, locale)} | {latestArchive.reason}
+              {formatDateLabel(latestArchive.time)} | {latestArchive.reason}
             </div>
             <div className="text-[13px] text-[var(--muted)]">
               RGB {latestArchive.rgb.r}/{latestArchive.rgb.g}/{latestArchive.rgb.b} | {uiText.metaEmotion}:{" "}
-              {getEmotionLabel(locale, latestArchive.emotion)}
+              {getEmotionLabel(latestArchive.emotion)}
             </div>
           </>
         ) : (

@@ -1,4 +1,4 @@
-import type { Creature, Interaction, InterfaceText, ActionText, Locale } from "../game/engine";
+import type { Creature, Interaction, InterfaceText, ActionText } from "../game/engine";
 import { barWidth, getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
 import { Apple, Droplets, Scan, Sparkles } from "lucide-react";
 
@@ -7,7 +7,6 @@ type ActiveCreaturePanelProps = {
   uiText: InterfaceText;
   actionText: ActionText;
   token: number;
-  locale: Locale;
   performAction: (interaction: Interaction, creature: Creature) => void;
   onOpenRoster: () => void;
   onOpenCreatureDetails: () => void;
@@ -30,7 +29,6 @@ export function ActiveCreaturePanel({
   uiText,
   actionText,
   token,
-  locale,
   performAction,
   onOpenRoster,
   onOpenCreatureDetails,
@@ -70,7 +68,7 @@ export function ActiveCreaturePanel({
             </button>
           </div>
           <p className="mt-1 mb-0 text-[13px] text-[var(--muted)]">
-            {selectedCreature.commonName} · {getDominantEmotionLabel(locale, selectedCreature.emotion)}
+            {selectedCreature.commonName} · {getDominantEmotionLabel(selectedCreature.emotion)}
           </p>
           <div className="mt-2.5 grid gap-2">
             <div className="grid gap-1">

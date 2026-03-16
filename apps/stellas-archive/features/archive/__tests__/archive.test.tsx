@@ -26,7 +26,6 @@ describe("ArchivePanel", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         archiveCount={0}
         latestArchive={null}
-        locale={SupportedLocale.En}
         onOpenArchive={onOpenArchive}
       />,
     );
@@ -44,7 +43,6 @@ describe("ArchivePanel", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         archiveCount={1}
         latestArchive={entry}
-        locale={SupportedLocale.En}
         onOpenArchive={() => undefined}
       />,
     );
@@ -62,7 +60,6 @@ describe("ArchiveModal", () => {
     render(
       <ArchiveModal
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
-        locale={SupportedLocale.En}
         archiveSpeciesTabs={[
           { id: "all", label: "All" },
           { id: "Mote", label: "Mote" },

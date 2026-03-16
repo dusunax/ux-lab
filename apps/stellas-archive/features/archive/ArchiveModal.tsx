@@ -1,9 +1,8 @@
-import type { ArchiveEntry, InterfaceText, Locale } from "../game/engine";
+import type { ArchiveEntry, InterfaceText } from "../game/engine";
 import { formatDateLabel, getEmotionLabel } from "../game/engine";
 
 type ArchiveModalProps = {
   uiText: InterfaceText;
-  locale: Locale;
   archiveSpeciesTabs: Array<{ id: string; label: string }>;
   archiveFilter: string;
   filteredArchiveEntries: ArchiveEntry[];
@@ -18,7 +17,6 @@ type ArchiveModalProps = {
 
 export function ArchiveModal({
   uiText,
-  locale,
   archiveSpeciesTabs,
   archiveFilter,
   filteredArchiveEntries,
@@ -66,8 +64,8 @@ export function ArchiveModal({
                 {entry.name} - <strong>{entry.species}</strong>
               </div>
               <div className="text-[13px] text-[var(--muted)]">
-                {formatDateLabel(entry.time, locale)} | {entry.reason} | {uiText.metaEmotion}:{" "}
-                {getEmotionLabel(locale, entry.emotion)}
+                {formatDateLabel(entry.time)} | {entry.reason} | {uiText.metaEmotion}:{" "}
+                {getEmotionLabel(entry.emotion)}
               </div>
               <div className="mt-1 text-[13px] text-[var(--muted)]">
                 RGB {entry.rgb.r}/{entry.rgb.g}/{entry.rgb.b} | {uiText.metaState} {entry.condition}

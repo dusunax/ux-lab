@@ -59,6 +59,29 @@ export const en = {
     playLabel: "Apply a light interaction (play) for emotional response.",
     playOptional: "Look for a color shift and log it in archive.",
   },
+  species: {
+    species_lumina: {
+      description: "Stable emotional baseline for Stella's first discovered species.",
+    },
+    species_mote: {
+      description: "A jittery particle life with curiosity spikes.",
+    },
+    species_glint: {
+      description: "A fierce light form with quick emotional spikes.",
+    },
+    species_verdant_echo: {
+      description: "Emerges through sustained growth tone and stable conditions.",
+    },
+    species_azure_shell: {
+      description: "A stabilizing form with calming resonance.",
+    },
+    species_feral_spark: {
+      description: "Unstable red-dominant evolution under emotional pressure.",
+    },
+    species_prism_core: {
+      description: "Rare harmonic balance from near-equal channels.",
+    },
+  },
   interfaceText: {
     langSwitch: "EN",
     pageTitle: "Stella's Archive",

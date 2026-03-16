@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { ASSET_PATHS } from "../lib/assets";
-import { I18nBootstrap } from "../features/i18n/I18nBootstrap";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://stellas-archive.vercel.app";
 
@@ -75,7 +74,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <I18nBootstrap>{children}</I18nBootstrap>
+        {children}
       </body>
     </html>
   );

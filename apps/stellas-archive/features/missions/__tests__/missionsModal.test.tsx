@@ -14,7 +14,6 @@ describe("MissionsModal", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         missionRemaining={0}
-        locale={SupportedLocale.En}
         onClearCompletedMissions={() => undefined}
       />,
     );
@@ -46,7 +45,6 @@ describe("MissionsModal", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         missionRemaining={1}
-        locale={SupportedLocale.En}
         onClearCompletedMissions={onClearCompletedMissions}
       />,
     );

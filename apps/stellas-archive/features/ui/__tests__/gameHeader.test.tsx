@@ -10,7 +10,6 @@ describe("GameHeader", () => {
     const onSetLocale = vi.fn();
     render(
       <GameHeader
-        locale={SupportedLocale.En}
         tokenCount={12}
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         onSetLocale={onSetLocale}
