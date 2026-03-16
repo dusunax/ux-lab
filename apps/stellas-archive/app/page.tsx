@@ -415,23 +415,28 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
         if (item.id !== creature.id) return item;
         wasCreatureFound = true;
 
+        if (item.state.energy <= 0 && interaction !== "feed") {
+          nextFeedback = localeText.noEnergy;
+          return item;
+        }
+
         const nextState = { ...item.state };
         const rgbDelta: { r?: number; g?: number; b?: number } = {};
 
-        switch (interaction) {
-          case "feed":
-            nextState.hunger = clamp(nextState.hunger + 24, 0, 100);
-            nextState.energy = clamp(nextState.energy + 8, 0, 100);
-            rgbDelta.r = 12;
-            rgbDelta.g = -1;
-            rgbDelta.b = -2;
-            break;
-          case "clean":
-            nextState.cleanliness = clamp(nextState.cleanliness + 26, 0, 100);
-            nextState.energy = clamp(nextState.energy + 4, 0, 100);
-            rgbDelta.b = 6;
-            rgbDelta.g = 2;
-            break;
+      switch (interaction) {
+        case "feed":
+          nextState.hunger = clamp(nextState.hunger + 24, 0, 100);
+          nextState.energy = clamp(nextState.energy + 8, 0, 100);
+          rgbDelta.r = 12;
+          rgbDelta.g = -1;
+          rgbDelta.b = -2;
+          break;
+        case "clean":
+          nextState.cleanliness = clamp(nextState.cleanliness + 26, 0, 100);
+          nextState.energy = clamp(nextState.energy - 4, 0, 100);
+          rgbDelta.b = 6;
+          rgbDelta.g = 2;
+          break;
           case "play":
             nextState.affection = clamp(nextState.affection + 12, 0, 100);
             nextState.hunger = clamp(nextState.hunger - 5, 0, 100);

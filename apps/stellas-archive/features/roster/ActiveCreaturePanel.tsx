@@ -1,6 +1,20 @@
 import type { Creature, Interaction, InterfaceText, ActionText } from "../game/engine";
-import { barWidth, getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
+import { getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
 import { Apple, Droplets, Scan, Sparkles } from "lucide-react";
+import { MetricRing } from "../ui/MetricRing";
+import { ColorProfile } from "../ui/ColorProfile";
+
+function getMetricTone(value: number, uiText: InterfaceText) {
+  if (value >= 70) return uiText.high;
+  if (value >= 35) return uiText.normal;
+  return uiText.low;
+}
+
+function getMetricColor(value: number) {
+  if (value >= 70) return "#85ff9e";
+  if (value >= 35) return "#ffd57a";
+  return "#ff7b7b";
+}
 
 type ActiveCreaturePanelProps = {
   selectedCreature: Creature | null;
@@ -13,16 +27,6 @@ type ActiveCreaturePanelProps = {
   showActions?: boolean;
   highlightActions?: Interaction[];
 };
-
-function StatBarFill({
-  width,
-  className,
-}: {
-  width: string;
-  className: string;
-}) {
-  return <div className={`h-full border-r-[2px] border-[rgba(255,255,255,0.4)] ${className}`} style={{ width }} />;
-}
 
 export function ActiveCreaturePanel({
   selectedCreature,
@@ -67,58 +71,40 @@ export function ActiveCreaturePanel({
               {uiText.select}
             </button>
           </div>
-          <p className="mt-1 mb-0 text-[13px] text-[var(--muted)]">
-            {selectedCreature.commonName} · {getDominantEmotionLabel(selectedCreature.emotion)}
-          </p>
-          <div className="mt-2.5 grid gap-2">
-            <div className="grid gap-1">
-              <span className="text-[13px] text-[#def1ff]">
-                {uiText.hunger} {Math.round(selectedCreature.state.hunger)}
-              </span>
-              <div className="h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-                <StatBarFill width={barWidth(selectedCreature.state.hunger, 100)} className="bg-[#ff7b7b]" />
-              </div>
-            </div>
-            <div className="grid gap-1">
-              <span className="text-[13px] text-[#def1ff]">
-                {uiText.cleanliness} {Math.round(selectedCreature.state.cleanliness)}
-              </span>
-              <div className="h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-                <StatBarFill width={barWidth(selectedCreature.state.cleanliness, 100)} className="bg-[#79e98c]" />
-              </div>
-            </div>
-            <div className="grid gap-1">
-              <span className="text-[13px] text-[#def1ff]">
-                {uiText.affection} {Math.round(selectedCreature.state.affection)}
-              </span>
-              <div className="h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-                <StatBarFill width={barWidth(selectedCreature.state.affection, 100)} className="bg-[#ffd78a]" />
-              </div>
-            </div>
-          </div>
-          <div className="mt-2 grid gap-1.5">
-            <div className="flex items-center gap-2">
-              <span className="w-6 text-right text-[12px] text-[var(--muted)]">R</span>
-              <div className="flex-1 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-                <StatBarFill width={barWidth(selectedCreature.rgb.r, 255)} className="bg-[#ff7b7b]" />
-              </div>
-              <span className="w-10 text-right text-[13px] text-white">{selectedCreature.rgb.r}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-6 text-right text-[12px] text-[var(--muted)]">G</span>
-              <div className="flex-1 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-                <StatBarFill width={barWidth(selectedCreature.rgb.g, 255)} className="bg-[#79e98c]" />
-              </div>
-              <span className="w-10 text-right text-[13px] text-white">{selectedCreature.rgb.g}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-6 text-right text-[12px] text-[var(--muted)]">B</span>
-              <div className="flex-1 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-                <StatBarFill width={barWidth(selectedCreature.rgb.b, 255)} className="bg-[#6cb8ff]" />
-              </div>
-              <span className="w-10 text-right text-[13px] text-white">{selectedCreature.rgb.b}</span>
-            </div>
-          </div>
+      <p className="mt-1 mb-0 text-[13px] text-[var(--muted)]">
+        {selectedCreature.commonName} · {getDominantEmotionLabel(selectedCreature.emotion)}
+      </p>
+      <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-4">
+        <MetricRing
+          label={uiText.hunger}
+          value={selectedCreature.state.hunger}
+          color={getMetricColor(selectedCreature.state.hunger)}
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(selectedCreature.state.hunger, uiText)}
+        />
+        <MetricRing
+          label={uiText.cleanliness}
+          value={selectedCreature.state.cleanliness}
+          color={getMetricColor(selectedCreature.state.cleanliness)}
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(selectedCreature.state.cleanliness, uiText)}
+        />
+        <MetricRing
+          label={uiText.affection}
+          value={selectedCreature.state.affection}
+          color={getMetricColor(selectedCreature.state.affection)}
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(selectedCreature.state.affection, uiText)}
+        />
+        <MetricRing
+          label={uiText.energy}
+          value={selectedCreature.state.energy}
+          color="#87bfff"
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(selectedCreature.state.energy, uiText)}
+        />
+      </div>
+          <ColorProfile rgb={selectedCreature.rgb} title="RGB Profile" />
           {showActions ? (
             <div className="grid grid-cols-4 gap-2 mt-2">
               <button
@@ -134,7 +120,7 @@ export function ActiveCreaturePanel({
               </button>
               <button
                 className={buttonClass("clean")}
-                disabled={token < TOKEN_COST.clean}
+                disabled={selectedCreature.state.energy <= 0 || token < TOKEN_COST.clean}
                 aria-label={`${actionText.clean} (${TOKEN_COST.clean})`}
                 onClick={() => performAction("clean", selectedCreature)}
                 data-action="clean"
@@ -145,7 +131,7 @@ export function ActiveCreaturePanel({
               </button>
               <button
                 className={buttonClass("play")}
-                disabled={token < TOKEN_COST.play}
+                disabled={selectedCreature.state.energy <= 0 || token < TOKEN_COST.play}
                 aria-label={`${actionText.play} (${TOKEN_COST.play})`}
                 onClick={() => performAction("play", selectedCreature)}
                 data-action="play"
@@ -156,7 +142,7 @@ export function ActiveCreaturePanel({
               </button>
               <button
                 className={buttonClass("scan")}
-                disabled={token < TOKEN_COST.scan}
+                disabled={selectedCreature.state.energy <= 0 || token < TOKEN_COST.scan}
                 aria-label={`${actionText.scan} (${TOKEN_COST.scan})`}
                 onClick={() => performAction("scan", selectedCreature)}
                 data-action="scan"

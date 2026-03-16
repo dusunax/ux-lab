@@ -166,6 +166,7 @@ export type InterfaceText = {
   observerTargets: string;
   missionsCleared: string;
   days: string;
+  noEnergy: string;
   hunger: string;
   cleanliness: string;
   affection: string;

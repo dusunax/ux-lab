@@ -1,11 +1,10 @@
 import type { ActionText, Creature, InterfaceText, Interaction } from "../game/engine";
-import { barWidth, getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
+import { getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
+import { MetricRing } from "../ui/MetricRing";
+import { ColorProfile } from "../ui/ColorProfile";
+import { Apple, Droplets, Scan, Sparkles, Brush } from "lucide-react";
 
 type SpeciesTextMap = Record<string, { description: string }>;
-
-function StatBarFill({ width, className }: { width: string; className: string }) {
-  return <div className={`h-full border-r-[2px] border-[rgba(255,255,255,0.4)] ${className}`} style={{ width }} />;
-}
 
 type CreatureDetailsModalProps = {
   creature: Creature | null;
@@ -16,6 +15,18 @@ type CreatureDetailsModalProps = {
   onAction: (interaction: Interaction, creature: Creature) => void;
   onSetObserverTarget: (creature: Creature) => void;
 };
+
+function getColorByMetric(value: number) {
+  if (value >= 70) return "#85ff9e";
+  if (value >= 35) return "#ffd57a";
+  return "#ff7b7b";
+}
+
+function getMetricTone(value: number, uiText: InterfaceText) {
+  if (value >= 70) return uiText.high;
+  if (value >= 35) return uiText.normal;
+  return uiText.low;
+}
 
 export function CreatureDetailsModal({
   creature,
@@ -54,83 +65,37 @@ export function CreatureDetailsModal({
         {uiText.emotion}: <strong>{getDominantEmotionLabel(creature.emotion)}</strong> / {uiText.traits}:{" "}
         {creature.traits.join(", ")}
       </p>
-      <div className="mt-2.5 grid gap-2.5">
-        <div>
-          <div className="flex justify-between text-[13px] text-[#d7dcf8]">
-            <span>
-              {uiText.hunger} {Math.round(creature.state.hunger)}
-            </span>
-            <span>
-              {creature.state.hunger > 79 ? uiText.high : creature.state.hunger > 39 ? uiText.normal : uiText.low}
-            </span>
-          </div>
-          <div className="mt-1.5 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.state.hunger, 100)} className="bg-[#ff7b7b]" />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-[13px] text-[#d7dcf8]">
-            <span>
-              {uiText.cleanliness} {Math.round(creature.state.cleanliness)}
-            </span>
-            <span>
-              {creature.state.cleanliness > 79
-              ? uiText.stable
-              : creature.state.cleanliness > 39
-                ? uiText.normal
-                : uiText.unstable}
-            </span>
-          </div>
-          <div className="mt-1.5 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.state.cleanliness, 100)} className="bg-[#96f7bf]" />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-[13px] text-[#d7dcf8]">
-            <span>
-              {uiText.affection} {Math.round(creature.state.affection)}
-            </span>
-            <span>{creature.state.affection > 79 ? uiText.bonded : uiText.friendly}</span>
-          </div>
-          <div className="mt-1.5 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.state.affection, 100)} className="bg-[#f8b4d9]" />
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-[13px] text-[#d7dcf8]">
-            <span>
-              {uiText.energy} {Math.round(creature.state.energy)}
-            </span>
-            <span>{creature.state.energy > 79 ? uiText.high : uiText.low}</span>
-          </div>
-          <div className="mt-1.5 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.state.energy, 100)} className="bg-[#ffd78a]" />
-          </div>
-        </div>
+      <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-4">
+        <MetricRing
+          label={uiText.hunger}
+          value={creature.state.hunger}
+          color={getColorByMetric(creature.state.hunger)}
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(creature.state.hunger, uiText)}
+        />
+        <MetricRing
+          label={uiText.cleanliness}
+          value={creature.state.cleanliness}
+          color={getColorByMetric(creature.state.cleanliness)}
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(creature.state.cleanliness, uiText)}
+        />
+        <MetricRing
+          label={uiText.affection}
+          value={creature.state.affection}
+          color={getColorByMetric(creature.state.affection)}
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(creature.state.affection, uiText)}
+        />
+        <MetricRing
+          label={uiText.energy}
+          value={creature.state.energy}
+          color="#87bfff"
+          trackColor="rgba(255,255,255,0.25)"
+          stateLabel={getMetricTone(creature.state.energy, uiText)}
+        />
       </div>
-      <div className="mt-2 grid gap-1.5">
-        <div className="flex items-center gap-2">
-          <span className="w-6 text-right text-[12px] text-[var(--muted)]">R</span>
-          <div className="flex-1 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.rgb.r, 255)} className="bg-[#ff7b7b]" />
-          </div>
-          <span className="w-10 text-right text-[13px] text-white">{creature.rgb.r}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-6 text-right text-[12px] text-[var(--muted)]">G</span>
-          <div className="flex-1 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.rgb.g, 255)} className="bg-[#79e98c]" />
-          </div>
-          <span className="w-10 text-right text-[13px] text-white">{creature.rgb.g}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-6 text-right text-[12px] text-[var(--muted)]">B</span>
-          <div className="flex-1 h-[10px] border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)] overflow-hidden">
-            <StatBarFill width={barWidth(creature.rgb.b, 255)} className="bg-[#6cb8ff]" />
-          </div>
-          <span className="w-10 text-right text-[13px] text-white">{creature.rgb.b}</span>
-        </div>
-      </div>
+      <ColorProfile rgb={creature.rgb} />
       <div className="mt-2.5 text-[13px] text-[#e8d5f8]">
         <span className="text-[11px] text-[#95f7de] tracking-[0.3px]">
           {uiText.mutationStage}: {creature.mutationStage}
@@ -138,50 +103,55 @@ export function CreatureDetailsModal({
         <br />
         {speciesText[creature.speciesId]?.description}
       </div>
-      <div className="mt-2.5 grid gap-2">
+      <div className="mt-2.5 grid grid-cols-4 gap-2">
         <button
-          className="inline-flex items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[#f6fdff] text-[13px] whitespace-nowrap min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
           aria-label={`${actionText.feed} (${TOKEN_COST.feed})`}
           disabled={token < TOKEN_COST.feed}
           onClick={() => onAction("feed", creature)}
           type="button"
         >
+          <Apple className="h-[18px] w-[18px]" aria-hidden="true" />
           {actionText.feed} ({TOKEN_COST.feed})
         </button>
         <button
-          className="inline-flex items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[#f6fdff] text-[13px] whitespace-nowrap min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
           aria-label={`${actionText.clean} (${TOKEN_COST.clean})`}
-          disabled={token < TOKEN_COST.clean}
+          disabled={creature.state.energy <= 0 || token < TOKEN_COST.clean}
           onClick={() => onAction("clean", creature)}
           type="button"
         >
+          <Droplets className="h-[18px] w-[18px]" aria-hidden="true" />
           {actionText.clean} ({TOKEN_COST.clean})
         </button>
         <button
-          className="inline-flex items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[#f6fdff] text-[13px] whitespace-nowrap min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
           aria-label={`${actionText.play} (${TOKEN_COST.play})`}
-          disabled={token < TOKEN_COST.play}
+          disabled={creature.state.energy <= 0 || token < TOKEN_COST.play}
           onClick={() => onAction("play", creature)}
           type="button"
         >
+          <Sparkles className="h-[18px] w-[18px]" aria-hidden="true" />
           {actionText.play} ({TOKEN_COST.play})
         </button>
         <button
-          className="inline-flex items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[#f6fdff] text-[13px] whitespace-nowrap min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
           aria-label={`${actionText.scan} (${TOKEN_COST.scan})`}
-          disabled={token < TOKEN_COST.scan}
+          disabled={creature.state.energy <= 0 || token < TOKEN_COST.scan}
           onClick={() => onAction("scan", creature)}
           type="button"
         >
+          <Scan className="h-[18px] w-[18px]" aria-hidden="true" />
           {actionText.scan} ({TOKEN_COST.scan})
         </button>
         <button
-          className="inline-flex items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[#f6fdff] text-[13px] whitespace-nowrap min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
           aria-label={`${actionText.decorate} (${TOKEN_COST.decorate})`}
-          disabled={token < TOKEN_COST.decorate}
+          disabled={creature.state.energy <= 0 || token < TOKEN_COST.decorate}
           onClick={() => onAction("decorate", creature)}
           type="button"
         >
+          <Brush className="h-[18px] w-[18px]" aria-hidden="true" />
           {actionText.decorate} ({TOKEN_COST.decorate})
         </button>
       </div>

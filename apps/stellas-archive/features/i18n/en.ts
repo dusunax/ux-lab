@@ -128,6 +128,7 @@ export const en = {
     missionsCleared: "Daily missions cleared. +2 bonus Tokens.",
     stellaComment: "Stella's comment",
     days: "days",
+    noEnergy: "Energy is depleted. Only Feed is available.",
     hunger: "Hunger",
     cleanliness: "Cleanliness",
     affection: "Affection",
