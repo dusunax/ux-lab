@@ -15,6 +15,8 @@ import { RosterModal } from "../features/roster/RosterModal";
 import { ObserverTargetModal } from "../features/observer/ObserverTargetModal";
 import { CreatureDetailsModal } from "../features/roster/CreatureDetailsModal";
 import { Info } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import i18next, { t } from "i18next";
 
 import {
   type ActiveModal,
@@ -23,6 +25,7 @@ import {
   type Interaction,
   type GameState,
   type ArchiveEntry,
+  type Locale,
   ARCHIVE_PAGE_SIZE,
   ROSTER_PAGE_SIZE,
   ACTION_TEXT,
@@ -30,7 +33,6 @@ import {
   SPECIES,
   TOKEN_COST,
   getLocaleFromBrowser,
-  getMissionText,
   creatureSpeciesFallback,
   evaluateMutation,
   applyRgbDelta,
@@ -43,15 +45,84 @@ import {
   getObserverProfile,
   getEmotionLabel,
 } from "../features/game/engine";
+import { initI18n, isSupportedLocale, normalizeLocale, SupportedLocale } from "../features/i18n/i18n";
 
 const archiveSort = (entries: ArchiveEntry[]) =>
   entries
     .slice()
     .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
-export default function StellaArchivePage() {
-  const [state, setState] = useState<GameState>(initialState);
-  const [feedback, setFeedback] = useState<string>(INTERFACE_TEXT.en.defaultNotice);
+const toLocaleFromI18n = (value?: string): Locale =>
+  normalizeLocale(value?.toLowerCase().startsWith(SupportedLocale.Ko) ? SupportedLocale.Ko : SupportedLocale.En);
+const LOCALE_STORAGE_KEY = "stellas-archive:ui-locale-v1";
+
+type StellaSearchParams = {
+  language?: string;
+  lang?: string;
+};
+
+const getLocaleFromSearchParams = (searchParams?: StellaSearchParams): Locale | null => {
+  if (searchParams?.language && isSupportedLocale(searchParams.language)) return searchParams.language;
+  if (searchParams?.lang && isSupportedLocale(searchParams.lang)) return searchParams.lang;
+  return null;
+};
+
+const getLocaleFromWindowSearch = () => {
+  if (typeof window === "undefined") return null;
+  const query = new URLSearchParams(window.location.search);
+  const raw = query.get("language") || query.get("lang");
+  return isSupportedLocale(raw) ? raw : null;
+};
+const getLocaleFromStorage = () => {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+  return isSupportedLocale(raw) ? raw : null;
+};
+const setLocaleStorage = (nextLocale: Locale) => {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale);
+};
+
+const resolveLocalePreference = (queryLocale: Locale | null): Locale => {
+  const queryLocaleOrWindow = queryLocale ?? getLocaleFromWindowSearch();
+  if (queryLocaleOrWindow) {
+    return queryLocaleOrWindow;
+  }
+  return getLocaleFromStorage() ?? getLocaleFromBrowser();
+};
+
+const writeLocaleQuery = (nextLocale: Locale) => {
+  if (typeof window === "undefined") return;
+  const url = new URL(window.location.href);
+  url.searchParams.set("language", nextLocale);
+  window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+};
+
+type StellaArchivePageProps = Record<string, never>;
+
+export default function StellaArchivePage(_props: StellaArchivePageProps) {
+  const urlSearchParams = useSearchParams();
+  const queryLocale = React.useMemo(
+    () => getLocaleFromSearchParams({
+      language: urlSearchParams.get("language") || undefined,
+      lang: urlSearchParams.get("lang") || undefined,
+    }),
+    [urlSearchParams],
+  );
+  const initialLocale = queryLocale ?? SupportedLocale.En;
+
+  const initState = (locale: Locale): GameState => {
+    if (typeof window === "undefined") {
+      return initialState(locale);
+    }
+    const loaded = loadState(locale);
+    return { ...loaded, locale };
+  };
+
+  const shouldSyncLocaleQuery = useRef(false);
+  const [isLocaleHydrated, setIsLocaleHydrated] = useState(false);
+  const [state, setState] = useState<GameState>(() => initState(initialLocale));
+  const [feedback, setFeedback] = useState<string>(INTERFACE_TEXT[initialLocale].defaultNotice);
   const [observerYaw, setObserverYaw] = useState(42);
   const [observerPitch, setObserverPitch] = useState(52);
   const [isObserverAutoTarget, setIsObserverAutoTarget] = useState(true);
@@ -72,13 +143,46 @@ export default function StellaArchivePage() {
   const entryPopupSnapshotRef = useRef("");
 
   useEffect(() => {
-    const next = loadState(getLocaleFromBrowser());
-    setFeedback(INTERFACE_TEXT[next.locale].defaultNotice);
-    setState((prev) => ({
-      ...next,
-      selectedCreatureId: prev.selectedCreatureId || next.selectedCreatureId,
-    }));
-  }, []);
+    const hydrateFromLocale = (nextLocale: Locale) => {
+      setLocaleStorage(nextLocale);
+      i18next.changeLanguage(nextLocale);
+      const next = loadState(nextLocale);
+      const nextWithLocale = { ...next, locale: nextLocale };
+      setFeedback(INTERFACE_TEXT[nextWithLocale.locale].defaultNotice);
+      setState((prev) => ({
+        ...nextWithLocale,
+        selectedCreatureId: prev.selectedCreatureId || next.selectedCreatureId,
+      }));
+      setIsLocaleHydrated(true);
+    };
+
+    const searchLocale = queryLocale ?? getLocaleFromWindowSearch();
+    shouldSyncLocaleQuery.current = searchLocale !== null;
+
+    const initLocale = resolveLocalePreference(queryLocale);
+    const initialize = async () => {
+      try {
+        await initI18n();
+      } catch {
+        // fallback: continue using preference chain without initialization blocker
+      }
+      const fromQuery = queryLocale ?? getLocaleFromWindowSearch();
+      const fallback = toLocaleFromI18n(i18next.resolvedLanguage || i18next.language || getLocaleFromBrowser());
+      const nextLocale = fromQuery || initLocale || fallback;
+      hydrateFromLocale(nextLocale);
+    };
+    void initialize();
+  }, [queryLocale]);
+
+  useEffect(() => {
+    if (!isLocaleHydrated) return;
+    i18next.changeLanguage(state.locale);
+  }, [isLocaleHydrated, state.locale]);
+
+  useEffect(() => {
+    if (!state.locale || !shouldSyncLocaleQuery.current) return;
+    writeLocaleQuery(state.locale);
+  }, [state.locale]);
 
   useEffect(() => saveState(state), [state]);
 
@@ -167,7 +271,6 @@ export default function StellaArchivePage() {
 
   const uiText = INTERFACE_TEXT[state.locale];
   const actionText = ACTION_TEXT[state.locale];
-  const missionText = getMissionText(state.locale);
   const missionTotal = state.daily.missions.length;
   const missionRemaining = state.daily.missions.filter((mission) => !mission.completed).length;
   const remainingMissions = state.daily.missions.filter((mission) => !mission.completed);
@@ -182,36 +285,34 @@ export default function StellaArchivePage() {
   }, [isEntryPopupOpen, missionRemaining, remainingMissions]);
 
   const isEntryPopupHighlighted = isMissionIncomplete || isMissionRewardAvailable;
-  const stellaComment =
-    missionTotal === 0
-      ? state.locale === "en"
-        ? "Quiet day, still active."
-        : "오늘도 평범한 하루입니다."
-      : missionRemaining > 0
-        ? state.locale === "en"
-          ? "Still working on it."
-          : "시간이 벌써 이렇게 되었네."
-        : state.locale === "en"
-          ? "All missions completed."
-          : "일일 미션 끝.";
+  const stellaComment = missionTotal === 0
+    ? t("stellaCommentEmpty", { lng: state.locale })
+    : missionRemaining > 0
+      ? t("stellaCommentWorking", { lng: state.locale })
+      : t("stellaCommentDone", { lng: state.locale });
 
   const targetStatusText = useMemo(
     () =>
       selectedCreature
         ? firstMission
-          ? state.locale === "en"
-            ? `Urgent check: ${selectedCreature.nickname} (${selectedCreature.commonName}), ${actionText[firstMission.requiredAction]} is required.`
-            : `긴급 점검: ${selectedCreature.nickname} (${selectedCreature.commonName})에게 ${actionText[firstMission.requiredAction]} 수행이 필요해요.`
-          : state.locale === "en"
-            ? `${selectedCreature.nickname} (${selectedCreature.commonName}) is ready.`
-            : `${selectedCreature.nickname} (${selectedCreature.commonName})는 안정 상태입니다.`
+        ? t("targetStatusUrgent", {
+            name: selectedCreature.nickname,
+            species: selectedCreature.commonName,
+            action: actionText[firstMission.requiredAction],
+            lng: state.locale,
+          })
+          : t("targetStatusReady", {
+              name: selectedCreature.nickname,
+              species: selectedCreature.commonName,
+              lng: state.locale,
+            })
         : "",
     [actionText, firstMission, selectedCreature, state.locale],
   );
 
   const rightPanelTabs = useMemo(
     () => [
-      { id: "research" as const, label: state.locale === "en" ? "Research Log" : "연구 기록" },
+      { id: "research" as const, label: t("researchLogTitle", { lng: state.locale }) },
       { id: "archive" as const, label: uiText.archive },
     ],
     [uiText.archive, state.locale],
@@ -361,7 +462,7 @@ export default function StellaArchivePage() {
         const drift = evaluateMutation(nextCreature);
         let archiveReason = "";
         if (drift.rule && SPECIES[drift.nextSpecies]) {
-          const nextSpecies = SPECIES[drift.nextSpecies];
+            const nextSpecies = SPECIES[drift.nextSpecies];
           nextCreature = {
             ...nextCreature,
             speciesId: nextSpecies.id,
@@ -377,7 +478,10 @@ export default function StellaArchivePage() {
               `${drift.rule.name} discovered (${drift.rule.message[locale]})`,
             ),
           );
-          archiveReason = locale === "ko" ? `${nextSpecies.commonName} 변이체로 진화했습니다` : `${nextSpecies.commonName} emerged`;
+          archiveReason = t("mutationEvolved", {
+            species: nextSpecies.commonName,
+            lng: locale,
+          });
         }
 
         nextCreature.state.hunger = clamp(nextCreature.state.hunger - 1, 0, 100);
@@ -538,12 +642,10 @@ export default function StellaArchivePage() {
     };
   }, []);
 
-  const setLocale = useCallback((nextLocale: "en" | "ko") => {
-    setState((prev) => {
-      if (prev.locale === nextLocale) return prev;
-      setFeedback(INTERFACE_TEXT[nextLocale].defaultNotice);
-      return { ...prev, locale: nextLocale };
-    });
+  const setLocale = useCallback((nextLocale: Locale) => {
+    setLocaleStorage(nextLocale);
+    setFeedback(INTERFACE_TEXT[nextLocale].defaultNotice);
+    setState((prev) => (prev.locale === nextLocale ? prev : { ...prev, locale: nextLocale }));
   }, []);
 
   const modalTitle = useMemo(() => {
@@ -562,6 +664,14 @@ export default function StellaArchivePage() {
     setIsEntryPopupOpen(false);
   }, []);
 
+  if (!isLocaleHydrated) {
+    return (
+      <main className="mx-auto flex h-[100dvh] min-h-[100dvh] w-full max-w-[1220px] flex-col overflow-x-hidden px-[clamp(14px,3vw,24px)] pb-8 pt-[22px]">
+        <div className="h-full bg-[rgba(5,11,24,0.35)]" />
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto flex h-[100dvh] min-h-[100dvh] w-full max-w-[1220px] flex-col overflow-x-hidden px-[clamp(14px,3vw,24px)] pb-8 pt-[22px]">
       <GameHeader locale={state.locale} tokenCount={state.tokens} uiText={uiText} onSetLocale={setLocale} />
@@ -571,7 +681,6 @@ export default function StellaArchivePage() {
             <ObserverPanel
               uiText={uiText}
               isObserverAutoTarget={isObserverAutoTarget}
-              locale={state.locale}
               observerCreature={observerCreature}
               observerStyle={observerStyle}
               observerYaw={observerYaw}
@@ -600,6 +709,7 @@ export default function StellaArchivePage() {
               isOpen={isEntryPopupOpen}
               hasUpdate={isEntryPopupHighlighted || hasEntryPopupUpdate}
               uiText={uiText}
+              locale={state.locale}
               tokens={state.tokens}
               researchObservation={state.researchData.observation}
               researchMutation={state.researchData.mutation}
@@ -669,8 +779,8 @@ export default function StellaArchivePage() {
             {rightPanel === "research" ? (
               <ResearchLogPanel
                 uiText={uiText}
-                locale={state.locale}
                 state={state}
+                locale={state.locale}
                 onOpenLog={() => openModal("missions")}
               />
             ) : (
@@ -694,6 +804,7 @@ export default function StellaArchivePage() {
               uiText={uiText}
               actionText={actionText}
               missionRemaining={missionRemaining}
+              locale={state.locale}
               onClearCompletedMissions={clearCompletedMissions}
             />
           ) : null}

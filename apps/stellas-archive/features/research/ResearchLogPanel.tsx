@@ -1,35 +1,43 @@
 import type { GameState, InterfaceText, Locale } from "../game/engine";
+import { t } from "i18next";
 
 export type ResearchLogPanelProps = {
   uiText: InterfaceText;
-  locale: Locale;
   state: GameState;
+  locale: Locale;
   onOpenLog: () => void;
 };
 
-export function ResearchLogPanel({ uiText, locale, state, onOpenLog }: ResearchLogPanelProps) {
+export function ResearchLogPanel({ uiText, state, locale, onOpenLog }: ResearchLogPanelProps) {
   const signalText = state.daily.signal?.message ?? uiText.noSignal;
   const signal = state.daily.signal;
   const signalStatus = signal
     ? signal.resolved
-      ? signal.rewardClaimed
-        ? uiText.signalDone
-        : uiText.resolved
-      : uiText.needsAction
-    : uiText.noSignal;
+    ? signal.rewardClaimed
+      ? t("signalStatusDone", { lng: locale })
+      : t("signalStatusReady", { lng: locale })
+      : t("signalStatusUrgent", { lng: locale })
+    : t("signalStatusIdle", { lng: locale });
   const signalBadge = signal
     ? signal.resolved
+    ? signal.rewardClaimed
+      ? t("signalStatusDone", { lng: locale })
+      : t("signalStatusReady", { lng: locale })
+      : t("signalStatusUrgent", { lng: locale })
+    : t("signalStatusIdle", { lng: locale });
+  const signalStatusTone = signal
+    ? signal.resolved
       ? signal.rewardClaimed
-        ? "DONE"
-        : "READY"
-      : "ALERT"
-    : "IDLE";
+        ? "signal-done"
+        : "signal-ready"
+      : "signal-alert"
+    : "signal-idle";
   const latest = state.archive[0];
 
-  const logHeading = locale === "en" ? "Research Log" : "연구 기록";
-  const signalHeading = locale === "en" ? "Signal detected" : "시그널 감지";
-  const mutationHeading = locale === "en" ? "Mutation possibility" : "변이 감지";
-  const missionHeading = locale === "en" ? "Research status" : "연구 상태";
+  const logHeading = t("researchLogTitle", { lng: locale });
+  const signalHeading = t("signalDetected", { lng: locale });
+  const mutationHeading = t("mutationPossibility", { lng: locale });
+  const missionHeading = t("researchStatus", { lng: locale });
 
   const missionText =
     missionHeading +
@@ -37,9 +45,7 @@ export function ResearchLogPanel({ uiText, locale, state, onOpenLog }: ResearchL
 
   const mutationText = latest
     ? `${latest.name} / ${latest.species} / ${latest.reason}`
-    : locale === "en"
-      ? "No mutation has been recorded yet."
-      : "아직 변이 기록이 없습니다.";
+    : t("noMutationRecorded", { lng: locale });
 
   return (
     <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
@@ -60,20 +66,12 @@ export function ResearchLogPanel({ uiText, locale, state, onOpenLog }: ResearchL
             {signalText}
           </output>
           <div className="flex items-center justify-between border border-[rgba(130,220,255,0.35)] bg-[rgba(8,14,30,0.85)] px-2 py-1 text-[11px] tracking-[0.32px] text-[#95f7de]">
-            <output role="status" aria-label={`Signal status ${signalStatus}`}>
+        <output role="status" aria-label={`${t("signalStatusAria", { lng: locale })} ${signalStatus}`}>
               {signalStatus}
             </output>
             <output
               role="status"
-              aria-label={
-                signalStatus === uiText.noSignal
-                  ? "signal-idle"
-                  : signalStatus === uiText.resolved
-                    ? "signal-ready"
-                    : signalStatus === uiText.signalDone
-                      ? "signal-done"
-                      : "signal-alert"
-              }
+              aria-label={signalStatusTone}
             >
               {signalBadge}
             </output>

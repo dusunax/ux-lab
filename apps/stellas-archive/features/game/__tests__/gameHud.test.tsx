@@ -3,9 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { GameHud } from "../GameHud";
 import { ACTION_TEXT, getMissionText, initialState, INTERFACE_TEXT, type GameState } from "../engine";
+import { SupportedLocale } from "../../i18n/i18n";
 
 const createState = (): GameState => {
-  const seed = initialState("en");
+  const seed = initialState(SupportedLocale.En);
   return {
     ...seed,
     daily: {
@@ -30,13 +31,13 @@ describe("GameHud", () => {
     const onOpenMissions = vi.fn();
     const onClearCompletedMissions = vi.fn();
     const state = createState();
-    const missionText = getMissionText("en");
+    const missionText = getMissionText(SupportedLocale.En);
 
     render(
       <GameHud
         state={state}
-        uiText={INTERFACE_TEXT.en}
-        actionText={ACTION_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        actionText={ACTION_TEXT[SupportedLocale.En]}
         missionText={missionText}
         missionTotal={state.daily.missions.length}
         missionRemaining={2}
@@ -47,10 +48,10 @@ describe("GameHud", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT.en.more }));
+    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].more }));
     expect(onOpenMissions).toHaveBeenCalledTimes(1);
 
-    const clearButton = screen.getByRole("button", { name: INTERFACE_TEXT.en.actionRowHint });
+    const clearButton = screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].actionRowHint });
     expect(clearButton.hasAttribute("disabled")).toBe(true);
     fireEvent.click(clearButton);
     expect(onClearCompletedMissions).not.toHaveBeenCalled();
@@ -60,7 +61,7 @@ describe("GameHud", () => {
     const onOpenMissions = vi.fn();
     const onClearCompletedMissions = vi.fn();
     const state = createState();
-    const missionText = getMissionText("en");
+    const missionText = getMissionText(SupportedLocale.En);
 
     render(
       <GameHud
@@ -74,12 +75,16 @@ describe("GameHud", () => {
             ],
             signal: {
               ...state.daily.signal,
+              creatureId: state.daily.signal?.creatureId ?? state.creatures[0]?.id ?? "",
+              message: state.daily.signal?.message ?? "Need quick action",
+              requiredAction: state.daily.signal?.requiredAction ?? "feed",
+              resolved: state.daily.signal?.resolved ?? false,
               rewardClaimed: false,
             },
           },
         }}
-        uiText={INTERFACE_TEXT.en}
-        actionText={ACTION_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        actionText={ACTION_TEXT[SupportedLocale.En]}
         missionText={missionText}
         missionTotal={2}
         missionRemaining={0}
@@ -90,7 +95,7 @@ describe("GameHud", () => {
       />,
     );
 
-    const clearButton = screen.getByRole("button", { name: INTERFACE_TEXT.en.actionRowHint });
+    const clearButton = screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].actionRowHint });
     expect(clearButton.hasAttribute("disabled")).toBe(false);
     fireEvent.click(clearButton);
     expect(onClearCompletedMissions).toHaveBeenCalledTimes(1);

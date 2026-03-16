@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { t } from "i18next";
 import { Settings } from "lucide-react";
 import type { Locale } from "../game/engine";
 import type { InterfaceText } from "../game/engine";
+import { SupportedLocale } from "../game/engine";
 
 type GameHeaderProps = {
   locale: Locale;
@@ -14,6 +16,13 @@ type GameHeaderProps = {
 export function GameHeader({ locale, tokenCount, uiText, onSetLocale }: GameHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const isEnglishLocale = locale === SupportedLocale.En;
+  const languageFallback = locale === SupportedLocale.En ? "Language" : "언어";
+  const englishFallback = "English";
+  const koreanFallback = "한국어";
+  const languageLabel = t("language", { lng: locale }) || languageFallback;
+  const englishLabel = t("languageEnglish", { lng: locale }) || englishFallback;
+  const koreanLabel = t("languageKorean", { lng: locale }) || koreanFallback;
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -88,39 +97,39 @@ export function GameHeader({ locale, tokenCount, uiText, onSetLocale }: GameHead
               className={`h-5 w-5 transition-transform duration-200 ${isMenuOpen ? "rotate-[48deg]" : ""}`}
               aria-hidden
             />
-            <span className="sr-only">Language</span>
+            <span className="sr-only">{languageLabel}</span>
           </button>
           {isMenuOpen ? (
             <div
               className="absolute top-[calc(100%+6px)] right-0 z-8 w-[132px] border border-[rgba(130,199,255,0.5)] bg-[rgba(10,18,38,0.94)] p-1.5 shadow-[var(--shadow),0_0_0_1px_rgba(125,225,255,0.2)_inset]"
               role="menu"
-              aria-label="Language"
+              aria-label={languageLabel}
             >
               <button
                 className={`mb-1 w-full rounded-none border border-[rgba(130,199,255,0.32)] bg-[rgba(8,14,32,0.85)] px-2 py-2 text-left text-[13px] leading-tight text-[#f2fcff] ${
-                  locale === "en" ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)]" : ""
+                  isEnglishLocale ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)]" : ""
                 } first:mt-0 hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.2)]`}
-                onClick={() => handleSelectLocale("en")}
+                onClick={() => handleSelectLocale(SupportedLocale.En)}
                 type="button"
                 role="menuitemradio"
-                aria-checked={locale === "en"}
-                aria-label="English"
+                aria-checked={locale === SupportedLocale.En}
+                aria-label={englishLabel}
               >
-                English
-                {locale === "en" ? " ✓" : ""}
+                {englishLabel}
+                {isEnglishLocale ? " ✓" : ""}
               </button>
               <button
                 className={`w-full rounded-none border border-[rgba(130,199,255,0.32)] bg-[rgba(8,14,32,0.85)] px-2 py-2 text-left text-[13px] leading-tight text-[#f2fcff] ${
-                  locale === "ko" ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)]" : ""
+                  !isEnglishLocale ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)]" : ""
                 } hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.2)]`}
-                onClick={() => handleSelectLocale("ko")}
+                onClick={() => handleSelectLocale(SupportedLocale.Ko)}
                 type="button"
                 role="menuitemradio"
-                aria-checked={locale === "ko"}
-                aria-label="한국어"
+                aria-checked={locale === SupportedLocale.Ko}
+                aria-label={koreanLabel}
               >
-                한국어
-                {locale === "ko" ? " ✓" : ""}
+                {koreanLabel}
+                {!isEnglishLocale ? " ✓" : ""}
               </button>
             </div>
           ) : null}

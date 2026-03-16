@@ -5,6 +5,7 @@ import { ArchivePanel } from "../ArchivePanel";
 import { ArchiveModal } from "../ArchiveModal";
 import { INTERFACE_TEXT } from "../../game/engine";
 import type { ArchiveEntry } from "../../game/engine";
+import { SupportedLocale } from "../../i18n/i18n";
 
 const entry: ArchiveEntry = {
   id: "a1",
@@ -22,26 +23,28 @@ describe("ArchivePanel", () => {
     const onOpenArchive = vi.fn();
     render(
       <ArchivePanel
-        uiText={INTERFACE_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
         archiveCount={0}
         latestArchive={null}
-        locale="en"
+        locale={SupportedLocale.En}
         onOpenArchive={onOpenArchive}
       />,
     );
 
-    expect(screen.getByRole("status", { name: INTERFACE_TEXT.en.archiveEmpty })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT.en.more }));
+    expect(
+      screen.getByRole("status", { name: INTERFACE_TEXT[SupportedLocale.En].archiveEmpty }),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].more }));
     expect(onOpenArchive).toHaveBeenCalledTimes(1);
   });
 
   it("shows latest archive summary", () => {
     render(
       <ArchivePanel
-        uiText={INTERFACE_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
         archiveCount={1}
         latestArchive={entry}
-        locale="en"
+        locale={SupportedLocale.En}
         onOpenArchive={() => undefined}
       />,
     );
@@ -58,8 +61,8 @@ describe("ArchiveModal", () => {
 
     render(
       <ArchiveModal
-        uiText={INTERFACE_TEXT.en}
-        locale="en"
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        locale={SupportedLocale.En}
         archiveSpeciesTabs={[
           { id: "all", label: "All" },
           { id: "Mote", label: "Mote" },

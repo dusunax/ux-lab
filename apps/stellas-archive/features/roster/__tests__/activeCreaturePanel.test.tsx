@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { ActiveCreaturePanel } from "../ActiveCreaturePanel";
 import { ACTION_TEXT, INTERFACE_TEXT } from "../../game/engine";
 import type { Creature } from "../../game/engine";
+import { SupportedLocale } from "../../i18n/i18n";
 
 const creature: Creature = {
   id: "c1",
@@ -29,17 +30,17 @@ describe("ActiveCreaturePanel", () => {
     render(
       <ActiveCreaturePanel
         selectedCreature={null}
-        uiText={INTERFACE_TEXT.en}
-        actionText={ACTION_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        actionText={ACTION_TEXT[SupportedLocale.En]}
         token={5}
-        locale="en"
+        locale={SupportedLocale.En}
         performAction={() => undefined}
         onOpenRoster={() => undefined}
         onOpenCreatureDetails={() => undefined}
       />,
     );
 
-    expect(screen.getByRole("status", { name: INTERFACE_TEXT.en.creatureNotFound })).toBeTruthy();
+    expect(screen.getByRole("status", { name: INTERFACE_TEXT[SupportedLocale.En].creatureNotFound })).toBeTruthy();
   });
 
   it("dispatches action callbacks with the selected creature", () => {
@@ -50,22 +51,22 @@ describe("ActiveCreaturePanel", () => {
     render(
       <ActiveCreaturePanel
         selectedCreature={creature}
-        uiText={INTERFACE_TEXT.en}
-        actionText={ACTION_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        actionText={ACTION_TEXT[SupportedLocale.En]}
         token={10}
-        locale="en"
+        locale={SupportedLocale.En}
         performAction={onAction}
         onOpenRoster={onOpenRoster}
         onOpenCreatureDetails={onOpenCreatureDetails}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: `${ACTION_TEXT.en.feed} (1)` }));
+    fireEvent.click(screen.getByRole("button", { name: `${ACTION_TEXT[SupportedLocale.En].feed} (1)` }));
     expect(onAction).toHaveBeenCalledWith("feed", creature);
 
-    fireEvent.click(screen.getByRole("button", { name: `${INTERFACE_TEXT.en.select}` }));
+    fireEvent.click(screen.getByRole("button", { name: `${INTERFACE_TEXT[SupportedLocale.En].select}` }));
     expect(onOpenRoster).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole("button", { name: `${INTERFACE_TEXT.en.creatureDetails}` }));
+    fireEvent.click(screen.getByRole("button", { name: `${INTERFACE_TEXT[SupportedLocale.En].creatureDetails}` }));
     expect(onOpenCreatureDetails).toHaveBeenCalledTimes(1);
   });
 });

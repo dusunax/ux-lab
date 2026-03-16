@@ -19,6 +19,7 @@ import {
   getMissionText,
   STORAGE_KEY,
 } from "../engine";
+import { SupportedLocale } from "../../i18n/i18n";
 import type { Creature, DailyState, Locale } from "../engine";
 import { SPECIES } from "../engine";
 
@@ -62,7 +63,7 @@ describe("game engine utilities", () => {
   });
 
   it("builds creature shape-independent observer profile defaults", () => {
-    const baseStyle = getObserverProfile(null);
+    const baseStyle = getObserverProfile(null) as Record<string, string>;
     expect(baseStyle["--observer-core-size"]).toBe("68px");
     expect(baseStyle["--observer-orb-size"]).toBe("150px");
   });
@@ -81,8 +82,8 @@ describe("game engine utilities", () => {
   });
 
   it("generates the mission pool with three mission types", () => {
-    const missionText = missionForLocale("en");
-    const missions = createMissionPool("en");
+    const missionText = missionForLocale(SupportedLocale.En);
+    const missions = createMissionPool(SupportedLocale.En);
     expect(missions).toHaveLength(3);
     expect(missions[0]).toMatchObject({ label: missionText.feedLabel, requiredAction: "feed", completed: false });
     expect(missions[1]).toMatchObject({ label: missionText.scanLabel, requiredAction: "scan", completed: false });
@@ -100,7 +101,7 @@ describe("game engine utilities", () => {
       state: { hunger: 90, cleanliness: 12, affection: 82, energy: 70 },
     });
 
-    const signal = createDailySignal([stressed, cleanTarget], "en");
+    const signal = createDailySignal([stressed, cleanTarget], SupportedLocale.En);
     expect(signal).not.toBeNull();
     expect(signal?.creatureId).toBe(stressed.id);
     expect(signal?.requiredAction).toBe("feed");
@@ -114,7 +115,7 @@ describe("game engine utilities", () => {
       signal: null,
       missions: [],
     };
-    const next = nextDayState(prev, [makeCreature()], "en");
+    const next = nextDayState(prev, [makeCreature()], SupportedLocale.En);
 
     expect(next.streak).toBe(6);
     expect(next.lastVisitDate).toBe(getTodayKey());
@@ -128,9 +129,9 @@ describe("game engine utilities", () => {
   });
 
   it("persists and restores game state snapshots", () => {
-    const seed = initialState("en");
+    const seed = initialState(SupportedLocale.En);
     saveState(seed);
-    const restored = loadState("en");
+    const restored = loadState(SupportedLocale.En);
 
     expect(restored.version).toBe(seed.version);
     expect(restored.creatures.length).toBe(seed.creatures.length);
@@ -139,7 +140,7 @@ describe("game engine utilities", () => {
 
   it("falls back to initial state on invalid serialized payload", () => {
     window.localStorage.setItem(STORAGE_KEY, "not-a-json");
-    const restored = loadState("en");
+    const restored = loadState(SupportedLocale.En);
 
     expect(restored.version).toBe(1);
     expect(restored.creatures.length).toBeGreaterThan(0);

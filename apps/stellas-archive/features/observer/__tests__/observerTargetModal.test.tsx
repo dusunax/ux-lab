@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { ObserverTargetModal } from "../ObserverTargetModal";
 import { INTERFACE_TEXT } from "../../game/engine";
 import type { Creature } from "../../game/engine";
+import { SupportedLocale } from "../../i18n/i18n";
 
 const mote: Creature = {
   id: "c1",
@@ -50,7 +51,7 @@ describe("ObserverTargetModal", () => {
 
     render(
       <ObserverTargetModal
-        uiText={INTERFACE_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
         creatures={[mote, glint]}
         isObserverAutoTarget={true}
         observerTargetId={null}
@@ -59,7 +60,7 @@ describe("ObserverTargetModal", () => {
       />,
     );
 
-    const autoButton = screen.getByRole("button", { name: INTERFACE_TEXT.en.observerAuto });
+    const autoButton = screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].observerAuto });
     expect(autoButton.getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(autoButton);
     expect(onAuto).toHaveBeenCalledTimes(1);
@@ -74,7 +75,7 @@ describe("ObserverTargetModal", () => {
 
     render(
       <ObserverTargetModal
-        uiText={INTERFACE_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
         creatures={[mote, glint]}
         isObserverAutoTarget={false}
         observerTargetId="c1"

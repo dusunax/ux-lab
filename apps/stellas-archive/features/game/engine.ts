@@ -1,6 +1,15 @@
+import { t } from "i18next";
 import type { CSSProperties } from "react";
+import {
+  SupportedLocale,
+  SUPPORTED_LOCALES,
+  getCatalog,
+  normalizeLocale,
+  type Locale as LocaleFromI18n,
+} from "../i18n/i18n";
 
-export type Locale = "en" | "ko";
+export type Locale = LocaleFromI18n;
+export { SupportedLocale, SUPPORTED_LOCALES };
 
 export type EmotionType =
   | "neutral"
@@ -205,205 +214,18 @@ export const ARCHIVE_PAGE_SIZE = 8;
 export const ROSTER_PAGE_SIZE = 6;
 
 export const INTERFACE_TEXT: Record<Locale, InterfaceText> = {
-  en: {
-    langSwitch: "EN",
-    pageTitle: "Stella's Archive",
-    subtitle: "Studio of Emotional Shapes",
-    labStatus: "Research Briefing",
-    tokens: "Tokens",
-    streak: "Streak",
-    research: "Research Data",
-    todaySignal: "Today&apos;s Signal",
-    noSignal: "No signal today.",
-    resolved: "Resolved",
-    needsAction: "Needs action",
-    dailyMissions: "Daily Missions",
-    missionCompleted: "Completed",
-    missionPending: "Pending",
-    actionRowHint: "Claim mission bonus (+2 Tokens)",
-    signalRewardHint: "Claim signal resolution bonus (+1 Token)",
-    archive: "Archive",
-    archiveEmpty: "No entries yet. Mutations and discoveries will be logged here.",
-    creatures: "Creatures in Lab",
-    all: "All",
-    active: "Active",
-    select: "Select",
-    emotion: "Emotion",
-    traits: "Traits",
-    mutationStage: "Mutation Stage",
-    species: "Species",
-    metaEmotion: "emotion",
-    metaState: "state",
-    missionEmpty: "No missions assigned.",
-    requiredAction: "Required action",
-    defaultNotice: "Observe, feed, and watch the colors shift.",
-    noToken: "Not enough Tokens.",
-    creatureNotFound: "Creature was not found.",
-    rosterEmpty: "No creatures available.",
-    more: "More",
-    close: "Close",
-    creatureDetails: "Creature Details",
-    missionDetails: "Mission List",
-  continueMissions: "Continue missions to unlock daily signal bonus.",
-  signalDone: "DONE",
-  signalRewardClaimed: "Signal resolved bonus claimed. +1 Token.",
-    observerTargets: "Observer Targets",
-    missionsCleared: "Daily missions cleared. +2 bonus Tokens.",
-    stellaComment: "Stella&apos;s comment",
-    days: "days",
-    hunger: "Hunger",
-    cleanliness: "Cleanliness",
-    affection: "Affection",
-    energy: "Energy",
-    deckResonance: "deck resonance adjusted",
-    colorTracked: "color tracked in lab",
-    respondedWith: "responded with",
-    recoveredHunger: "recovered hunger",
-    careStable: "stabilized by care",
-    high: "high",
-    normal: "normal",
-    low: "low",
-    stable: "stable",
-    unstable: "unstable",
-    bonded: "bonded",
-    friendly: "friendly",
-    neutral: "Neutral",
-    observerTarget: "Observer Target",
-    observerAuto: "AUTO",
-    observerPanel: "3D Lumina Observer",
-    observerDescription: "Rotate the bio-crystal lens and inspect the core in real time.",
-    noObserverTarget: "No Lumina specimen is available for observation.",
-  },
-  ko: {
-    langSwitch: "한국어",
-    pageTitle: "스텔라의 기록소",
-    subtitle: "생명체의 정서형상 실험실",
-    labStatus: "오늘의 연구 브리핑",
-    tokens: "토큰",
-    streak: "연속 출석",
-    research: "연구 데이터",
-    todaySignal: "오늘의 신호",
-    noSignal: "오늘 신호가 없습니다.",
-    resolved: "해결됨",
-    needsAction: "조치 필요",
-    dailyMissions: "일일 미션",
-    missionCompleted: "완료",
-    missionPending: "진행중",
-    actionRowHint: "미션 보상 받기 (+2 토큰)",
-    signalRewardHint: "해결 보상 받기 (+1 토큰)",
-    archive: "아카이브",
-    archiveEmpty: "아직 기록이 없습니다. 변이와 발견은 여기에 남습니다.",
-    creatures: "연구 대상",
-    all: "전체",
-    active: "활성",
-    select: "선택",
-    emotion: "감정",
-    traits: "특성",
-    mutationStage: "진화 단계",
-    species: "종족",
-    metaEmotion: "감정",
-    metaState: "상태",
-    missionEmpty: "현재 미션이 없습니다.",
-    requiredAction: "요구 동작",
-    defaultNotice: "관찰하고 먹이를 주며 색이 변하는 과정을 확인하세요.",
-    noToken: "토큰이 부족합니다.",
-    creatureNotFound: "생명체를 찾지 못했습니다.",
-    rosterEmpty: "현재 생명체가 없습니다.",
-    more: "더보기",
-    close: "닫기",
-    creatureDetails: "생명체 상세",
-    missionDetails: "미션 목록",
-  continueMissions: "미션을 모두 완료해야 시그널 보너스가 열립니다.",
-  signalDone: "완료",
-  signalRewardClaimed: "해결 보상이 지급되었습니다. +1 토큰.",
-    observerTargets: "관측 대상",
-    missionsCleared: "일일 미션을 완료했습니다. 보너스 +2 토큰",
-    stellaComment: "스텔라의 코멘트",
-    days: "일",
-    hunger: "배고픔",
-    cleanliness: "청결도",
-    affection: "친밀도",
-    energy: "에너지",
-    deckResonance: "데코 공진이 조정됨",
-    colorTracked: "실험실에서 색상 기록",
-    respondedWith: "반응",
-    recoveredHunger: "배고픔 회복",
-    careStable: "안정화됨",
-    high: "높음",
-    normal: "보통",
-    low: "낮음",
-    stable: "안정",
-    unstable: "불안정",
-    bonded: "친밀",
-    friendly: "우호",
-    neutral: "중립",
-    observerTarget: "관측 대상",
-    observerAuto: "자동",
-    observerPanel: "3D Lumina 관측실",
-    observerDescription: "생체 크리스탈 렌즈를 돌려 코어의 변화를 실시간으로 확인하세요.",
-    noObserverTarget: "관측 가능한 Lumina 샘플이 없습니다.",
-  },
+  [SupportedLocale.En]: getCatalog(SupportedLocale.En).interfaceText,
+  [SupportedLocale.Ko]: getCatalog(SupportedLocale.Ko).interfaceText,
 };
 
 export const ACTION_TEXT: Record<Locale, ActionText> = {
-  en: {
-    feed: "Feed",
-    clean: "Clean",
-    play: "Play",
-    scan: "Scan",
-    decorate: "Decorate",
-  },
-  ko: {
-    feed: "먹이주기",
-    clean: "청소",
-    play: "놀아주기",
-    scan: "스캔",
-    decorate: "장식",
-  },
-};
-
-export const EMOTION_TEXT: Record<Locale, Record<EmotionType, string>> = {
-  en: {
-    neutral: "Neutral",
-    calm: "Calm",
-    curious: "Curious",
-    agitated: "Agitated",
-    harmonic: "Harmonic",
-    mystic: "Mystic",
-    feral: "Feral",
-    attached: "Attached",
-    lonely: "Lonely",
-  },
-  ko: {
-    neutral: "중립",
-    calm: "차분",
-    curious: "호기심",
-    agitated: "불안",
-    harmonic: "조화",
-    mystic: "신비",
-    feral: "격정",
-    attached: "애착",
-    lonely: "고독",
-  },
+  [SupportedLocale.En]: getCatalog(SupportedLocale.En).actionText,
+  [SupportedLocale.Ko]: getCatalog(SupportedLocale.Ko).actionText,
 };
 
 export const MISSION_TEXT: Record<Locale, MissionText> = {
-  en: {
-    feedLabel: "Feed one creature to restore life drive.",
-    feedOptional: "Try a red or green food for color experiments.",
-    scanLabel: "Run a scan once to collect research data.",
-    scanOptional: "",
-    playLabel: "Apply a light interaction (play) for emotional response.",
-    playOptional: "Look for a color shift and log it in archive.",
-  },
-  ko: {
-    feedLabel: "생명체 하나를 먹이며 생존 에너지를 회복하세요.",
-    feedOptional: "색 변화를 보려면 적색/녹색 사료를 번갈아 써 보세요.",
-    scanLabel: "한 번 스캔해 연구 데이터를 수집하세요.",
-    scanOptional: "",
-    playLabel: "가벼운 상호작용(놀아주기)으로 감정 반응을 유도하세요.",
-    playOptional: "색 변화가 생기면 아카이브에 남겨보세요.",
-  },
+  [SupportedLocale.En]: getCatalog(SupportedLocale.En).missionText,
+  [SupportedLocale.Ko]: getCatalog(SupportedLocale.Ko).missionText,
 };
 
 export const SPECIES: Record<string, Species> = {
@@ -557,19 +379,20 @@ export const MUTATION_RULES: MutationRule[] = [
 ];
 
 export function getLocaleFromBrowser(): Locale {
-  if (typeof window === "undefined") return "en";
+  if (typeof window === "undefined") return SupportedLocale.En;
   const language = window.navigator.language.toLowerCase();
-  return language.startsWith("ko") ? "ko" : "en";
+  return language.startsWith("ko") ? SupportedLocale.Ko : SupportedLocale.En;
 }
 
 export function getTodayText(locale: Locale, value: string) {
   const date = new Date(value);
-  const locales = locale === "ko" ? "ko-KR" : "en-US";
+  const locales = locale === SupportedLocale.Ko ? "ko-KR" : "en-US";
   return date.toLocaleString(locales, { month: "short", day: "numeric" });
 }
 
 export function getEmotionLabel(locale: Locale, emotion: EmotionType) {
-  return EMOTION_TEXT[locale][emotion] ?? EMOTION_TEXT[locale].neutral;
+  const emotionText = getCatalog(locale).emotionText;
+  return emotionText[emotion] ?? emotionText.neutral;
 }
 
 export function getMissionText(locale: Locale): MissionText {
@@ -716,10 +539,12 @@ export function createDailySignal(creatures: Creature[], locale: Locale): DailyS
   const action: Interaction =
     target.state.hunger < 55 ? "feed" : target.state.cleanliness < 55 ? "clean" : "play";
   const actionLabel = getActionName(locale, action);
-  const message =
-    locale === "ko"
-      ? `긴급 점검: ${target.nickname} (${target.commonName})에게 ${actionLabel} 수행이 필요해요.`
-      : `Critical check: ${target.nickname} (${target.commonName}) needs urgent ${actionLabel}.`;
+  const message = t("targetStatusUrgent", {
+    name: target.nickname,
+    species: target.commonName,
+    action: actionLabel,
+    lng: locale,
+  });
 
   return {
     creatureId: target.id,
@@ -745,7 +570,7 @@ export function nextDayState(prev: DailyState | null, creatures: Creature[], loc
   };
 }
 
-export const initialState = (locale: Locale = "en"): GameState => {
+export const initialState = (locale: Locale = SupportedLocale.En): GameState => {
   const today = getTodayKey();
   const nicknames = ["Moon Glow", "Pulse", "Quiet Drift", "Neon Wick", "White Veil", "Signal Echo"];
 
@@ -770,7 +595,7 @@ export const initialState = (locale: Locale = "en"): GameState => {
   };
 };
 
-export const loadState = (fallbackLocale: Locale = "en"): GameState => {
+export const loadState = (fallbackLocale: Locale = SupportedLocale.En): GameState => {
   if (typeof window === "undefined") return initialState();
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return initialState(fallbackLocale);
@@ -778,9 +603,10 @@ export const loadState = (fallbackLocale: Locale = "en"): GameState => {
     const parsed = JSON.parse(raw) as GameState;
     if (!parsed.daily?.lastVisitDate) return initialState(fallbackLocale);
 
+    const nextLocale = normalizeLocale(parsed.locale, fallbackLocale);
     let normalizedState = {
       ...parsed,
-      locale: parsed.locale ?? fallbackLocale,
+      locale: nextLocale,
       archive: parsed.archive ?? [],
       researchData: parsed.researchData ?? { observation: 0, mutation: 0, emotion: 0 },
       daily: {

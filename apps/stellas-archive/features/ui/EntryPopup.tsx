@@ -1,10 +1,12 @@
 import { X } from "lucide-react";
-import type { Creature, DailyMission, InterfaceText } from "../game/engine";
+import type { Creature, DailyMission, InterfaceText, Locale } from "../game/engine";
+import { t } from "i18next";
 
 type EntryPopupProps = {
   isOpen: boolean;
   hasUpdate: boolean;
   uiText: InterfaceText;
+  locale: Locale;
   tokens: number;
   researchObservation: number;
   researchMutation: number;
@@ -19,9 +21,9 @@ type EntryPopupProps = {
   missions: DailyMission[];
   signalResolved: boolean;
   signalRewardClaimed: boolean;
-    hasSignal: boolean;
-    selectedCreature: Creature | null;
-    onClose: () => void;
+  hasSignal: boolean;
+  selectedCreature: Creature | null;
+  onClose: () => void;
   onOpenMissions: () => void;
   onClearCompletedMissions: () => void;
   onClaimSignalReward: () => void;
@@ -31,6 +33,7 @@ export function EntryPopup({
   isOpen,
   hasUpdate,
   uiText,
+  locale,
   tokens,
   researchObservation,
   researchMutation,
@@ -55,14 +58,18 @@ export function EntryPopup({
   if (!isOpen) return null;
 
   const signalBadge = signalRewardClaimed
-    ? "DONE"
-    : signalState === uiText.resolved
-      ? "READY"
+      ? t("signalStatusDone", { lng: locale })
+      : signalState === uiText.resolved
+      ? t("signalStatusReady", { lng: locale })
       : signalState === uiText.noSignal
-        ? "IDLE"
-        : "ALERT";
+        ? t("signalStatusIdle", { lng: locale })
+        : t("signalStatusUrgent", { lng: locale });
   const isSignalRewardDisabled = !hasSignal || !signalResolved || signalRewardClaimed;
-  const missionBadge = missionTotal === 0 ? "IDLE" : missionRemaining === 0 ? "DONE" : "ACTIVE";
+  const missionBadge = missionTotal === 0
+    ? t("missionStatusIdle", { lng: locale })
+    : missionRemaining === 0
+      ? t("missionStatusDone", { lng: locale })
+      : t("missionStatusActive", { lng: locale });
   const isMissionRewardDisabled = !(missionTotal > 0 && missionRemaining === 0);
 
   return (
@@ -160,9 +167,13 @@ export function EntryPopup({
                     </div>
                     <output
                       className="text-[10px] tracking-[0.32px] text-[#95f7de]"
-                      aria-label={mission.completed ? `${mission.label} completed` : `${mission.label} active`}
+                      aria-label={
+                        mission.completed
+                        ? `${mission.label} ${t("missionStatusCompleted", { lng: locale })}`
+                          : `${mission.label} ${t("missionStatusActive", { lng: locale })}`
+                      }
                     >
-                      {mission.completed ? "DONE" : "ACTIVE"}
+                      {mission.completed ? t("missionStatusCompleted", { lng: locale }) : t("missionStatusActive", { lng: locale })}
                     </output>
                   </article>
                 ))

@@ -1,13 +1,14 @@
 import { type CSSProperties, type PointerEvent, type RefObject, useMemo } from "react";
-import type { Creature, InterfaceText, Locale } from "../game/engine";
+import type { Creature, InterfaceText } from "../game/engine";
 import { getEmotionLabel } from "../game/engine";
 import { ASSET_PATHS, OBSERVER_CHAMBER_BG_IMAGES } from "../../lib/assets";
+import i18next from "i18next";
+import { normalizeLocale } from "../i18n/i18n";
 
 type ObserverPanelProps = {
   uiText: InterfaceText;
   isObserverAutoTarget: boolean;
   observerCreature: Creature | null;
-  locale: Locale;
   observerStyle: CSSProperties;
   observerYaw: number;
   observerPitch: number;
@@ -23,7 +24,6 @@ export function ObserverPanel({
   uiText,
   isObserverAutoTarget,
   observerCreature,
-  locale,
   observerStyle,
   observerYaw,
   observerPitch,
@@ -40,6 +40,11 @@ export function ObserverPanel({
   const luminaCoreColor = observerCreature
     ? `rgb(${observerCreature.rgb.r}, ${observerCreature.rgb.g}, ${observerCreature.rgb.b})`
     : "rgb(128, 210, 255)";
+  const observerLocale = normalizeLocale(i18next.resolvedLanguage || i18next.language);
+  const emotionLabel = useMemo(
+    () => (observerCreature ? getEmotionLabel(observerLocale, observerCreature.emotion) : ""),
+    [observerCreature, observerLocale],
+  );
 
   const observerOrbStyle: CSSProperties = useMemo(
     () => ({
@@ -268,13 +273,11 @@ export function ObserverPanel({
             </div>
             <output
               role="status"
-              aria-label={`${observerCreature.nickname} ${observerCreature.commonName} ${getEmotionLabel(
-                locale,
-                observerCreature.emotion,
-              )}`}
+              aria-label={`${observerCreature.nickname} ${observerCreature.commonName} ${emotionLabel}`}
               className="mt-4 mx-auto text-[13px] text-[var(--muted)]"
             >
-              {observerCreature.nickname} ({observerCreature.commonName}) | {getEmotionLabel(locale, observerCreature.emotion)}
+              {observerCreature.nickname} ({observerCreature.commonName}) |{" "}
+              {emotionLabel}
             </output>
           </div>
         </div>

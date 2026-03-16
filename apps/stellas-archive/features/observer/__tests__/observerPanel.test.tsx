@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import { ObserverPanel } from "../ObserverPanel";
 import { INTERFACE_TEXT } from "../../game/engine";
 import type { Creature } from "../../game/engine";
+import { SupportedLocale } from "../../i18n/i18n";
 
 const creature: Creature = {
   id: "c1",
@@ -30,10 +31,9 @@ describe("ObserverPanel", () => {
     const onObserverTargetOpen = vi.fn();
     render(
       <ObserverPanel
-        uiText={INTERFACE_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
         isObserverAutoTarget={true}
         observerCreature={null}
-        locale="en"
         observerStyle={{}}
         observerYaw={0}
         observerPitch={0}
@@ -46,18 +46,17 @@ describe("ObserverPanel", () => {
       />,
     );
 
-    expect(screen.getByRole("status", { name: INTERFACE_TEXT.en.noObserverTarget })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT.en.observerTarget }));
+    expect(screen.getByRole("status", { name: INTERFACE_TEXT[SupportedLocale.En].noObserverTarget })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].observerTarget }));
     expect(onObserverTargetOpen).toHaveBeenCalledTimes(1);
   });
 
   it("shows active observer creature when present and non-auto target", () => {
     render(
       <ObserverPanel
-        uiText={INTERFACE_TEXT.en}
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
         isObserverAutoTarget={false}
         observerCreature={creature}
-        locale="en"
         observerStyle={{ "--lumina-core": "rgb(120, 100, 160)" } as CSSProperties}
         observerYaw={42}
         observerPitch={30}

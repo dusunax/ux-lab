@@ -5,6 +5,7 @@ import { RosterModal } from "../RosterModal";
 import { CreatureDetailsModal } from "../CreatureDetailsModal";
 import { ACTION_TEXT, INTERFACE_TEXT } from "../../game/engine";
 import type { Creature } from "../../game/engine";
+import { SupportedLocale } from "../../i18n/i18n";
 
 const lumina: Creature = {
   id: "c1",
@@ -53,8 +54,8 @@ describe("RosterModal", () => {
 
     render(
       <RosterModal
-        uiText={INTERFACE_TEXT.en}
-        locale="en"
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        locale={SupportedLocale.En}
         selectedCreatureId="c1"
         rosterSpeciesTabs={[
           { id: "all", label: "All", count: 2 },
@@ -89,8 +90,8 @@ describe("RosterModal", () => {
 
     render(
       <RosterModal
-        uiText={INTERFACE_TEXT.en}
-        locale="en"
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        locale={SupportedLocale.En}
         selectedCreatureId="c1"
         rosterSpeciesTabs={[
           { id: "all", label: "All", count: 2 },
@@ -122,16 +123,16 @@ describe("CreatureDetailsModal", () => {
     render(
       <CreatureDetailsModal
         creature={null}
-        uiText={INTERFACE_TEXT.en}
-        actionText={ACTION_TEXT.en}
-        locale="en"
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        actionText={ACTION_TEXT[SupportedLocale.En]}
+        locale={SupportedLocale.En}
         token={10}
         onAction={() => undefined}
         onSetObserverTarget={() => undefined}
       />,
     );
 
-    expect(screen.getByRole("status", { name: INTERFACE_TEXT.en.creatureNotFound })).toBeTruthy();
+    expect(screen.getByRole("status", { name: INTERFACE_TEXT[SupportedLocale.En].creatureNotFound })).toBeTruthy();
   });
 
   it("triggers mutation and action callbacks", () => {
@@ -140,9 +141,9 @@ describe("CreatureDetailsModal", () => {
     render(
       <CreatureDetailsModal
         creature={lumina}
-        uiText={INTERFACE_TEXT.en}
-        actionText={ACTION_TEXT.en}
-        locale="en"
+        uiText={INTERFACE_TEXT[SupportedLocale.En]}
+        actionText={ACTION_TEXT[SupportedLocale.En]}
+        locale={SupportedLocale.En}
         token={10}
         onAction={onAction}
         onSetObserverTarget={onSetObserverTarget}
@@ -150,11 +151,13 @@ describe("CreatureDetailsModal", () => {
     );
 
     fireEvent.click(
-      screen.getByRole("button", { name: new RegExp(`^${ACTION_TEXT.en.feed}\\s*\\(\\d+\\)$`) }),
+      screen.getByRole("button", { name: new RegExp(`^${ACTION_TEXT[SupportedLocale.En].feed}\\s*\\(\\d+\\)$`) }),
     );
     expect(onAction).toHaveBeenCalledWith("feed", lumina);
     fireEvent.click(
-      screen.getByRole("button", { name: new RegExp(`^${INTERFACE_TEXT.en.select}\\s+${lumina.nickname}$`) }),
+      screen.getByRole("button", {
+        name: new RegExp(`^${INTERFACE_TEXT[SupportedLocale.En].select}\\s+${lumina.nickname}$`),
+      }),
     );
     expect(onSetObserverTarget).toHaveBeenCalledWith(lumina);
   });

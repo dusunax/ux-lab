@@ -1,14 +1,18 @@
 import type { CSSProperties } from "react";
+import { t } from "i18next";
 import type {
   GameState,
   InterfaceText,
   MissionText,
+  Locale,
 } from "../game/engine";
 import type { ActionText } from "../game/engine";
+import { SupportedLocale } from "../game/engine";
 
 type GameHudProps = {
   state: GameState;
   uiText: InterfaceText;
+  locale?: Locale;
   actionText: ActionText;
   missionText: MissionText;
   missionTotal: number;
@@ -22,6 +26,7 @@ type GameHudProps = {
 export function GameHud({
   state,
   uiText,
+  locale,
   missionText,
   notice,
   missionTotal,
@@ -30,8 +35,15 @@ export function GameHud({
   onOpenMissions,
   onClearCompletedMissions,
 }: GameHudProps) {
+  const activeLocale: Locale = locale ?? SupportedLocale.En;
   const missionCompleted = missionTotal - missionRemaining;
-  const missionBadge = missionTotal === 0 ? "IDLE" : missionRemaining === 0 ? "DONE" : "ACTIVE";
+  const missionBadge = missionTotal === 0
+    ? t("missionStatusIdle", { lng: activeLocale })
+    : missionRemaining === 0
+      ? t("missionStatusDone", { lng: activeLocale })
+      : t("missionStatusActive", { lng: activeLocale });
+  const missionStatusTone =
+    missionTotal === 0 ? "mission-idle" : missionRemaining === 0 ? "mission-done" : "mission-active";
   const firstMission = state.daily.missions[0];
   const stellaComment = firstMission
     ? firstMission.requiredAction === "feed"
@@ -43,20 +55,27 @@ export function GameHud({
   const signalText = state.daily.signal?.message ?? uiText.noSignal;
   const signal = state.daily.signal;
   const statusText = signal
+      ? signal.resolved
+        ? signal.rewardClaimed
+        ? t("signalStatusDone", { lng: activeLocale })
+        : t("signalStatusReady", { lng: activeLocale })
+      : t("signalStatusUrgent", { lng: activeLocale })
+    : t("signalStatusIdle", { lng: activeLocale });
+  const statusTone = signal
     ? signal.resolved
       ? signal.rewardClaimed
-        ? uiText.signalDone
-        : uiText.resolved
-      : uiText.needsAction
-    : uiText.noSignal;
+        ? "signal-done"
+        : "signal-ready"
+      : "signal-alert"
+    : "signal-idle";
   const canClearMissions = missionTotal > 0 && missionRemaining === 0;
   const signalBadge = signal
-    ? signal.resolved
+      ? signal.resolved
       ? signal.rewardClaimed
-        ? "DONE"
-        : "READY"
-      : "ALERT"
-    : "IDLE";
+      ? t("signalStatusDone", { lng: activeLocale })
+      : t("signalStatusReady", { lng: activeLocale })
+      : t("signalStatusUrgent", { lng: activeLocale })
+    : t("signalStatusIdle", { lng: activeLocale });
   const signalHint = state.daily.signal?.message ?? "";
 
   return (
@@ -98,7 +117,7 @@ export function GameHud({
           {signalHint ? (
             <output
               role="status"
-              aria-label={`Signal detail ${signalHint}`}
+              aria-label={t("signalDetailPrefix", { detail: signalHint, lng: activeLocale })}
               className="mb-2 block text-[12px] leading-tight text-[var(--muted)]"
             >
               {signalHint}
@@ -110,15 +129,7 @@ export function GameHud({
             <span>{statusText}</span>
             <output
               role="status"
-              aria-label={
-                statusText === uiText.noSignal
-                  ? "signal-idle"
-                  : statusText === uiText.resolved
-                    ? "signal-resolved"
-                    : statusText === uiText.signalDone
-                      ? "signal-done"
-                      : "signal-urgent"
-              }
+              aria-label={statusTone}
             >
               {signalBadge}
             </output>
@@ -153,8 +164,15 @@ export function GameHud({
                     <span className={`mr-2 inline-block h-2.5 w-2.5 rounded-full ${mission.completed ? "bg-[#95f7de]" : "border border-[#95f7de] bg-[rgba(149,247,222,0.08)]"}`} />
                     <span className={mission.completed ? "line-through text-[#95d7eb]/70" : ""}>{mission.label}</span>
                   </div>
-                  <output className="text-[11px] tracking-[0.35px] text-[#95f7de]" aria-label={mission.completed ? `${mission.label} completed` : `${mission.label} pending`}>
-                    {mission.completed ? "COMPLETED" : "ACTIVE"}
+                  <output
+                    className="text-[11px] tracking-[0.35px] text-[#95f7de]"
+                    aria-label={
+                        mission.completed
+                        ? `${mission.label} ${t("missionStatusCompleted", { lng: activeLocale })}`
+                        : `${mission.label} ${t("missionStatusActive", { lng: activeLocale })}`
+                    }
+                  >
+                    {mission.completed ? t("missionStatusCompleted", { lng: activeLocale }) : t("missionStatusActive", { lng: activeLocale })}
                   </output>
                 </article>
                 ))
