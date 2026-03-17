@@ -59,7 +59,7 @@ export function GameHeader({ tokenCount, uiText, onSetLocale }: GameHeaderProps)
     <div className="mb-3.5 flex py-2 min-h-20 max-h-[112px] flex-wrap items-start justify-between gap-3">
       <div>
         <h1
-          className="relative inline-block text-4xl font-black leading-tight tracking-[2px] text-transparent [font-family:Orbitron,_'Press_Start_2P',_'Courier_New',_monospace] [background-image:linear-gradient(90deg,_#74f5ff,_#ffd97f_45%,_#d18cff_62%,_#74f5ff)] [-webkit-text-stroke:1px_rgba(255,255,255,0.22)] [-webkit-background-clip:text] [background-clip:text] [color:transparent] [text-shadow:0_0_6px_rgba(116,_245,_255,_0.15),_0_0_18px_rgba(255,_195,_129,_0.25)]"
+          className="relative inline-block text-4xl font-logo font-black leading-tight tracking-[2px] text-transparent [background-image:linear-gradient(90deg,_#74f5ff,_#ffd97f_45%,_#d18cff_62%,_#74f5ff)] [-webkit-text-stroke:1px_rgba(255,255,255,0.22)] [-webkit-background-clip:text] [background-clip:text] [color:transparent] [text-shadow:0_0_6px_rgba(116,_245,_255,_0.15),_0_0_18px_rgba(255,_195,_129,_0.25)]"
           data-logo={uiText.pageTitle}
         >
           <Link href="/landing" className="inline-block text-inherit no-underline">
