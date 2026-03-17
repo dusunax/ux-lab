@@ -2,6 +2,7 @@ import { type CSSProperties, type PointerEvent, type RefObject, useMemo } from "
 import type { Creature, InterfaceText } from "../game/engine";
 import { getEmotionLabel } from "../game/engine";
 import { ASSET_PATHS, OBSERVER_CHAMBER_BG_IMAGES } from "../../lib/assets";
+import { ObserverCoreFog } from "./ObserverCoreFog";
 
 type ObserverPanelProps = {
   uiText: InterfaceText;
@@ -10,6 +11,10 @@ type ObserverPanelProps = {
   observerStyle: CSSProperties;
   observerYaw: number;
   observerPitch: number;
+  observerDragOffset: {
+    x: number;
+    y: number;
+  };
   isDraggingObserver: boolean;
   observerShellRef: RefObject<HTMLDivElement | null>;
   onObserverTargetOpen: () => void;
@@ -25,6 +30,7 @@ export function ObserverPanel({
   observerStyle,
   observerYaw,
   observerPitch,
+  observerDragOffset,
   isDraggingObserver,
   observerShellRef,
   onObserverTargetOpen,
@@ -38,6 +44,18 @@ export function ObserverPanel({
   const luminaCoreColor = observerCreature
     ? `rgb(${observerCreature.rgb.r}, ${observerCreature.rgb.g}, ${observerCreature.rgb.b})`
     : "rgb(128, 210, 255)";
+  const luminaCoreColorWithAlpha = useMemo(() => {
+    const [r, g, b] = luminaCoreColor
+      .replace("rgb(", "")
+      .replace(")", "")
+      .split(",")
+      .map((value) => Number.parseInt(value.trim(), 10));
+    return {
+      strong: `rgba(${r}, ${g}, ${b}, 0.7)`,
+      soft: `rgba(${r}, ${g}, ${b}, 0.45)`,
+      mid: `rgba(${r}, ${g}, ${b}, 0.2)`,
+    };
+  }, [luminaCoreColor]);
   const emotionLabel = useMemo(
     () => (observerCreature ? getEmotionLabel(observerCreature.emotion) : ""),
     [observerCreature],
@@ -74,6 +92,9 @@ export function ObserverPanel({
     }),
     [],
   );
+  const observerOrbTransform = isDraggingObserver
+    ? "perspective(840px) rotateX(10deg) rotateY(-2deg) scale(0.965)"
+    : "perspective(840px) rotateX(10deg) rotateY(-2deg) scale(1)";
 
   return (
     <section
@@ -102,9 +123,9 @@ export function ObserverPanel({
       </div>
       {observerCreature ? (
         <div className="flex flex-1 min-h-0 items-center justify-center">
-          <div className="relative flex flex-col w-full max-h-20 min-w-0 mb-[20%] justify-center overflow-x-hidden overflow-y-hidden box-border perspective-[900px] p-4 border border-[rgba(130,206,255,0.28)] min-h-[clamp(360px,47vh,470px)] bg-[linear-gradient(140deg,rgba(2,7,20,0.95),rgba(8,14,28,0.88)),radial-gradient(circle at 50% 38%,rgba(122,197,255,0.14),transparent 52%)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05),inset_0_0_48px_rgba(80,190,255,0.2)] max-w-80">
+          <div className="relative flex flex-col w-full max-h-20 min-w-0 mb-[20%] justify-center overflow-x-hidden overflow-y-hidden box-border perspective-[900px] p-4 border border-[rgba(130,206,255,0.28)] min-h-[clamp(360px,47vh,470px)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05),inset_0_0_48px_rgba(80,190,255,0.2)] max-w-80">
               <div
-                className="relative w-full max-w-full min-w-0 box-border overflow-hidden border-2 border-[rgba(130,220,255,0.45)] [aspect-ratio:16/11] min-h-[280px] h-[min(clamp(280px,34vh,360px),100%)] max-h-full m-0 [background:linear-gradient(160deg,rgba(8,15,30,0.98),rgba(11,24,45,0.87))] [box-shadow:inset_0_0_26px_rgba(96,205,255,0.25),inset_0_0_0_2px_rgba(255,255,255,0.06)]"
+                className="relative w-full max-w-full min-w-0 box-border overflow-hidden border-2 border-[rgba(130,220,255,0.45)] [aspect-ratio:16/11] min-h-[280px] h-[min(clamp(280px,34vh,360px),100%)] max-h-full m-0 bg-transparent [box-shadow:inset_0_0_26px_rgba(96,205,255,0.25),inset_0_0_0_2px_rgba(255,255,255,0.06)]"
               >
               <span
                 className="pointer-events-none absolute inset-[7px] z-[2] border border-[rgba(255,255,255,0.08)] [box-shadow:inset_0_0_24px_rgba(111,205,255,0.16)]"
@@ -118,7 +139,7 @@ export function ObserverPanel({
                 </span>
                 <span className="text-[#b9f1ff]">{observerCreature.nickname}</span>
               </div>
-              <div className="absolute left-2.5 right-2.5 top-[2.6rem] bottom-2.5 border border-[rgba(130,220,255,0.25)] bg-[linear-gradient(180deg,rgba(9,19,36,0.9),rgba(7,16,34,0.75))] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] z-[2]">
+                <div className="absolute left-2.5 right-2.5 top-[2.6rem] bottom-2.5 border border-[rgba(130,220,255,0.25)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] z-[2]">
                 <span
                   className="pointer-events-none absolute inset-0 z-[2] border-[1px] border-[rgba(125,225,255,0.14)] [box-shadow:inset_0_0_28px_rgba(95,220,255,0.16)]"
                 />
@@ -135,135 +156,44 @@ export function ObserverPanel({
                   className="absolute bottom-[14px] right-[14px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-t-0 border-l-0 z-[4]"
                 />
                 <div
-                  className="absolute left-3 right-3 top-3 bottom-3 flex items-center justify-center overflow-hidden z-[2] bg-[linear-gradient(180deg,rgba(2,8,20,0.4),rgba(8,12,22,0.22)),repeating-linear-gradient(90deg,rgba(128,209,255,0.07) 0 1px,transparent 1px 6px)]"
+                  className="absolute left-3 right-3 top-3 bottom-3 flex items-center justify-center overflow-hidden bg-transparent"
                 >
                   <span
-                    className="pointer-events-none absolute h-px w-[calc(100%-12px)] bg-[rgba(140,240,255,0.45)] top-[50%] left-[6px] right-[6px] [transform:translateY(-50%)] [animation:observer-scan_4.2s_linear_infinite]"
+                    className="observer-aura-layer pointer-events-none absolute -inset-12 mix-blend-screen opacity-30"
+                    style={{
+                      zIndex: 0,
+                      background: `radial-gradient(circle at 50% 50%, ${luminaCoreColorWithAlpha.strong} 0%, ${luminaCoreColorWithAlpha.soft} 24%, ${luminaCoreColorWithAlpha.mid} 48%, transparent 78%)`,
+                    }}
                   />
                   <span
-                    className="pointer-events-none absolute inset-[4px] [background:radial-gradient(circle_at_50%_80%,transparent,rgba(8,26,42,0.34)_58%)] [mix-blend-mode:multiply]"
+                    className="pointer-events-none absolute inset-[4px] [background:radial-gradient(circle_at_50%_80%,transparent,rgba(8,26,42,0.34)_58%)] [mix-blend-mode:multiply] z-[2]"
                   />
                   <span
-                    className="pointer-events-none absolute inset-0 [box-shadow:inset_0_0_22px_rgba(9,17,34,0.6),inset_0_-24px_36px_rgba(16,50,98,0.5)]"
+                    className="pointer-events-none absolute inset-0 [box-shadow:inset_0_0_22px_rgba(9,17,34,0.6),inset_0_-24px_36px_rgba(16,50,98,0.5)] z-[3]"
                   />
                   <div
                     ref={observerShellRef}
-                    className={`relative m-0 mx-auto w-[min(100%,_clamp(190px,_28vw,_320px))] aspect-square h-auto [touch-action:none] [transform-style:preserve-3d] border-[2px] border-[rgba(125,210,255,0.4)] [box-shadow:inset_0_0_0_1px_rgba(255,255,255,0.18),0_0_0_1px_rgba(0,0,0,0.6),0_0_30px_rgba(120,205,255,0.3)] [background:linear-gradient(140deg,rgba(8,14,34,0.96),rgba(4,8,18,0.58)),repeating-linear-gradient(0deg,rgba(125,200,255,0.1)_0,rgba(125,200,255,0.1)_2px,transparent_2px,transparent_6px)] [transform:perspective(840px)_rotateX(10deg)_rotateY(-2deg)] ${
+                    className={`relative m-0 mx-auto w-[min(100%,_clamp(190px,_28vw,_320px))] aspect-square h-auto [touch-action:none] [transform-style:preserve-3d] bg-transparent z-[4] ${
                       isDraggingObserver ? "cursor-grabbing" : "cursor-grab"
                     }`}
                     style={{
                       ...observerOrbStyle,
                       cursor: isDraggingObserver ? "grabbing" : "grab",
+                      transform: observerOrbTransform,
+                      transition: "transform 110ms cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
                     onPointerDown={onPointerDown}
                     onPointerMove={onPointerMove}
                     onPointerUp={onPointerUp}
                     onPointerLeave={onPointerUp}
                   >
-                    <span
-                      className="pointer-events-none absolute inset-0 border border-[rgba(255,255,255,0.2)] z-[2] [background:linear-gradient(180deg,rgba(130,216,255,0.09),transparent_38%),radial-gradient(circle_at_50%_50%,rgba(130,220,255,0.14),transparent_60%)] [mix-blend-mode:screen]"
+                    <ObserverCoreFog
+                      color={luminaCoreColor}
+                      yaw={observerYaw}
+                      pitch={observerPitch}
+                      dragOffsetX={observerDragOffset.x}
+                      dragOffsetY={observerDragOffset.y}
                     />
-                    <span
-                      className="pointer-events-none absolute inset-0 opacity-[0.48] z-[2] mix-blend-multiply [background:radial-gradient(circle_at_50%_38%,rgba(170,230,255,0.2),transparent_45%),linear-gradient(0deg,rgba(0,0,0,0.22)_50%,transparent_50.6%)]"
-                    />
-                    <div
-                      className="absolute inset-0 mix-blend-screen"
-                    >
-                      <span
-                        className="absolute inset-0 [background:radial-gradient(circle_at_center,rgba(125,200,255,0.28),rgba(13,19,42,0.1)_45%,transparent_55%)] [mix-blend-mode:screen]"
-                      />
-                      <span
-                        className="absolute inset-0 border-[2px] border-[rgba(255,255,255,0.16)] [transform:translateZ(16px)] [transform-style:preserve-3d] [background:linear-gradient(180deg,rgba(18,30,58,0.72),rgba(9,15,36,0.75)),linear-gradient(90deg,transparent_48%,rgba(125,220,255,0.22)_48%,rgba(125,220,255,0.22)_52%,transparent_52%)] [box-shadow:inset_0_0_20px_rgba(125,220,255,0.28),0_0_16px_rgba(125,220,255,0.28)] mix-blend-normal z-[2]"
-                      />
-                    </div>
-                    <div
-                      className="absolute left-1/2 top-1/2"
-                      style={{
-                        ...observerOrbStyle,
-                        ...observerStyle,
-                        position: "absolute",
-                        width: "var(--observer-orb-size)",
-                        height: "var(--observer-orb-size)",
-                        left: "50%",
-                        top: "50%",
-                        transformStyle: "preserve-3d",
-                        transform: `translate(-50%, -50%) translateZ(0) rotateX(${observerPitch}deg) rotateY(${observerYaw}deg)`,
-                      }}
-                      key={observerCreature.id}
-                    >
-                      <span
-                        className="pointer-events-none absolute rounded-sm opacity-40 z-[3] inset-[6px] border border-[rgba(255,255,255,0.18)]"
-                      />
-                      <span
-                        className="absolute inset-0 z-10 rounded-none blur-[2px]"
-                        style={{
-                          background:
-                            "radial-gradient(circle, rgba(255,255,255,0.28), transparent 62%)",
-                          transform: "translateZ(4px) scale(var(--observer-halo-scale))",
-                          opacity: "calc(0.4 * var(--observer-halo-intensity))",
-                          animation: "observer-halo var(--observer-ring-a-speed) ease-in-out infinite",
-                        }}
-                      />
-                      <span
-                        className="absolute left-1/2 top-1/2 z-20"
-                        style={{
-                          width: "var(--observer-core-size)",
-                          height: "var(--observer-core-size)",
-                          borderRadius: "var(--observer-shape)",
-                          transform: "translate(-50%, -50%) translateZ(12px) scale(var(--observer-core-scale))",
-                          background:
-                            `radial-gradient(circle at 35% 35%, color-mix(in srgb, ${luminaCoreColor} 80%, white), ${luminaCoreColor})`,
-                          boxShadow:
-                            "0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 24px color-mix(in srgb, var(--lumina-core) 72%, transparent), 0 0 40px color-mix(in srgb, var(--lumina-core) 60%, transparent)",
-                          animation: "observer-core var(--observer-ring-c-speed) ease-in-out infinite",
-                        }}
-                      >
-                        <span
-                          className="absolute left-1/2 top-1/2 h-[calc(100%+20px)] w-0.5"
-                          style={{
-                            background: "linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.4) 48%, transparent 100%)",
-                            transform: "translate(-50%, -50%)",
-                          }}
-                        />
-                        <span
-                          className="absolute left-1/2 top-1/2 w-[calc(100%+20px)] h-0.5"
-                          style={{
-                            background: "linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 52%, transparent 100%)",
-                            transform: "translate(-50%, -50%)",
-                          }}
-                        />
-                      </span>
-                      <span
-                        className="absolute"
-                        style={{
-                          border: `2px solid color-mix(in srgb, ${luminaCoreColor} 72%, rgba(255, 255, 255, 0.45))`,
-                          inset: "var(--observer-ring-a-inset)",
-                          transformStyle: "preserve-3d",
-                          transform: "translateZ(24px) rotateX(68deg) rotateZ(0deg)",
-                          animation: "observer-ring-a var(--observer-ring-a-speed) linear infinite",
-                        }}
-                      />
-                      <span
-                        className="absolute"
-                        style={{
-                          border: `2px solid color-mix(in srgb, ${luminaCoreColor} 72%, rgba(255, 255, 255, 0.45))`,
-                          inset: "var(--observer-ring-b-inset)",
-                          transformStyle: "preserve-3d",
-                          transform: "translateZ(0px) rotateY(52deg) rotateZ(0deg)",
-                          animation: "observer-ring-b var(--observer-ring-b-speed) linear infinite reverse",
-                        }}
-                      />
-                      <span
-                        className="absolute"
-                        style={{
-                          border: `2px solid color-mix(in srgb, ${luminaCoreColor} 72%, rgba(255, 255, 255, 0.45))`,
-                          inset: "var(--observer-ring-c-inset)",
-                          transformStyle: "preserve-3d",
-                          transform: "translateZ(16px) rotateX(8deg) rotateZ(38deg)",
-                          animation: "observer-ring-c var(--observer-ring-c-speed) linear infinite",
-                        }}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>

@@ -10,19 +10,22 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "i18next": "^24.2.3",
+    "i18next-browser-languagedetector": "^8.2.0",
     "next": "15.3.8",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "i18next": "^24.2.3",
-    "i18next-browser-languagedetector": "^8.2.0"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.0.0",
+    "@react-three/fiber": "^9.5.0",
     "@testing-library/react": "^16.3.0",
+    "@types/three": "0.181.0",
     "@vitejs/plugin-react": "^5.0.3",
+    "autoprefixer": "^10.0.0",
     "jsdom": "^22.1.0",
-    "vitest": "^3.2.3",
     "postcss": "^8.0.0",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^3.4.0",
+    "three": "^0.181.2",
+    "vitest": "^3.2.3"
   }
 }

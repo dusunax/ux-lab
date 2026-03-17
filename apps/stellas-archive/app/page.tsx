@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { GameHeader } from "../features/ui/GameHeader";
 import { ModalShell } from "../features/ui/ModalShell";
@@ -57,7 +63,11 @@ const archiveSort = (entries: ArchiveEntry[]) =>
     .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
 const toLocaleFromI18n = (value?: string): Locale =>
-  normalizeLocale(value?.toLowerCase().startsWith(SupportedLocale.Ko) ? SupportedLocale.Ko : SupportedLocale.En);
+  normalizeLocale(
+    value?.toLowerCase().startsWith(SupportedLocale.Ko)
+      ? SupportedLocale.Ko
+      : SupportedLocale.En
+  );
 const LOCALE_STORAGE_KEY = "stellas-archive:ui-locale-v1";
 
 type StellaSearchParams = {
@@ -65,9 +75,13 @@ type StellaSearchParams = {
   lang?: string;
 };
 
-const getLocaleFromSearchParams = (searchParams?: StellaSearchParams): Locale | null => {
-  if (searchParams?.language && isSupportedLocale(searchParams.language)) return searchParams.language;
-  if (searchParams?.lang && isSupportedLocale(searchParams.lang)) return searchParams.lang;
+const getLocaleFromSearchParams = (
+  searchParams?: StellaSearchParams
+): Locale | null => {
+  if (searchParams?.language && isSupportedLocale(searchParams.language))
+    return searchParams.language;
+  if (searchParams?.lang && isSupportedLocale(searchParams.lang))
+    return searchParams.lang;
   return null;
 };
 
@@ -107,11 +121,12 @@ type StellaArchivePageProps = Record<string, never>;
 export default function StellaArchivePage(_props: StellaArchivePageProps) {
   const urlSearchParams = useSearchParams();
   const queryLocale = React.useMemo(
-    () => getLocaleFromSearchParams({
-      language: urlSearchParams.get("language") || undefined,
-      lang: urlSearchParams.get("lang") || undefined,
-    }),
-    [urlSearchParams],
+    () =>
+      getLocaleFromSearchParams({
+        language: urlSearchParams.get("language") || undefined,
+        lang: urlSearchParams.get("lang") || undefined,
+      }),
+    [urlSearchParams]
   );
   const initialLocale = queryLocale ?? SupportedLocale.En;
 
@@ -126,14 +141,22 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   const shouldSyncLocaleQuery = useRef(false);
   const [isLocaleHydrated, setIsLocaleHydrated] = useState(false);
   const [state, setState] = useState<GameState>(() => initState(initialLocale));
-  const [feedback, setFeedback] = useState<string>(() => MESSAGE_CATALOGS[initialLocale].interfaceText.defaultNotice);
+  const [feedback, setFeedback] = useState<string>(
+    () => MESSAGE_CATALOGS[initialLocale].interfaceText.defaultNotice
+  );
   const [observerYaw, setObserverYaw] = useState(42);
   const [observerPitch, setObserverPitch] = useState(52);
+  const [observerDragOffset, setObserverDragOffset] = useState({
+    x: 0,
+    y: 0,
+  });
   const [isObserverAutoTarget, setIsObserverAutoTarget] = useState(true);
   const [observerTargetId, setObserverTargetId] = useState<string | null>(null);
   const [isDraggingObserver, setIsDraggingObserver] = useState(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
-  const [rightPanel, setRightPanel] = useState<"research" | "archive">("research");
+  const [rightPanel, setRightPanel] = useState<"research" | "archive">(
+    "research"
+  );
   const [archivePage, setArchivePage] = useState(0);
   const [rosterPage, setRosterPage] = useState(0);
   const [archiveFilter, setArchiveFilter] = useState<FilterTab>("all");
@@ -142,7 +165,16 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   const [hasEntryPopupUpdate, setHasEntryPopupUpdate] = useState(false);
 
   const observerShellRef = useRef<HTMLDivElement | null>(null);
-  const observerDragState = useRef({ startX: 0, startY: 0, startYaw: 42, startPitch: 52 });
+  const observerDragState = useRef({
+    startX: 0,
+    startY: 0,
+    startYaw: 42,
+    startPitch: 52,
+    startOffsetX: 0,
+    startOffsetY: 0,
+    halfWidth: 1,
+    halfHeight: 1,
+  });
   const observerDraggingRef = useRef(false);
   const entryPopupSnapshotRef = useRef("");
 
@@ -172,7 +204,9 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
         // fallback: continue using preference chain without initialization blocker
       }
       const fromQuery = queryLocale ?? getLocaleFromWindowSearch();
-      const fallback = toLocaleFromI18n(i18next.resolvedLanguage || i18next.language || getLocaleFromBrowser());
+      const fallback = toLocaleFromI18n(
+        i18next.resolvedLanguage || i18next.language || getLocaleFromBrowser()
+      );
       const nextLocale = fromQuery || initLocale || fallback;
       hydrateFromLocale(nextLocale);
     };
@@ -192,10 +226,16 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   useEffect(() => saveState(state), [state]);
 
   const selectedCreature = useMemo(
-    () => state.creatures.find((creature) => creature.id === state.selectedCreatureId) ?? state.creatures[0],
-    [state.creatures, state.selectedCreatureId],
+    () =>
+      state.creatures.find(
+        (creature) => creature.id === state.selectedCreatureId
+      ) ?? state.creatures[0],
+    [state.creatures, state.selectedCreatureId]
   );
-  const autoTargetId = useMemo(() => selectedCreature?.id ?? null, [selectedCreature]);
+  const autoTargetId = useMemo(
+    () => selectedCreature?.id ?? null,
+    [selectedCreature]
+  );
 
   useEffect(() => {
     if (isObserverAutoTarget) {
@@ -204,36 +244,53 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     }
 
     if (!observerTargetId) return;
-    const exists = state.creatures.some((creature) => creature.id === observerTargetId);
+    const exists = state.creatures.some(
+      (creature) => creature.id === observerTargetId
+    );
     if (!exists) {
       setObserverTargetId(state.creatures[0]?.id ?? null);
     }
   }, [isObserverAutoTarget, autoTargetId, observerTargetId, state.creatures]);
 
   useEffect(() => {
-    if (rosterFilter !== "all" && !state.creatures.some((creature) => creature.speciesId === rosterFilter)) {
+    if (
+      rosterFilter !== "all" &&
+      !state.creatures.some((creature) => creature.speciesId === rosterFilter)
+    ) {
       setRosterFilter("all");
       setRosterPage(0);
     }
   }, [rosterFilter, state.creatures]);
 
   useEffect(() => {
-    if (archiveFilter !== "all" && !state.archive.some((entry) => entry.species === archiveFilter)) {
+    if (
+      archiveFilter !== "all" &&
+      !state.archive.some((entry) => entry.species === archiveFilter)
+    ) {
       setArchiveFilter("all");
       setArchivePage(0);
     }
   }, [archiveFilter, state.archive]);
 
   const selectedObserverTargetId = useMemo(
-    () => (isObserverAutoTarget ? autoTargetId : observerTargetId ?? state.creatures[0]?.id ?? null),
-    [autoTargetId, isObserverAutoTarget, observerTargetId, state.creatures],
+    () =>
+      isObserverAutoTarget
+        ? autoTargetId
+        : observerTargetId ?? state.creatures[0]?.id ?? null,
+    [autoTargetId, isObserverAutoTarget, observerTargetId, state.creatures]
   );
 
   const observerCreature = useMemo(
-    () => state.creatures.find((creature) => creature.id === selectedObserverTargetId) ?? null,
-    [state.creatures, selectedObserverTargetId],
+    () =>
+      state.creatures.find(
+        (creature) => creature.id === selectedObserverTargetId
+      ) ?? null,
+    [state.creatures, selectedObserverTargetId]
   );
-  const observerProfile = useMemo(() => getObserverProfile(observerCreature), [observerCreature]);
+  const observerProfile = useMemo(
+    () => getObserverProfile(observerCreature),
+    [observerCreature]
+  );
   const observerStyle = useMemo(
     () =>
       ({
@@ -241,10 +298,13 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
           ? `rgb(${observerCreature.rgb.r}, ${observerCreature.rgb.g}, ${observerCreature.rgb.b})`
           : "rgb(128, 210, 255)",
         ...observerProfile,
-      }) as React.CSSProperties,
-    [observerProfile, observerCreature],
+      } as React.CSSProperties),
+    [observerProfile, observerCreature]
   );
-  const localizedText = useMemo(() => MESSAGE_CATALOGS[state.locale], [state.locale]);
+  const localizedText = useMemo(
+    () => MESSAGE_CATALOGS[state.locale],
+    [state.locale]
+  );
   const uiText = localizedText.interfaceText;
   const actionText = localizedText.actionText;
   const speciesText = localizedText.species;
@@ -254,7 +314,9 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       state.daily.missions.filter((mission) => !mission.completed).length
     }|${state.daily.signal?.message ?? ""}|${
       state.daily.signal?.resolved ? 1 : 0
-    }|${state.daily.signal?.rewardClaimed ? 1 : 0}|${state.researchData.observation}/${state.researchData.mutation}/${state.researchData.emotion}`;
+    }|${state.daily.signal?.rewardClaimed ? 1 : 0}|${
+      state.researchData.observation
+    }/${state.researchData.mutation}/${state.researchData.emotion}`;
 
     if (!entryPopupSnapshotRef.current) {
       entryPopupSnapshotRef.current = snapshot;
@@ -279,10 +341,15 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   ]);
 
   const missionTotal = state.daily.missions.length;
-  const missionRemaining = state.daily.missions.filter((mission) => !mission.completed).length;
-  const remainingMissions = state.daily.missions.filter((mission) => !mission.completed);
+  const missionRemaining = state.daily.missions.filter(
+    (mission) => !mission.completed
+  ).length;
+  const remainingMissions = state.daily.missions.filter(
+    (mission) => !mission.completed
+  );
   const firstMission = remainingMissions[0];
-  const completedMissionsCount = state.daily.missions.length - remainingMissions.length;
+  const completedMissionsCount =
+    state.daily.missions.length - remainingMissions.length;
   const isMissionIncomplete = missionRemaining > 0;
   const isMissionRewardAvailable = missionTotal > 0 && missionRemaining === 0;
   const activeMissionActions = useMemo(() => {
@@ -291,10 +358,12 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     return Array.from(new Set(actions));
   }, [isEntryPopupOpen, missionRemaining, remainingMissions]);
 
-  const isEntryPopupHighlighted = isMissionIncomplete || isMissionRewardAvailable;
-  const stellaComment = missionTotal === 0
-    ? t("stellaCommentEmpty")
-    : missionRemaining > 0
+  const isEntryPopupHighlighted =
+    isMissionIncomplete || isMissionRewardAvailable;
+  const stellaComment =
+    missionTotal === 0
+      ? t("stellaCommentEmpty")
+      : missionRemaining > 0
       ? t("stellaCommentWorking")
       : t("stellaCommentDone");
 
@@ -302,17 +371,17 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     () =>
       selectedCreature
         ? firstMission
-        ? t("targetStatusUrgent", {
-            name: selectedCreature.nickname,
-            species: selectedCreature.commonName,
-            action: actionText[firstMission.requiredAction],
-          })
+          ? t("targetStatusUrgent", {
+              name: selectedCreature.nickname,
+              species: selectedCreature.commonName,
+              action: actionText[firstMission.requiredAction],
+            })
           : t("targetStatusReady", {
               name: selectedCreature.nickname,
               species: selectedCreature.commonName,
             })
         : "",
-    [actionText, firstMission, selectedCreature],
+    [actionText, firstMission, selectedCreature]
   );
 
   const rightPanelTabs = useMemo(
@@ -326,7 +395,7 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
         label: localizedText.page.archive,
       },
     ],
-    [localizedText.page.researchLogTitle, localizedText.page.archive],
+    [localizedText.page.researchLogTitle, localizedText.page.archive]
   );
   const signalState = state.daily.signal
     ? state.daily.signal.resolved
@@ -336,17 +405,19 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       : uiText.needsAction
     : uiText.noSignal;
 
-  const archiveSpeciesTabs = useMemo(
-    () => {
-      const species = new Set(state.archive.map((entry) => entry.species));
-      return [{ id: "all", label: uiText.all }, ...[...species].map((name) => ({ id: name, label: name }))];
-    },
-    [state.archive, uiText.all],
-  );
+  const archiveSpeciesTabs = useMemo(() => {
+    const species = new Set(state.archive.map((entry) => entry.species));
+    return [
+      { id: "all", label: uiText.all },
+      ...[...species].map((name) => ({ id: name, label: name })),
+    ];
+  }, [state.archive, uiText.all]);
   const filteredArchiveEntries = useMemo(
     () =>
-      archiveFilter === "all" ? archiveSort(state.archive) : state.archive.filter((entry) => entry.species === archiveFilter),
-    [archiveFilter, state.archive],
+      archiveFilter === "all"
+        ? archiveSort(state.archive)
+        : state.archive.filter((entry) => entry.species === archiveFilter),
+    [archiveFilter, state.archive]
   );
   const rosterSpeciesTabs = useMemo(() => {
     const entries: Array<{ id: string; label: string; count: number }> = [];
@@ -356,30 +427,46 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     });
 
     counts.forEach((count, speciesId) => {
-      const speciesName = SPECIES[speciesId]?.commonName ?? creatureSpeciesFallback(speciesId);
+      const speciesName =
+        SPECIES[speciesId]?.commonName ?? creatureSpeciesFallback(speciesId);
       entries.push({ id: speciesId, label: speciesName, count });
     });
 
     return [
       { id: "all", label: uiText.all, count: state.creatures.length },
-      ...entries.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
+      ...entries.sort(
+        (a, b) => b.count - a.count || a.label.localeCompare(b.label)
+      ),
     ];
   }, [state.creatures, uiText.all]);
   const filteredRoster = useMemo(
     () =>
-      rosterFilter === "all" ? state.creatures : state.creatures.filter((creature) => creature.speciesId === rosterFilter),
-    [rosterFilter, state.creatures],
+      rosterFilter === "all"
+        ? state.creatures
+        : state.creatures.filter(
+            (creature) => creature.speciesId === rosterFilter
+          ),
+    [rosterFilter, state.creatures]
   );
 
-  const archivePageCount = Math.max(1, Math.ceil(filteredArchiveEntries.length / ARCHIVE_PAGE_SIZE));
-  const rosterPageCount = Math.max(1, Math.ceil(filteredRoster.length / ROSTER_PAGE_SIZE));
+  const archivePageCount = Math.max(
+    1,
+    Math.ceil(filteredArchiveEntries.length / ARCHIVE_PAGE_SIZE)
+  );
+  const rosterPageCount = Math.max(
+    1,
+    Math.ceil(filteredRoster.length / ROSTER_PAGE_SIZE)
+  );
   const safeArchivePage = Math.min(archivePage, archivePageCount - 1);
   const safeRosterPage = Math.min(rosterPage, rosterPageCount - 1);
   const archiveSlice = filteredArchiveEntries.slice(
     safeArchivePage * ARCHIVE_PAGE_SIZE,
-    safeArchivePage * ARCHIVE_PAGE_SIZE + ARCHIVE_PAGE_SIZE,
+    safeArchivePage * ARCHIVE_PAGE_SIZE + ARCHIVE_PAGE_SIZE
   );
-  const rosterSlice = filteredRoster.slice(safeRosterPage * ROSTER_PAGE_SIZE, safeRosterPage * ROSTER_PAGE_SIZE + ROSTER_PAGE_SIZE);
+  const rosterSlice = filteredRoster.slice(
+    safeRosterPage * ROSTER_PAGE_SIZE,
+    safeRosterPage * ROSTER_PAGE_SIZE + ROSTER_PAGE_SIZE
+  );
 
   const openModal = useCallback(
     (nextModal: Exclude<ActiveModal, null>) => {
@@ -393,169 +480,201 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       }
       if (nextModal === "observer-targets") {
         setIsObserverAutoTarget(false);
-        if (!state.creatures.find((creature) => creature.id === observerTargetId)) {
+        if (
+          !state.creatures.find((creature) => creature.id === observerTargetId)
+        ) {
           setObserverTargetId(state.creatures[0]?.id ?? null);
         }
       }
       setActiveModal(nextModal);
     },
-    [observerTargetId, state.creatures],
+    [observerTargetId, state.creatures]
   );
 
   const closeModal = useCallback(() => setActiveModal(null), []);
 
-  const performAction = useCallback((interaction: Interaction, creature: Creature) => {
-    setState((prev) => {
-      const localeText = uiText;
-      if (prev.tokens < TOKEN_COST[interaction]) {
-        setFeedback(localeText.noToken);
-        return prev;
-      }
-
-      let nextArchive = [...prev.archive];
-      let nextFeedback = "";
-      let wasCreatureFound = false;
-      const prevCompletedMissionCount = prev.daily.missions.filter((mission) => mission.completed).length;
-
-      const targets = prev.creatures.map((item) => {
-        if (item.id !== creature.id) return item;
-        wasCreatureFound = true;
-
-        if (item.state.energy <= 0 && interaction !== "feed") {
-          nextFeedback = localeText.noEnergy;
-          return item;
+  const performAction = useCallback(
+    (interaction: Interaction, creature: Creature) => {
+      setState((prev) => {
+        const localeText = uiText;
+        if (prev.tokens < TOKEN_COST[interaction]) {
+          setFeedback(localeText.noToken);
+          return prev;
         }
 
-        const nextState = { ...item.state };
-        const rgbDelta: { r?: number; g?: number; b?: number } = {};
+        let nextArchive = [...prev.archive];
+        let nextFeedback = "";
+        let wasCreatureFound = false;
+        const prevCompletedMissionCount = prev.daily.missions.filter(
+          (mission) => mission.completed
+        ).length;
 
-      switch (interaction) {
-        case "feed":
-          nextState.hunger = clamp(nextState.hunger + 24, 0, 100);
-          nextState.energy = clamp(nextState.energy + 8, 0, 100);
-          rgbDelta.r = 12;
-          rgbDelta.g = -1;
-          rgbDelta.b = -2;
-          break;
-        case "clean":
-          nextState.cleanliness = clamp(nextState.cleanliness + 26, 0, 100);
-          nextState.energy = clamp(nextState.energy - 4, 0, 100);
-          rgbDelta.b = 6;
-          rgbDelta.g = 2;
-          break;
-          case "play":
-            nextState.affection = clamp(nextState.affection + 12, 0, 100);
-            nextState.hunger = clamp(nextState.hunger - 5, 0, 100);
-            nextState.energy = clamp(nextState.energy - 8, 0, 100);
-            nextState.cleanliness = clamp(nextState.cleanliness - 6, 0, 100);
-            rgbDelta.r = 11;
-            rgbDelta.g = 10;
-            rgbDelta.b = 1;
-            break;
-          case "scan":
-            rgbDelta.r = 1;
-            rgbDelta.g = 1;
-            rgbDelta.b = 1;
-            break;
-          case "decorate":
-            nextState.affection = clamp(nextState.affection + 6, 0, 100);
-            rgbDelta.b = 12;
-            rgbDelta.g = 6;
-            break;
-        }
+        const targets = prev.creatures.map((item) => {
+          if (item.id !== creature.id) return item;
+          wasCreatureFound = true;
 
-        const nextRgb = applyRgbDelta(item.rgb, rgbDelta);
-        const nextEmotion = getDominantEmotion(nextRgb);
-        let nextCreature: Creature = {
-          ...item,
-          state: nextState,
-          rgb: nextRgb,
-          emotion: nextEmotion,
-        };
+          if (item.state.energy <= 0 && interaction !== "feed") {
+            nextFeedback = localeText.noEnergy;
+            return item;
+          }
 
-        const drift = evaluateMutation(nextCreature);
-        let archiveReason = "";
-        if (drift.rule && SPECIES[drift.nextSpecies]) {
-            const nextSpecies = SPECIES[drift.nextSpecies];
-          nextCreature = {
-            ...nextCreature,
-            speciesId: nextSpecies.id,
-            scientificName: nextSpecies.scientificName,
-            commonName: nextSpecies.commonName,
-            traits: nextSpecies.traits,
-            mutationStage: nextCreature.mutationStage + 1,
+          const nextState = { ...item.state };
+          const rgbDelta: { r?: number; g?: number; b?: number } = {};
+
+          switch (interaction) {
+            case "feed":
+              nextState.hunger = clamp(nextState.hunger + 24, 0, 100);
+              nextState.energy = clamp(nextState.energy + 8, 0, 100);
+              rgbDelta.r = 12;
+              rgbDelta.g = -1;
+              rgbDelta.b = -2;
+              break;
+            case "clean":
+              nextState.cleanliness = clamp(nextState.cleanliness + 26, 0, 100);
+              nextState.energy = clamp(nextState.energy - 4, 0, 100);
+              rgbDelta.b = 6;
+              rgbDelta.g = 2;
+              break;
+            case "play":
+              nextState.affection = clamp(nextState.affection + 12, 0, 100);
+              nextState.hunger = clamp(nextState.hunger - 5, 0, 100);
+              nextState.energy = clamp(nextState.energy - 8, 0, 100);
+              nextState.cleanliness = clamp(nextState.cleanliness - 6, 0, 100);
+              rgbDelta.r = 11;
+              rgbDelta.g = 10;
+              rgbDelta.b = 1;
+              break;
+            case "scan":
+              rgbDelta.r = 1;
+              rgbDelta.g = 1;
+              rgbDelta.b = 1;
+              break;
+            case "decorate":
+              nextState.affection = clamp(nextState.affection + 6, 0, 100);
+              rgbDelta.b = 12;
+              rgbDelta.g = 6;
+              break;
+          }
+
+          const nextRgb = applyRgbDelta(item.rgb, rgbDelta);
+          const nextEmotion = getDominantEmotion(nextRgb);
+          let nextCreature: Creature = {
+            ...item,
+            state: nextState,
+            rgb: nextRgb,
+            emotion: nextEmotion,
           };
-          nextArchive.unshift(
-            createArchiveEntry(
-              nextCreature,
-              nextSpecies,
-              `${drift.rule.name} discovered (${drift.rule.message[prev.locale]})`,
-            ),
+
+          const drift = evaluateMutation(nextCreature);
+          let archiveReason = "";
+          if (drift.rule && SPECIES[drift.nextSpecies]) {
+            const nextSpecies = SPECIES[drift.nextSpecies];
+            nextCreature = {
+              ...nextCreature,
+              speciesId: nextSpecies.id,
+              scientificName: nextSpecies.scientificName,
+              commonName: nextSpecies.commonName,
+              traits: nextSpecies.traits,
+              mutationStage: nextCreature.mutationStage + 1,
+            };
+            nextArchive.unshift(
+              createArchiveEntry(
+                nextCreature,
+                nextSpecies,
+                `${drift.rule.name} discovered (${
+                  drift.rule.message[prev.locale]
+                })`
+              )
+            );
+            archiveReason = t("mutationEvolved", {
+              species: nextSpecies.commonName,
+            });
+          }
+
+          nextCreature.state.hunger = clamp(
+            nextCreature.state.hunger - 1,
+            0,
+            100
           );
-          archiveReason = t("mutationEvolved", {
-            species: nextSpecies.commonName,
-          });
+          nextCreature.state.cleanliness = clamp(
+            nextCreature.state.cleanliness - 1,
+            0,
+            100
+          );
+
+          const reaction = (() => {
+            if (archiveReason) return archiveReason;
+            if (interaction === "scan")
+              return `${nextCreature.nickname}: ${localeText.colorTracked}`;
+            if (interaction === "decorate")
+              return `${nextCreature.nickname}: ${localeText.deckResonance}`;
+            if (interaction === "play")
+              return `${nextCreature.nickname}: ${
+                localeText.respondedWith
+              } ${getEmotionLabel(nextEmotion, prev.locale)}`;
+            if (interaction === "feed")
+              return `${nextCreature.nickname}: ${localeText.recoveredHunger}`;
+            return `${nextCreature.nickname}: ${localeText.careStable}`;
+          })();
+          nextFeedback = reaction;
+          return nextCreature;
+        });
+
+        if (!wasCreatureFound) {
+          setFeedback(localeText.creatureNotFound);
+          return prev;
         }
 
-        nextCreature.state.hunger = clamp(nextCreature.state.hunger - 1, 0, 100);
-        nextCreature.state.cleanliness = clamp(nextCreature.state.cleanliness - 1, 0, 100);
-
-        const reaction = (() => {
-          if (archiveReason) return archiveReason;
-          if (interaction === "scan") return `${nextCreature.nickname}: ${localeText.colorTracked}`;
-          if (interaction === "decorate") return `${nextCreature.nickname}: ${localeText.deckResonance}`;
-          if (interaction === "play")
-            return `${nextCreature.nickname}: ${localeText.respondedWith} ${getEmotionLabel(nextEmotion, prev.locale)}`;
-          if (interaction === "feed") return `${nextCreature.nickname}: ${localeText.recoveredHunger}`;
-          return `${nextCreature.nickname}: ${localeText.careStable}`;
-        })();
-        nextFeedback = reaction;
-        return nextCreature;
-      });
-
-      if (!wasCreatureFound) {
-        setFeedback(localeText.creatureNotFound);
-        return prev;
-      }
-
-      if (nextFeedback) {
-        setFeedback(nextFeedback);
-      }
-
-      const updatedMission = prev.daily.missions.map((mission) => {
-        if (mission.completed || mission.requiredAction !== interaction) return mission;
-        return { ...mission, completed: true };
-      });
-
-      let updatedSignal = prev.daily.signal;
-      if (updatedSignal && !updatedSignal.resolved) {
-        const resolved = updatedSignal.creatureId === creature.id && updatedSignal.requiredAction === interaction;
-        if (resolved) {
-          updatedSignal = { ...updatedSignal, resolved: true };
+        if (nextFeedback) {
+          setFeedback(nextFeedback);
         }
-      }
 
-      const completedMissions = updatedMission.filter((mission) => mission.completed).length;
-      const bonus = completedMissions >= 2 && prevCompletedMissionCount < 2 ? 2 : 0;
+        const updatedMission = prev.daily.missions.map((mission) => {
+          if (mission.completed || mission.requiredAction !== interaction)
+            return mission;
+          return { ...mission, completed: true };
+        });
 
-      return {
-        ...prev,
-        tokens: clamp(prev.tokens - TOKEN_COST[interaction] + bonus, 0, 999),
-        creatures: targets,
-        archive: nextArchive,
-        researchData: {
-          observation: prev.researchData.observation + (interaction === "scan" ? 5 : 0),
-          mutation: prev.researchData.mutation + (nextArchive.length > prev.archive.length ? 20 : 0),
-          emotion: prev.researchData.emotion + (interaction === "play" ? 2 : 1),
-        },
-        daily: {
-          ...prev.daily,
-          signal: updatedSignal,
-          missions: updatedMission,
-        },
-      };
-    });
-  }, [state.locale]);
+        let updatedSignal = prev.daily.signal;
+        if (updatedSignal && !updatedSignal.resolved) {
+          const resolved =
+            updatedSignal.creatureId === creature.id &&
+            updatedSignal.requiredAction === interaction;
+          if (resolved) {
+            updatedSignal = { ...updatedSignal, resolved: true };
+          }
+        }
+
+        const completedMissions = updatedMission.filter(
+          (mission) => mission.completed
+        ).length;
+        const bonus =
+          completedMissions >= 2 && prevCompletedMissionCount < 2 ? 2 : 0;
+
+        return {
+          ...prev,
+          tokens: clamp(prev.tokens - TOKEN_COST[interaction] + bonus, 0, 999),
+          creatures: targets,
+          archive: nextArchive,
+          researchData: {
+            observation:
+              prev.researchData.observation + (interaction === "scan" ? 5 : 0),
+            mutation:
+              prev.researchData.mutation +
+              (nextArchive.length > prev.archive.length ? 20 : 0),
+            emotion:
+              prev.researchData.emotion + (interaction === "play" ? 2 : 1),
+          },
+          daily: {
+            ...prev.daily,
+            signal: updatedSignal,
+            missions: updatedMission,
+          },
+        };
+      });
+    },
+    [state.locale]
+  );
 
   const selectCreature = useCallback((id: string) => {
     setState((prev) => ({ ...prev, selectedCreatureId: id }));
@@ -563,7 +682,9 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   const clearCompletedMissions = useCallback(() => {
     const localeText = uiText;
-    const allCompleted = state.daily.missions.every((mission) => mission.completed);
+    const allCompleted = state.daily.missions.every(
+      (mission) => mission.completed
+    );
     if (!allCompleted) {
       setFeedback(localeText.continueMissions);
       return;
@@ -573,7 +694,10 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
       ...prev,
       daily: {
         ...prev.daily,
-        missions: prev.daily.missions.map((mission) => ({ ...mission, completed: false })),
+        missions: prev.daily.missions.map((mission) => ({
+          ...mission,
+          completed: false,
+        })),
       },
       tokens: prev.tokens + 2,
     }));
@@ -611,35 +735,65 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   const handleObserverPointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const halfWidth = Math.max(rect.width * 0.5, 1);
+      const halfHeight = Math.max(rect.height * 0.5, 1);
       observerDragState.current = {
         startX: event.clientX,
         startY: event.clientY,
         startYaw: observerYaw,
         startPitch: observerPitch,
+        startOffsetX: observerDragOffset.x,
+        startOffsetY: observerDragOffset.y,
+        halfWidth,
+        halfHeight,
       };
       observerDraggingRef.current = true;
       setIsDraggingObserver(true);
       observerShellRef.current?.setPointerCapture(event.pointerId);
     },
-    [observerYaw, observerPitch],
+    [observerDragOffset, observerPitch, observerYaw]
   );
 
-  const handleObserverPointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    if (!observerDraggingRef.current) return;
-    event.preventDefault();
-    const deltaX = event.clientX - observerDragState.current.startX;
-    const deltaY = event.clientY - observerDragState.current.startY;
+  const handleObserverPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!observerDraggingRef.current) return;
+      event.preventDefault();
+      const deltaX = event.clientX - observerDragState.current.startX;
+      const deltaY = event.clientY - observerDragState.current.startY;
+      const clampRangeX = clamp(
+        observerDragState.current.startOffsetX + (deltaX / observerDragState.current.halfWidth) * 0.5,
+        -0.5,
+        0.5,
+      );
+      const clampRangeY = clamp(
+        observerDragState.current.startOffsetY + (-deltaY / observerDragState.current.halfHeight) * 0.32,
+        -0.32,
+        0.32,
+      );
+      setObserverDragOffset({
+        x: clampRangeX,
+        y: clampRangeY,
+      });
 
-    setObserverYaw(observerDragState.current.startYaw + deltaX * 0.4);
-    setObserverPitch(clamp(observerDragState.current.startPitch - deltaY * 0.4, -80, 80));
-  }, []);
+      setObserverYaw(observerDragState.current.startYaw + deltaX * 0.4);
+      setObserverPitch(
+        clamp(observerDragState.current.startPitch - deltaY * 0.4, -80, 80)
+      );
+    },
+    []
+  );
 
-  const handleObserverPointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    if (!observerDraggingRef.current) return;
-    observerDraggingRef.current = false;
-    setIsDraggingObserver(false);
-    observerShellRef.current?.releasePointerCapture(event.pointerId);
-  }, []);
+  const handleObserverPointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!observerDraggingRef.current) return;
+      observerDraggingRef.current = false;
+      setIsDraggingObserver(false);
+      setObserverDragOffset({ x: 0, y: 0 });
+      observerShellRef.current?.releasePointerCapture(event.pointerId);
+    },
+    []
+  );
 
   useEffect(() => {
     let rafId = 0;
@@ -660,14 +814,18 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     setLocaleStorage(nextLocale);
     const nextCatalog = MESSAGE_CATALOGS[nextLocale];
     setFeedback(nextCatalog.interfaceText.defaultNotice);
-    setState((prev) => (prev.locale === nextLocale ? prev : { ...prev, locale: nextLocale }));
+    setState((prev) =>
+      prev.locale === nextLocale ? prev : { ...prev, locale: nextLocale }
+    );
   }, []);
 
   const modalTitle = useMemo(() => {
-    if (activeModal === "missions") return uiText.missionDetails || "Mission List";
+    if (activeModal === "missions")
+      return uiText.missionDetails || "Mission List";
     if (activeModal === "archive") return uiText.archive || "Archive";
     if (activeModal === "roster") return uiText.creatures || "Creatures in Lab";
-    if (activeModal === "observer-targets") return uiText.observerTargets || "Observer Targets";
+    if (activeModal === "observer-targets")
+      return uiText.observerTargets || "Observer Targets";
     return uiText.creatureDetails || "Creature Details";
   }, [activeModal, uiText]);
 
@@ -689,80 +847,91 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   return (
     <main className="mx-auto flex h-[100dvh] min-h-[100dvh] w-full max-w-[1220px] flex-col overflow-x-hidden px-[clamp(14px,3vw,24px)] pb-8 pt-[22px]">
-      <GameHeader tokenCount={state.tokens} uiText={uiText} onSetLocale={setLocale} />
+      <GameHeader
+        tokenCount={state.tokens}
+        uiText={uiText}
+        onSetLocale={setLocale}
+      />
 
-        <section className="grid flex-1 min-h-0 min-w-0 gap-[var(--panel-gap)] items-start overflow-x-hidden [grid-template-columns:minmax(0,1.35fr)_minmax(300px,1fr)]">
-          <section className="grid min-w-0 w-full gap-3 overflow-x-hidden h-full relative">
-            <ObserverPanel
-              uiText={uiText}
-              isObserverAutoTarget={isObserverAutoTarget}
-              observerCreature={observerCreature}
-              observerStyle={observerStyle}
-              observerYaw={observerYaw}
-              observerPitch={observerPitch}
-              isDraggingObserver={isDraggingObserver}
-              observerShellRef={observerShellRef}
-              onObserverTargetOpen={() => openModal("observer-targets")}
-              onPointerDown={handleObserverPointerDown}
-              onPointerMove={handleObserverPointerMove}
-              onPointerUp={handleObserverPointerUp}
-            />
-            <button
-              className={`absolute top-[14px] right-[14px] grid h-9 w-9 place-items-center border border-[rgba(125,210,255,0.6)] bg-[rgba(8,14,32,0.88)] text-[#e8f7ff] cursor-pointer z-[6] shadow-[0_0_12px_rgba(115,214,255,0.24)] transition-[border-color,box-shadow] hover:border-[rgba(143,245,255,1)] hover:shadow-[0_0_16px_rgba(127,232,255,0.35)] ${
-                isEntryPopupHighlighted
-                  ? "border-[rgba(255,230,120,0.96)] shadow-[0_0_16px_rgba(127,232,255,0.35)]"
-                  : ""
-              } ${isEntryPopupHighlighted && hasEntryPopupUpdate ? "animate-[entry-pop_0.2s_ease-out_0s_2_alternate]" : ""}`}
-              onClick={openEntryPopup}
-              type="button"
-              aria-label={uiText.creatureDetails}
-            >
-              <Info className="h-[18px] w-[18px]" aria-hidden="true" />
-            </button>
+      <section className="grid flex-1 min-h-0 min-w-0 gap-[var(--panel-gap)] items-start overflow-x-hidden [grid-template-columns:minmax(0,1.35fr)_minmax(300px,1fr)]">
+        <section className="grid min-w-0 w-full gap-3 overflow-x-hidden h-full relative">
+          <ObserverPanel
+            uiText={uiText}
+            isObserverAutoTarget={isObserverAutoTarget}
+            observerCreature={observerCreature}
+            observerStyle={observerStyle}
+            observerYaw={observerYaw}
+            observerPitch={observerPitch}
+            observerDragOffset={observerDragOffset}
+            isDraggingObserver={isDraggingObserver}
+            observerShellRef={observerShellRef}
+            onObserverTargetOpen={() => openModal("observer-targets")}
+            onPointerDown={handleObserverPointerDown}
+            onPointerMove={handleObserverPointerMove}
+            onPointerUp={handleObserverPointerUp}
+          />
+          <button
+            className={`absolute top-[14px] right-[14px] grid h-9 w-9 place-items-center border border-[rgba(125,210,255,0.6)] bg-[rgba(8,14,32,0.88)] text-[#e8f7ff] cursor-pointer z-[6] shadow-[0_0_12px_rgba(115,214,255,0.24)] transition-[border-color,box-shadow] hover:border-[rgba(143,245,255,1)] hover:shadow-[0_0_16px_rgba(127,232,255,0.35)] ${
+              isEntryPopupHighlighted
+                ? "border-[rgba(255,230,120,0.96)] shadow-[0_0_16px_rgba(127,232,255,0.35)]"
+                : ""
+            } ${
+              isEntryPopupHighlighted && hasEntryPopupUpdate
+                ? "animate-[entry-pop_0.2s_ease-out_0s_2_alternate]"
+                : ""
+            }`}
+            onClick={openEntryPopup}
+            type="button"
+            aria-label={uiText.creatureDetails}
+          >
+            <Info className="h-[18px] w-[18px]" aria-hidden="true" />
+          </button>
 
-            <EntryPopup
-              isOpen={isEntryPopupOpen}
-              hasUpdate={isEntryPopupHighlighted || hasEntryPopupUpdate}
-              uiText={uiText}
-              tokens={state.tokens}
-              researchObservation={state.researchData.observation}
-              researchMutation={state.researchData.mutation}
-              researchEmotion={state.researchData.emotion}
-              streak={state.daily.streak}
-              completedMissionsCount={completedMissionsCount}
-              missionTotal={missionTotal}
-              signalState={signalState}
-              stellaComment={stellaComment}
-              statusText={targetStatusText}
-              missionRemaining={missionRemaining}
-              missions={state.daily.missions}
-              signalRewardClaimed={Boolean(state.daily.signal?.rewardClaimed)}
-              selectedCreature={selectedCreature ?? null}
-              onClose={closeEntryPopup}
-              onOpenMissions={() => openModal("missions")}
-              onClearCompletedMissions={clearCompletedMissions}
-              onClaimSignalReward={claimSignalReward}
-              signalResolved={Boolean(state.daily.signal?.resolved)}
-              hasSignal={Boolean(state.daily.signal)}
-            />
-          
+          <EntryPopup
+            isOpen={isEntryPopupOpen}
+            hasUpdate={isEntryPopupHighlighted || hasEntryPopupUpdate}
+            uiText={uiText}
+            tokens={state.tokens}
+            researchObservation={state.researchData.observation}
+            researchMutation={state.researchData.mutation}
+            researchEmotion={state.researchData.emotion}
+            streak={state.daily.streak}
+            completedMissionsCount={completedMissionsCount}
+            missionTotal={missionTotal}
+            signalState={signalState}
+            stellaComment={stellaComment}
+            statusText={targetStatusText}
+            missionRemaining={missionRemaining}
+            missions={state.daily.missions}
+            signalRewardClaimed={Boolean(state.daily.signal?.rewardClaimed)}
+            selectedCreature={selectedCreature ?? null}
+            onClose={closeEntryPopup}
+            onOpenMissions={() => openModal("missions")}
+            onClearCompletedMissions={clearCompletedMissions}
+            onClaimSignalReward={claimSignalReward}
+            signalResolved={Boolean(state.daily.signal?.resolved)}
+            hasSignal={Boolean(state.daily.signal)}
+          />
         </section>
-
         <section className="min-w-0">
           <div className="mb-2">
-              <ActiveCreaturePanel
-                selectedCreature={selectedCreature ?? null}
-                uiText={uiText}
-                actionText={actionText}
-                token={state.tokens}
-                performAction={performAction}
-                onOpenRoster={() => openModal("roster")}
-                onOpenCreatureDetails={() => openModal("creature-details")}
+            <ActiveCreaturePanel
+              selectedCreature={selectedCreature ?? null}
+              uiText={uiText}
+              actionText={actionText}
+              token={state.tokens}
+              performAction={performAction}
+              onOpenRoster={() => openModal("roster")}
+              onOpenCreatureDetails={() => openModal("creature-details")}
               showActions={true}
               highlightActions={activeMissionActions}
             />
           </div>
-          <div className="grid grid-cols-2 gap-2 mb-2" role="tablist" aria-label="Right panel">
+          <div
+            className="grid grid-cols-2 gap-2 mb-2"
+            role="tablist"
+            aria-label="Right panel"
+          >
             {rightPanelTabs.map((tab) => (
               <button
                 key={tab.id}
@@ -806,9 +975,12 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
           </div>
         </section>
       </section>
-
       {activeModal && (
-        <ModalShell title={modalTitle} onClose={closeModal} closeLabel={uiText.close}>
+        <ModalShell
+          title={modalTitle}
+          onClose={closeModal}
+          closeLabel={uiText.close}
+        >
           {activeModal === "missions" ? (
             <MissionsModal
               missions={state.daily.missions}
@@ -820,29 +992,35 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
           ) : null}
 
           {activeModal === "archive" ? (
-              <ArchiveModal
-                uiText={uiText}
-                archiveSpeciesTabs={archiveSpeciesTabs}
-                archiveFilter={archiveFilter}
-                filteredArchiveEntries={filteredArchiveEntries}
-                archiveSlice={archiveSlice}
-                archiveTotal={state.archive.length}
-                archivePageCount={archivePageCount}
-                safeArchivePage={safeArchivePage}
+            <ArchiveModal
+              uiText={uiText}
+              archiveSpeciesTabs={archiveSpeciesTabs}
+              archiveFilter={archiveFilter}
+              filteredArchiveEntries={filteredArchiveEntries}
+              archiveSlice={archiveSlice}
+              archiveTotal={state.archive.length}
+              archivePageCount={archivePageCount}
+              safeArchivePage={safeArchivePage}
               onChangeFilter={(tab) => {
                 setArchiveFilter(tab);
                 setArchivePage(0);
               }}
-              onPrevPage={() => setArchivePage((value) => Math.max(0, value - 1))}
-              onNextPage={() => setArchivePage((value) => Math.min(archivePageCount - 1, value + 1))}
+              onPrevPage={() =>
+                setArchivePage((value) => Math.max(0, value - 1))
+              }
+              onNextPage={() =>
+                setArchivePage((value) =>
+                  Math.min(archivePageCount - 1, value + 1)
+                )
+              }
             />
           ) : null}
 
           {activeModal === "roster" ? (
-              <RosterModal
-                uiText={uiText}
-                selectedCreatureId={selectedCreature?.id ?? ""}
-                rosterSpeciesTabs={rosterSpeciesTabs}
+            <RosterModal
+              uiText={uiText}
+              selectedCreatureId={selectedCreature?.id ?? ""}
+              rosterSpeciesTabs={rosterSpeciesTabs}
               rosterFilter={rosterFilter}
               filteredRoster={filteredRoster}
               rosterSlice={rosterSlice}
@@ -856,8 +1034,14 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
                 selectCreature(id);
                 closeModal();
               }}
-              onPrevPage={() => setRosterPage((value) => Math.max(0, value - 1))}
-              onNextPage={() => setRosterPage((value) => Math.min(rosterPageCount - 1, value + 1))}
+              onPrevPage={() =>
+                setRosterPage((value) => Math.max(0, value - 1))
+              }
+              onNextPage={() =>
+                setRosterPage((value) =>
+                  Math.min(rosterPageCount - 1, value + 1)
+                )
+              }
             />
           ) : null}
 
