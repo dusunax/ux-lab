@@ -75,10 +75,10 @@ export function GameHud({
 
   return (
     <section className="w-full">
-      <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-3.5 shadow-[var(--shadow)] relative overflow-hidden">
+      <section className="rounded-none border-2 border-primary bg-panel px-4 py-3.5 shadow-[0_0_30px_rgba(102,240,255,0.15)] relative overflow-hidden">
         <div className="flex items-center justify-between gap-2 mb-2">
           <h2>{uiText.labStatus}</h2>
-          <span className="text-[var(--accent)] text-sm">{state.tokens}T</span>
+          <span className="text-accent text-sm">{state.tokens}T</span>
         </div>
 
         <div className="mt-0.5 mb-2.5">
@@ -96,8 +96,8 @@ export function GameHud({
         </div>
 
         <div className="mb-1.5 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-          <span className="text-[13px] text-[var(--muted)]">{uiText.todaySignal}: </span>
-          <span className="text-[13px] text-[var(--muted)]">{state.daily.lastVisitDate}</span>
+          <span className="text-[13px] text-muted">{uiText.todaySignal}: </span>
+          <span className="text-[13px] text-muted">{state.daily.lastVisitDate}</span>
         </div>
 
         <article className="rounded-none border-2 border-[rgba(125,210,255,0.55)] bg-[rgba(9,15,30,0.55)] px-2.5 py-2">
@@ -105,7 +105,7 @@ export function GameHud({
           <output
             role="status"
             aria-label={`${uiText.todaySignal} ${signalText}`}
-            className="mb-1 text-[13px] leading-tight text-[var(--muted)]"
+            className="mb-1 text-[13px] leading-tight text-muted"
           >
             {signalText}
           </output>
@@ -113,7 +113,7 @@ export function GameHud({
             <output
               role="status"
               aria-label={t("signalDetailPrefix", { detail: signalHint })}
-              className="mb-2 block text-[12px] leading-tight text-[var(--muted)]"
+              className="mb-2 block text-[12px] leading-tight text-muted"
             >
               {signalHint}
             </output>
@@ -144,7 +144,7 @@ export function GameHud({
           </div>
           <div className="grid max-h-[126px] gap-1.5 overflow-auto pr-1">
             {state.daily.missions.length === 0 ? (
-              <output role="status" aria-label={notice} className="text-[13px] text-[var(--muted)]">
+              <output role="status" aria-label={notice} className="text-[13px] text-muted">
                 {notice}
               </output>
             ) : (
@@ -190,7 +190,7 @@ export function GameHud({
               style={{ ["--mission-progress" as keyof CSSProperties]: `${missionProgressPercent}%` } as CSSProperties}
             />
           </div>
-          <p className="mt-1.5 text-[13px] text-[var(--muted)]">{firstMission ? stellaComment : notice}</p>
+          <p className="mt-1.5 text-[13px] text-muted">{firstMission ? stellaComment : notice}</p>
         </div>
 
         <button

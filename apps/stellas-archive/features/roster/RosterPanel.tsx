@@ -18,7 +18,7 @@ export function RosterPanel({
   onOpenRoster,
 }: RosterPanelProps) {
   return (
-    <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)] relative">
+    <section className="rounded-none border-2 border-primary bg-panel px-4 py-4 shadow-[0_0_30px_rgba(102,240,255,0.15)] relative">
       <div className="flex items-center justify-between gap-2 mb-2">
         <h2>{uiText.creatures}</h2>
         <button
@@ -33,13 +33,13 @@ export function RosterPanel({
         <output
           role="status"
           aria-label={`${uiText.creatures} ${total}`}
-          className="text-[13px] text-[var(--muted)]"
+          className="text-[13px] text-muted"
         >
           총 {uiText.creatures}: {total}
         </output>
-        <div className="text-[13px] text-[var(--muted)]">총 종류: {speciesCount}</div>
-        <div className="text-[13px] text-[var(--muted)]">현재 활성: {activeName}</div>
-        <div className="text-[13px] text-[var(--muted)]">주요 종: {topSpecies.join(", ") || uiText.rosterEmpty}</div>
+        <div className="text-[13px] text-muted">총 종류: {speciesCount}</div>
+        <div className="text-[13px] text-muted">현재 활성: {activeName}</div>
+        <div className="text-[13px] text-muted">주요 종: {topSpecies.join(", ") || uiText.rosterEmpty}</div>
       </div>
       <div className="grid grid-cols-1 gap-2">
         <button

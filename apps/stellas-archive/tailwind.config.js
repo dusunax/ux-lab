@@ -8,10 +8,12 @@ module.exports = {
     extend: {
       colors: {
         stellaBg: "#0b1220",
+        text: "#ecf2ff",
+        muted: "#9ab0c6",
+        lineWeak: "rgba(59, 199, 255, 0.3)",
         surface: "#111c30",
         panel: "#111c30",
         panelLine: "rgba(130, 206, 255, 0.28)",
-        muted: "#97a5bf",
         primary: "#3bc7ff",
         primaryDark: "#2a8cd0",
         accent: "#b48cff",

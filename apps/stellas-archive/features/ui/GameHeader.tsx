@@ -56,7 +56,7 @@ export function GameHeader({ tokenCount, uiText, onSetLocale }: GameHeaderProps)
   };
 
   return (
-    <div className="mb-3.5 flex py-2 min-h-20 max-h-[112px] flex-wrap items-start justify-between gap-3">
+      <div className="mb-3.5 flex py-2 min-h-20 max-h-[112px] flex-wrap items-start justify-between gap-3">
       <div>
         <h1
           className="relative inline-block text-4xl font-logo font-black leading-tight tracking-[2px] text-transparent [background-image:linear-gradient(90deg,_#74f5ff,_#ffd97f_45%,_#d18cff_62%,_#74f5ff)] [-webkit-text-stroke:1px_rgba(255,255,255,0.22)] [-webkit-background-clip:text] [background-clip:text] [color:transparent] [text-shadow:0_0_6px_rgba(116,_245,_255,_0.15),_0_0_18px_rgba(255,_195,_129,_0.25)]"
@@ -69,24 +69,26 @@ export function GameHeader({ tokenCount, uiText, onSetLocale }: GameHeaderProps)
         <p
           role="note"
           aria-label={uiText.subtitle}
-          className="mt-1 max-w-[min(56ch,65vw)] overflow-hidden text-[13px] leading-tight text-[var(--muted)]"
+          className="mt-1 max-w-[min(56ch,65vw)] overflow-hidden text-[13px] leading-tight text-muted"
         >
           {uiText.subtitle}
         </p>
       </div>
-      <div className="relative flex items-start self-start gap-1.5">
+        <div className="relative flex items-start self-start gap-1.5">
         <output
           role="status"
           aria-live="off"
           aria-label={`${uiText.tokens}: ${tokenCount}`}
-          className="w-fit border border-[rgba(130,199,255,0.5)] bg-[rgba(8,14,32,0.85)] px-2.5 py-1.5 text-[12px] leading-tight text-[#d8f2ff]"
+          className="w-fit border border-panelLine bg-surface/85 px-2.5 py-1.5 text-[12px] leading-tight text-text"
         >
           {uiText.tokens}: {tokenCount}
         </output>
         <div className="relative" ref={menuRef}>
           <button
-            className={`grid h-10 w-10 min-w-10 cursor-pointer place-items-center rounded-none border border-[rgba(127,220,255,0.7)] bg-[linear-gradient(180deg,rgba(30,60,120,0.56),rgba(9,17,39,0.66))] px-0 text-[13px] text-[#fbfdff] tracking-[0.4px] ${
+            className={`grid h-10 w-10 min-w-10 cursor-pointer place-items-center rounded-none border border-[rgba(127,220,255,0.7)] bg-surface/75 px-0 text-[13px] text-text tracking-[0.4px] transition-transform duration-200 ${
               isMenuOpen ? "outline-none ring-0" : ""
+            } ${
+              isMenuOpen ? "border-[#8ff5ff] shadow-[0_0_16px_rgba(127,232,255,0.35)]" : ""
             }`}
             onClick={() => setIsMenuOpen((value) => !value)}
             aria-expanded={isMenuOpen}
@@ -97,17 +99,17 @@ export function GameHeader({ tokenCount, uiText, onSetLocale }: GameHeaderProps)
               className={`h-5 w-5 transition-transform duration-200 ${isMenuOpen ? "rotate-[48deg]" : ""}`}
               aria-hidden
             />
-            <span className="sr-only">{languageLabel}</span>
+          <span className="sr-only">{languageLabel}</span>
           </button>
           {isMenuOpen ? (
             <div
-              className="absolute top-[calc(100%+6px)] right-0 z-8 w-[132px] border border-[rgba(130,199,255,0.5)] bg-[rgba(10,18,38,0.94)] p-1.5 shadow-[var(--shadow),0_0_0_1px_rgba(125,225,255,0.2)_inset]"
+              className="absolute top-[calc(100%+6px)] right-0 z-10 w-[132px] border border-panelLine bg-surface/95 p-1.5 shadow-[0_0_30px_rgba(102,240,255,0.15),0_0_0_1px_rgba(125,225,255,0.2)_inset]"
               role="menu"
               aria-label={languageLabel}
             >
               <button
-                className={`mb-1 w-full rounded-none border border-[rgba(130,199,255,0.32)] bg-[rgba(8,14,32,0.85)] px-2 py-2 text-left text-[13px] leading-tight text-[#f2fcff] ${
-                  isEnglishLocale ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)]" : ""
+                className={`mb-1 w-full rounded-none border border-[rgba(130,199,255,0.32)] bg-surface/85 px-2 py-2 text-left text-[13px] leading-tight text-text ${
+                  isEnglishLocale ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)] text-[#ffffff]" : ""
                 } first:mt-0 hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.2)]`}
                 onClick={() => handleSelectLocale(SupportedLocale.En)}
                 type="button"
@@ -119,8 +121,8 @@ export function GameHeader({ tokenCount, uiText, onSetLocale }: GameHeaderProps)
                 {isEnglishLocale ? " ✓" : ""}
               </button>
               <button
-                className={`w-full rounded-none border border-[rgba(130,199,255,0.32)] bg-[rgba(8,14,32,0.85)] px-2 py-2 text-left text-[13px] leading-tight text-[#f2fcff] ${
-                  !isEnglishLocale ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)]" : ""
+                className={`w-full rounded-none border border-[rgba(130,199,255,0.32)] bg-surface/85 px-2 py-2 text-left text-[13px] leading-tight text-text ${
+                  !isEnglishLocale ? "bg-[rgba(40,95,180,0.68)] border-[rgba(143,245,255,1)] text-[#ffffff]" : ""
                 } hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.2)]`}
                 onClick={() => handleSelectLocale(SupportedLocale.Ko)}
                 type="button"

@@ -6,6 +6,7 @@ export const ko = {
   },
   page: {
     researchLogTitle: "연구 기록",
+    archive: "아카이브",
     signalDetected: "시그널 감지",
     mutationPossibility: "변이 감지",
     mutationEvolved: "{species} 변이체로 진화했습니다",

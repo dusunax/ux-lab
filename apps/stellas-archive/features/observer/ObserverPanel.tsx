@@ -77,7 +77,7 @@ export function ObserverPanel({
 
   return (
     <section
-      className="w-full h-full max-w-full rounded-none border-2 border-[var(--line)] shadow-[var(--shadow)] relative overflow-hidden px-4 py-4 flex-col flex"
+      className="w-full h-full max-w-full rounded-none border-2 border-primary shadow-[0_0_30px_rgba(102,240,255,0.15)] relative overflow-hidden px-4 py-4 flex-col flex"
       style={observerChamberBackgroundStyle}
     >
       <h2 className="mb-4">{uiText.observerPanel}</h2>
@@ -85,7 +85,7 @@ export function ObserverPanel({
         <output
           role="status"
           aria-label={`${uiText.observerTarget}: ${summaryTarget}`}
-          className="text-[13px] text-[var(--muted)]"
+          className="text-[13px] text-muted"
         >
           {uiText.observerTarget}: {summaryTarget}
         </output>
@@ -271,7 +271,7 @@ export function ObserverPanel({
             <output
               role="status"
               aria-label={`${observerCreature.nickname} ${observerCreature.commonName} ${emotionLabel}`}
-              className="mt-4 mx-auto text-[13px] text-[var(--muted)]"
+              className="mt-4 mx-auto text-[13px] text-muted"
             >
               {observerCreature.nickname} ({observerCreature.commonName}) |{" "}
               {emotionLabel}
@@ -279,7 +279,7 @@ export function ObserverPanel({
           </div>
         </div>
       ) : (
-        <output role="status" aria-label={uiText.noObserverTarget} className="mt-2 text-[13px] text-[var(--muted)]">
+        <output role="status" aria-label={uiText.noObserverTarget} className="mt-2 text-[13px] text-muted">
           {uiText.noObserverTarget}
         </output>
       )}

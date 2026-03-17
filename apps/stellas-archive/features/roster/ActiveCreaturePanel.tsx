@@ -45,7 +45,7 @@ export function ActiveCreaturePanel({
     }`;
 
   return (
-    <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
+    <section className="rounded-none border-2 border-primary bg-panel px-4 py-4 shadow-[0_0_30px_rgba(102,240,255,0.15)]">
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <h2>{uiText.active}</h2>
         <button
@@ -57,7 +57,7 @@ export function ActiveCreaturePanel({
         </button>
       </div>
       {selectedCreature && (
-        <article className="w-full border border-[var(--line-weak)] bg-[rgba(10,18,38,0.72)] p-3 relative">
+        <article className="w-full border border-lineWeak bg-[rgba(10,18,38,0.72)] p-3 relative">
           <div className="flex justify-between items-center gap-2">
             <div>
               <div className="text-[13px] text-[#bfe8ff] font-semibold">{uiText.active} Lumina</div>
@@ -71,7 +71,7 @@ export function ActiveCreaturePanel({
               {uiText.select}
             </button>
           </div>
-      <p className="mt-1 mb-0 text-[13px] text-[var(--muted)]">
+      <p className="mt-1 mb-0 text-[13px] text-muted">
         {selectedCreature.commonName} · {getDominantEmotionLabel(selectedCreature.emotion)}
       </p>
       <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-4">
@@ -156,7 +156,7 @@ export function ActiveCreaturePanel({
         </article>
       )}
       {!selectedCreature ? (
-        <output role="status" aria-label={uiText.creatureNotFound} className="text-[13px] text-[var(--muted)]">
+        <output role="status" aria-label={uiText.creatureNotFound} className="text-[13px] text-muted">
           {uiText.creatureNotFound}
         </output>
       ) : null}

@@ -317,10 +317,16 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
 
   const rightPanelTabs = useMemo(
     () => [
-      { id: "research" as const, label: t("researchLogTitle") },
-      { id: "archive" as const, label: uiText.archive },
+      {
+        id: "research" as const,
+        label: localizedText.page.researchLogTitle,
+      },
+      {
+        id: "archive" as const,
+        label: localizedText.page.archive,
+      },
     ],
-    [uiText.archive],
+    [localizedText.page.researchLogTitle, localizedText.page.archive],
   );
   const signalState = state.daily.signal
     ? state.daily.signal.resolved
@@ -658,11 +664,11 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   }, []);
 
   const modalTitle = useMemo(() => {
-    if (activeModal === "missions") return uiText.missionDetails;
-    if (activeModal === "archive") return uiText.archive;
-    if (activeModal === "roster") return uiText.creatures;
-    if (activeModal === "observer-targets") return uiText.observerTargets;
-    return uiText.creatureDetails;
+    if (activeModal === "missions") return uiText.missionDetails || "Mission List";
+    if (activeModal === "archive") return uiText.archive || "Archive";
+    if (activeModal === "roster") return uiText.creatures || "Creatures in Lab";
+    if (activeModal === "observer-targets") return uiText.observerTargets || "Observer Targets";
+    return uiText.creatureDetails || "Creature Details";
   }, [activeModal, uiText]);
 
   const openEntryPopup = useCallback(() => {

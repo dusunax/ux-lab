@@ -73,7 +73,7 @@ export const viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-stellaBg font-body text-text">
         {children}
       </body>
     </html>

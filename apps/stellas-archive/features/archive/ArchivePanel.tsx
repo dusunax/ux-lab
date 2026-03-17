@@ -10,7 +10,7 @@ type ArchivePanelProps = {
 
 export function ArchivePanel({ uiText, archiveCount, latestArchive, onOpenArchive }: ArchivePanelProps) {
   return (
-    <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
+    <section className="rounded-none border-2 border-primary bg-panel px-4 py-4 shadow-[0_0_30px_rgba(102,240,255,0.15)]">
       <div className="flex items-center justify-between gap-2 mb-2">
         <h2>{uiText.archive}</h2>
         <button
@@ -27,27 +27,27 @@ export function ArchivePanel({ uiText, archiveCount, latestArchive, onOpenArchiv
             <output
               role="status"
               aria-label={`Archive entries ${archiveCount}`}
-              className="text-[13px] text-[var(--muted)]"
+              className="text-[13px] text-muted"
             >
               총 기록: {archiveCount}건
             </output>
             <output
               role="status"
               aria-label={`Latest archive: ${latestArchive.name}`}
-              className="text-[13px] text-[var(--muted)]"
+              className="text-[13px] text-muted"
             >
               최근 기록: {latestArchive.name} - <strong>{latestArchive.species}</strong>
             </output>
-            <div className="text-[13px] text-[var(--muted)]">
+            <div className="text-[13px] text-muted">
               {formatDateLabel(latestArchive.time)} | {latestArchive.reason}
             </div>
-            <div className="text-[13px] text-[var(--muted)]">
+            <div className="text-[13px] text-muted">
               RGB {latestArchive.rgb.r}/{latestArchive.rgb.g}/{latestArchive.rgb.b} | {uiText.metaEmotion}:{" "}
               {getEmotionLabel(latestArchive.emotion)}
             </div>
           </>
         ) : (
-          <output role="status" aria-label={uiText.archiveEmpty} className="text-[13px] text-[var(--muted)]">
+          <output role="status" aria-label={uiText.archiveEmpty} className="text-[13px] text-muted">
             {uiText.archiveEmpty}
           </output>
         )}

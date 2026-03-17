@@ -6,6 +6,7 @@ export const en = {
   },
   page: {
     researchLogTitle: "Research Log",
+    archive: "Archive",
     signalDetected: "Signal detected",
     mutationPossibility: "Mutation possibility",
     mutationEvolved: "{species} evolved",

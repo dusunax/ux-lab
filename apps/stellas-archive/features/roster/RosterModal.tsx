@@ -52,14 +52,14 @@ export function RosterModal({
       </div>
       <div className="grid gap-2 max-h-[58vh] overflow-auto pr-1">
         {filteredRoster.length === 0 ? (
-          <div className="text-[13px] text-[var(--muted)]">{uiText.rosterEmpty}</div>
+          <div className="text-[13px] text-muted">{uiText.rosterEmpty}</div>
         ) : (
           rosterSlice.map((creature) => {
             const isSelected = creature.id === selectedCreatureId;
             return (
               <article
                 key={creature.id}
-                className={`w-full border-2 border-[var(--line-weak)] p-3 bg-[rgba(10,18,38,0.72)] ${
+                className={`w-full border-2 border-lineWeak p-3 bg-[rgba(10,18,38,0.72)] ${
                   isSelected
                     ? "outline outline-[3px] outline-[rgba(127,220,255,0.9)] outline-offset-[-3px] shadow-[0_0_18px_rgba(127,220,255,0.45)]"
                     : ""
@@ -97,7 +97,7 @@ export function RosterModal({
                   {uiText.emotion}: <strong>{getDominantEmotionLabel(creature.emotion)}</strong> / {uiText.traits}:{" "}
                   {creature.traits.join(", ")}
                 </p>
-                <p className="mt-1 text-[12px] text-[var(--muted)]">
+                <p className="mt-1 text-[12px] text-muted">
                   R{creature.rgb.r} / G{creature.rgb.g} / B{creature.rgb.b} / {uiText.mutationStage}{" "}
                   {creature.mutationStage}
                 </p>
@@ -116,7 +116,7 @@ export function RosterModal({
         >
           ◀
         </button>
-        <span className="text-[13px] text-[var(--muted)]">
+        <span className="text-[13px] text-muted">
           {safeRosterPage + 1} / {rosterPageCount}
         </span>
         <button

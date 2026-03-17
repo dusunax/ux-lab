@@ -21,7 +21,7 @@ export function MissionsModal({
   return (
     <div className="grid gap-2 max-h-[58vh] overflow-auto pr-1">
       {missions.length === 0 ? (
-        <output role="status" aria-label={uiText.missionEmpty} className="text-[13px] text-[var(--muted)]">
+        <output role="status" aria-label={uiText.missionEmpty} className="text-[13px] text-muted">
           {uiText.missionEmpty}
         </output>
       ) : null}
@@ -61,7 +61,7 @@ export function MissionsModal({
             <output
               role="status"
               aria-label={`Mission optional: ${mission.label} ${mission.optional}`}
-              className="ml-4 border-l-2 border-[rgba(149,247,222,0.45)] px-2 text-[12px] text-[var(--muted)]"
+              className="ml-4 border-l-2 border-[rgba(149,247,222,0.45)] px-2 text-[12px] text-muted"
             >
               {mission.optional}
             </output>

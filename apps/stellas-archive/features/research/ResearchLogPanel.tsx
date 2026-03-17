@@ -47,7 +47,7 @@ export function ResearchLogPanel({ uiText, state, onOpenLog }: ResearchLogPanelP
     : t("noMutationRecorded");
 
   return (
-    <section className="rounded-none border-2 border-[var(--line)] bg-[var(--card)] px-4 py-4 shadow-[var(--shadow)]">
+    <section className="rounded-none border-2 border-primary bg-panel px-4 py-4 shadow-[0_0_30px_rgba(102,240,255,0.15)]">
       <div className="flex items-center justify-between gap-2 mb-2">
         <h2>{logHeading}</h2>
         <button
@@ -61,7 +61,7 @@ export function ResearchLogPanel({ uiText, state, onOpenLog }: ResearchLogPanelP
       <div className="grid gap-2">
         <article className="p-2 border border-[rgba(130,199,255,0.25)] bg-[rgba(9,16,34,0.54)]">
           <div className="text-[11px] text-[#9fd8ff] mb-1">{signalHeading}</div>
-          <output role="status" aria-label={`${signalHeading} ${signalText}`} className="text-[13px] text-[var(--muted)] mb-2 block">
+          <output role="status" aria-label={`${signalHeading} ${signalText}`} className="text-[13px] text-muted mb-2 block">
             {signalText}
           </output>
           <div className="flex items-center justify-between border border-[rgba(130,220,255,0.35)] bg-[rgba(8,14,30,0.85)] px-2 py-1 text-[11px] tracking-[0.32px] text-[#95f7de]">
@@ -78,7 +78,7 @@ export function ResearchLogPanel({ uiText, state, onOpenLog }: ResearchLogPanelP
         </article>
         <article className="p-2 border border-[rgba(130,199,255,0.25)] bg-[rgba(9,16,34,0.54)]">
           <div className="text-[11px] text-[#9fd8ff] mb-1">{mutationHeading}</div>
-          <div className="text-[13px] text-[var(--muted)]">{mutationText}</div>
+          <div className="text-[13px] text-muted">{mutationText}</div>
         </article>
         <article className="p-2 border border-[rgba(130,199,255,0.25)] bg-[rgba(9,16,34,0.54)]">
           <div className="text-[11px] text-[#9fd8ff] mb-1">{missionText}</div>

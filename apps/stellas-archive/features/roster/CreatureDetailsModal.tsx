@@ -39,14 +39,14 @@ export function CreatureDetailsModal({
 }: CreatureDetailsModalProps) {
   if (!creature) {
     return (
-      <output role="status" aria-label={uiText.creatureNotFound} className="text-[13px] text-[var(--muted)]">
+      <output role="status" aria-label={uiText.creatureNotFound} className="text-[13px] text-muted">
         {uiText.creatureNotFound}
       </output>
     );
   }
 
   return (
-    <article className="w-full border border-[var(--line-weak)] bg-[rgba(10,18,38,0.72)] p-3">
+    <article className="w-full border border-lineWeak bg-[rgba(10,18,38,0.72)] p-3">
       <div className="flex justify-between items-center gap-2">
         <div>
           <div className="text-[13px] text-[#bfe8ff] font-semibold">{creature.commonName}</div>

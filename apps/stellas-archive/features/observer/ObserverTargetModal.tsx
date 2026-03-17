@@ -20,7 +20,7 @@ export function ObserverTargetModal({
 }: ObserverTargetModalProps) {
   return (
     <div className="grid gap-2 max-h-[58vh] overflow-auto pr-1">
-      <div className="text-[13px] text-[var(--muted)]">{uiText.observerDescription}</div>
+      <div className="text-[13px] text-muted">{uiText.observerDescription}</div>
       <button
         className={`rounded-none border border-[rgba(130,199,255,0.9)] px-2 py-2 text-[12px] text-left tracking-[0.2px] min-h-[30px] ${
           isObserverAutoTarget

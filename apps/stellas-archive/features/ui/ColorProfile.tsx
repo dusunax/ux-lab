@@ -51,7 +51,7 @@ export function ColorProfile({ rgb, title, className }: ColorProfileProps) {
             const percent = (clampByte(channel.value) / 255) * 100;
             return (
               <div className="flex items-center gap-2" key={channel.label}>
-                <span className="w-5 text-right text-[12px] text-[var(--muted)]">{channel.label}</span>
+                <span className="w-5 text-right text-[12px] text-muted">{channel.label}</span>
                 <div className="relative h-[10px] flex-1 overflow-hidden border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.12)]">
                   <div
                     className="absolute inset-y-0 left-0 h-full border-r-[2px] border-[rgba(255,255,255,0.4)]"

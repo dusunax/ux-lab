@@ -72,7 +72,7 @@ export function EntryPopup({
 
   return (
     <aside
-      className={`absolute top-[58px] right-2.5 z-10 w-[min(360px,100%)] max-w-[360px] box-border border-2 border-[rgba(125,220,255,0.55)] bg-[var(--card)] p-3 shadow-[0_0_24px_rgba(112,196,255,0.3)] before:absolute before:right-5 before:top-[-7px] before:h-3 before:w-3 before:border before:border-[rgba(125,220,255,0.55)] before:border-r-0 before:border-b-0 before:bg-[var(--card)] before:rotate-45 ${
+      className={`absolute top-[58px] right-2.5 z-10 w-[min(360px,100%)] max-w-[360px] box-border border-2 border-[rgba(125,220,255,0.55)] bg-panel p-3 shadow-[0_0_24px_rgba(112,196,255,0.3)] before:absolute before:right-5 before:top-[-7px] before:h-3 before:w-3 before:border before:border-[rgba(125,220,255,0.55)] before:border-r-0 before:border-b-0 before:bg-panel before:rotate-45 ${
         hasUpdate ? "border-[rgba(255,231,132,0.85)] shadow-[0_0_24px_rgba(255,219,118,0.38)]" : ""
       }`}
       role="dialog"
@@ -103,14 +103,14 @@ export function EntryPopup({
           <output
             role="status"
             aria-label={`${uiText.research}: ${researchObservation}/${researchMutation}/${researchEmotion}`}
-            className="mb-0 break-words text-[13px] leading-tight text-[var(--muted)]"
+            className="mb-0 break-words text-[13px] leading-tight text-muted"
           >
             {uiText.research}: {researchObservation}/{researchMutation}/{researchEmotion}
           </output>
           <output
             role="status"
             aria-label={`${uiText.streak}: ${streak} ${uiText.days}`}
-            className="mb-0 break-words text-[13px] leading-tight text-[var(--muted)]"
+            className="mb-0 break-words text-[13px] leading-tight text-muted"
           >
             {uiText.streak}: {streak} {uiText.days}
           </output>
@@ -127,7 +127,7 @@ export function EntryPopup({
               <output
                 role="status"
                 aria-label={`Stella comment ${stellaComment}`}
-                className="text-[12px] leading-tight text-[var(--muted)]"
+                className="text-[12px] leading-tight text-muted"
               >
                 {stellaComment}
               </output>
@@ -142,7 +142,7 @@ export function EntryPopup({
             <output
               role="status"
               aria-label={`${uiText.dailyMissions}: ${uiText.missionCompleted} ${completedMissionsCount}/${missionTotal}`}
-              className="mb-1 text-[13px] leading-tight text-[var(--muted)]"
+              className="mb-1 text-[13px] leading-tight text-muted"
             >
               {uiText.missionCompleted} {completedMissionsCount}/{missionTotal}
             </output>
@@ -192,7 +192,7 @@ export function EntryPopup({
             <output
               role="status"
               aria-label={`${uiText.todaySignal} ${signalState}`}
-              className="mb-1 text-[13px] leading-tight text-[var(--muted)]"
+              className="mb-1 text-[13px] leading-tight text-muted"
             >
               {signalState}
             </output>
@@ -235,7 +235,7 @@ export function EntryPopup({
           </div>
         </div>
       ) : (
-        <div className="text-sm text-[var(--muted)] break-words">{uiText.noObserverTarget}</div>
+        <div className="text-sm text-muted break-words">{uiText.noObserverTarget}</div>
       )}
     </aside>
   );

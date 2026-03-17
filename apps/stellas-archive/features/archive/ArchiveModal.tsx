@@ -49,7 +49,7 @@ export function ArchiveModal({
       </div>
       <div className="grid gap-2 max-h-[58vh] overflow-auto pr-1">
         {filteredArchiveEntries.length === 0 ? (
-          <output role="status" aria-label={uiText.archiveEmpty} className="text-[13px] text-[var(--muted)]">
+          <output role="status" aria-label={uiText.archiveEmpty} className="text-[13px] text-muted">
             {uiText.archiveEmpty}
           </output>
         ) : (
@@ -63,18 +63,18 @@ export function ArchiveModal({
               <div>
                 {entry.name} - <strong>{entry.species}</strong>
               </div>
-              <div className="text-[13px] text-[var(--muted)]">
+              <div className="text-[13px] text-muted">
                 {formatDateLabel(entry.time)} | {entry.reason} | {uiText.metaEmotion}:{" "}
                 {getEmotionLabel(entry.emotion)}
               </div>
-              <div className="mt-1 text-[13px] text-[var(--muted)]">
+              <div className="mt-1 text-[13px] text-muted">
                 RGB {entry.rgb.r}/{entry.rgb.g}/{entry.rgb.b} | {uiText.metaState} {entry.condition}
               </div>
             </article>
           ))
         )}
       </div>
-      <output role="status" aria-label={`Archive count ${filteredArchiveEntries.length} ${archiveTotal}`} className="mt-2 text-[13px] text-[var(--muted)]">
+      <output role="status" aria-label={`Archive count ${filteredArchiveEntries.length} ${archiveTotal}`} className="mt-2 text-[13px] text-muted">
         {uiText.archive}: {filteredArchiveEntries.length}/{archiveTotal}
       </output>
       <div className="mt-2 flex items-center justify-center gap-2.5">
@@ -87,7 +87,7 @@ export function ArchiveModal({
         >
           ◀
         </button>
-        <span className="text-[13px] text-[var(--muted)]">
+        <span className="text-[13px] text-muted">
           {safeArchivePage + 1} / {archivePageCount}
         </span>
         <button
