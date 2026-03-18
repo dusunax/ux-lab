@@ -147,7 +147,7 @@ export const ko = {
     bonded: "친밀",
     friendly: "우호",
     neutral: "중립",
-    observerTarget: "관측 대상",
+    observerTarget: "고정 관측 대상",
     observerAuto: "자동",
     observerPanel: "3D Lumina 관측실",
     observerDescription: "생체 크리스탈 렌즈를 돌려 코어의 변화를 실시간으로 확인하세요.",

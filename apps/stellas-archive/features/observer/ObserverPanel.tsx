@@ -102,14 +102,7 @@ export function ObserverPanel({
       style={observerChamberBackgroundStyle}
     >
       <h2 className="mb-4">{uiText.observerPanel}</h2>
-      <div className="my-4 flex items-center justify-between gap-2">
-        <output
-          role="status"
-          aria-label={`${uiText.observerTarget}: ${summaryTarget}`}
-          className="text-[13px] text-muted"
-        >
-          {uiText.observerTarget}: {summaryTarget}
-        </output>
+      <div className="my-4 flex flex-col gap-1">
         <div className="grid grid-cols-1 gap-2">
           <button
             className="inline-flex min-h-9 items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[15px] text-[#f6fdff] tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
@@ -120,26 +113,26 @@ export function ObserverPanel({
             {uiText.observerTarget}
           </button>
         </div>
+        <output
+          role="status"
+          aria-label={`${uiText.observerTarget}: ${summaryTarget}`}
+          className="text-sm text-muted self-end"
+        >
+          {uiText.observerTarget}: {summaryTarget}
+        </output>
       </div>
       {observerCreature ? (
         <div className="flex flex-1 min-h-0 items-center justify-center">
           <div className="relative flex flex-col w-full max-h-20 min-w-0 mb-[20%] justify-center overflow-x-hidden overflow-y-hidden box-border perspective-[900px] p-4 border border-[rgba(130,206,255,0.28)] min-h-[clamp(360px,47vh,470px)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05),inset_0_0_48px_rgba(80,190,255,0.2)] max-w-80">
-              <div
-                className="relative w-full max-w-full min-w-0 box-border overflow-hidden border-2 border-[rgba(130,220,255,0.45)] [aspect-ratio:16/11] min-h-[280px] h-[min(clamp(280px,34vh,360px),100%)] max-h-full m-0 bg-transparent [box-shadow:inset_0_0_26px_rgba(96,205,255,0.25),inset_0_0_0_2px_rgba(255,255,255,0.06)]"
-              >
-              <span
-                className="pointer-events-none absolute inset-[7px] z-[2] border border-[rgba(255,255,255,0.08)] [box-shadow:inset_0_0_24px_rgba(111,205,255,0.16)]"
-              />
-              <span
-                className="pointer-events-none absolute left-0 right-0 top-[40%] h-px z-[2] opacity-50 [background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)]"
-              />
-              <div className="absolute left-3 top-2 right-3 h-7 flex justify-between items-center text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase z-[3]">
-                <span className="text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase text-shadow-[0_0_8px_rgba(98,235,255,0.5)]">
+            <div
+              className="relative w-full max-w-full min-w-0 box-border overflow-hidden border-2 border-[rgba(130,220,255,0.45)] [aspect-ratio:16/9] min-h-[320px] h-[min(clamp(280px,34vh,360px),100%)] max-h-full m-0 bg-transparent [box-shadow:inset_0_0_26px_rgba(96,205,255,0.25),inset_0_0_0_2px_rgba(255,255,255,0.06)]"
+            >
+              <div className="flex flex-col text-center text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase z-[3]">
+                <span className="mt-4 text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase text-shadow-[0_0_8px_rgba(98,235,255,0.5)]">
                   LUMINA OBSERVATORY
                 </span>
-                <span className="text-[#b9f1ff]">{observerCreature.nickname}</span>
               </div>
-                <div className="absolute left-2.5 right-2.5 top-[2.6rem] bottom-2.5 border border-[rgba(130,220,255,0.25)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] z-[2]">
+              <div className="absolute left-2.5 right-2.5 top-[2.6rem] bottom-2.5 border border-[rgba(130,220,255,0.25)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] z-[2]">
                 <span
                   className="pointer-events-none absolute inset-0 z-[2] border-[1px] border-[rgba(125,225,255,0.14)] [box-shadow:inset_0_0_28px_rgba(95,220,255,0.16)]"
                 />
@@ -201,7 +194,7 @@ export function ObserverPanel({
             <output
               role="status"
               aria-label={`${observerCreature.nickname} ${observerCreature.commonName} ${emotionLabel}`}
-              className="mt-4 mx-auto text-[13px] text-muted"
+              className="translate-y-6 inline-flex mx-auto w-fit max-w-full items-center rounded-md border border-[rgba(130,210,255,0.45)] bg-[rgba(6,12,24,0.84)] px-3 py-1.5 text-xs tracking-[0.15em] text-[#d5f1ff] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_16px_rgba(120,220,255,0.18)]"
             >
               {observerCreature.nickname} ({observerCreature.commonName}) |{" "}
               {emotionLabel}

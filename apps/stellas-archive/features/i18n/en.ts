@@ -147,7 +147,7 @@ export const en = {
     bonded: "bonded",
     friendly: "friendly",
     neutral: "Neutral",
-    observerTarget: "Observer Target",
+    observerTarget: "Fixed Observer Target",
     observerAuto: "AUTO",
     observerPanel: "3D Lumina Observer",
     observerDescription: "Rotate the bio-crystal lens and inspect the core in real time.",
