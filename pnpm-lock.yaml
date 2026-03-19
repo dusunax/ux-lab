@@ -350,6 +350,9 @@ importers:
       i18next-browser-languagedetector:
         specifier: ^8.2.0
         version: 8.2.1
+      lucide-react:
+        specifier: ^0.400.0
+        version: 0.400.0(react@19.1.0)
       next:
         specifier: 15.3.8
         version: 15.3.8(@babel/core@7.29.0)(react-dom@19.1.0)(react@19.1.0)
