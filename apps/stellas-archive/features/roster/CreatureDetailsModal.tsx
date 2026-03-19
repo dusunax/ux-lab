@@ -101,7 +101,7 @@ export function CreatureDetailsModal({
           {uiText.mutationStage}: {creature.mutationStage}
         </span>
         <br />
-        {speciesText[creature.speciesId]?.description}
+        {speciesText[creature.speciesId || ""]?.description}
       </div>
       <div className="mt-2.5 grid grid-cols-4 gap-2">
         <button

@@ -1,0 +1,226 @@
+{
+  "species_lumina": {
+    "scientificName": "Luminidae sapiens",
+    "commonName": "Lumina",
+    "baseRgb": {
+      "r": 120,
+      "g": 100,
+      "b": 160
+    },
+    "temperament": "calm",
+    "rarity": "common",
+    "traits": [
+      "glow",
+      "stable"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 1,
+        "intensity": 0.46,
+        "spacing": 0.2,
+        "scale": 1,
+        "satellites": {
+          "count": 2,
+          "intensity": 0.74
+        }
+      },
+      "flicker": {
+        "intensity": 0.22
+      }
+    },
+    "id": "f6f0b8d8-0f2d-4e2a-9f95-d1e2f8b8a111",
+    "speciesId": "species_lumina"
+  },
+  "species_mote": {
+    "scientificName": "Motenia driftra",
+    "commonName": "Mote",
+    "baseRgb": {
+      "r": 80,
+      "g": 150,
+      "b": 90
+    },
+    "temperament": "curious",
+    "rarity": "common",
+    "traits": [
+      "adaptive",
+      "scatter"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 2,
+        "intensity": 0.22,
+        "spacing": 0.16,
+        "scale": 0.78,
+        "satellites": {
+          "count": 1,
+          "intensity": 0.36
+        }
+      },
+      "flicker": {
+        "intensity": 0.18
+      }
+    },
+    "id": "b1c2e1f4-3f72-4d2b-9b63-2b74f4a9e222",
+    "speciesId": "species_mote"
+  },
+  "species_glint": {
+    "scientificName": "Glintus impulsa",
+    "commonName": "Glint",
+    "baseRgb": {
+      "r": 160,
+      "g": 90,
+      "b": 90
+    },
+    "temperament": "aggressive",
+    "rarity": "common",
+    "traits": [
+      "volatile",
+      "pulse"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 3,
+        "intensity": 0.86,
+        "spacing": 0.2,
+        "scale": 0.74,
+        "satellites": {
+          "count": 2,
+          "intensity": 0.74
+        }
+      },
+      "flicker": {
+        "intensity": 0.84
+      }
+    },
+    "id": "d2f8a1f0-8eab-4f6f-b5d6-3a65d1e4c333",
+    "speciesId": "species_glint"
+  },
+  "species_verdant_echo": {
+    "scientificName": "Verdantia echoensis",
+    "commonName": "Verdant Echo",
+    "baseRgb": {
+      "r": 90,
+      "g": 220,
+      "b": 120
+    },
+    "temperament": "curious",
+    "rarity": "rare",
+    "traits": [
+      "growth",
+      "adaptive"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 2,
+        "intensity": 0.55,
+        "spacing": 0.24,
+        "scale": 0.8,
+        "satellites": {
+          "count": 1,
+          "intensity": 0.54
+        }
+      },
+      "flicker": {
+        "intensity": 0.36
+      }
+    },
+    "id": "c4b1a8a2-6d70-4f10-b2f9-4b9d3f8b4aa4",
+    "speciesId": "species_verdant_echo"
+  },
+  "species_azure_shell": {
+    "scientificName": "Azurum stabilis",
+    "commonName": "Azure Shell",
+    "baseRgb": {
+      "r": 100,
+      "g": 100,
+      "b": 220
+    },
+    "temperament": "calm",
+    "rarity": "rare",
+    "traits": [
+      "stable",
+      "memoryEcho"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 2,
+        "intensity": 0.34,
+        "spacing": 0.18,
+        "scale": 0.86,
+        "satellites": {
+          "count": 0,
+          "intensity": 0
+        }
+      },
+      "flicker": {
+        "intensity": 0.2
+      }
+    },
+    "id": "a7f3d9e0-2b1d-4c3a-8b4f-5c9a1f2e3bb5",
+    "speciesId": "species_azure_shell"
+  },
+  "species_feral_spark": {
+    "scientificName": "Feralis impuls",
+    "commonName": "Feral Spark",
+    "baseRgb": {
+      "r": 220,
+      "g": 120,
+      "b": 80
+    },
+    "temperament": "aggressive",
+    "rarity": "rare",
+    "traits": [
+      "volatile",
+      "feral"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 3,
+        "intensity": 1,
+        "spacing": 0.1,
+        "scale": 0.76,
+        "satellites": {
+          "count": 3,
+          "intensity": 0.9
+        }
+      },
+      "flicker": {
+        "intensity": 1
+      }
+    },
+    "id": "9d5c4b9a-5f6e-4d8a-a4f6-6d8c7e9a5cc6",
+    "speciesId": "species_feral_spark"
+  },
+  "species_prism_core": {
+    "scientificName": "Prismata nexus",
+    "commonName": "Prism Core",
+    "baseRgb": {
+      "r": 180,
+      "g": 180,
+      "b": 180
+    },
+    "temperament": "harmonic",
+    "rarity": "epic",
+    "traits": [
+      "prismatic",
+      "harmonic"
+    ],
+    "visualProfile": {
+      "rings": {
+        "count": 2,
+        "intensity": 0.72,
+        "spacing": 0.24,
+        "scale": 0.8,
+        "satellites": {
+          "count": 2,
+          "intensity": 0.58
+        }
+      },
+      "flicker": {
+        "intensity": 0.5
+      }
+    },
+    "id": "8e7d6c5b-4a3f-4f2a-b7e8-7c2f6a9b8dd7",
+    "speciesId": "species_prism_core"
+  }
+}

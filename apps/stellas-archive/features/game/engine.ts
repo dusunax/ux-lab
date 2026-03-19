@@ -6,201 +6,173 @@ import {
   normalizeLocale,
   getActiveLocale,
   MESSAGE_CATALOGS,
-  type Locale as LocaleFromI18n,
+  type Locale,
 } from "../i18n/i18n";
-
-export type Locale = LocaleFromI18n;
-export { SupportedLocale, SUPPORTED_LOCALES };
-
-export type EmotionType =
-  | "neutral"
-  | "calm"
-  | "curious"
-  | "agitated"
-  | "harmonic"
-  | "mystic"
-  | "feral"
-  | "attached"
-  | "lonely";
-
-export type RGB = { r: number; g: number; b: number };
-
-export type CreatureState = {
-  hunger: number;
-  cleanliness: number;
-  affection: number;
-  energy: number;
+export type { Locale } from "../i18n/i18n";
+export {
+  SupportedLocale,
+  SUPPORTED_LOCALES,
 };
 
-export type Species = {
-  id: string;
-  scientificName: string;
-  commonName: string;
-  baseRgb: RGB;
-  temperament: "calm" | "curious" | "aggressive" | "harmonic" | "unstable" | "mysterious";
-  rarity: "common" | "rare" | "epic" | "legendary";
-  traits: string[];
+import type {
+  ActiveModal,
+  ActionText,
+  ArchiveEntry,
+  Creature,
+  CreatureState,
+  DailyMission,
+  DailySignal,
+  DailyState,
+  EmotionType,
+  FilterTab,
+  GameMockupMutationConditionType,
+  GameMockupMutation,
+  GameMockupSpecies,
+  GameState,
+  GameMockupData,
+  GameMockupDataDocument,
+  GameMockupNoSqlData,
+  InterfaceText,
+  Interaction,
+  LuminaFlickerProfile,
+  LuminaRingProfile,
+  LuminaSatelliteProfile,
+  LuminaVisualProfile,
+  MissionText,
+  MutationRule,
+  RGB,
+  ResearchData,
+  Species,
+} from "./types";
+
+export type {
+  ActiveModal,
+  ActionText,
+  ArchiveEntry,
+  Creature,
+  CreatureState,
+  DailyMission,
+  DailySignal,
+  DailyState,
+  EmotionType,
+  GameMockupMutationConditionType,
+  GameMockupSpecies,
+  GameState,
+  GameMockupDataDocument,
+  GameMockupNoSqlData,
+  InterfaceText,
+  Interaction,
+  LuminaFlickerProfile,
+  LuminaRingProfile,
+  LuminaSatelliteProfile,
+  LuminaVisualProfile,
+  MissionText,
+  MutationRule,
+  RGB,
+  ResearchData,
+  Species,
+  FilterTab,
+} from "./types";
+
+import mockupCore from "../../data/core/v1.json";
+import mockupSpecies from "../../data/species/index.json";
+import mockupMutationRules from "../../data/mutationRules/index.json";
+
+const mockupData = {
+  ...mockupCore,
+  species: mockupSpecies,
+  mutationRules: mockupMutationRules,
 };
 
-export type Creature = {
-  id: string;
-  speciesId: string;
-  scientificName: string;
-  commonName: string;
-  nickname: string;
-  rgb: RGB;
-  state: CreatureState;
-  emotion: EmotionType;
-  traits: string[];
-  mutationStage: number;
-  discoveredAt: number;
+const LOCALE_KEYS: readonly Locale[] = [SupportedLocale.En, SupportedLocale.Ko];
+const TEMPERAMENTS = ["calm", "curious", "aggressive", "harmonic", "unstable", "mysterious"] as const;
+const RARITIES = ["common", "rare", "epic", "legendary"] as const;
+const MUTATION_CONDITION_TYPES: readonly GameMockupMutationConditionType[] = [
+  "verdant_echo",
+  "azure_shell",
+  "feral_spark",
+  "prism_core",
+];
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isString = (value: unknown): value is string => typeof value === "string";
+
+const isNumber = (value: unknown): value is number => Number.isFinite(value as number);
+
+const isInArray = <T extends string>(value: unknown, candidates: readonly T[]): value is T =>
+  isString(value) && candidates.includes(value as T);
+
+const isRgb = (value: unknown): value is { r: number; g: number; b: number } => {
+  if (!isObject(value)) return false;
+  const v = value as Record<string, unknown>;
+  return isNumber(v.r) && isNumber(v.g) && isNumber(v.b);
 };
 
-export type ArchiveEntry = {
-  id: string;
-  time: string;
-  species: string;
-  name: string;
-  rgb: RGB;
-  emotion: EmotionType;
-  condition: string;
-  reason: string;
+const isLocalizedStringMap = (value: unknown): value is Record<Locale, string> => {
+  if (!isObject(value)) return false;
+  return LOCALE_KEYS.every((locale) => isString((value as Record<string, unknown>)[locale]));
 };
 
-export type Interaction = "feed" | "clean" | "play" | "scan" | "decorate";
-
-export type DailySignal = {
-  creatureId: string;
-  message: string;
-  requiredAction: Interaction;
-  resolved: boolean;
-  rewardClaimed: boolean;
+const isVisualProfile = (value: unknown): value is LuminaVisualProfile => {
+  if (!isObject(value)) return false;
+  const v = value as Record<string, unknown>;
+  const rings = isObject(v.rings) ? (v.rings as Record<string, unknown>) : null;
+  const flicker = isObject(v.flicker) ? (v.flicker as Record<string, unknown>) : null;
+  const satellites = rings && isObject(rings.satellites) ? (rings.satellites as Record<string, unknown>) : null;
+  return (
+    !!rings &&
+    !!flicker &&
+    !!satellites &&
+    isNumber(rings.count) &&
+    isNumber(rings.intensity) &&
+    isNumber(rings.spacing) &&
+    (rings.scale === undefined || isNumber(rings.scale)) &&
+    isNumber(flicker.intensity) &&
+    isNumber(satellites.count) &&
+    isNumber(satellites.intensity)
+  );
 };
 
-export type DailyMission = {
-  id: string;
-  label: string;
-  requiredAction: Interaction;
-  completed: boolean;
-  optional?: string;
+const isSpecies = (value: unknown): value is GameMockupSpecies => {
+  if (!isObject(value)) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    isString(v.id) &&
+    isString(v.speciesId) &&
+    isString(v.scientificName) &&
+    isString(v.commonName) &&
+    isRgb(v.baseRgb) &&
+    isInArray(v.temperament, TEMPERAMENTS) &&
+    isInArray(v.rarity, RARITIES) &&
+    Array.isArray(v.traits) &&
+    v.traits.every((trait) => isString(trait)) &&
+    isVisualProfile(v.visualProfile)
+  );
 };
 
-export type DailyState = {
-  lastVisitDate: string;
-  streak: number;
-  signal: DailySignal | null;
-  missions: DailyMission[];
+const isMutation = (value: unknown): value is GameMockupMutation => {
+  if (!isObject(value)) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    isString(v.id) &&
+    isString(v.name) &&
+    isString(v.resultSpeciesId) &&
+    isInArray(v.rarity, RARITIES) &&
+    isLocalizedStringMap(v.message) &&
+    isInArray(v.conditionType, MUTATION_CONDITION_TYPES)
+  );
 };
 
-export type ResearchData = {
-  observation: number;
-  mutation: number;
-  emotion: number;
+const isGameMockupSpeciesCollection = (value: unknown): value is GameMockupDataDocument["species"] => {
+  if (!isObject(value)) return false;
+  return Object.entries(value).every(([id, entry]) => isString(id) && isSpecies(entry) && isObject(entry));
 };
 
-export type GameState = {
-  version: number;
-  locale: Locale;
-  tokens: number;
-  creatures: Creature[];
-  selectedCreatureId: string;
-  archive: ArchiveEntry[];
-  researchData: ResearchData;
-  daily: DailyState;
-};
-
-export type ActiveModal = null | "missions" | "archive" | "roster" | "creature-details" | "observer-targets";
-export type FilterTab = "all" | string;
-
-export type MutationRule = {
-  id: string;
-  name: string;
-  resultSpeciesId: string;
-  rarity: Species["rarity"];
-  condition: (creature: Creature) => boolean;
-  message: Record<Locale, string>;
-};
-
-export type InterfaceText = {
-  langSwitch: string;
-  pageTitle: string;
-  subtitle: string;
-  labStatus: string;
-  tokens: string;
-  streak: string;
-  research: string;
-  todaySignal: string;
-  noSignal: string;
-  resolved: string;
-  needsAction: string;
-  dailyMissions: string;
-  missionCompleted: string;
-  missionPending: string;
-  actionRowHint: string;
-  signalDone: string;
-  signalRewardHint: string;
-  archive: string;
-  archiveEmpty: string;
-  creatures: string;
-  all: string;
-  active: string;
-  select: string;
-  emotion: string;
-  traits: string;
-  mutationStage: string;
-  species: string;
-  metaEmotion: string;
-  metaState: string;
-  missionEmpty: string;
-  requiredAction: string;
-  defaultNotice: string;
-  noToken: string;
-  creatureNotFound: string;
-  rosterEmpty: string;
-  more: string;
-  close: string;
-  creatureDetails: string;
-  missionDetails: string;
-  continueMissions: string;
-  signalRewardClaimed: string;
-  observerTargets: string;
-  missionsCleared: string;
-  days: string;
-  noEnergy: string;
-  hunger: string;
-  cleanliness: string;
-  affection: string;
-  energy: string;
-  deckResonance: string;
-  colorTracked: string;
-  respondedWith: string;
-  recoveredHunger: string;
-  careStable: string;
-  high: string;
-  normal: string;
-  low: string;
-  stable: string;
-  unstable: string;
-  bonded: string;
-  friendly: string;
-  neutral: string;
-  observerTarget: string;
-  observerAuto: string;
-  observerPanel: string;
-  observerDescription: string;
-  noObserverTarget: string;
-  stellaComment: string;
-};
-
-export type ActionText = Record<Interaction, string>;
-
-export type MissionText = {
-  feedLabel: string;
-  feedOptional: string;
-  scanLabel: string;
-  scanOptional: string;
-  playLabel: string;
-  playOptional: string;
+const isGameMockupMutationCollection = (value: unknown): value is GameMockupDataDocument["mutationRules"] => {
+  if (!isObject(value)) return false;
+  return Object.entries(value).every(([id, entry]) => isString(id) && isMutation(entry) && isObject(entry));
 };
 
 export const STORAGE_KEY = "stellas-archive:game-state-v1";
@@ -213,6 +185,197 @@ export const TOKEN_COST: Record<Interaction, number> = {
 };
 export const ARCHIVE_PAGE_SIZE = 8;
 export const ROSTER_PAGE_SIZE = 6;
+
+const clampVisualFactor = (value: number) => Math.min(1, Math.max(0, Number.isFinite(value) ? value : 0));
+const clampRingScale = (value: number) => Math.min(1.4, Math.max(0.25, Number.isFinite(value) ? value : 1));
+
+const clampRingCount = (value: number) => Math.max(1, Math.min(4, Math.floor(value)));
+
+type TraitVisualBoost = {
+  rings?: Partial<LuminaRingProfile>;
+  flicker?: Partial<LuminaFlickerProfile>;
+};
+
+const TRAIT_VISUAL_BOOSTS: Record<string, TraitVisualBoost> = {
+  glow: {
+    rings: {
+      intensity: 0.16,
+      satellites: { count: 0, intensity: 0 },
+    },
+    flicker: { intensity: 0.05 },
+  },
+  stable: {
+    flicker: { intensity: -0.08 },
+    rings: { intensity: -0.05 },
+  },
+  adaptive: {
+    rings: {
+      satellites: { count: 0, intensity: 0.18 },
+    },
+  },
+  scatter: {
+    rings: { spacing: 0.08 },
+  },
+  volatile: {
+    rings: {
+      intensity: 0.16,
+      satellites: { count: 0, intensity: 0.14 },
+    },
+    flicker: { intensity: 0.22 },
+  },
+  pulse: {
+    flicker: { intensity: 0.28 },
+  },
+  growth: {
+    rings: { count: 1 },
+  },
+  prismatic: {
+    rings: {
+      satellites: { count: 1, intensity: 0.2 },
+    },
+    flicker: { intensity: 0.08 },
+  },
+  memoryEcho: {
+    rings: { spacing: 0.05 },
+    flicker: { intensity: 0.06 },
+  },
+  feral: {
+    rings: {
+      satellites: { count: 1, intensity: 0.22 },
+    },
+    flicker: { intensity: 0.18 },
+  },
+};
+
+function applyVisualBoost(
+  base: LuminaVisualProfile,
+  traits: readonly string[] | undefined,
+): LuminaVisualProfile {
+  const merged = {
+    rings: { ...base.rings },
+    flicker: { ...base.flicker },
+  } as LuminaVisualProfile;
+
+  if (!traits || traits.length === 0) {
+    return merged;
+  }
+
+  traits.forEach((traitKey) => {
+    const boost = TRAIT_VISUAL_BOOSTS[traitKey];
+    if (!boost) return;
+
+    if (boost.rings?.count) {
+      merged.rings.count += boost.rings.count;
+    }
+    if (boost.rings?.intensity) {
+      merged.rings.intensity += boost.rings.intensity;
+    }
+    if (boost.rings?.spacing) {
+      merged.rings.spacing += boost.rings.spacing;
+    }
+
+    if (boost.flicker?.intensity) {
+      merged.flicker.intensity += boost.flicker.intensity;
+    }
+
+    if (boost.rings?.satellites?.count) {
+      merged.rings.satellites = {
+        count: (merged.rings.satellites?.count ?? 0) + boost.rings.satellites.count,
+        intensity: merged.rings.satellites?.intensity ?? 0,
+      };
+    }
+    if (boost.rings?.satellites?.intensity) {
+      merged.rings.satellites = {
+        count: merged.rings.satellites?.count ?? 0,
+        intensity: (merged.rings.satellites?.intensity ?? 0) + boost.rings.satellites.intensity,
+      };
+    }
+  });
+
+  return withVisualProfile(merged);
+}
+
+export function withVisualProfile(value: LuminaVisualProfile): LuminaVisualProfile {
+  const baseSatellites = value.rings.satellites;
+  return {
+    rings: {
+      count: clampRingCount(value.rings.count),
+      intensity: clampVisualFactor(value.rings.intensity),
+      spacing: clampVisualFactor(value.rings.spacing),
+      scale: clampRingScale(value.rings.scale ?? 1),
+      satellites: {
+        count: clampRingCount(baseSatellites?.count ?? 0),
+        intensity: clampVisualFactor(baseSatellites?.intensity ?? 0),
+      },
+    },
+    flicker: {
+      intensity: clampVisualFactor(value.flicker.intensity),
+    },
+  };
+}
+
+const isGameMockupNoSqlData = (value: unknown): value is GameMockupNoSqlData => {
+  if (!isObject(value)) return false;
+  const data = value as Record<string, unknown>;
+  return (
+    isNumber(data.dataVersion) &&
+    data.dataVersion > 0 &&
+    Array.isArray(data.starterIds) &&
+    data.starterIds.every((id) => isString(id)) &&
+    Array.isArray(data.starterNicknames) &&
+    data.starterNicknames.every((name) => isString(name)) &&
+    isVisualProfile(data.defaultVisualProfile) &&
+    isObject(data.species) &&
+    isGameMockupSpeciesCollection(data.species) &&
+    isObject(data.mutationRules) &&
+    isGameMockupMutationCollection(data.mutationRules)
+  );
+};
+
+const normalizeMockupData = (raw: GameMockupNoSqlData): GameMockupData => {
+  return {
+    dataVersion: raw.dataVersion,
+    defaultVisualProfile: raw.defaultVisualProfile,
+    starterIds: raw.starterIds,
+    starterNicknames: raw.starterNicknames,
+    species: Object.fromEntries(
+      Object.entries(raw.species).map(([id, species]) => [
+        species.speciesId || species.id || id,
+        {
+          ...species,
+          id: species.id || id,
+          speciesId: species.speciesId,
+          visualProfile: withVisualProfile(species.visualProfile),
+        },
+      ]),
+    ),
+    mutationRules: Object.fromEntries(
+      Object.entries(raw.mutationRules).map(([id, rule]) => [
+        rule.id,
+        {
+          ...rule,
+          id: rule.id ?? id,
+        },
+      ]),
+    ),
+  };
+};
+
+const readGameMockupData = (raw: unknown): GameMockupData => {
+  if (isGameMockupNoSqlData(raw)) return normalizeMockupData(raw);
+  throw new Error("Invalid mockup-data-v1.json schema");
+};
+
+const gameMockup = readGameMockupData(mockupData);
+
+export const DEFAULT_LUMINA_VISUAL_PROFILE: LuminaVisualProfile = withVisualProfile(gameMockup.defaultVisualProfile);
+
+export function getCreatureVisualProfile(creature: Pick<Creature, "speciesId" | "traits"> | null): LuminaVisualProfile {
+  if (!creature) return DEFAULT_LUMINA_VISUAL_PROFILE;
+  const species = SPECIES[creature.speciesId];
+  const speciesProfile = species?.visualProfile ?? DEFAULT_LUMINA_VISUAL_PROFILE;
+  return applyVisualBoost(speciesProfile, creature.traits);
+}
 
 const LOCALE_CATALOGS = MESSAGE_CATALOGS;
 
@@ -231,127 +394,44 @@ export const MISSION_TEXT: Record<Locale, MissionText> = {
   [SupportedLocale.Ko]: LOCALE_CATALOGS[SupportedLocale.Ko].missionText,
 };
 
-export const SPECIES: Record<string, Species> = {
-  species_lumina: {
-    id: "species_lumina",
-    scientificName: "Luminidae sapiens",
-    commonName: "Lumina",
-    baseRgb: { r: 120, g: 100, b: 160 },
-    temperament: "calm",
-    rarity: "common",
-    traits: ["glow", "stable"],
-  },
-  species_mote: {
-    id: "species_mote",
-    scientificName: "Motenia driftra",
-    commonName: "Mote",
-    baseRgb: { r: 80, g: 150, b: 90 },
-    temperament: "curious",
-    rarity: "common",
-    traits: ["adaptive", "scatter"],
-  },
-  species_glint: {
-    id: "species_glint",
-    scientificName: "Glintus impulsa",
-    commonName: "Glint",
-    baseRgb: { r: 160, g: 90, b: 90 },
-    temperament: "aggressive",
-    rarity: "common",
-    traits: ["volatile", "pulse"],
-  },
-  species_verdant_echo: {
-    id: "species_verdant_echo",
-    scientificName: "Verdantia echoensis",
-    commonName: "Verdant Echo",
-    baseRgb: { r: 90, g: 220, b: 120 },
-    temperament: "curious",
-    rarity: "rare",
-    traits: ["growth", "adaptive"],
-  },
-  species_azure_shell: {
-    id: "species_azure_shell",
-    scientificName: "Azurum stabilis",
-    commonName: "Azure Shell",
-    baseRgb: { r: 100, g: 100, b: 220 },
-    temperament: "calm",
-    rarity: "rare",
-    traits: ["stable", "memoryEcho"],
-  },
-  species_feral_spark: {
-    id: "species_feral_spark",
-    scientificName: "Feralis impuls",
-    commonName: "Feral Spark",
-    baseRgb: { r: 220, g: 120, b: 80 },
-    temperament: "aggressive",
-    rarity: "rare",
-    traits: ["volatile", "feral"],
-  },
-  species_prism_core: {
-    id: "species_prism_core",
-    scientificName: "Prismata nexus",
-    commonName: "Prism Core",
-    baseRgb: { r: 180, g: 180, b: 180 },
-    temperament: "harmonic",
-    rarity: "epic",
-    traits: ["prismatic", "harmonic"],
-  },
+const getMutationCondition = (conditionType: GameMockupMutation["conditionType"]) => {
+  switch (conditionType) {
+    case "verdant_echo":
+      return (c: Creature) =>
+        c.state.cleanliness >= 80 &&
+        c.state.hunger >= 60 &&
+        c.rgb.g >= 220 &&
+        c.rgb.r < 190;
+    case "azure_shell":
+      return (c: Creature) => c.rgb.b >= 220 && c.state.affection >= 70 && c.emotion === "calm";
+    case "feral_spark":
+      return (c: Creature) => c.rgb.r >= 220 && c.state.hunger <= 45 && c.state.cleanliness <= 55;
+    case "prism_core":
+      return (c: Creature) =>
+        Math.abs(c.rgb.r - c.rgb.g) < 10 &&
+        Math.abs(c.rgb.g - c.rgb.b) < 10 &&
+        (c.rgb.r + c.rgb.g + c.rgb.b) / 3 > 180;
+    default:
+      return () => false;
+  }
 };
 
-export const STARTER_IDS = ["species_lumina", "species_mote", "species_glint"];
+export const SPECIES = gameMockup.species as Record<string, Species>;
 
-export const MUTATION_RULES: MutationRule[] = [
-  {
-    id: "verdant_echo",
-    name: "Verdant Echo",
-    resultSpeciesId: "species_verdant_echo",
-    rarity: "rare",
-    message: {
-      en: "Sustained green growth stabilized the form.",
-      ko: "장기 녹색 성장으로 형태가 안정됐습니다.",
-    },
-    condition: (c) =>
-      c.state.cleanliness >= 80 &&
-      c.state.hunger >= 60 &&
-      c.rgb.g >= 220 &&
-      c.rgb.r < 190,
+export const STARTER_IDS = gameMockup.starterIds;
+
+export const MUTATION_RULES_BY_ID = Object.entries(gameMockup.mutationRules).reduce(
+  (acc, [id, rule]) => {
+    acc[id] = {
+      ...rule,
+      id,
+      condition: getMutationCondition(rule.conditionType),
+    };
+    return acc;
   },
-  {
-    id: "azure_shell",
-    name: "Azure Shell",
-    resultSpeciesId: "species_azure_shell",
-    rarity: "rare",
-    message: {
-      en: "High blue coherence triggered a bonding shell variant.",
-      ko: "높은 청색 응집이 결합성 외피 변이를 촉발했습니다.",
-    },
-    condition: (c) => c.rgb.b >= 220 && c.state.affection >= 70 && c.emotion === "calm",
-  },
-  {
-    id: "feral_spark",
-    name: "Feral Spark",
-    resultSpeciesId: "species_feral_spark",
-    rarity: "rare",
-    message: {
-      en: "A red surge destabilized the field into feral motion.",
-      ko: "적색 과충전이 장을 격정적인 불안정 상태로 바꿨습니다.",
-    },
-    condition: (c) => c.rgb.r >= 220 && c.state.hunger <= 45 && c.state.cleanliness <= 55,
-  },
-  {
-    id: "prism_core",
-    name: "Prism Core",
-    resultSpeciesId: "species_prism_core",
-    rarity: "epic",
-    message: {
-      en: "RGB balance collapsed into a harmonic plate.",
-      ko: "RGB 균형이 조화판으로 수렴했습니다.",
-    },
-    condition: (c) =>
-      Math.abs(c.rgb.r - c.rgb.g) < 10 &&
-      Math.abs(c.rgb.g - c.rgb.b) < 10 &&
-      (c.rgb.r + c.rgb.g + c.rgb.b) / 3 > 180,
-  },
-];
+  {} as Record<string, MutationRule>,
+);
+export const MUTATION_RULES = Object.values(MUTATION_RULES_BY_ID);
 
 export function getLocaleFromBrowser(): Locale {
   if (typeof window === "undefined") return SupportedLocale.En;
@@ -444,22 +524,22 @@ export function getColorOffset(seed: string, maxOffset: number, channel: 0 | 1 |
 }
 
 export function createCreature(speciesId: string, nickname: string, variantSeed?: string): Creature {
-  const species = SPECIES[speciesId];
+  const speciesData = SPECIES[speciesId];
   const luminaOffsetSeed = variantSeed || `${speciesId}-${nickname}`;
   const luminaVariance = speciesId === "species_lumina";
   const variantRgb = luminaVariance
     ? {
-        r: clamp(species.baseRgb.r + getColorOffset(luminaOffsetSeed, 16, 0), 0, 255),
-        g: clamp(species.baseRgb.g + getColorOffset(luminaOffsetSeed, 10, 1), 0, 255),
-        b: clamp(species.baseRgb.b + getColorOffset(luminaOffsetSeed, 10, 2), 0, 255),
+        r: clamp(speciesData.baseRgb.r + getColorOffset(luminaOffsetSeed, 16, 0), 0, 255),
+        g: clamp(speciesData.baseRgb.g + getColorOffset(luminaOffsetSeed, 10, 1), 0, 255),
+        b: clamp(speciesData.baseRgb.b + getColorOffset(luminaOffsetSeed, 10, 2), 0, 255),
       }
-    : species.baseRgb;
+    : speciesData.baseRgb;
 
   return {
     id: `${speciesId}-${crypto.randomUUID().slice(0, 6)}`,
     speciesId,
-    scientificName: species.scientificName,
-    commonName: species.commonName,
+    scientificName: speciesData.scientificName,
+    commonName: speciesData.commonName,
     nickname,
     rgb: variantRgb,
     state: {
@@ -469,7 +549,7 @@ export function createCreature(speciesId: string, nickname: string, variantSeed?
       energy: 75,
     },
     emotion: getDominantEmotion(variantRgb),
-    traits: species.traits,
+    traits: speciesData.traits,
     mutationStage: 0,
     discoveredAt: Date.now(),
   };
@@ -550,10 +630,13 @@ export function nextDayState(
 
 export const initialState = (locale: Locale = SupportedLocale.En): GameState => {
   const today = getTodayKey();
-  const nicknames = ["Moon Glow", "Pulse", "Quiet Drift", "Neon Wick", "White Veil", "Signal Echo"];
 
   const starter = STARTER_IDS.map((id, index) =>
-    createCreature(id, nicknames[index] ?? `Archive Echo ${index + 1}`, `starter-${index}`),
+    createCreature(
+      id,
+      gameMockup.starterNicknames[index] ?? `Archive Echo ${index + 1}`,
+      `starter-${index}`,
+    ),
   );
 
   return {
@@ -585,6 +668,10 @@ export const loadState = (fallbackLocale: Locale = SupportedLocale.En): GameStat
     let normalizedState = {
       ...parsed,
       locale: nextLocale,
+      creatures: (parsed.creatures ?? []).map((creature) => ({
+        ...creature,
+        speciesId: creature.speciesId ?? "species_lumina",
+      })),
       archive: parsed.archive ?? [],
       researchData: parsed.researchData ?? { observation: 0, mutation: 0, emotion: 0 },
       daily: {

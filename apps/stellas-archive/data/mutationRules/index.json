@@ -1,0 +1,46 @@
+{
+  "verdant_echo": {
+    "name": "Verdant Echo",
+    "resultSpeciesId": "species_verdant_echo",
+    "rarity": "rare",
+    "message": {
+      "en": "Sustained green growth stabilized the form.",
+      "ko": "장기 녹색 성장으로 형태가 안정됐습니다."
+    },
+    "conditionType": "verdant_echo",
+    "id": "verdant_echo"
+  },
+  "azure_shell": {
+    "name": "Azure Shell",
+    "resultSpeciesId": "species_azure_shell",
+    "rarity": "rare",
+    "message": {
+      "en": "High blue coherence triggered a bonding shell variant.",
+      "ko": "높은 청색 응집이 결합성 외피 변이를 촉발했습니다."
+    },
+    "conditionType": "azure_shell",
+    "id": "azure_shell"
+  },
+  "feral_spark": {
+    "name": "Feral Spark",
+    "resultSpeciesId": "species_feral_spark",
+    "rarity": "rare",
+    "message": {
+      "en": "A red surge destabilized the field into feral motion.",
+      "ko": "적색 과충전이 장을 격정적인 불안정 상태로 바꿨습니다."
+    },
+    "conditionType": "feral_spark",
+    "id": "feral_spark"
+  },
+  "prism_core": {
+    "name": "Prism Core",
+    "resultSpeciesId": "species_prism_core",
+    "rarity": "epic",
+    "message": {
+      "en": "RGB balance collapsed into a harmonic plate.",
+      "ko": "RGB 균형이 조화판으로 수렴했습니다."
+    },
+    "conditionType": "prism_core",
+    "id": "prism_core"
+  }
+}

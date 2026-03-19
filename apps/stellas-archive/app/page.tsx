@@ -423,13 +423,15 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
     const entries: Array<{ id: string; label: string; count: number }> = [];
     const counts = new Map<string, number>();
     state.creatures.forEach((creature) => {
-      counts.set(creature.speciesId, (counts.get(creature.speciesId) ?? 0) + 1);
+      const species = creature.speciesId;
+      if (!species) return;
+      counts.set(species, (counts.get(species) ?? 0) + 1);
     });
 
-    counts.forEach((count, speciesId) => {
+    counts.forEach((count, species) => {
       const speciesName =
-        SPECIES[speciesId]?.commonName ?? creatureSpeciesFallback(speciesId);
-      entries.push({ id: speciesId, label: speciesName, count });
+        SPECIES[species]?.commonName ?? creatureSpeciesFallback(species);
+      entries.push({ id: species, label: speciesName, count });
     });
 
     return [
@@ -441,11 +443,9 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
   }, [state.creatures, uiText.all]);
   const filteredRoster = useMemo(
     () =>
-      rosterFilter === "all"
-        ? state.creatures
-        : state.creatures.filter(
-            (creature) => creature.speciesId === rosterFilter
-          ),
+    rosterFilter === "all"
+      ? state.creatures
+      : state.creatures.filter((creature) => creature.speciesId === rosterFilter),
     [rosterFilter, state.creatures]
   );
 

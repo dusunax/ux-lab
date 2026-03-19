@@ -1,0 +1,31 @@
+{
+  "dataVersion": 1,
+  "defaultVisualProfile": {
+    "rings": {
+      "count": 2,
+      "intensity": 0.4,
+      "spacing": 0.19,
+      "scale": 0.82,
+      "satellites": {
+        "count": 1,
+        "intensity": 0.32
+      }
+    },
+    "flicker": {
+      "intensity": 0.28
+    }
+  },
+  "starterIds": [
+    "species_lumina",
+    "species_mote",
+    "species_glint"
+  ],
+  "starterNicknames": [
+    "Moon Glow",
+    "Pulse",
+    "Quiet Drift",
+    "Neon Wick",
+    "White Veil",
+    "Signal Echo"
+  ]
+}

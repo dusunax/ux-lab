@@ -1,4 +1,4 @@
-import type { ActionText, EmotionType, InterfaceText, MissionText } from "../game/engine";
+import type { ActionText, EmotionType, InterfaceText, MissionText } from "../game/types";
 
 export type MessageCatalog = {
   ui: Record<string, string>;

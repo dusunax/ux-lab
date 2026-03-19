@@ -79,7 +79,7 @@ export function RosterModal({
                     />
                     <div>
                     <div className="text-[13px] text-[#bfe8ff] font-bold">
-                      {creature.commonName} ({SPECIES[creature.speciesId]?.rarity ?? "common"})
+                      {creature.commonName} ({SPECIES[creature.speciesId || ""]?.rarity ?? "common"})
                     </div>
                     <div className="text-[13px] tracking-[0.8px] text-white">{creature.nickname}</div>
                     </div>
