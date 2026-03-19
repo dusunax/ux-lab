@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  Suspense,
 } from "react";
 
 import { GameHeader } from "../features/ui/GameHeader";
@@ -56,6 +57,8 @@ import {
   SupportedLocale,
   MESSAGE_CATALOGS,
 } from "../features/i18n/i18n";
+
+export const dynamic = "force-dynamic";
 
 const archiveSort = (entries: ArchiveEntry[]) =>
   entries
@@ -118,7 +121,7 @@ const writeLocaleQuery = (nextLocale: Locale) => {
 
 type StellaArchivePageProps = Record<string, never>;
 
-export default function StellaArchivePage(_props: StellaArchivePageProps) {
+function StellaArchivePageContent(_props: StellaArchivePageProps) {
   const urlSearchParams = useSearchParams();
   const queryLocale = React.useMemo(
     () =>
@@ -1080,5 +1083,21 @@ export default function StellaArchivePage(_props: StellaArchivePageProps) {
         </ModalShell>
       )}
     </main>
+  );
+}
+
+export default function StellaArchivePage(_props: StellaArchivePageProps) {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto flex min-h-[100dvh] w-full max-w-[1220px] items-center justify-center px-[clamp(14px,3vw,24px)]">
+          <div className="text-[13px] text-[rgba(180,230,255,0.85)]">
+            Loading...
+          </div>
+        </main>
+      }
+    >
+      <StellaArchivePageContent {..._props} />
+    </Suspense>
   );
 }
