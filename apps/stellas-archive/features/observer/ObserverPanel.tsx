@@ -1,6 +1,7 @@
 import { type CSSProperties, type PointerEvent, type RefObject, useMemo } from "react";
 import type { Creature, InterfaceText } from "../game/engine";
 import { getEmotionLabel } from "../game/engine";
+import { DEFAULT_LUMINA_VISUAL_PROFILE, getCreatureVisualProfile } from "../game/engine";
 import { ASSET_PATHS, OBSERVER_CHAMBER_BG_IMAGES } from "../../lib/assets";
 import { ObserverCoreFog } from "./ObserverCoreFog";
 
@@ -11,7 +12,7 @@ type ObserverPanelProps = {
   observerStyle: CSSProperties;
   observerYaw: number;
   observerPitch: number;
-  observerDragOffset: {
+  observerDragOffset?: {
     x: number;
     y: number;
   };
@@ -58,6 +59,10 @@ export function ObserverPanel({
   }, [luminaCoreColor]);
   const emotionLabel = useMemo(
     () => (observerCreature ? getEmotionLabel(observerCreature.emotion) : ""),
+    [observerCreature],
+  );
+  const luminaVisualProfile = useMemo(
+    () => (observerCreature ? getCreatureVisualProfile(observerCreature) : DEFAULT_LUMINA_VISUAL_PROFILE),
     [observerCreature],
   );
 
@@ -123,33 +128,33 @@ export function ObserverPanel({
       </div>
       {observerCreature ? (
         <div className="flex flex-1 min-h-0 items-center justify-center">
-          <div className="relative flex flex-col w-full max-h-20 min-w-0 mb-[20%] justify-center overflow-x-hidden overflow-y-hidden box-border perspective-[900px] p-4 border border-[rgba(130,206,255,0.28)] min-h-[clamp(360px,47vh,470px)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05),inset_0_0_48px_rgba(80,190,255,0.2)] max-w-80">
+          <div className="relative flex flex-col w-full max-h-20 min-w-0 mb-[30%] justify-center overflow-x-hidden overflow-y-hidden box-border perspective-[900px] p-4 border border-[rgba(130,206,255,0.28)] min-h-[clamp(320px,47vh,420px)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05),inset_0_0_48px_rgba(80,190,255,0.2)] max-w-80">
             <div
               className="relative w-full max-w-full min-w-0 box-border overflow-hidden border-2 border-[rgba(130,220,255,0.45)] [aspect-ratio:16/9] min-h-[320px] h-[min(clamp(280px,34vh,360px),100%)] max-h-full m-0 bg-transparent [box-shadow:inset_0_0_26px_rgba(96,205,255,0.25),inset_0_0_0_2px_rgba(255,255,255,0.06)]"
             >
-              <div className="flex flex-col text-center text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase z-[3]">
-                <span className="mt-4 text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase text-shadow-[0_0_8px_rgba(98,235,255,0.5)]">
+              <div className="absolute flex left-1/2 -translate-x-1/2 text-nowrap flex-col text-center text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase z-[3]">
+                <span className="mt-3 text-[11px] tracking-[0.26em] text-[rgba(194,239,255,0.95)] uppercase text-shadow-[0_0_8px_rgba(98,235,255,0.5)]">
                   LUMINA OBSERVATORY
                 </span>
               </div>
-              <div className="absolute left-2.5 right-2.5 top-[2.6rem] bottom-2.5 border border-[rgba(130,220,255,0.25)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] z-[2]">
+              <div className="absolute left-2.5 right-2.5 top-0 bottom-2.5 border border-[rgba(130,220,255,0.25)] bg-transparent shadow-[inset_0_0_0_1px_rgba(255,255,255,0.03)] z-[2]">
                 <span
                   className="pointer-events-none absolute inset-0 z-[2] border-[1px] border-[rgba(125,225,255,0.14)] [box-shadow:inset_0_0_28px_rgba(95,220,255,0.16)]"
                 />
                 <span
-                  className="absolute left-[14px] top-[12%] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-b-0 border-r-0 z-[4]"
+                  className="absolute left-[12px] top-[12px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-b-0 border-r-0 z-[4]"
                 />
                 <span
-                  className="absolute right-[14px] top-[12%] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-b-0 border-l-0 z-[4]"
+                  className="absolute right-[12px] top-[12px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-b-0 border-l-0 z-[4]"
                 />
                 <span
-                  className="absolute bottom-[14px] left-[14px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-t-0 border-r-0 z-[4]"
+                  className="absolute bottom-[12px] left-[12px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-t-0 border-r-0 z-[4]"
                 />
                 <span
-                  className="absolute bottom-[14px] right-[14px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-t-0 border-l-0 z-[4]"
+                  className="absolute bottom-[12px] right-[12px] h-[14px] w-[14px] border border-[rgba(130,240,255,0.7)] border-t-0 border-l-0 z-[4]"
                 />
                 <div
-                  className="absolute left-3 right-3 top-3 bottom-3 flex items-center justify-center overflow-hidden bg-transparent"
+                  className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center overflow-hidden bg-transparent"
                 >
                   <span
                     className="observer-aura-layer pointer-events-none absolute -inset-12 mix-blend-screen opacity-30"
@@ -180,13 +185,14 @@ export function ObserverPanel({
                     onPointerUp={onPointerUp}
                     onPointerLeave={onPointerUp}
                   >
-                    <ObserverCoreFog
-                      color={luminaCoreColor}
-                      yaw={observerYaw}
-                      pitch={observerPitch}
-                      dragOffsetX={observerDragOffset.x}
-                      dragOffsetY={observerDragOffset.y}
-                    />
+                  <ObserverCoreFog
+                    color={luminaCoreColor}
+                    visualProfile={luminaVisualProfile}
+                    yaw={observerYaw}
+                    pitch={observerPitch}
+                    dragOffsetX={observerDragOffset?.x ?? 0}
+                    dragOffsetY={observerDragOffset?.y ?? 0}
+                  />
                   </div>
                 </div>
               </div>

@@ -1,19 +1,29 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ObserverCoreCanvas } from "./ObserverCoreCanvas";
+import type { LuminaVisualProfile } from "../game/engine";
 
 type ObserverCoreFogProps = {
   color: string;
+  visualProfile?: LuminaVisualProfile;
   yaw: number;
   pitch: number;
   dragOffsetX: number;
   dragOffsetY: number;
 };
 
-export function ObserverCoreFog({ color, yaw, pitch, dragOffsetX, dragOffsetY }: ObserverCoreFogProps) {
+export function ObserverCoreFog({
+  color,
+  visualProfile,
+  yaw,
+  pitch,
+  dragOffsetX,
+  dragOffsetY,
+}: ObserverCoreFogProps) {
   const [mounted, setMounted] = useState(false);
   const [isPixelBurst, setPixelBurst] = useState(false);
   const [burstScale, setBurstScale] = useState(1.018);
   const patternIndexRef = useRef(0);
+  const supportsResizeObserver = typeof ResizeObserver !== "undefined";
 
   const burstPatterns = useMemo(
     () => [
@@ -53,7 +63,7 @@ export function ObserverCoreFog({ color, yaw, pitch, dragOffsetX, dragOffsetY }:
     };
   }, [burstPatterns]);
 
-  if (!mounted) {
+  if (!supportsResizeObserver || !mounted) {
     return (
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 z-[40] overflow-hidden"
@@ -72,6 +82,7 @@ export function ObserverCoreFog({ color, yaw, pitch, dragOffsetX, dragOffsetY }:
     >
       <ObserverCoreCanvas
         color={color}
+        visualProfile={visualProfile}
         yaw={yaw}
         pitch={pitch}
         isPixelBurst={isPixelBurst}

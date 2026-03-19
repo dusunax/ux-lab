@@ -1,9 +1,11 @@
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import type { LuminaVisualProfile } from "../game/engine";
 
 type ObserverCoreSceneProps = {
   color: string;
+  visualProfile: LuminaVisualProfile;
   yaw: number;
   pitch: number;
   isPixelBurst: boolean;
@@ -34,6 +36,7 @@ type GlitchState = {
 
 export function ObserverCoreScene({
   color,
+  visualProfile,
   yaw,
   pitch,
   isPixelBurst = false,
@@ -41,13 +44,13 @@ export function ObserverCoreScene({
   dragOffsetX,
   dragOffsetY,
 }: ObserverCoreSceneProps) {
-  const coreRadius = 0.8;
-  const shellRadius = 0.94;
+  const objectScale = 0.95;
+  const coreRadius = 0.8 * objectScale;
+  const shellRadius = 0.94 * objectScale;
 
   const coreColor = useMemo(() => {
     const next = color && color.trim() ? color : "rgb(128,210,255)";
-    const parsed = new THREE.Color(next);
-    return parsed;
+    return new THREE.Color(next);
   }, [color]);
   const safeColor = coreColor;
 
@@ -56,10 +59,7 @@ export function ObserverCoreScene({
   const coreInnerRef = useRef<THREE.Mesh>(null);
   const shellRef = useRef<THREE.Mesh>(null);
   const fogRef = useRef<THREE.Points>(null);
-  const orbitARef = useRef<THREE.Group | null>(null);
-  const orbitASpinRef = useRef<THREE.Group | null>(null);
-  const orbitBRef = useRef<THREE.Group | null>(null);
-  const orbitBSpinRef = useRef<THREE.Group | null>(null);
+  const orbitRefs = useRef<Array<THREE.Group | null>>([]);
   const springRef = useRef({ vx: 0, vy: 0, x: 0, y: 0 });
   const glitchRef = useRef<GlitchState>({
     triggerAt: 0,
@@ -72,28 +72,30 @@ export function ObserverCoreScene({
   });
 
   const orbitTracks = useMemo<OrbitTrack[]>(
-    () => [
-      {
-        name: "orbit-a",
-        radius: shellRadius + 0.3,
-        tube: 0.013,
-        segments: 150,
-        rot: [0, 0, 0],
-        speed: 0.54,
-        direction: 1,
-      },
-      {
-        name: "orbit-b",
-        radius: shellRadius + 0.2,
-        tube: 0.011,
-        segments: 150,
-        rot: [0.7, 0, 0.5],
-        speed: 0.42,
-        direction: -1,
-      },
-    ],
-    [],
+    () =>
+      Array.from({ length: Math.max(1, Math.min(4, visualProfile.rings.count)) }, (_, index) => {
+        const factor = index / Math.max(1, Math.max(1, visualProfile.rings.count - 1));
+        const count = Math.max(1, Math.min(4, visualProfile.rings.count));
+        const ringScale = Math.max(0.25, Math.min(1.4, visualProfile.rings.scale ?? 1));
+
+        return {
+          name: `orbit-${index}`,
+          radius: (shellRadius + 0.085 + visualProfile.rings.spacing * count * 0.45 + index * 0.11) * ringScale,
+          tube: 0.01 - index * 0.0012,
+          segments: 150 + index * 20,
+          rot: [0.45 * factor, index * 0.33, 0.45 * (1 - factor)],
+          speed: 0.2 + 0.18 * (index + 1),
+          direction: index % 2 === 0 ? 1 : -1,
+        };
+      }),
+    [visualProfile.rings.count, visualProfile.rings.spacing],
   );
+
+  const hasSatellite =
+    visualProfile.rings.satellites.count > 0 && Math.max(0, visualProfile.rings.satellites.intensity) > 0;
+  const orbitIntensity = Math.max(0, visualProfile.rings.intensity);
+  const flickerIntensity = Math.max(0, Math.min(1, visualProfile.flicker.intensity));
+  const satelliteIntensity = Math.max(0, Math.min(1, visualProfile.rings.satellites.intensity));
 
   const fogPositions = useMemo(() => {
     const count = 152;
@@ -121,24 +123,27 @@ export function ObserverCoreScene({
     const time = performance.now() * 0.001;
     const burstFactor = isPixelBurst ? 2.8 : 1;
 
-    if (time >= glitchRef.current.triggerAt) {
-      const duration = 0.12 + Math.random() * 0.12;
+    if (flickerIntensity > 0.01 && time >= glitchRef.current.triggerAt) {
+      const duration = 0.1 + Math.random() * 0.14;
+      const intensityScale = 0.6 + flickerIntensity * 0.9;
       glitchRef.current = {
-        triggerAt: time + 0.5 + Math.random() * 1.8,
+        triggerAt: time + 0.2 + Math.random() * (1.2 / intensityScale),
         releaseAt: time + duration,
-        power: 0.008 + Math.random() * 0.014,
+        power: 0.003 + 0.02 * flickerIntensity,
         seed: Math.random() * Math.PI * 2,
-        offsetX: (Math.random() - 0.5) * 0.03,
-        offsetY: (Math.random() - 0.5) * 0.03,
-        offsetZ: (Math.random() - 0.5) * 0.03,
+        offsetX: (Math.random() - 0.5) * (0.018 + flickerIntensity * 0.022),
+        offsetY: (Math.random() - 0.5) * (0.018 + flickerIntensity * 0.022),
+        offsetZ: (Math.random() - 0.5) * (0.01 + flickerIntensity * 0.03),
       };
+    } else if (flickerIntensity <= 0.01) {
+      glitchRef.current.power = 0;
     }
 
     const isGlitch = time < glitchRef.current.releaseAt;
     const glitchLerp = isGlitch
       ? Math.min(1, (glitchRef.current.releaseAt - time) / (glitchRef.current.releaseAt - glitchRef.current.triggerAt + 0.001))
       : 0;
-    const jitter = glitchRef.current.power * glitchLerp * burstFactor;
+    const jitter = glitchRef.current.power * glitchLerp * burstFactor * (flickerIntensity || 0.45);
 
     groupRef.current.rotation.set(
       THREE.MathUtils.degToRad(pitch) + glitchRef.current.offsetX * jitter,
@@ -173,52 +178,36 @@ export function ObserverCoreScene({
     coreInnerRef.current.rotation.y -= delta * 0.56;
     coreInnerRef.current.rotation.x += delta * 0.22;
     shellRef.current.rotation.y -= delta * 0.22;
-    if (orbitARef.current) {
-      orbitARef.current.position.set(0, 0, 0);
-      orbitARef.current.rotation.set(
-        orbitTracks[0].rot[0],
-        orbitTracks[0].rot[1] + time * orbitTracks[0].speed * orbitTracks[0].direction,
-        orbitTracks[0].rot[2],
-      );
-    }
-    if (orbitASpinRef.current) {
-      orbitASpinRef.current.position.set(0, 0, 0);
-      orbitASpinRef.current.rotation.set(0, 0, 0);
-    }
-    if (orbitBRef.current) {
-      orbitBRef.current.position.set(0, 0, 0);
-      orbitBRef.current.rotation.set(
-        orbitTracks[1].rot[0],
-        orbitTracks[1].rot[1] + time * orbitTracks[1].speed * orbitTracks[1].direction,
-        orbitTracks[1].rot[2],
-      );
-    }
-    if (orbitBSpinRef.current) {
-      orbitBSpinRef.current.position.set(0, 0, 0);
-      orbitBSpinRef.current.rotation.set(0, 0, 0);
-    }
 
-    fogRef.current.rotation.y += delta * 0.2;
-    fogRef.current.rotation.x += delta * 0.15;
+    orbitRefs.current.forEach((group, index) => {
+      const track = orbitTracks[index];
+      if (!group || !track) return;
+      const speed = track.speed * (0.8 + orbitIntensity * 0.9);
+      // 기존 회전 감각(회전축 변경)과, 링 자체 회전(자기축 spin)을 동시에 적용
+      group.rotation.set(
+        track.rot[0],
+        track.rot[1] + time * speed * track.direction * 0.45,
+        track.rot[2] + time * speed * track.direction,
+      );
+    });
 
+    fogRef.current.rotation.y += delta * 0.12 * (1 + flickerIntensity);
+    fogRef.current.rotation.x += delta * 0.12 * (1 + flickerIntensity * 0.5);
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={[objectScale, objectScale, objectScale]}>
       <mesh ref={coreRef}>
-        <sphereGeometry args={[coreRadius, 64, 64]} />
-        <meshBasicMaterial
-          color={safeColor}
-          toneMapped={false}
-        />
+        <icosahedronGeometry args={[coreRadius, 6]} />
+        <meshBasicMaterial color={safeColor} toneMapped={false} />
       </mesh>
 
       <mesh>
-        <sphereGeometry args={[shellRadius, 48, 48]} />
-      <meshBasicMaterial
+        <icosahedronGeometry args={[shellRadius, 5]} />
+        <meshBasicMaterial
           color={safeColor}
           transparent
-          opacity={0.05}
+          opacity={0.035}
           depthWrite={false}
           toneMapped={false}
           blending={THREE.AdditiveBlending}
@@ -226,85 +215,96 @@ export function ObserverCoreScene({
       </mesh>
 
       <mesh ref={coreInnerRef}>
-        <sphereGeometry args={[0.62, 56, 56]} />
+        <icosahedronGeometry args={[0.62, 5]} />
         <meshBasicMaterial
           color={safeColor}
           transparent
-          opacity={0.96}
+          opacity={0.9}
           toneMapped={false}
         />
       </mesh>
 
       <mesh ref={shellRef}>
-        <sphereGeometry args={[shellRadius, 64, 48]} />
-      <meshStandardMaterial
+        <icosahedronGeometry args={[shellRadius, 6]} />
+        <meshPhysicalMaterial
           color={safeColor}
           transparent
-          opacity={0.08}
+          opacity={0.18}
+          transmission={0}
+          thickness={0}
+          clearcoat={0}
+          metalness={0}
+          roughness={1}
           depthWrite={false}
           toneMapped={false}
-          roughness={0.82}
-          metalness={0}
-          side={THREE.DoubleSide}
+          emissive={safeColor}
+          emissiveIntensity={0.35}
         />
       </mesh>
 
-      <group
-        ref={(el) => {
-          orbitARef.current = el;
-        }}
-      >
-        <group
-          ref={(el) => {
-            orbitASpinRef.current = el;
-          }}
-        >
-          <mesh>
-            <torusGeometry args={[orbitTracks[0].radius, orbitTracks[0].tube, 8, orbitTracks[0].segments]} />
-            <meshBasicMaterial
-              color={safeColor}
-              transparent
-              opacity={0.45}
-              blending={THREE.NormalBlending}
-              toneMapped={false}
-            />
-          </mesh>
-        </group>
-      </group>
+      {orbitTracks.map((track, index) => {
+        const ringOpacity = Math.max(
+          0.16,
+          Math.min(0.82, 0.18 + orbitIntensity * (0.6 - index * 0.08)),
+        );
+        const ringColor = new THREE.Color(safeColor);
+        ringColor.offsetHSL(0, -0.02 * track.direction, 0);
+        const satelliteVisible = hasSatellite && index < Math.min(visualProfile.rings.satellites.count, orbitTracks.length);
+        const satelliteRadius = 0.026 + satelliteIntensity * 0.028;
 
-      <group
-        ref={(el) => {
-          orbitBRef.current = el;
-        }}
-      >
-        <group
-          ref={(el) => {
-            orbitBSpinRef.current = el;
-          }}
-        >
-          <mesh>
-            <torusGeometry
-              args={[orbitTracks[1].radius, orbitTracks[1].tube, 8, orbitTracks[1].segments]}
-            />
-            <meshBasicMaterial
-              color={safeColor}
-              transparent
-              opacity={0.28}
-              blending={THREE.NormalBlending}
-              toneMapped={false}
-            />
-          </mesh>
-        </group>
-      </group>
+        return (
+          <group
+            key={track.name}
+            ref={(el) => {
+              orbitRefs.current[index] = el;
+            }}
+          >
+            <mesh>
+              <torusGeometry
+                args={[
+                  track.radius,
+                  Math.max(0.007, track.tube * (0.8 + orbitIntensity * 0.6)),
+                  16,
+                  track.segments,
+                ]}
+              />
+              <meshPhysicalMaterial
+                color={ringColor}
+                roughness={0.38}
+                metalness={0.25}
+                clearcoat={0.5}
+                transparent
+                opacity={ringOpacity}
+                toneMapped={false}
+                emissive={ringColor}
+                emissiveIntensity={0.08 + orbitIntensity * 0.18}
+              />
+            </mesh>
+            {satelliteVisible && (
+              <mesh position={[track.radius, 0, 0]} scale={[satelliteRadius, satelliteRadius, satelliteRadius]}>
+                <sphereGeometry args={[1, 24, 24]} />
+                <meshStandardMaterial
+                  color={safeColor}
+                  toneMapped={false}
+                  emissive={safeColor}
+                  emissiveIntensity={0.28 + satelliteIntensity * 0.6}
+                  roughness={0.25}
+                  metalness={0.25}
+                />
+              </mesh>
+            )}
+          </group>
+        );
+      })}
 
-        <points ref={fogRef}>
+      <points ref={fogRef}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[fogPositions, 3]} />
         </bufferGeometry>
         <pointsMaterial
           color={safeColor}
           transparent
-          opacity={0.16}
+          opacity={Math.max(0.08, 0.18 * (0.5 + orbitIntensity))}
           size={0.013}
           sizeAttenuation
           depthWrite={false}

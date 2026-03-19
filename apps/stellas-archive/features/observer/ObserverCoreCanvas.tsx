@@ -2,9 +2,11 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { ObserverCoreScene } from "./ObserverCoreScene";
+import { DEFAULT_LUMINA_VISUAL_PROFILE, type LuminaVisualProfile } from "../game/engine";
 
 type ObserverCoreCanvasProps = {
   color: string;
+  visualProfile?: LuminaVisualProfile;
   yaw: number;
   pitch: number;
   isPixelBurst: boolean;
@@ -15,6 +17,7 @@ type ObserverCoreCanvasProps = {
 
 export function ObserverCoreCanvas({
   color,
+  visualProfile,
   yaw,
   pitch,
   isPixelBurst,
@@ -61,13 +64,20 @@ export function ObserverCoreCanvas({
         gl.setClearColor(0x000000, 0);
       }}
     >
-      <ambientLight color={rgbColor} intensity={0.38} />
-      <pointLight position={[2.2, 1.6, 2.4]} color={rgbColor} intensity={1.7} decay={1.2} />
-      <pointLight position={[-1.8, -1.4, 1.3]} color={rgbColor} intensity={0.95} decay={1.2} />
-      <pointLight position={[0, 0, 3.1]} color={rgbColor} intensity={0.45} decay={1.4} />
-      <pointLight position={[0, 0, 0]} color={rgbColor} intensity={0.55} distance={2.8} decay={2} />
+      <ambientLight color={rgbColor} intensity={0.56} />
+      <pointLight position={[2.2, 1.6, 2.4]} color={rgbColor} intensity={2.25} decay={1.2} />
+      <pointLight position={[-1.8, -1.4, 1.3]} color={rgbColor} intensity={1.25} decay={1.2} />
+      <pointLight position={[0, 0, 3.1]} color={rgbColor} intensity={0.72} decay={1.4} />
+      <pointLight
+        position={[0, 0, 0]}
+        color={rgbColor}
+        intensity={0.95}
+        distance={3}
+        decay={2}
+      />
       <ObserverCoreScene
         color={rgbColor.getStyle()}
+        visualProfile={visualProfile ?? DEFAULT_LUMINA_VISUAL_PROFILE}
         yaw={yaw}
         pitch={pitch}
         isPixelBurst={isPixelBurst}
