@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { RosterModal } from "../RosterModal";
 import { CreatureDetailsModal } from "../CreatureDetailsModal";
-import { ACTION_TEXT, INTERFACE_TEXT } from "../../game/engine";
+import { ACTION_TEXT, FEEDS, getDefaultFeedInventory, INTERFACE_TEXT } from "../../game/engine";
 import type { Creature } from "../../game/engine";
 import { SupportedLocale } from "../../i18n/i18n";
 import { getCatalog } from "../../i18n/i18n";
@@ -125,6 +125,8 @@ describe("CreatureDetailsModal", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         token={10}
+        feeds={FEEDS}
+        feedInventory={getDefaultFeedInventory(FEEDS)}
         speciesText={getCatalog(SupportedLocale.En).species}
         onAction={() => undefined}
         onSetObserverTarget={() => undefined}
@@ -143,21 +145,20 @@ describe("CreatureDetailsModal", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         token={10}
+        feeds={FEEDS}
+        feedInventory={getDefaultFeedInventory(FEEDS)}
         speciesText={getCatalog(SupportedLocale.En).species}
         onAction={onAction}
         onSetObserverTarget={onSetObserverTarget}
       />,
     );
 
+    fireEvent.click(screen.getByTestId("details-action-feed"));
     fireEvent.click(
-      screen.getByRole("button", { name: new RegExp(`^${ACTION_TEXT[SupportedLocale.En].feed}\\s*\\(\\d+\\)$`) }),
+      screen.getByTestId("details-feed-option-feed_red_spore"),
     );
-    expect(onAction).toHaveBeenCalledWith("feed", lumina);
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: new RegExp(`^${INTERFACE_TEXT[SupportedLocale.En].select}\\s+${lumina.nickname}$`),
-      }),
-    );
+    expect(onAction).toHaveBeenCalledWith("feed", lumina, "feed_red_spore");
+    fireEvent.click(screen.getByTestId("details-select-button"));
     expect(onSetObserverTarget).toHaveBeenCalledWith(lumina);
   });
 });

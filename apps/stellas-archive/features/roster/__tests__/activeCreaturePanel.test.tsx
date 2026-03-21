@@ -2,7 +2,12 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { ActiveCreaturePanel } from "../ActiveCreaturePanel";
-import { ACTION_TEXT, INTERFACE_TEXT } from "../../game/engine";
+import {
+  ACTION_TEXT,
+  FEEDS,
+  getDefaultFeedInventory,
+  INTERFACE_TEXT,
+} from "../../game/engine";
 import type { Creature } from "../../game/engine";
 import { SupportedLocale } from "../../i18n/i18n";
 
@@ -33,6 +38,8 @@ describe("ActiveCreaturePanel", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         token={5}
+        feeds={FEEDS}
+        feedInventory={getDefaultFeedInventory(FEEDS)}
         performAction={() => undefined}
         onOpenRoster={() => undefined}
         onOpenCreatureDetails={() => undefined}
@@ -53,18 +60,21 @@ describe("ActiveCreaturePanel", () => {
         uiText={INTERFACE_TEXT[SupportedLocale.En]}
         actionText={ACTION_TEXT[SupportedLocale.En]}
         token={10}
+        feeds={FEEDS}
+        feedInventory={getDefaultFeedInventory(FEEDS)}
         performAction={onAction}
         onOpenRoster={onOpenRoster}
         onOpenCreatureDetails={onOpenCreatureDetails}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: `${ACTION_TEXT[SupportedLocale.En].feed} (1)` }));
-    expect(onAction).toHaveBeenCalledWith("feed", creature);
+    fireEvent.click(screen.getByTestId("active-action-feed"));
+    fireEvent.click(screen.getByTestId("active-feed-option-feed_red_spore"));
+    expect(onAction).toHaveBeenCalledWith("feed", creature, "feed_red_spore");
 
-    fireEvent.click(screen.getByRole("button", { name: `${INTERFACE_TEXT[SupportedLocale.En].select}` }));
+    fireEvent.click(screen.getByTestId("active-select-button"));
     expect(onOpenRoster).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByRole("button", { name: `${INTERFACE_TEXT[SupportedLocale.En].creatureDetails}` }));
+    fireEvent.click(screen.getByTestId("active-creature-details-button"));
     expect(onOpenCreatureDetails).toHaveBeenCalledTimes(1);
   });
 });

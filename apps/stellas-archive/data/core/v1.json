@@ -27,5 +27,122 @@
     "Neon Wick",
     "White Veil",
     "Signal Echo"
-  ]
+  ],
+  "feeds": {
+    "feed_red_spore": {
+      "id": "feed_red_spore",
+      "symbolColor": "#ff5f5f",
+      "name": {
+        "en": "Scarlet Injection",
+        "ko": "적색 주입체"
+      },
+      "description": {
+        "en": "Red charge: increases red saturation while weakening green and blue.",
+        "ko": "적색 사료: 적색 채널을 높이고 녹색/청색을 낮춥니다."
+      },
+      "stateDelta": {
+        "hunger": 15,
+        "cleanliness": -1,
+        "energy": 5
+      },
+      "rgbDelta": {
+        "r": 8,
+        "g": -4,
+        "b": -4
+      },
+      "stock": 99
+    },
+    "feed_green_bloom": {
+      "id": "feed_green_bloom",
+      "symbolColor": "#62e07a",
+      "name": {
+        "en": "Verdant Injection",
+        "ko": "녹색 주입체"
+      },
+      "description": {
+        "en": "Green charge: restores appetite and raises green channel.",
+        "ko": "녹색 사료: 배고픔을 회복하고 녹색 채널을 상승시킵니다."
+      },
+      "stateDelta": {
+        "hunger": 15,
+        "cleanliness": -1,
+        "energy": 5
+      },
+      "rgbDelta": {
+        "r": -4,
+        "g": 8,
+        "b": -4
+      },
+      "stock": 99
+    },
+    "feed_blue_mist": {
+      "id": "feed_blue_mist",
+      "symbolColor": "#5cb3ff",
+      "name": {
+        "en": "Azure Injection",
+        "ko": "청색 주입체"
+      },
+      "description": {
+        "en": "Blue charge: improves calmness and increases blue saturation.",
+        "ko": "청색 사료: 진정 반응과 청색 채널 상승을 유도합니다."
+      },
+      "stateDelta": {
+        "hunger": 15,
+        "cleanliness": -1,
+        "energy": 5
+      },
+      "rgbDelta": {
+        "r": -4,
+        "g": -4,
+        "b": 8
+      },
+      "stock": 99
+    },
+    "feed_white_vein": {
+      "id": "feed_white_vein",
+      "symbolColor": "#f6f7ff",
+      "name": {
+        "en": "White Pulse",
+        "ko": "백색 주입체"
+      },
+      "description": {
+        "en": "White charge: stabilizes channels and restores hunger.",
+        "ko": "백색 에너지: 채널 균형을 안정화하고 배고픔을 회복합니다."
+      },
+      "stateDelta": {
+        "hunger": 20,
+        "cleanliness": -1,
+        "energy": 10
+      },
+      "rgbDelta": {
+        "r": 4,
+        "g": 4,
+        "b": 4
+      },
+      "stock": 99
+    },
+    "feed_black_vein": {
+      "id": "feed_black_vein",
+      "symbolColor": "#3a3a3a",
+      "name": {
+        "en": "Black Pulse",
+        "ko": "흑색 주입체"
+      },
+      "description": {
+        "en": "Black charge: increases contrast and suppresses blue-green channels.",
+        "ko": "흑색 에너지: 대비를 강화하고 청색·녹색 채널을 누릅니다."
+      },
+      "stateDelta": {
+        "hunger": 20,
+        "cleanliness": -1,
+        "energy": 10
+      },
+      "rgbDelta": {
+        "r": -4,
+        "g": -4,
+        "b": -4
+      },
+      "stock": 99
+    }
+  }
 }

@@ -112,6 +112,7 @@ export function ObserverPanel({
           <button
             className="inline-flex min-h-9 items-center justify-center border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2.5 py-2 text-[15px] text-[#f6fdff] tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
             aria-label={uiText.observerTarget}
+            data-testid="observer-target-button"
             onClick={onObserverTargetOpen}
             type="button"
           >
@@ -122,6 +123,7 @@ export function ObserverPanel({
           role="status"
           aria-label={`${uiText.observerTarget}: ${summaryTarget}`}
           className="text-sm text-muted self-end"
+          data-testid="observer-target-status"
         >
           {uiText.observerTarget}: {summaryTarget}
         </output>
@@ -201,6 +203,7 @@ export function ObserverPanel({
               role="status"
               aria-label={`${observerCreature.nickname} ${observerCreature.commonName} ${emotionLabel}`}
               className="translate-y-6 inline-flex mx-auto w-fit max-w-full items-center rounded-md border border-[rgba(130,210,255,0.45)] bg-[rgba(6,12,24,0.84)] px-3 py-1.5 text-xs tracking-[0.15em] text-[#d5f1ff] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_0_16px_rgba(120,220,255,0.18)]"
+              data-testid="observer-creature-status"
             >
               {observerCreature.nickname} ({observerCreature.commonName}) |{" "}
               {emotionLabel}
@@ -208,7 +211,12 @@ export function ObserverPanel({
           </div>
         </div>
       ) : (
-        <output role="status" aria-label={uiText.noObserverTarget} className="mt-2 text-[13px] text-muted">
+        <output
+          role="status"
+          aria-label={uiText.noObserverTarget}
+          className="mt-2 text-[13px] text-muted"
+          data-testid="observer-no-target-status"
+        >
           {uiText.noObserverTarget}
         </output>
       )}

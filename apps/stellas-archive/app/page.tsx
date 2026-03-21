@@ -35,7 +35,9 @@ import {
   type Locale,
   ARCHIVE_PAGE_SIZE,
   ROSTER_PAGE_SIZE,
+  FEEDS,
   SPECIES,
+  normalizeSpeciesId,
   TOKEN_COST,
   getLocaleFromBrowser,
   creatureSpeciesFallback,
@@ -180,6 +182,7 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
   });
   const observerDraggingRef = useRef(false);
   const entryPopupSnapshotRef = useRef("");
+  const lastActionRef = useRef<Interaction | null>(null);
 
   useEffect(() => {
     const hydrateFromLocale = (nextLocale: Locale) => {
@@ -313,6 +316,16 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
   const speciesText = localizedText.species;
 
   useEffect(() => {
+    if (lastActionRef.current === "feed") {
+      entryPopupSnapshotRef.current = `${state.archive.length}|${state.daily.missions.length}|${
+        state.daily.missions.filter((mission) => !mission.completed).length
+      }|${state.daily.signal?.message ?? ""}|${state.daily.signal?.resolved ? 1 : 0}|${
+        state.daily.signal?.rewardClaimed ? 1 : 0
+      }|${state.researchData.observation}/${state.researchData.mutation}/${state.researchData.emotion}`;
+      lastActionRef.current = null;
+      return;
+    }
+
     const snapshot = `${state.archive.length}|${state.daily.missions.length}|${
       state.daily.missions.filter((mission) => !mission.completed).length
     }|${state.daily.signal?.message ?? ""}|${
@@ -426,7 +439,7 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
     const entries: Array<{ id: string; label: string; count: number }> = [];
     const counts = new Map<string, number>();
     state.creatures.forEach((creature) => {
-      const species = creature.speciesId;
+      const species = normalizeSpeciesId(creature.speciesId);
       if (!species) return;
       counts.set(species, (counts.get(species) ?? 0) + 1);
     });
@@ -448,7 +461,7 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
     () =>
     rosterFilter === "all"
       ? state.creatures
-      : state.creatures.filter((creature) => creature.speciesId === rosterFilter),
+      : state.creatures.filter((creature) => normalizeSpeciesId(creature.speciesId) === rosterFilter),
     [rosterFilter, state.creatures]
   );
 
@@ -497,17 +510,37 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
   const closeModal = useCallback(() => setActiveModal(null), []);
 
   const performAction = useCallback(
-    (interaction: Interaction, creature: Creature) => {
+    (interaction: Interaction, creature: Creature, feedItemId?: string) => {
+      lastActionRef.current = interaction;
       setState((prev) => {
         const localeText = uiText;
         if (prev.tokens < TOKEN_COST[interaction]) {
           setFeedback(localeText.noToken);
           return prev;
         }
+        if (interaction === "feed" && !feedItemId) {
+          setFeedback(localeText.noFeed);
+          return prev;
+        }
 
         let nextArchive = [...prev.archive];
         let nextFeedback = "";
         let wasCreatureFound = false;
+        const selectedFeedItem = interaction === "feed" ? FEEDS[feedItemId ?? ""] : null;
+        if (interaction === "feed" && !selectedFeedItem) {
+          setFeedback(localeText.noFeed);
+          return prev;
+        }
+        const nextFeedInventory = { ...prev.feedInventory };
+        if (interaction === "feed" && selectedFeedItem) {
+          const currentStock = nextFeedInventory[selectedFeedItem.id] ?? 0;
+          if (currentStock <= 0) {
+            setFeedback(localeText.noFeed);
+            return prev;
+          }
+          nextFeedInventory[selectedFeedItem.id] = Math.max(currentStock - 1, 0);
+        }
+
         const prevCompletedMissionCount = prev.daily.missions.filter(
           (mission) => mission.completed
         ).length;
@@ -526,26 +559,44 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
 
           switch (interaction) {
             case "feed":
-              nextState.hunger = clamp(nextState.hunger + 24, 0, 100);
-              nextState.energy = clamp(nextState.energy + 8, 0, 100);
-              rgbDelta.r = 12;
-              rgbDelta.g = -1;
-              rgbDelta.b = -2;
+              if (!selectedFeedItem) return item;
+              if (selectedFeedItem.stateDelta.hunger !== undefined)
+                nextState.hunger = clamp(
+                  nextState.hunger + selectedFeedItem.stateDelta.hunger,
+                  0,
+                  100
+                );
+              if (selectedFeedItem.stateDelta.cleanliness !== undefined)
+                nextState.cleanliness = clamp(
+                  nextState.cleanliness + selectedFeedItem.stateDelta.cleanliness,
+                  0,
+                  100
+                );
+              if (selectedFeedItem.stateDelta.affection !== undefined)
+                nextState.affection = clamp(
+                  nextState.affection + selectedFeedItem.stateDelta.affection,
+                  0,
+                  100
+                );
+              if (selectedFeedItem.stateDelta.energy !== undefined)
+                nextState.energy = clamp(
+                  nextState.energy + selectedFeedItem.stateDelta.energy,
+                  0,
+                  100
+                );
+              rgbDelta.r = selectedFeedItem.rgbDelta.r ?? 0;
+              rgbDelta.g = selectedFeedItem.rgbDelta.g ?? 0;
+              rgbDelta.b = selectedFeedItem.rgbDelta.b ?? 0;
               break;
             case "clean":
               nextState.cleanliness = clamp(nextState.cleanliness + 26, 0, 100);
               nextState.energy = clamp(nextState.energy - 4, 0, 100);
-              rgbDelta.b = 6;
-              rgbDelta.g = 2;
               break;
             case "play":
               nextState.affection = clamp(nextState.affection + 12, 0, 100);
               nextState.hunger = clamp(nextState.hunger - 5, 0, 100);
               nextState.energy = clamp(nextState.energy - 8, 0, 100);
               nextState.cleanliness = clamp(nextState.cleanliness - 6, 0, 100);
-              rgbDelta.r = 11;
-              rgbDelta.g = 10;
-              rgbDelta.b = 1;
               break;
             case "scan":
               rgbDelta.r = 1;
@@ -574,7 +625,7 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
             const nextSpecies = SPECIES[drift.nextSpecies];
             nextCreature = {
               ...nextCreature,
-              speciesId: nextSpecies.id,
+              speciesId: drift.nextSpecies,
               scientificName: nextSpecies.scientificName,
               commonName: nextSpecies.commonName,
               traits: nextSpecies.traits,
@@ -657,6 +708,7 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
         return {
           ...prev,
           tokens: clamp(prev.tokens - TOKEN_COST[interaction] + bonus, 0, 999),
+          feedInventory: interaction === "feed" ? nextFeedInventory : prev.feedInventory,
           creatures: targets,
           archive: nextArchive,
           researchData: {
@@ -918,12 +970,14 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
         </section>
         <section className="min-w-0">
           <div className="mb-2">
-            <ActiveCreaturePanel
+          <ActiveCreaturePanel
               selectedCreature={selectedCreature ?? null}
               uiText={uiText}
               actionText={actionText}
               token={state.tokens}
               performAction={performAction}
+              feeds={FEEDS}
+              feedInventory={state.feedInventory}
               onOpenRoster={() => openModal("roster")}
               onOpenCreatureDetails={() => openModal("creature-details")}
               showActions={true}
@@ -1072,6 +1126,8 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
               uiText={uiText}
               actionText={actionText}
               token={state.tokens}
+              feeds={FEEDS}
+              feedInventory={state.feedInventory}
               speciesText={speciesText}
               onAction={performAction}
               onSetObserverTarget={(creature) => {

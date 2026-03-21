@@ -15,6 +15,25 @@ export type EmotionType =
 
 export type RGB = { r: number; g: number; b: number };
 
+export type FeedItemStateDelta = {
+  hunger?: number;
+  cleanliness?: number;
+  affection?: number;
+  energy?: number;
+};
+
+export type FeedItem = {
+  id: string;
+  name: Record<Locale, string>;
+  description?: Record<Locale, string>;
+  stateDelta: FeedItemStateDelta;
+  rgbDelta: Partial<RGB>;
+  symbolColor?: string;
+  stock: number;
+};
+
+export type FeedInventory = Record<string, number>;
+
 export type CreatureState = {
   hunger: number;
   cleanliness: number;
@@ -117,6 +136,7 @@ export type GameState = {
   tokens: number;
   creatures: Creature[];
   selectedCreatureId: string;
+  feedInventory: FeedInventory;
   archive: ArchiveEntry[];
   researchData: ResearchData;
   daily: DailyState;
@@ -202,6 +222,12 @@ export type InterfaceText = {
   observerPanel: string;
   observerDescription: string;
   noObserverTarget: string;
+  noFeed: string;
+  feedDetails: string;
+  noDescription: string;
+  stock: string;
+  stateChange: string;
+  colorShift: string;
   stellaComment: string;
 };
 
@@ -242,6 +268,7 @@ export type GameMockupNoSqlData = {
   dataVersion: 1;
   defaultVisualProfile: LuminaVisualProfile;
   starterIds: string[];
+  feeds: Record<string, FeedItem>;
   species: GameMockupDataDocument["species"];
   mutationRules: GameMockupDataDocument["mutationRules"];
   starterNicknames: string[];
@@ -252,6 +279,7 @@ export type GameMockupData = {
   defaultVisualProfile: LuminaVisualProfile;
   starterIds: string[];
   starterNicknames: string[];
+  feeds: Record<string, FeedItem>;
   species: Record<string, GameMockupSpecies>;
   mutationRules: Record<string, GameMockupMutation>;
 };

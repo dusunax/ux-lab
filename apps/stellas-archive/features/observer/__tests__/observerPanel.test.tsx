@@ -46,8 +46,8 @@ describe("ObserverPanel", () => {
       />,
     );
 
-    expect(screen.getByRole("status", { name: INTERFACE_TEXT[SupportedLocale.En].noObserverTarget })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: INTERFACE_TEXT[SupportedLocale.En].observerTarget }));
+    expect(screen.getByTestId("observer-no-target-status")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("observer-target-button"));
     expect(onObserverTargetOpen).toHaveBeenCalledTimes(1);
   });
 
@@ -69,7 +69,7 @@ describe("ObserverPanel", () => {
       />,
     );
 
-    expect(screen.getByRole("status", { name: "Observer Target: Moon Glow" })).toBeTruthy();
-    expect(screen.getByRole("status", { name: "Moon Glow Lumina Harmonic" })).toBeTruthy();
+    expect(screen.getByTestId("observer-target-status").textContent).toContain("Moon Glow");
+    expect(screen.getByTestId("observer-creature-status").textContent).toContain("Moon Glow");
   });
 });

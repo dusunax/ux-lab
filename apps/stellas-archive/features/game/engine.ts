@@ -18,6 +18,8 @@ import type {
   ActiveModal,
   ActionText,
   ArchiveEntry,
+  FeedInventory,
+  FeedItem,
   Creature,
   CreatureState,
   DailyMission,
@@ -49,6 +51,8 @@ export type {
   ActiveModal,
   ActionText,
   ArchiveEntry,
+  FeedInventory,
+  FeedItem,
   Creature,
   CreatureState,
   DailyMission,
@@ -115,6 +119,39 @@ const isLocalizedStringMap = (value: unknown): value is Record<Locale, string> =
   return LOCALE_KEYS.every((locale) => isString((value as Record<string, unknown>)[locale]));
 };
 
+const isFeedItem = (value: unknown): value is FeedItem => {
+  if (!isObject(value)) return false;
+  const data = value as Record<string, unknown>;
+  const rgbDelta = isObject(data.rgbDelta) ? (data.rgbDelta as Record<string, unknown>) : null;
+  const stateDelta = isObject(data.stateDelta) ? (data.stateDelta as Record<string, unknown>) : null;
+  if (!isString(data.id)) return false;
+  if (!isLocalizedStringMap(data.name)) return false;
+  if (data.description !== undefined && !isLocalizedStringMap(data.description)) return false;
+  if (!stateDelta) return false;
+  const stateEntries = Object.entries(stateDelta);
+  if (
+    stateEntries.some(
+      ([key, item]) => !["hunger", "cleanliness", "affection", "energy"].includes(key) || !isNumber(item),
+    )
+  ) {
+    return false;
+  }
+  if (!rgbDelta) return false;
+  const rgbEntries = Object.entries(rgbDelta);
+  if (
+    rgbEntries.some(([key, item]) => !["r", "g", "b"].includes(key) || !isNumber(item))
+  ) {
+    return false;
+  }
+  if (data.stock !== undefined && !isNumber(data.stock)) return false;
+  return true;
+};
+
+const isFeedCollection = (value: unknown): value is Record<string, FeedItem> => {
+  if (!isObject(value)) return false;
+  return Object.entries(value).every(([id, feed]) => isFeedItem(feed) && feed.id === id);
+};
+
 const isVisualProfile = (value: unknown): value is LuminaVisualProfile => {
   if (!isObject(value)) return false;
   const v = value as Record<string, unknown>;
@@ -177,7 +214,7 @@ const isGameMockupMutationCollection = (value: unknown): value is GameMockupData
 
 export const STORAGE_KEY = "stellas-archive:game-state-v1";
 export const TOKEN_COST: Record<Interaction, number> = {
-  feed: 1,
+  feed: 0,
   clean: 1,
   play: 2,
   scan: 3,
@@ -190,6 +227,7 @@ const clampVisualFactor = (value: number) => Math.min(1, Math.max(0, Number.isFi
 const clampRingScale = (value: number) => Math.min(1.4, Math.max(0.25, Number.isFinite(value) ? value : 1));
 
 const clampRingCount = (value: number) => Math.max(1, Math.min(4, Math.floor(value)));
+const clampFeedStock = (value: number) => Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
 
 type TraitVisualBoost = {
   rings?: Partial<LuminaRingProfile>;
@@ -325,6 +363,7 @@ const isGameMockupNoSqlData = (value: unknown): value is GameMockupNoSqlData => 
     Array.isArray(data.starterNicknames) &&
     data.starterNicknames.every((name) => isString(name)) &&
     isVisualProfile(data.defaultVisualProfile) &&
+    isFeedCollection(data.feeds) &&
     isObject(data.species) &&
     isGameMockupSpeciesCollection(data.species) &&
     isObject(data.mutationRules) &&
@@ -338,6 +377,16 @@ const normalizeMockupData = (raw: GameMockupNoSqlData): GameMockupData => {
     defaultVisualProfile: raw.defaultVisualProfile,
     starterIds: raw.starterIds,
     starterNicknames: raw.starterNicknames,
+    feeds: Object.fromEntries(
+      Object.entries(raw.feeds).map(([id, feed]) => [
+        id,
+        {
+          ...feed,
+          id,
+          stock: clampFeedStock(feed.stock ?? 0),
+        },
+      ]),
+    ) as Record<string, FeedItem>,
     species: Object.fromEntries(
       Object.entries(raw.species).map(([id, species]) => [
         species.speciesId || species.id || id,
@@ -417,8 +466,26 @@ const getMutationCondition = (conditionType: GameMockupMutation["conditionType"]
 };
 
 export const SPECIES = gameMockup.species as Record<string, Species>;
+export const FEEDS = gameMockup.feeds as Record<string, FeedItem>;
+
+const SPECIES_ID_LOOKUP_BY_UUID: Record<string, string> = Object.fromEntries(
+  Object.entries(SPECIES).map(([speciesId, value]) => [value.id, speciesId]),
+);
+
+export const normalizeSpeciesId = (speciesId: string) => {
+  if (SPECIES[speciesId]) return speciesId;
+  return SPECIES_ID_LOOKUP_BY_UUID[speciesId] || speciesId;
+};
 
 export const STARTER_IDS = gameMockup.starterIds;
+
+export const getDefaultFeedInventory = (source: Record<string, FeedItem> = FEEDS): FeedInventory => {
+  const next: FeedInventory = {};
+  Object.entries(source).forEach(([id, feed]) => {
+    next[id] = clampFeedStock(feed.stock ?? 0);
+  });
+  return next;
+};
 
 export const MUTATION_RULES_BY_ID = Object.entries(gameMockup.mutationRules).reduce(
   (acc, [id, rule]) => {
@@ -645,6 +712,7 @@ export const initialState = (locale: Locale = SupportedLocale.En): GameState => 
     tokens: 15,
     creatures: starter,
     selectedCreatureId: starter[0]?.id ?? "",
+    feedInventory: getDefaultFeedInventory(),
     archive: [],
     researchData: { observation: 0, mutation: 0, emotion: 0 },
     daily: {
@@ -670,8 +738,17 @@ export const loadState = (fallbackLocale: Locale = SupportedLocale.En): GameStat
       locale: nextLocale,
       creatures: (parsed.creatures ?? []).map((creature) => ({
         ...creature,
-        speciesId: creature.speciesId ?? "species_lumina",
+        speciesId: normalizeSpeciesId(creature.speciesId ?? "species_lumina"),
       })),
+      feedInventory: (() => {
+        const mergedInventory: FeedInventory = { ...getDefaultFeedInventory() };
+        Object.entries(parsed.feedInventory ?? {}).forEach(([id, rawStock]) => {
+          if (FEEDS[id]) {
+            mergedInventory[id] = clampFeedStock(Number(rawStock));
+          }
+        });
+        return mergedInventory;
+      })(),
       archive: parsed.archive ?? [],
       researchData: parsed.researchData ?? { observation: 0, mutation: 0, emotion: 0 },
       daily: {
