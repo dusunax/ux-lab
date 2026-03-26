@@ -9,6 +9,8 @@ type ObserverCoreFogProps = {
   pitch: number;
   dragOffsetX: number;
   dragOffsetY: number;
+  isPixelBurst?: boolean;
+  burstScale?: number;
 };
 
 export function ObserverCoreFog({
@@ -18,6 +20,8 @@ export function ObserverCoreFog({
   pitch,
   dragOffsetX,
   dragOffsetY,
+  isPixelBurst: forcedPixelBurst,
+  burstScale: forcedBurstScale,
 }: ObserverCoreFogProps) {
   const [mounted, setMounted] = useState(false);
   const [isPixelBurst, setPixelBurst] = useState(false);
@@ -85,8 +89,8 @@ export function ObserverCoreFog({
         visualProfile={visualProfile}
         yaw={yaw}
         pitch={pitch}
-        isPixelBurst={isPixelBurst}
-        burstScale={isPixelBurst ? burstScale : 1}
+        isPixelBurst={forcedPixelBurst ?? isPixelBurst}
+        burstScale={forcedPixelBurst ? forcedBurstScale ?? burstScale : isPixelBurst ? burstScale : 1}
         dragOffsetX={dragOffsetX}
         dragOffsetY={dragOffsetY}
       />

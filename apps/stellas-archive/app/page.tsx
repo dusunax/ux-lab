@@ -642,9 +642,9 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
   }, [selectedCreature]);
 
   const selectedSpeciesDescription = useMemo(() => {
-    if (!selectedCreatureSpecies) return "";
-    return speciesText[selectedCreatureSpecies.speciesId]?.description ?? "";
-  }, [speciesText, selectedCreatureSpecies]);
+    if (!selectedCreature) return "";
+    return speciesText[normalizeSpeciesId(selectedCreature.speciesId)]?.description ?? "";
+  }, [speciesText, selectedCreature]);
 
   useEffect(() => {
     if (lastActionRef.current === "feed") {
