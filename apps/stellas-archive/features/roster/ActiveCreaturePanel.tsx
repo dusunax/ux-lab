@@ -4,10 +4,11 @@ import type {
   FeedInventory,
   FeedItem,
   Interaction,
+  Species,
   InterfaceText,
   ActionText,
 } from "../game/engine";
-import { getDominantEmotionLabel, TOKEN_COST } from "../game/engine";
+import { TOKEN_COST } from "../game/engine";
 import { Apple, ChevronDown, CircleHelp, Droplets, Scan, Sparkles } from "lucide-react";
 import { MetricRing } from "../ui/MetricRing";
 import { ColorProfile } from "../ui/ColorProfile";
@@ -92,6 +93,8 @@ type ActiveCreaturePanelProps = {
   token: number;
   feeds: Record<string, FeedItem>;
   feedInventory: FeedInventory;
+  speciesProfile?: Species | null;
+  speciesDescription?: string;
   performAction: (interaction: Interaction, creature: Creature, feedItemId?: string) => void;
   onOpenRoster: () => void;
   onOpenCreatureDetails: () => void;
@@ -107,6 +110,8 @@ export function ActiveCreaturePanel({
   performAction,
   feeds,
   feedInventory,
+  speciesProfile,
+  speciesDescription,
   onOpenRoster,
   onOpenCreatureDetails,
   showActions = true,
@@ -140,40 +145,46 @@ export function ActiveCreaturePanel({
   const renderActionLabel = (actionLabel: string, cost: number) =>
     `${actionLabel}${cost > 0 ? ` (${cost})` : ""}`;
   const isFeedDisabled = token < TOKEN_COST.feed;
+  const isEnergyEmpty = selectedCreature ? selectedCreature.state.energy <= 0 : true;
 
   return (
     <section className="rounded-none border-2 border-primary bg-panel px-4 py-4 shadow-[0_0_30px_rgba(102,240,255,0.15)]">
       <div className="flex items-center justify-between gap-2 mb-2.5">
         <h2>{uiText.active}</h2>
-        <button
-          className="border border-[rgba(130,199,255,0.58)] bg-[rgba(11,18,40,0.8)] px-2 py-2 text-[12px] text-[#f2fcff] tracking-[0.3px] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.28)]"
-          data-testid="active-creature-details-button"
-          onClick={onOpenCreatureDetails}
-          type="button"
-        >
-          {uiText.creatureDetails}
-        </button>
+        <div className="grid min-w-0 shrink-0 grid-cols-2 gap-2">
+          <button
+            className="border border-[rgba(130,199,255,0.58)] bg-[rgba(11,18,40,0.8)] px-2 py-2 text-[12px] text-[#f2fcff] tracking-[0.3px] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.28)] min-h-10"
+            data-testid="active-creature-details-button"
+            onClick={onOpenCreatureDetails}
+            type="button"
+          >
+            {uiText.creatureDetails}
+          </button>
+          <button
+            className="inline-flex min-h-10 items-center justify-center border border-[rgba(130,199,255,0.8)] px-2 py-2 text-[12px] text-[#f6fdff] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] tracking-[0.34px] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
+            data-testid="active-select-button"
+            onClick={onOpenRoster}
+            type="button"
+          >
+            {uiText.rosterSelectTitle}
+          </button>
+        </div>
       </div>
+
       {selectedCreature && (
         <article className="w-full border border-lineWeak bg-[rgba(10,18,38,0.72)] p-3 relative">
-          <div className="flex justify-between items-center gap-2">
-            <div>
-              <div className="text-[13px] text-[#bfe8ff] font-semibold">{uiText.active} Lumina</div>
-              <div className="text-[13px] tracking-[0.8px] text-white">{selectedCreature.nickname}</div>
+          <div className="mb-2.5 flex items-start justify-between gap-2">
+            <div className="min-w-0 space-y-1">
+              <p className="min-w-0 text-[13px] text-[#bfe8ff] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+                {selectedCreature.nickname}
+              </p>
+              <p className="min-w-0 text-[11px] text-[#95f7de] tracking-[0.3px] whitespace-nowrap overflow-hidden text-ellipsis">
+                {selectedCreature.commonName} · {uiText.mutationStage}: {selectedCreature.mutationStage}
+              </p>
             </div>
-            <button
-              className="border border-[rgba(130,199,255,0.8)] px-2 py-2 text-[#f6fdff] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] min-h-10 hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
-              data-testid="active-select-button"
-              onClick={onOpenRoster}
-              type="button"
-            >
-              {uiText.select}
-            </button>
           </div>
-          <p className="mt-1 mb-0 text-[13px] text-muted">
-            {selectedCreature.commonName} · {getDominantEmotionLabel(selectedCreature.emotion)}
-          </p>
-          <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-4">
+
+          <div className="mb-2.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <MetricRing
               label={uiText.hunger}
               value={selectedCreature.state.hunger}
@@ -203,11 +214,13 @@ export function ActiveCreaturePanel({
               stateLabel={getMetricTone(selectedCreature.state.energy, uiText)}
             />
           </div>
-          <ColorProfile rgb={selectedCreature.rgb} title="RGB Profile" />
+
+          <ColorProfile rgb={selectedCreature.rgb} />
+
           {showActions ? (
-            <div className="mt-2 relative">
-              <div className="grid grid-cols-4 gap-2">
-                  <button
+            <div className="mt-2">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <button
                   type="button"
                   className={`${buttonClass("feed")} ${isFeedDisabled ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
                   onClick={() => setIsFeedMenuOpen((value) => !value)}
@@ -220,67 +233,14 @@ export function ActiveCreaturePanel({
                 >
                   <Apple className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
                   {renderActionLabel(actionText.feed, TOKEN_COST.feed)}
-
-                  <ChevronDown className={`h-[18px] w-[18px] shrink-0 -ml-1 ${isFeedMenuOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+                  <ChevronDown
+                    className={`h-[18px] w-[18px] shrink-0 -ml-1 ${isFeedMenuOpen ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  />
                 </button>
-                <div className="absolute left-0 right-0 top-full -mt-2 z-10">
-                  <div
-                    id="feed-accordion-active"
-                    role="region"
-                    aria-hidden={!isFeedMenuOpen}
-                    className={`${isFeedMenuOpen ? "absolute left-0 right-0 top-full mt-2 z-10 grid gap-2 border border-lineWeak bg-[rgba(8,14,32,0.95)] px-2.5 py-2" : "hidden"}`}
-                  >
-                    {feedOptions.length === 0 ? (
-                      <output className="rounded-none border border-lineWeak bg-[rgba(8,14,32,0.72)] px-3 py-2 text-[12px] text-muted">
-                        {uiText.noFeed}
-                      </output>
-                    ) : (
-                      feedOptions.map((feed) => (
-                        <div key={feed.id} className="grid gap-2">
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                performAction("feed", selectedCreature, feed.id);
-                                setActiveFeedDescription(null);
-                              }}
-                              data-testid={`active-feed-option-${feed.id}`}
-                              className="grid min-w-0 flex-1 grid-cols-[auto_1fr_auto] items-center gap-2 border-2 border-[rgba(130,199,255,0.72)] bg-[rgba(8,14,32,0.75)] px-2.5 py-1 text-[12px] text-[#f6fdff] tracking-[0.35px] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
-                              aria-label={`${feed.name} x${feed.stock}`}
-                            >
-                              <span
-                                aria-hidden="true"
-                                className="h-3 w-3 rounded-full border border-white/25"
-                                style={{ backgroundColor: feed.symbolColor }}
-                              />
-                              <span className="min-w-0 truncate text-left">{feed.name}</span>
-                              <span className="grid h-5 w-10 shrink-0 place-items-center rounded-full border border-[rgba(130,199,255,0.8)] bg-[rgba(10,20,44,0.9)] text-[11px] text-[#d6ecff]">
-                                {`x${feed.stock}`}
-                              </span>
-                            </button>
-                            <button
-                              type="button"
-                              className="grid h-8 w-8 shrink-0 place-items-center border border-[rgba(130,199,255,0.8)] bg-[rgba(10,20,44,0.9)] text-[#d6ecff] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
-                              data-testid={`active-feed-details-${feed.id}`}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                setActiveFeedDescription(activeFeedDescription?.id === feed.id ? null : feed);
-                              }}
-                              aria-label={`${uiText.feedDetails}: ${feed.name}`}
-                              aria-controls={`feed-detail-active-${feed.id}`}
-                              aria-expanded={activeFeedDescription?.id === feed.id}
-                            >
-                              <CircleHelp className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
-                            </button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
                 <button
                   className={buttonClass("clean")}
-                  disabled={selectedCreature.state.energy <= 0 || token < TOKEN_COST.clean}
+                  disabled={isEnergyEmpty || token < TOKEN_COST.clean}
                   aria-label={`${actionText.clean} (${TOKEN_COST.clean})`}
                   onClick={() => performAction("clean", selectedCreature)}
                   data-action="clean"
@@ -291,8 +251,8 @@ export function ActiveCreaturePanel({
                 </button>
                 <button
                   className={buttonClass("play")}
-                  disabled={selectedCreature.state.energy <= 0 || token < TOKEN_COST.play}
-                  aria-label={`${actionText.play} ({TOKEN_COST.play})`}
+                  disabled={isEnergyEmpty || token < TOKEN_COST.play}
+                  aria-label={`${actionText.play} (${TOKEN_COST.play})`}
                   onClick={() => performAction("play", selectedCreature)}
                   data-action="play"
                   type="button"
@@ -302,8 +262,8 @@ export function ActiveCreaturePanel({
                 </button>
                 <button
                   className={buttonClass("scan")}
-                  disabled={selectedCreature.state.energy <= 0 || token < TOKEN_COST.scan}
-                  aria-label={`${actionText.scan} ({TOKEN_COST.scan})`}
+                  disabled={isEnergyEmpty || token < TOKEN_COST.scan}
+                  aria-label={`${actionText.scan} (${TOKEN_COST.scan})`}
                   onClick={() => performAction("scan", selectedCreature)}
                   data-action="scan"
                   type="button"
@@ -312,22 +272,79 @@ export function ActiveCreaturePanel({
                   {actionText.scan} ({TOKEN_COST.scan})
                 </button>
               </div>
+
+              <div
+                id="feed-accordion-active"
+                role="region"
+                aria-hidden={!isFeedMenuOpen}
+                className={`${isFeedMenuOpen ? "mt-2 grid gap-2 border border-lineWeak bg-[rgba(8,14,32,0.95)] px-2.5 py-2" : "hidden"}`}
+              >
+                {feedOptions.length === 0 ? (
+                  <output className="rounded-none border border-lineWeak bg-[rgba(8,14,32,0.72)] px-3 py-2 text-[12px] text-muted">
+                    {uiText.noFeed}
+                  </output>
+                ) : (
+                  feedOptions.map((feed) => (
+                    <div key={feed.id} className="grid gap-2">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            performAction("feed", selectedCreature, feed.id);
+                            setActiveFeedDescription(null);
+                            setIsFeedMenuOpen(false);
+                          }}
+                          data-testid={`active-feed-option-${feed.id}`}
+                          className="grid min-w-0 flex-1 grid-cols-[auto_1fr_auto] items-center gap-2 border-2 border-[rgba(130,199,255,0.72)] bg-[rgba(8,14,32,0.75)] px-2.5 py-1 text-[12px] text-[#f6fdff] tracking-[0.35px] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
+                          aria-label={`${feed.name} x${feed.stock}`}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="h-3 w-3 rounded-full border border-white/25"
+                            style={{ backgroundColor: feed.symbolColor }}
+                          />
+                          <span className="min-w-0 truncate text-left">{feed.name}</span>
+                          <span className="grid h-5 w-10 shrink-0 place-items-center rounded-full border border-[rgba(130,199,255,0.8)] bg-[rgba(10,20,44,0.9)] text-[11px] text-[#d6ecff]">
+                            {`x${feed.stock}`}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          className="grid h-8 w-8 shrink-0 place-items-center border border-[rgba(130,199,255,0.8)] bg-[rgba(10,20,44,0.9)] text-[#d6ecff] hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
+                          data-testid={`active-feed-details-${feed.id}`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setActiveFeedDescription(activeFeedDescription?.id === feed.id ? null : feed);
+                          }}
+                          aria-label={`${uiText.feedDetails}: ${feed.name}`}
+                          aria-controls={`feed-detail-active-${feed.id}`}
+                          aria-expanded={activeFeedDescription?.id === feed.id}
+                        >
+                          <CircleHelp className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           ) : null}
         </article>
       )}
+
       {!selectedCreature ? (
         <output role="status" aria-label={uiText.creatureNotFound} className="text-[13px] text-muted">
           {uiText.creatureNotFound}
         </output>
       ) : null}
+
       {activeFeedDescription ? (
         <ModalShell
           title={`${activeFeedDescription.name} ${uiText.feedDetails}`}
           onClose={() => setActiveFeedDescription(null)}
           closeLabel={uiText.close}
         >
-            <div className="grid gap-3 text-[12px] text-[#d8ecff]">
+          <div className="grid gap-3 text-[12px] text-[#d8ecff]">
             <output className="rounded-none border border-lineWeak bg-[rgba(8,14,32,0.72)] px-3 py-2 leading-snug text-[#e9f6ff]">
               {activeFeedDescription.description || uiText.noDescription}
             </output>
@@ -341,7 +358,9 @@ export function ActiveCreaturePanel({
                   {buildStateDeltaRows(activeFeedDescription, uiText).map((row) => (
                     <div key={row.label} className="flex items-center justify-between gap-3">
                       <span>{row.label}</span>
-                      <span className={row.value > 0 ? "text-[#85ff9e]" : "text-[#ff9f9f]"}>{formatSignedValue(row.value)}</span>
+                      <span className={row.value > 0 ? "text-[#85ff9e]" : "text-[#ff9f9f]"}>
+                        {formatSignedValue(row.value)}
+                      </span>
                     </div>
                   ))}
                 </div>

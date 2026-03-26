@@ -1,0 +1,41 @@
+{
+  "dataVersion": 1,
+  "activeUserId": "4f6a3d60-5f17-4f8d-bf1d-0e9c7a8f2a31",
+  "users": {
+    "4f6a3d60-5f17-4f8d-bf1d-0e9c7a8f2a31": {
+      "id": "4f6a3d60-5f17-4f8d-bf1d-0e9c7a8f2a31",
+      "nickname": "Arcadia-07",
+      "tokens": 15,
+      "feedInventory": {
+        "feed_red_spore": 84,
+        "feed_green_bloom": 72,
+        "feed_blue_mist": 56,
+        "feed_white_vein": 24,
+        "feed_black_vein": 18
+      }
+    },
+    "a7f3d9e0-2b1d-4c3a-8b4f-5c9a1f2e3bb5": {
+      "id": "a7f3d9e0-2b1d-4c3a-8b4f-5c9a1f2e3bb5",
+      "nickname": "Nocturne-Lab",
+      "tokens": 22,
+      "feedInventory": {
+        "feed_red_spore": 40,
+        "feed_green_bloom": 53,
+        "feed_blue_mist": 48,
+        "feed_white_vein": 10
+      }
+    },
+    "3e4c7a98-18df-4dcb-b5d8-0b4a7f7f1234": {
+      "id": "3e4c7a98-18df-4dcb-b5d8-0b4a7f7f1234",
+      "nickname": "Field Operator Rook",
+      "tokens": 9,
+      "feedInventory": {
+        "feed_red_spore": 25,
+        "feed_green_bloom": 25,
+        "feed_blue_mist": 25,
+        "feed_white_vein": 15,
+        "feed_black_vein": 15
+      }
+    }
+  }
+}

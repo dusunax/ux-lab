@@ -49,8 +49,7 @@
         "r": 8,
         "g": -4,
         "b": -4
-      },
-      "stock": 99
+      }
     },
     "feed_green_bloom": {
       "id": "feed_green_bloom",
@@ -72,8 +71,7 @@
         "r": -4,
         "g": 8,
         "b": -4
-      },
-      "stock": 99
+      }
     },
     "feed_blue_mist": {
       "id": "feed_blue_mist",
@@ -95,8 +93,7 @@
         "r": -4,
         "g": -4,
         "b": 8
-      },
-      "stock": 99
+      }
     },
     "feed_white_vein": {
       "id": "feed_white_vein",
@@ -118,8 +115,7 @@
         "r": 4,
         "g": 4,
         "b": 4
-      },
-      "stock": 99
+      }
     },
     "feed_black_vein": {
       "id": "feed_black_vein",
@@ -141,8 +137,7 @@
         "r": -4,
         "g": -4,
         "b": -4
-      },
-      "stock": 99
+      }
     }
   }
 }

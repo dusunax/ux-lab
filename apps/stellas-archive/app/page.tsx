@@ -50,6 +50,7 @@ import {
   initialState,
   clamp,
   getObserverProfile,
+  getCreatureVisualProfile,
   getEmotionLabel,
 } from "../features/game/engine";
 import {
@@ -59,6 +60,7 @@ import {
   SupportedLocale,
   MESSAGE_CATALOGS,
 } from "../features/i18n/i18n";
+import { ObserverCoreFog } from "../features/observer/ObserverCoreFog";
 
 export const dynamic = "force-dynamic";
 
@@ -101,6 +103,325 @@ const getLocaleFromStorage = () => {
   const raw = window.localStorage.getItem(LOCALE_STORAGE_KEY);
   return isSupportedLocale(raw) ? raw : null;
 };
+
+type FloatingCreatureCoreProps = {
+  creature: Creature | null;
+  observerYaw: number;
+  observerPitch: number;
+  observerDragOffset?: {
+    x: number;
+    y: number;
+  };
+  className?: string;
+};
+
+function FloatingCreatureCore({
+  creature,
+  observerYaw,
+  observerPitch,
+  observerDragOffset,
+  className = "",
+}: FloatingCreatureCoreProps) {
+  if (!creature) return null;
+
+  const luminaCoreColor = `rgb(${creature.rgb.r}, ${creature.rgb.g}, ${creature.rgb.b})`;
+  const luminaCoreColorWithAlpha = (() => {
+    const rgb = luminaCoreColor
+      .replace("rgb(", "")
+      .replace(")", "")
+      .split(",")
+      .map((value) => Number.parseInt(value.trim(), 10));
+    return {
+      strong: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.7)`,
+      soft: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.45)`,
+      mid: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.2)`,
+    };
+  })();
+  const visualProfile = getCreatureVisualProfile(creature);
+  const orbSize = 140;
+  const positionRef = useRef({
+    x: 24,
+    y: 24,
+  });
+  const velocityRef = useRef({ vx: 0.035, vy: 0.027 });
+  const springMotionRef = useRef({ vx: 0, vy: 0 });
+  const dragTargetRef = useRef({
+    x: 24,
+    y: 24,
+  });
+  const dragVelocityRef = useRef({ vx: 0, vy: 0 });
+  const dragSampleRef = useRef({ x: 0, y: 0, time: 0 });
+  const isDraggingRef = useRef(false);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const hasDraggedRef = useRef(false);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const lastFrameTimeRef = useRef<number>(0);
+  const boundsRef = useRef({ minX: 16, maxX: 400, minY: 16, maxY: 400 });
+  const isAutoMotionEnabledRef = useRef(false);
+  const isInitializedRef = useRef(false);
+
+  const [position, setPosition] = useState(positionRef.current);
+
+  const setBounds = () => {
+    if (typeof window === "undefined") return;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const panelRect = window.document.querySelector<HTMLElement>(
+      "[data-creature-details-panel]",
+    )?.getBoundingClientRect();
+    const panelTopStart = panelRect ? panelRect.top + 34 : Math.floor(viewportHeight * 0.22);
+    const panelRightInner = panelRect
+      ? panelRect.right - orbSize - 20
+      : viewportWidth - orbSize - 16;
+    const panelLeftInner = panelRect
+      ? panelRect.left + panelRect.width * 0.6
+      : viewportWidth * 0.5 - orbSize / 2;
+    const panelCenterX = panelRect
+      ? panelRect.left + panelRect.width / 2 - orbSize / 2
+      : viewportWidth * 0.5 - orbSize / 2;
+
+    const horizontalPadding = 16;
+    const minX = horizontalPadding;
+    const maxX = Math.max(horizontalPadding, viewportWidth - orbSize - horizontalPadding);
+    const minY = horizontalPadding;
+    const maxY = Math.max(horizontalPadding, viewportHeight - orbSize - horizontalPadding);
+
+    if (!isInitializedRef.current) {
+      positionRef.current = {
+        x: Math.min(
+          Math.max(Math.max(panelRightInner, panelLeftInner), minX),
+          maxX,
+        ),
+        y: Math.min(Math.max(panelTopStart, minY), maxY),
+      };
+      dragTargetRef.current = {
+        x: positionRef.current.x,
+        y: positionRef.current.y,
+      };
+      isInitializedRef.current = true;
+    }
+    boundsRef.current = {
+      minX,
+      maxX,
+      minY,
+      maxY,
+    };
+    const clamped = {
+      x: Math.min(Math.max(positionRef.current.x, boundsRef.current.minX), boundsRef.current.maxX),
+      y: Math.min(Math.max(positionRef.current.y, boundsRef.current.minY), boundsRef.current.maxY),
+    };
+    dragTargetRef.current = {
+      x: clamped.x,
+      y: clamped.y,
+    };
+    positionRef.current = clamped;
+    setPosition(clamped);
+  };
+
+  useEffect(() => {
+    setBounds();
+    if (typeof window === "undefined") return;
+    const handleResize = () => setBounds();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const animate = (time: number) => {
+      if (!lastFrameTimeRef.current) lastFrameTimeRef.current = time;
+      const delta = Math.min(64, time - lastFrameTimeRef.current);
+      lastFrameTimeRef.current = time;
+
+      if (isDraggingRef.current) {
+        const frameScale = Math.min(1.5, delta / 16.67);
+        const pullX = (dragTargetRef.current.x - positionRef.current.x) * (0.08 * frameScale);
+        const pullY = (dragTargetRef.current.y - positionRef.current.y) * (0.08 * frameScale);
+
+        springMotionRef.current = {
+          vx: Math.min(28, Math.max(-28, springMotionRef.current.vx * 0.72 + pullX)),
+          vy: Math.min(28, Math.max(-28, springMotionRef.current.vy * 0.72 + pullY)),
+        };
+
+        const nextX = Math.min(
+          boundsRef.current.maxX,
+          Math.max(boundsRef.current.minX, positionRef.current.x + springMotionRef.current.vx),
+        );
+        const nextY = Math.min(
+          boundsRef.current.maxY,
+          Math.max(boundsRef.current.minY, positionRef.current.y + springMotionRef.current.vy),
+        );
+
+        positionRef.current = {
+          x: nextX,
+          y: nextY,
+        };
+        setPosition(positionRef.current);
+      } else if (isAutoMotionEnabledRef.current) {
+        let nextX = positionRef.current.x + velocityRef.current.vx * delta;
+        let nextY = positionRef.current.y + velocityRef.current.vy * delta;
+        let nextVx = velocityRef.current.vx;
+        let nextVy = velocityRef.current.vy;
+
+        if (nextX <= boundsRef.current.minX || nextX >= boundsRef.current.maxX) {
+          nextVx *= -1;
+          nextX = Math.min(boundsRef.current.maxX, Math.max(boundsRef.current.minX, nextX));
+        }
+        if (nextY <= boundsRef.current.minY || nextY >= boundsRef.current.maxY) {
+          nextVy *= -1;
+          nextY = Math.min(boundsRef.current.maxY, Math.max(boundsRef.current.minY, nextY));
+        }
+
+        velocityRef.current = { vx: nextVx, vy: nextVy };
+        positionRef.current = {
+          x: nextX,
+          y: nextY,
+        };
+        setPosition(positionRef.current);
+      }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    const node = event.currentTarget;
+    isDraggingRef.current = true;
+    isAutoMotionEnabledRef.current = false;
+    const now = performance.now();
+    springMotionRef.current = {
+      vx: 0,
+      vy: 0,
+    };
+    dragOffsetRef.current = {
+      x: event.clientX - positionRef.current.x,
+      y: event.clientY - positionRef.current.y,
+    };
+    dragStartRef.current = {
+      x: event.clientX - dragOffsetRef.current.x,
+      y: event.clientY - dragOffsetRef.current.y,
+    };
+    hasDraggedRef.current = false;
+    dragSampleRef.current = {
+      x: event.clientX - dragOffsetRef.current.x,
+      y: event.clientY - dragOffsetRef.current.y,
+      time: now,
+    };
+    dragVelocityRef.current = {
+      vx: 0,
+      vy: 0,
+    };
+    node.setPointerCapture(event.pointerId);
+  };
+
+  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    const nextX = event.clientX - dragOffsetRef.current.x;
+    const nextY = event.clientY - dragOffsetRef.current.y;
+    const next = {
+      x: Math.min(boundsRef.current.maxX, Math.max(boundsRef.current.minX, nextX)),
+      y: Math.min(boundsRef.current.maxY, Math.max(boundsRef.current.minY, nextY)),
+    };
+    const now = performance.now();
+    const sampleTime = Math.max(1, now - dragSampleRef.current.time);
+    const sampleSourceX = dragSampleRef.current.x;
+    const sampleSourceY = dragSampleRef.current.y;
+    dragVelocityRef.current = {
+      vx: (next.x - sampleSourceX) / sampleTime,
+      vy: (next.y - sampleSourceY) / sampleTime,
+    };
+    const dx = next.x - dragStartRef.current.x;
+    const dy = next.y - dragStartRef.current.y;
+    if (dx * dx + dy * dy > 9) {
+      hasDraggedRef.current = true;
+    }
+    dragSampleRef.current = {
+      x: next.x,
+      y: next.y,
+      time: now,
+    };
+    dragTargetRef.current = next;
+  };
+
+  const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = false;
+    if (hasDraggedRef.current) {
+      const pointerMomentumX = Math.max(
+        -0.08,
+        Math.min(0.08, dragVelocityRef.current.vx * 0.6 + springMotionRef.current.vx * 0.018),
+      );
+      const pointerMomentumY = Math.max(
+        -0.08,
+        Math.min(0.08, dragVelocityRef.current.vy * 0.6 + springMotionRef.current.vy * 0.018),
+      );
+      velocityRef.current = {
+        vx: pointerMomentumX,
+        vy: pointerMomentumY,
+      };
+      isAutoMotionEnabledRef.current = true;
+    } else {
+      velocityRef.current = { vx: 0, vy: 0 };
+      isAutoMotionEnabledRef.current = false;
+    }
+    springMotionRef.current = {
+      vx: 0,
+      vy: 0,
+    };
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+  };
+
+  return (
+    <div
+      className={`fixed inset-0 z-[95] overflow-hidden pointer-events-none ${className}`}
+      aria-hidden="true"
+    >
+      <div
+        className="absolute rounded-full select-none touch-none cursor-grab active:cursor-grabbing"
+        style={{
+          width: `${orbSize}px`,
+          height: `${orbSize}px`,
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          touchAction: "none",
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onPointerLeave={onPointerUp}
+      >
+        <div
+          className="absolute inset-0 rounded-full blur-[1px]"
+          style={{
+            background: `radial-gradient(circle at 50% 50%, ${luminaCoreColorWithAlpha.strong} 0%, ${luminaCoreColorWithAlpha.soft} 24%, ${luminaCoreColorWithAlpha.mid} 48%, transparent 78%)`,
+          }}
+        />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <ObserverCoreFog
+            color={luminaCoreColor}
+            visualProfile={visualProfile}
+            yaw={observerYaw}
+            pitch={observerPitch}
+            isPixelBurst={false}
+            burstScale={1}
+            dragOffsetX={observerDragOffset?.x ?? 0}
+            dragOffsetY={observerDragOffset?.y ?? 0}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 const setLocaleStorage = (nextLocale: Locale) => {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale);
@@ -314,6 +635,16 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
   const uiText = localizedText.interfaceText;
   const actionText = localizedText.actionText;
   const speciesText = localizedText.species;
+
+  const selectedCreatureSpecies = useMemo(() => {
+    if (!selectedCreature) return null;
+    return SPECIES[normalizeSpeciesId(selectedCreature.speciesId)] ?? null;
+  }, [selectedCreature]);
+
+  const selectedSpeciesDescription = useMemo(() => {
+    if (!selectedCreatureSpecies) return "";
+    return speciesText[selectedCreatureSpecies.speciesId]?.description ?? "";
+  }, [speciesText, selectedCreatureSpecies]);
 
   useEffect(() => {
     if (lastActionRef.current === "feed") {
@@ -878,7 +1209,8 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
     if (activeModal === "missions")
       return uiText.missionDetails || "Mission List";
     if (activeModal === "archive") return uiText.archive || "Archive";
-    if (activeModal === "roster") return uiText.creatures || "Creatures in Lab";
+    if (activeModal === "roster")
+      return uiText.rosterSelectTitle || uiText.creatures || "Creatures in Lab";
     if (activeModal === "observer-targets")
       return uiText.observerTargets || "Observer Targets";
     return uiText.creatureDetails || "Creature Details";
@@ -978,6 +1310,8 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
               performAction={performAction}
               feeds={FEEDS}
               feedInventory={state.feedInventory}
+              speciesProfile={selectedCreatureSpecies}
+              speciesDescription={selectedSpeciesDescription}
               onOpenRoster={() => openModal("roster")}
               onOpenCreatureDetails={() => openModal("creature-details")}
               showActions={true}
@@ -1129,6 +1463,8 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
               feeds={FEEDS}
               feedInventory={state.feedInventory}
               speciesText={speciesText}
+              speciesProfile={selectedCreatureSpecies}
+              speciesDescription={selectedSpeciesDescription}
               onAction={performAction}
               onSetObserverTarget={(creature) => {
                 setIsObserverAutoTarget(false);
@@ -1138,6 +1474,14 @@ function StellaArchivePageContent(_props: StellaArchivePageProps) {
           ) : null}
         </ModalShell>
       )}
+      {activeModal === "creature-details" ? (
+        <FloatingCreatureCore
+          creature={selectedCreature}
+          observerYaw={observerYaw}
+          observerPitch={observerPitch}
+          observerDragOffset={observerDragOffset}
+        />
+      ) : null}
     </main>
   );
 }

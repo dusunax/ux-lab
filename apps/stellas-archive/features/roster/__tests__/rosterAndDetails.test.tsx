@@ -3,10 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import { RosterModal } from "../RosterModal";
 import { CreatureDetailsModal } from "../CreatureDetailsModal";
-import { ACTION_TEXT, FEEDS, getDefaultFeedInventory, INTERFACE_TEXT } from "../../game/engine";
+import { ACTION_TEXT, FEEDS, getDefaultFeedInventory, INTERFACE_TEXT, type Species } from "../../game/engine";
 import type { Creature } from "../../game/engine";
 import { SupportedLocale } from "../../i18n/i18n";
-import { getCatalog } from "../../i18n/i18n";
 
 const lumina: Creature = {
   id: "c1",
@@ -44,6 +43,20 @@ const glint: Creature = {
   traits: ["volatile", "pulse"],
   mutationStage: 0,
   discoveredAt: 1700000000000,
+};
+
+const speciesProfile: Species = {
+  id: "species_lumina",
+  commonName: "Lumina",
+  scientificName: "Luminidae sapiens",
+  traits: ["glow", "stable"],
+  baseRgb: { r: 120, g: 100, b: 160 },
+  temperament: "calm",
+  rarity: "common",
+  visualProfile: {
+    rings: { count: 2, intensity: 0.75, spacing: 0.28, satellites: { count: 0, intensity: 0 } },
+    flicker: { intensity: 0.2 },
+  },
 };
 
 describe("RosterModal", () => {
@@ -127,9 +140,7 @@ describe("CreatureDetailsModal", () => {
         token={10}
         feeds={FEEDS}
         feedInventory={getDefaultFeedInventory(FEEDS)}
-        speciesText={getCatalog(SupportedLocale.En).species}
         onAction={() => undefined}
-        onSetObserverTarget={() => undefined}
       />,
     );
 
@@ -138,7 +149,8 @@ describe("CreatureDetailsModal", () => {
 
   it("triggers mutation and action callbacks", () => {
     const onAction = vi.fn();
-    const onSetObserverTarget = vi.fn();
+    const speciesDescription = "Stable emotional baseline for Stella's first discovered species.";
+
     render(
       <CreatureDetailsModal
         creature={lumina}
@@ -147,18 +159,22 @@ describe("CreatureDetailsModal", () => {
         token={10}
         feeds={FEEDS}
         feedInventory={getDefaultFeedInventory(FEEDS)}
-        speciesText={getCatalog(SupportedLocale.En).species}
+        speciesProfile={speciesProfile}
+        speciesDescription={speciesDescription}
         onAction={onAction}
-        onSetObserverTarget={onSetObserverTarget}
       />,
     );
+
+    expect(screen.getByText(INTERFACE_TEXT[SupportedLocale.En].speciesProfile)).toBeTruthy();
+    expect(screen.getByText((value) => value.includes("Luminidae sapiens"))).toBeTruthy();
+    expect(screen.getByText(speciesDescription)).toBeTruthy();
+    expect(screen.getAllByText(INTERFACE_TEXT[SupportedLocale.En].myLuminaData).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(lumina.nickname)).toBeTruthy();
 
     fireEvent.click(screen.getByTestId("details-action-feed"));
     fireEvent.click(
       screen.getByTestId("details-feed-option-feed_red_spore"),
     );
     expect(onAction).toHaveBeenCalledWith("feed", lumina, "feed_red_spore");
-    fireEvent.click(screen.getByTestId("details-select-button"));
-    expect(onSetObserverTarget).toHaveBeenCalledWith(lumina);
   });
 });

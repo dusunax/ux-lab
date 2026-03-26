@@ -34,6 +34,8 @@ import type {
   GameMockupData,
   GameMockupDataDocument,
   GameMockupNoSqlData,
+  GameMockupUser,
+  GameMockupUserData,
   InterfaceText,
   Interaction,
   LuminaFlickerProfile,
@@ -64,6 +66,8 @@ export type {
   GameState,
   GameMockupDataDocument,
   GameMockupNoSqlData,
+  GameMockupUser,
+  GameMockupUserData,
   InterfaceText,
   Interaction,
   LuminaFlickerProfile,
@@ -81,12 +85,14 @@ export type {
 import mockupCore from "../../data/core/v1.json";
 import mockupSpecies from "../../data/species/index.json";
 import mockupMutationRules from "../../data/mutationRules/index.json";
+import mockupUsers from "../../data/users/index.json";
 
 const mockupData = {
   ...mockupCore,
   species: mockupSpecies,
   mutationRules: mockupMutationRules,
 };
+const userMockupData = mockupUsers as unknown as GameMockupUserData;
 
 const LOCALE_KEYS: readonly Locale[] = [SupportedLocale.En, SupportedLocale.Ko];
 const TEMPERAMENTS = ["calm", "curious", "aggressive", "harmonic", "unstable", "mysterious"] as const;
@@ -143,7 +149,6 @@ const isFeedItem = (value: unknown): value is FeedItem => {
   ) {
     return false;
   }
-  if (data.stock !== undefined && !isNumber(data.stock)) return false;
   return true;
 };
 
@@ -383,7 +388,6 @@ const normalizeMockupData = (raw: GameMockupNoSqlData): GameMockupData => {
         {
           ...feed,
           id,
-          stock: clampFeedStock(feed.stock ?? 0),
         },
       ]),
     ) as Record<string, FeedItem>,
@@ -416,6 +420,28 @@ const readGameMockupData = (raw: unknown): GameMockupData => {
 };
 
 const gameMockup = readGameMockupData(mockupData);
+const getUserInventoryById = (
+  userId = userMockupData.activeUserId,
+): FeedInventory => {
+  const user = userMockupData.users[userId];
+  if (!user) return {};
+  return Object.entries(user.feedInventory ?? {}).reduce<FeedInventory>((acc, [feedId, stock]) => {
+    if (FEEDS[feedId]) {
+      acc[feedId] = clampFeedStock(stock);
+    }
+    return acc;
+  }, {});
+};
+
+const getActiveUserProfileById = (userId = userMockupData.activeUserId): GameMockupUser | null => {
+  return userMockupData.users[userId] ?? null;
+};
+
+export const getActiveUserTokens = (userId = userMockupData.activeUserId): number => {
+  const user = getActiveUserProfileById(userId);
+  if (!user) return 15;
+  return Number.isFinite(user.tokens) ? clamp(user.tokens, 0, 999) : 15;
+};
 
 export const DEFAULT_LUMINA_VISUAL_PROFILE: LuminaVisualProfile = withVisualProfile(gameMockup.defaultVisualProfile);
 
@@ -479,10 +505,14 @@ export const normalizeSpeciesId = (speciesId: string) => {
 
 export const STARTER_IDS = gameMockup.starterIds;
 
-export const getDefaultFeedInventory = (source: Record<string, FeedItem> = FEEDS): FeedInventory => {
+export const getDefaultFeedInventory = (
+  source: Record<string, FeedItem> = FEEDS,
+  userId?: string
+): FeedInventory => {
+  const userInventory = getUserInventoryById(userId);
   const next: FeedInventory = {};
-  Object.entries(source).forEach(([id, feed]) => {
-    next[id] = clampFeedStock(feed.stock ?? 0);
+  Object.entries(source).forEach(([id]) => {
+    next[id] = clampFeedStock(userInventory[id] ?? 0);
   });
   return next;
 };
@@ -696,6 +726,7 @@ export function nextDayState(
 }
 
 export const initialState = (locale: Locale = SupportedLocale.En): GameState => {
+  const activeUserId = userMockupData.activeUserId;
   const today = getTodayKey();
 
   const starter = STARTER_IDS.map((id, index) =>
@@ -709,10 +740,10 @@ export const initialState = (locale: Locale = SupportedLocale.En): GameState => 
   return {
     version: 1,
     locale,
-    tokens: 15,
+    tokens: getActiveUserTokens(activeUserId),
     creatures: starter,
     selectedCreatureId: starter[0]?.id ?? "",
-    feedInventory: getDefaultFeedInventory(),
+    feedInventory: getDefaultFeedInventory(FEEDS, activeUserId),
     archive: [],
     researchData: { observation: 0, mutation: 0, emotion: 0 },
     daily: {
@@ -727,6 +758,7 @@ export const initialState = (locale: Locale = SupportedLocale.En): GameState => 
 export const loadState = (fallbackLocale: Locale = SupportedLocale.En): GameState => {
   if (typeof window === "undefined") return initialState();
   const raw = window.localStorage.getItem(STORAGE_KEY);
+  const activeUserId = userMockupData.activeUserId;
   if (!raw) return initialState(fallbackLocale);
   try {
     const parsed = JSON.parse(raw) as GameState;
@@ -741,7 +773,7 @@ export const loadState = (fallbackLocale: Locale = SupportedLocale.En): GameStat
         speciesId: normalizeSpeciesId(creature.speciesId ?? "species_lumina"),
       })),
       feedInventory: (() => {
-        const mergedInventory: FeedInventory = { ...getDefaultFeedInventory() };
+        const mergedInventory: FeedInventory = { ...getDefaultFeedInventory(FEEDS, activeUserId) };
         Object.entries(parsed.feedInventory ?? {}).forEach(([id, rawStock]) => {
           if (FEEDS[id]) {
             mergedInventory[id] = clampFeedStock(Number(rawStock));
@@ -749,6 +781,10 @@ export const loadState = (fallbackLocale: Locale = SupportedLocale.En): GameStat
         });
         return mergedInventory;
       })(),
+      tokens:
+        typeof parsed.tokens === "number"
+          ? clamp(parsed.tokens, 0, 999)
+          : getActiveUserTokens(activeUserId),
       archive: parsed.archive ?? [],
       researchData: parsed.researchData ?? { observation: 0, mutation: 0, emotion: 0 },
       daily: {

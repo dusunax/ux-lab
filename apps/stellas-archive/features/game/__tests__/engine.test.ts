@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ARCHIVE_PAGE_SIZE,
+  FEEDS,
   clamp,
   createCreature,
   createDailySignal,
@@ -13,11 +14,13 @@ import {
   isYesterday,
   loadState,
   saveState,
+  getDefaultFeedInventory,
   applyRgbDelta,
   initialState,
   nextDayState,
   getMissionText,
   STORAGE_KEY,
+  getActiveUserTokens,
 } from "../engine";
 import { SupportedLocale } from "../../i18n/i18n";
 import type { Creature, DailyState, Locale } from "../engine";
@@ -136,6 +139,36 @@ describe("game engine utilities", () => {
     expect(restored.version).toBe(seed.version);
     expect(restored.creatures.length).toBe(seed.creatures.length);
     expect(restored.creatures[0]?.id).toBe(seed.creatures[0]?.id);
+  });
+
+  it("builds default feed inventory by active user mock profile", () => {
+    const activeUserInventory = getDefaultFeedInventory(FEEDS, "4f6a3d60-5f17-4f8d-bf1d-0e9c7a8f2a31");
+
+    expect(activeUserInventory.feed_red_spore).toBe(84);
+    expect(activeUserInventory.feed_green_bloom).toBe(72);
+    expect(activeUserInventory.feed_blue_mist).toBe(56);
+    expect(activeUserInventory.feed_white_vein).toBe(24);
+    expect(activeUserInventory.feed_black_vein).toBe(18);
+    expect(activeUserInventory.feed_unknown).toBeUndefined();
+  });
+
+  it("uses active user token from mock profile in initial state", () => {
+    const activeUserTokens = getActiveUserTokens();
+    const state = initialState(SupportedLocale.En);
+
+    expect(state.tokens).toBe(activeUserTokens);
+  });
+
+  it("falls back to baseline tokens for unknown user profile", () => {
+    expect(getActiveUserTokens("unknown-user-id")).toBe(15);
+  });
+
+  it("falls back to zero inventory for unknown users or missing feed items", () => {
+    const unknownUserInventory = getDefaultFeedInventory(FEEDS, "unknown-user-id");
+
+    expect(unknownUserInventory.feed_red_spore).toBe(0);
+    expect(unknownUserInventory.feed_green_bloom).toBe(0);
+    expect(unknownUserInventory.feed_black_vein).toBe(0);
   });
 
   it("falls back to initial state on invalid serialized payload", () => {

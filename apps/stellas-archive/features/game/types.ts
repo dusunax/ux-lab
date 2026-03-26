@@ -29,7 +29,6 @@ export type FeedItem = {
   stateDelta: FeedItemStateDelta;
   rgbDelta: Partial<RGB>;
   symbolColor?: string;
-  stock: number;
 };
 
 export type FeedInventory = Record<string, number>;
@@ -175,6 +174,7 @@ export type InterfaceText = {
   archive: string;
   archiveEmpty: string;
   creatures: string;
+  rosterSelectTitle: string;
   all: string;
   active: string;
   select: string;
@@ -182,6 +182,8 @@ export type InterfaceText = {
   traits: string;
   mutationStage: string;
   species: string;
+  speciesProfile: string;
+  myLuminaData: string;
   metaEmotion: string;
   metaState: string;
   missionEmpty: string;
@@ -272,6 +274,21 @@ export type GameMockupNoSqlData = {
   species: GameMockupDataDocument["species"];
   mutationRules: GameMockupDataDocument["mutationRules"];
   starterNicknames: string[];
+};
+
+export type GameMockupUser = {
+  id: string;
+  nickname: string;
+  tokens: number;
+  feedInventory: FeedInventory;
+};
+
+export type GameMockupUserDocument = Record<string, GameMockupUser>;
+
+export type GameMockupUserData = {
+  dataVersion: 1;
+  activeUserId: string;
+  users: GameMockupUserDocument;
 };
 
 export type GameMockupData = {

@@ -4,6 +4,7 @@ import type {
   Creature,
   FeedInventory,
   FeedItem,
+  Species,
   InterfaceText,
   Interaction,
 } from "../game/engine";
@@ -13,8 +14,6 @@ import { ColorProfile } from "../ui/ColorProfile";
 import { Apple, CircleHelp, Droplets, Scan, Sparkles } from "lucide-react";
 import { ModalShell } from "../ui/ModalShell";
 import { getActiveLocale } from "../i18n/i18n";
-
-type SpeciesTextMap = Record<string, { description: string }>;
 
 type FeedOption = {
   id: string;
@@ -42,9 +41,11 @@ type CreatureDetailsModalProps = {
   token: number;
   feeds: Record<string, FeedItem>;
   feedInventory: FeedInventory;
-  speciesText: SpeciesTextMap;
+  speciesText?: Record<string, { description: string }>;
+  speciesProfile?: Species | null;
+  speciesDescription?: string;
   onAction: (interaction: Interaction, creature: Creature, feedItemId?: string) => void;
-  onSetObserverTarget: (creature: Creature) => void;
+  onSetObserverTarget?: (creature: Creature) => void;
 };
 
 function getColorByMetric(value: number) {
@@ -107,12 +108,23 @@ export function CreatureDetailsModal({
   feeds,
   feedInventory,
   speciesText,
+  speciesProfile,
+  speciesDescription,
   onAction,
-  onSetObserverTarget,
 }: CreatureDetailsModalProps) {
   const [isFeedMenuOpen, setIsFeedMenuOpen] = useState(false);
   const [activeFeedDescription, setActiveFeedDescription] = useState<FeedOption | null>(null);
   const activeLocale = getActiveLocale();
+  const resolvedSpecies = creature
+    ? {
+        commonName: speciesProfile?.commonName ?? creature.commonName,
+        scientificName: speciesProfile?.scientificName ?? creature.scientificName,
+        traits: speciesProfile?.traits.length ? speciesProfile.traits : creature.traits,
+      }
+    : null;
+  const resolvedSpeciesDescription = creature
+    ? speciesDescription ?? speciesText?.[creature.speciesId]?.description ?? ""
+    : "";
   const feedOptions = useMemo(
     () =>
       Object.values(feeds)
@@ -141,27 +153,52 @@ export function CreatureDetailsModal({
     );
   }
 
+  const isEnergyEmpty = creature.state.energy <= 0;
+
   return (
-    <article className="w-full border border-lineWeak bg-[rgba(10,18,38,0.72)] p-3">
+    <article data-creature-details-panel className="w-full border border-lineWeak bg-[rgba(10,18,38,0.72)] p-3">
       <div className="flex justify-between items-center gap-2">
         <div>
-          <div className="text-[13px] text-[#bfe8ff] font-semibold">{creature.commonName}</div>
           <div className="text-[13px] tracking-[0.8px] text-white">{creature.nickname}</div>
         </div>
-        <button
-          data-testid="details-select-button"
-          className="border border-[rgba(130,199,255,0.8)] px-2 py-2 text-[#f6fdff] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] min-h-10 hover:border-[#8ff5ff] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)]"
-          aria-label={`${uiText.select} ${creature.nickname}`}
-          onClick={() => onSetObserverTarget(creature)}
-          type="button"
-        >
-          {uiText.select}
-        </button>
       </div>
-      <p className="mt-2 text-[11px] text-[#95f7de] tracking-[0.3px]">
-        {uiText.emotion}: <strong>{getDominantEmotionLabel(creature.emotion)}</strong> / {uiText.traits}:{" "}
-        {creature.traits.join(", ")}
-      </p>
+      <div className="mt-2.5 grid gap-2.5 md:grid-cols-[1.35fr_1fr]">
+        <section className="space-y-2 rounded border border-[rgba(130,200,255,0.28)] bg-[rgba(8,14,30,0.55)] p-2.5">
+          <p className="text-[12px] tracking-[0.4px] text-[#95f7de]">{uiText.speciesProfile}</p>
+          {resolvedSpecies ? (
+            <>
+              <p className="text-[13px] font-semibold text-[#d2ecff]">
+                {resolvedSpecies.commonName}
+                <span className="ml-2 text-[11px] text-[#98b7e8]">({resolvedSpecies.scientificName})</span>
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {resolvedSpecies.traits.map((trait) => (
+                  <span
+                    key={trait}
+                    className="rounded-none border border-[rgba(130,199,255,0.45)] bg-[rgba(10,20,44,0.82)] px-2 py-1 text-[11px] text-[#d7e9fb] tracking-[0.2px]"
+                  >
+                    {trait}
+                  </span>
+                ))}
+              </div>
+              {resolvedSpeciesDescription ? (
+                <p id="creature-species-detail" className="text-[12px] leading-snug text-[#d7e9fb]">
+                  {resolvedSpeciesDescription}
+                </p>
+              ) : null}
+            </>
+          ) : null}
+        </section>
+        <section className="space-y-2 rounded border border-[rgba(130,200,255,0.28)] bg-[rgba(8,14,30,0.55)] p-2.5">
+          <p className="text-[12px] tracking-[0.4px] text-[#95f7de]">{uiText.myLuminaData}</p>
+          <p className="text-[12px] text-[#e8f2ff]">
+            {uiText.emotion}: {getDominantEmotionLabel(creature.emotion)}
+          </p>
+          <p className="text-[11px] text-[#95f7de] tracking-[0.3px]">
+            {uiText.mutationStage}: {creature.mutationStage}
+          </p>
+        </section>
+      </div>
       <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-4">
         <MetricRing
           label={uiText.hunger}
@@ -193,24 +230,18 @@ export function CreatureDetailsModal({
         />
       </div>
       <ColorProfile rgb={creature.rgb} />
-      <div className="mt-2.5 text-[13px] text-[#e8d5f8]">
-        <span className="text-[11px] text-[#95f7de] tracking-[0.3px]">
-          {uiText.mutationStage}: {creature.mutationStage}
-        </span>
-        <br />
-        {speciesText[creature.speciesId || ""]?.description}
-      </div>
-        <div className="mt-2.5 space-y-2">
-          <div className="grid grid-cols-4 gap-2">
-            <button
-              type="button"
-              data-testid="details-action-feed"
-              className={`inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed ${isFeedDisabled ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
-              aria-label={renderActionLabel(actionText.feed, TOKEN_COST.feed)}
-              data-action="feed"
-              aria-expanded={isFeedMenuOpen}
-              aria-controls="feed-accordion-creature"
-              onClick={() => setIsFeedMenuOpen((value) => !value)}
+      <section className="mt-2.5 rounded border border-[rgba(130,200,255,0.28)] bg-[rgba(8,14,30,0.55)] p-2.5">
+        <p className="mb-2 text-[12px] tracking-[0.4px] text-[#95f7de]">액션</p>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
+          <button
+            type="button"
+            data-testid="details-action-feed"
+            className={`inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed ${isFeedDisabled ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
+            aria-label={renderActionLabel(actionText.feed, TOKEN_COST.feed)}
+            data-action="feed"
+            aria-expanded={isFeedMenuOpen}
+            aria-controls="feed-accordion-creature"
+            onClick={() => setIsFeedMenuOpen((value) => !value)}
             disabled={isFeedDisabled}
           >
             <Apple className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
@@ -219,7 +250,7 @@ export function CreatureDetailsModal({
           <button
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
             aria-label={`${actionText.clean} (${TOKEN_COST.clean})`}
-            disabled={creature.state.energy <= 0 || token < TOKEN_COST.clean}
+            disabled={isEnergyEmpty || token < TOKEN_COST.clean}
             onClick={() => onAction("clean", creature)}
             type="button"
           >
@@ -229,7 +260,7 @@ export function CreatureDetailsModal({
           <button
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
             aria-label={`${actionText.play} (${TOKEN_COST.play})`}
-            disabled={creature.state.energy <= 0 || token < TOKEN_COST.play}
+            disabled={isEnergyEmpty || token < TOKEN_COST.play}
             onClick={() => onAction("play", creature)}
             type="button"
           >
@@ -239,7 +270,7 @@ export function CreatureDetailsModal({
           <button
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap border-2 border-[rgba(130,199,255,0.8)] bg-[linear-gradient(180deg,rgba(43,84,151,0.72),rgba(17,29,64,0.82))] px-2 py-2 text-[13px] text-[#f6fdff] min-h-10 tracking-[0.4px] hover:border-[rgba(130,245,255,1)] hover:shadow-[0_0_12px_rgba(127,232,255,0.35)] disabled:opacity-45 disabled:cursor-not-allowed"
             aria-label={`${actionText.scan} (${TOKEN_COST.scan})`}
-            disabled={creature.state.energy <= 0 || token < TOKEN_COST.scan}
+            disabled={isEnergyEmpty || token < TOKEN_COST.scan}
             onClick={() => onAction("scan", creature)}
             type="button"
           >
@@ -251,7 +282,9 @@ export function CreatureDetailsModal({
           id="feed-accordion-creature"
           role="region"
           aria-hidden={!isFeedMenuOpen}
-          className={`${isFeedMenuOpen ? "grid gap-2" : "hidden"}`}
+          className={`mt-2 grid gap-2 border border-lineWeak bg-[rgba(8,14,32,0.95)] px-2.5 py-2 ${
+            isFeedMenuOpen ? "grid" : "hidden"
+          }`}
         >
           {feedOptions.length === 0 ? (
             <output className="rounded-none border border-lineWeak bg-[rgba(8,14,32,0.72)] px-3 py-2 text-[12px] text-muted">
@@ -300,7 +333,7 @@ export function CreatureDetailsModal({
             ))
           )}
         </div>
-      </div>
+      </section>
       {activeFeedDescription ? (
         <ModalShell
           title={`${activeFeedDescription.name} ${uiText.feedDetails}`}

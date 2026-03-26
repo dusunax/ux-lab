@@ -68,6 +68,10 @@ describe("ActiveCreaturePanel", () => {
       />,
     );
 
+    expect(screen.getByText((value) => value.includes(creature.commonName))).toBeTruthy();
+    expect(screen.getByText((value) => value.includes("Mutation Stage"))).toBeTruthy();
+    expect(screen.getByText(creature.nickname)).toBeTruthy();
+
     fireEvent.click(screen.getByTestId("active-action-feed"));
     fireEvent.click(screen.getByTestId("active-feed-option-feed_red_spore"));
     expect(onAction).toHaveBeenCalledWith("feed", creature, "feed_red_spore");
