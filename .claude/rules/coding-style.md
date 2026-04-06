@@ -54,3 +54,9 @@ try {
 - [ ] No magic numbers
 - [ ] Error handling in place
 - [ ] Types defined (no `any`)
+
+## Structural Rule
+
+- Place feature implementations under the `features` folder by feature area.
+- Prefer minimal file splitting for a feature; keep related logic and rendering together.
+- Split files only when complexity requires it to keep maintenance cost predictable.
