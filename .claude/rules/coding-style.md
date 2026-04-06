@@ -54,6 +54,7 @@ try {
 - [ ] No magic numbers
 - [ ] Error handling in place
 - [ ] Types defined (no `any`)
+- [ ] Update existing markdown documentation whenever significant logic changes occur to keep docs and implementation consistent
 
 ## Structural Rule
 
