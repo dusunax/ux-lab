@@ -128,7 +128,7 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
-  apps/design-harness:
+  apps/figma-harness:
     dependencies:
       next:
         specifier: 15.5.9
@@ -6186,10 +6186,6 @@ packages:
       three: 0.181.2
     dev: false
 
-  /caniuse-lite@1.0.30001747:
-    resolution: {integrity: sha512-mzFa2DGIhuc5490Nd/G31xN1pnBnYMadtkyTjefPI7wzypqgCEpeWu9bJr0OnDsyKrW75zA9ZAt7pbQFmwLsQg==}
-    dev: false
-
   /caniuse-lite@1.0.30001765:
     resolution: {integrity: sha512-LWcNtSyZrakjECqmpP4qdg0MMGdN368D7X8XvvAqOcqMv0RxnlqVKZl2V6/mBR68oYMxOZPLw/gO7DuisMHUvQ==}
 
@@ -9724,7 +9720,7 @@ packages:
     dependencies:
       '@next/env': 15.5.9
       '@swc/helpers': 0.5.15
-      caniuse-lite: 1.0.30001747
+      caniuse-lite: 1.0.30001765
       postcss: 8.4.31
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
