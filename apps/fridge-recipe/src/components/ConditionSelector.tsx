@@ -5,6 +5,9 @@ import type { Conditions } from "@/lib/recipeApi";
 interface Props {
   value: Conditions;
   onChange: (next: Conditions) => void;
+  allergies?: string[];
+  excludeAllergies?: boolean;
+  onExcludeAllergiesChange?: (v: boolean) => void;
 }
 
 function ChipGroup<T extends string | number | null>({
@@ -47,7 +50,7 @@ function ChipGroup<T extends string | number | null>({
   );
 }
 
-export default function ConditionSelector({ value, onChange }: Props) {
+export default function ConditionSelector({ value, onChange, allergies = [], excludeAllergies = false, onExcludeAllergiesChange }: Props) {
   return (
     <div className="space-y-5">
       <ChipGroup
@@ -77,7 +80,7 @@ export default function ConditionSelector({ value, onChange }: Props) {
           { value: "normal", label: "일반" },
           { value: "vegetarian", label: "채식" },
           { value: "vegan", label: "비건" },
-          { value: "weird", label: "괴식" },
+          { value: "low-sodium", label: "무염식" },
         ]}
         value={value.diet}
         onSelect={(v) => onChange({ ...value, diet: v as Conditions["diet"] })}
@@ -90,10 +93,38 @@ export default function ConditionSelector({ value, onChange }: Props) {
           { value: "western", label: "양식" },
           { value: "chinese", label: "중식" },
           { value: "southeast-asian", label: "동남아식" },
+          { value: "weird", label: "괴식" },
         ]}
         value={value.cuisine}
         onSelect={(v) => onChange({ ...value, cuisine: v as Conditions["cuisine"] })}
       />
+      {allergies.length > 0 && onExcludeAllergiesChange && (
+        <div className="space-y-3 pt-1">
+          <p className="font-mono text-xs tracking-widest uppercase" style={{ color: "var(--muted)" }}>개인설정</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium" style={{ color: "var(--text)" }}>알레르기 재료 무시</p>
+              <p className="font-mono text-xs" style={{ color: "var(--muted)" }}>{allergies.join(", ")}</p>
+            </div>
+            <button
+              onClick={() => onExcludeAllergiesChange(!excludeAllergies)}
+              className="relative h-6 w-11 shrink-0 rounded-full transition-all duration-200"
+              style={{ background: excludeAllergies ? "var(--accent)" : "var(--border)" }}
+              aria-checked={excludeAllergies}
+              role="switch"
+            >
+              <span
+                className="absolute top-0.5 h-5 w-5 rounded-full transition-all duration-200"
+                style={{
+                  background: "var(--surface)",
+                  left: excludeAllergies ? "22px" : "2px",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+                }}
+              />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

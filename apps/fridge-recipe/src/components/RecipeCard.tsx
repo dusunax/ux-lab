@@ -2,15 +2,23 @@
 
 import { useState } from "react";
 import type { Recipe } from "@/lib/recipeApi";
+import IngredientChip from "@/components/IngredientChip";
 
 interface Props {
   recipe: Recipe;
   onSave: (recipe: Recipe) => void;
   saved: boolean;
+  allergies?: string[];
 }
 
-export default function RecipeCard({ recipe, onSave, saved }: Props) {
+export default function RecipeCard({ recipe, onSave, saved, allergies = [] }: Props) {
   const [expanded, setExpanded] = useState(false);
+
+  const allergyMatches = allergies.length > 0
+    ? recipe.usedIngredients.filter((ing) =>
+        allergies.some((a) => ing.includes(a) || a.includes(ing))
+      )
+    : [];
 
   return (
     <article
@@ -41,6 +49,19 @@ export default function RecipeCard({ recipe, onSave, saved }: Props) {
         <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
           {recipe.description}
         </p>
+        {allergyMatches.length > 0 && (
+          <div
+            className="mt-3 flex items-start gap-2 rounded-sm px-3 py-2"
+            style={{ background: "var(--danger-light)", border: "1px solid var(--danger-mid)" }}
+          >
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="var(--danger)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
+              <path d="M6.5 1L12 11H1L6.5 1Z" /><line x1="6.5" y1="5" x2="6.5" y2="7.5" /><circle cx="6.5" cy="9.5" r="0.5" fill="var(--danger)" stroke="none" />
+            </svg>
+            <p className="font-mono text-xs leading-relaxed" style={{ color: "var(--danger)" }}>
+              알레르기 주의: {allergyMatches.join(", ")}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Ingredients */}
@@ -52,17 +73,7 @@ export default function RecipeCard({ recipe, onSave, saved }: Props) {
             </p>
             <div className="flex flex-wrap gap-1.5">
               {recipe.usedIngredients.map((i) => (
-                <span
-                  key={i}
-                  className="rounded-sm px-2.5 py-1 font-mono text-xs"
-                  style={{
-                    background: "var(--accent-light)",
-                    border: "1px solid color-mix(in srgb, var(--accent-mid) 25%, transparent)",
-                    color: "var(--accent)",
-                  }}
-                >
-                  {i}
-                </span>
+                <IngredientChip key={i} label={i} isAllergy={allergyMatches.includes(i)} />
               ))}
             </div>
           </div>

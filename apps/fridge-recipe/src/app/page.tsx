@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ImageDropzone from "@/components/ImageDropzone";
 import IngredientTagList from "@/components/IngredientTagList";
 import { recognizeIngredients } from "@/lib/openrouter";
 import { compressImage } from "@/lib/compressImage";
+import { getProfile } from "@/lib/storage";
 
 type Status = "idle" | "loading" | "done" | "error";
 
@@ -16,17 +17,27 @@ export default function Step1Page() {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [imageOpen, setImageOpen] = useState(true);
+  const [profileAllergies, setProfileAllergies] = useState<string[]>([]);
+
+  useEffect(() => {
+    const profile = getProfile();
+    if (profile) setProfileAllergies(profile.allergies);
+  }, []);
+
   function handleFile(file: File) {
     setImageFile(file);
     setImageUrl(URL.createObjectURL(file));
     setIngredients([]);
     setStatus("idle");
     setErrorMessage(null);
+    setImageOpen(true);
   }
 
   async function analyze() {
     if (!imageFile) return;
     setStatus("loading");
+    setImageOpen(false);
     setErrorMessage(null);
     try {
       const compressed = await compressImage(imageFile);
@@ -45,17 +56,16 @@ export default function Step1Page() {
 
         {/* Header */}
         <header className="mb-6">
-          <div className="mb-3 flex items-center gap-3">
-            <span
-              className="font-mono text-xs tracking-widest uppercase"
-              style={{ color: "var(--muted)" }}
-            >
-              Step 01 / 03
+          <div className="mb-4 flex items-center gap-3 font-mono text-xs">
+            <span className="flex items-center gap-1.5" style={{ color: "var(--accent)" }}>
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>
+              <span style={{ fontWeight: 600 }}>재료 인식</span>
             </span>
-            <span
-              className="h-px flex-1"
-              style={{ background: "var(--border)" }}
-            />
+            <span className="h-px w-6" style={{ background: "var(--border)" }} />
+            <span className="flex items-center gap-1.5" style={{ color: "var(--muted)" }}>
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
+              <span>레시피 추천</span>
+            </span>
           </div>
           <h1
             className="font-display text-5xl font-light leading-[1.1] tracking-tight"
@@ -74,10 +84,31 @@ export default function Step1Page() {
           </p>
         </header>
 
-        {/* Dropzone */}
-        <div className="mb-5">
-          <ImageDropzone imageUrl={imageUrl} onFile={handleFile} />
-        </div>
+        {/* Dropzone — 접기/펼치기 */}
+        {imageUrl && status !== "idle" && status !== "error" ? (
+          <div className="mb-5">
+            <button
+              onClick={() => setImageOpen((v) => !v)}
+              className="mb-2 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+            >
+              <span className="font-mono text-xs tracking-widest uppercase" style={{ color: "var(--muted)" }}>
+                업로드 사진
+              </span>
+              <svg
+                width="12" height="12" viewBox="0 0 12 12" fill="none"
+                stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+                style={{ color: "var(--muted)", transform: imageOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}
+              >
+                <polyline points="2,4 6,8 10,4" />
+              </svg>
+            </button>
+            {imageOpen && <ImageDropzone imageUrl={imageUrl} onFile={handleFile} />}
+          </div>
+        ) : (
+          <div className="mb-5">
+            <ImageDropzone imageUrl={imageUrl} onFile={handleFile} />
+          </div>
+        )}
 
         {/* Analyze button */}
         <button
@@ -102,12 +133,11 @@ export default function Step1Page() {
           )}
         </button>
 
-
         {/* Error */}
         {status === "error" && errorMessage && (
           <div
             className="mb-6 rounded-sm border px-4 py-3 font-mono text-xs"
-            style={{ borderColor: "#e0b0b0", background: "#fdf5f5", color: "#b84040" }}
+            style={{ borderColor: "var(--danger-mid)", background: "var(--danger-light)", color: "var(--danger)" }}
           >
             {errorMessage}
           </div>
@@ -133,7 +163,7 @@ export default function Step1Page() {
                 {ingredients.length}가지
               </span>
             </div>
-            <IngredientTagList ingredients={ingredients} onChange={setIngredients} />
+            <IngredientTagList ingredients={ingredients} onChange={setIngredients} allergies={profileAllergies} />
           </div>
         )}
 

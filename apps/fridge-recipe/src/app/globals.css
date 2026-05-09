@@ -12,6 +12,9 @@
   --accent-mid: #3d6b4f;
   --accent-light: #eaf1ec;
   --warm: #c8a048;
+  --danger: #b84040;
+  --danger-mid: #e0b0b0;
+  --danger-light: #fdf5f5;
 }
 
 body {

@@ -12,14 +12,14 @@ export interface Recipe {
 export interface Conditions {
   maxTime: 15 | 30 | null;
   difficulty: "easy" | "normal" | "hard" | null;
-  diet: "normal" | "vegetarian" | "vegan" | "weird";
-  cuisine: "any" | "korean" | "western" | "chinese" | "southeast-asian";
+  diet: "normal" | "vegetarian" | "vegan" | "low-sodium";
+  cuisine: "any" | "korean" | "western" | "chinese" | "southeast-asian" | "weird";
 }
 
 const PROXY_URL = process.env.NEXT_PUBLIC_PROXY_URL || "http://localhost:3035";
 
 const DIFF_LABEL: Record<string, string> = { easy: "쉬움", normal: "보통", hard: "어려움" };
-const DIET_LABEL: Record<string, string> = { normal: "일반", vegetarian: "채식", vegan: "비건", weird: "괴식" };
+const DIET_LABEL: Record<string, string> = { normal: "일반", vegetarian: "채식", vegan: "비건", "low-sodium": "무염식" };
 const CUISINE_LABEL: Record<string, string> = {
   any: "상관없음", korean: "한식", western: "양식", chinese: "중식", "southeast-asian": "동남아식",
 };
@@ -30,8 +30,9 @@ function buildConditionText(c: Conditions): string {
   if (c.difficulty) parts.push(`난이도 ${DIFF_LABEL[c.difficulty]}`);
   if (c.diet === "vegetarian") parts.push("채식");
   else if (c.diet === "vegan") parts.push("비건");
-  else if (c.diet === "weird") parts.push("딸기마라탕처럼 상상을 초월하는 괴식 — 재료 조합이 충격적이고 창의적일수록 좋음");
-  if (c.cuisine !== "any") parts.push(`${CUISINE_LABEL[c.cuisine]} 스타일`);
+  else if (c.diet === "low-sodium") parts.push("무염식 (소금·간장·된장 등 염분 재료 최소화)");
+  if (c.cuisine === "weird") parts.push("딸기마라탕처럼 상상을 초월하는 괴식 — 재료 조합이 충격적이고 창의적일수록 좋음");
+  else if (c.cuisine !== "any") parts.push(`${CUISINE_LABEL[c.cuisine]} 스타일`);
   return parts.length ? parts.join(", ") : "제한 없음";
 }
 
@@ -70,8 +71,18 @@ function parseCompletedRecipes(text: string): Recipe[] {
 export async function fetchRecipes(
   ingredients: string[],
   conditions: Conditions,
+  allergies: string[],
+  excludeAllergies: boolean,
+  specialNote: string,
   onRecipe?: (recipes: Recipe[]) => void,
 ): Promise<Recipe[]> {
+  const excludeLine = excludeAllergies && allergies.length > 0
+    ? `\n반드시 다음 재료는 사용하지 마세요: [${allergies.join(", ")}]`
+    : "";
+  const specialNoteLine = specialNote.trim()
+    ? `\n[최우선 반영] ${specialNote.trim()}`
+    : "";
+
   const res = await fetch(`${PROXY_URL}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -85,7 +96,7 @@ export async function fetchRecipes(
         },
         {
           role: "user",
-          content: `재료: [${ingredients.join(", ")}]\n조건: ${buildConditionText(conditions)}\n\n위 재료로 만들 수 있는 레시피 2개를 다음 JSON 형식으로 반환해:\n[\n  {\n    "name": "레시피 이름",\n    "description": "한 줄 설명",\n    "time": "조리 시간 (분)",\n    "difficulty": "쉬움|보통|어려움",\n    "usedIngredients": ["사용 재료"],\n    "missingIngredients": ["없어서 필요한 재료"],\n    "steps": ["1. 단계", "2. 단계"]\n  }\n]`,
+          content: `재료: [${ingredients.join(", ")}]\n조건: ${buildConditionText(conditions)}${excludeLine}${specialNoteLine}\n\n위 재료로 만들 수 있는 레시피 2개를 다음 JSON 형식으로 반환해:\n[\n  {\n    "name": "레시피 이름",\n    "description": "한 줄 설명",\n    "time": "조리 시간 (분)",\n    "difficulty": "쉬움|보통|어려움",\n    "usedIngredients": ["사용 재료"],\n    "missingIngredients": ["없어서 필요한 재료"],\n    "steps": ["1. 단계", "2. 단계"]\n  }\n]`,
         },
       ],
       max_tokens: 1500,
@@ -94,7 +105,17 @@ export async function fetchRecipes(
     }),
   });
 
-  if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
+  if (!res.ok) {
+    try {
+      const body = await res.json();
+      const msg = body?.error ?? `서버 오류 (${res.status})`;
+      const tried = body?.tried as string[] | undefined;
+      throw new Error(tried?.length ? `${msg}\n시도된 모델: ${tried.join(", ")}` : msg);
+    } catch (e) {
+      if (e instanceof Error && e.message !== `서버 오류 (${res.status})`) throw e;
+      throw new Error(`서버 오류 (${res.status})`);
+    }
+  }
 
   const reader = res.body!.getReader();
   const decoder = new TextDecoder();

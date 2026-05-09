@@ -30,7 +30,17 @@ export async function recognizeIngredients(imageBase64: string): Promise<string[
     }),
   });
 
-  if (!res.ok) throw new Error(`서버 오류 (${res.status})`);
+  if (!res.ok) {
+    try {
+      const body = await res.json();
+      const msg = body?.error ?? `서버 오류 (${res.status})`;
+      const tried = body?.tried as string[] | undefined;
+      throw new Error(tried?.length ? `${msg}\n시도된 모델: ${tried.join(", ")}` : msg);
+    } catch (e) {
+      if (e instanceof Error) throw e;
+      throw new Error(`서버 오류 (${res.status})`);
+    }
+  }
 
   const data = await res.json();
   if (data.error) throw new Error(data.error);

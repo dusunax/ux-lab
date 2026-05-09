@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Space_Mono, Lora } from "next/font/google";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" className={`${cormorant.variable} ${spaceMono.variable} ${lora.variable}`}>
       <body className="min-h-screen antialiased" style={{ fontFamily: "var(--font-body)" }}>
         {children}
+        <Nav />
       </body>
     </html>
   );

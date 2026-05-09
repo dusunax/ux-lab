@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, KeyboardEvent } from "react";
+import IngredientChip from "@/components/IngredientChip";
 
 interface Props {
   ingredients: string[];
   onChange: (next: string[]) => void;
+  allergies?: string[];
 }
 
-export default function IngredientTagList({ ingredients, onChange }: Props) {
+export default function IngredientTagList({ ingredients, onChange, allergies = [] }: Props) {
   const [input, setInput] = useState("");
 
   function addIngredient() {
@@ -24,33 +26,13 @@ export default function IngredientTagList({ ingredients, onChange }: Props) {
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         {ingredients.map((item, i) => (
-          <span
+          <IngredientChip
             key={item}
-            className="tag-animate group flex items-center gap-1.5 rounded-sm px-3 py-1.5"
-            style={{
-              animationDelay: `${i * 40}ms`,
-              background: "var(--accent-light)",
-              border: "1px solid",
-              borderColor: "color-mix(in srgb, var(--accent-mid) 30%, transparent)",
-              fontFamily: "var(--font-mono)",
-              fontSize: "0.72rem",
-              letterSpacing: "0.04em",
-              color: "var(--accent)",
-            }}
-          >
-            {item}
-            <button
-              onClick={() => onChange(ingredients.filter((x) => x !== item))}
-              aria-label={`${item} 삭제`}
-              className="opacity-40 transition-opacity hover:opacity-100"
-              style={{ color: "var(--accent)", lineHeight: 1 }}
-            >
-              <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                <line x1="1" y1="1" x2="8" y2="8" />
-                <line x1="8" y1="1" x2="1" y2="8" />
-              </svg>
-            </button>
-          </span>
+            label={item}
+            isAllergy={allergies.some((a) => item.includes(a) || a.includes(item))}
+            onDelete={() => onChange(ingredients.filter((x) => x !== item))}
+            animationDelay={i * 40}
+          />
         ))}
       </div>
 

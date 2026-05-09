@@ -69,10 +69,12 @@ Step 1에서 추출한 재료 목록을 바탕으로 만들 수 있는 레시피
 |---|---|
 | 조리 시간 | 제한 없음 / 15분 이내 / 30분 이내 |
 | 난이도 | 상관없음 / 쉬움 / 보통 / 어려움 |
-| 식단 | 일반 / 채식 / 비건 / 괴식 (딸기마라탕류 창의적 조합) |
-| 요리 스타일 | 상관없음 / 한식 / 양식 / 중식 / 동남아식 |
+| 식단 | 일반 / 채식 / 비건 / 무염식 |
+| 요리 스타일 | 상관없음 / 한식 / 양식 / 중식 / 동남아식 / 괴식 (딸기마라탕류 창의적 조합) |
 
 조건 선택 패널은 토글로 접힘/펼침. 추천 버튼 클릭 시 자동으로 닫힘.
+
+프로필에 알레르기 재료가 등록된 경우, 조건 패널 하단 개인설정 섹션에서 "알레르기 재료 무시" 토글이 표시된다. 활성 시 해당 재료는 `effectiveIngredients`에서 제외되어 API에 전달된다.
 
 ---
 
@@ -105,8 +107,8 @@ interface Step2State {
 interface Conditions {
   maxTime: 15 | 30 | null;
   difficulty: 'easy' | 'normal' | 'hard' | null;
-  diet: 'normal' | 'vegetarian' | 'vegan' | 'weird';
-  cuisine: 'any' | 'korean' | 'western' | 'chinese' | 'southeast-asian';
+  diet: 'normal' | 'vegetarian' | 'vegan' | 'low-sodium';
+  cuisine: 'any' | 'korean' | 'western' | 'chinese' | 'southeast-asian' | 'weird';
 }
 
 interface Recipe {
@@ -154,7 +156,8 @@ interface Recipe {
 
 - [x] URL 파라미터에서 재료 목록 수신 및 표시
 - [x] 조건 선택 UI (조리 시간 / 난이도 / 식단 / 요리 스타일)
-- [x] 식단: 괴식 옵션 (창의적 레시피 유도 프롬프트)
+- [x] 식단: 무염식 옵션
+- [x] 요리 스타일: 괴식 옵션 (창의적 레시피 유도 프롬프트)
 - [x] 요리 스타일: 한식 / 양식 / 중식 / 동남아식
 - [x] 조건 패널 접힘/펼침, 추천 시 자동 닫힘
 - [x] SSE 스트리밍 API 호출
@@ -164,3 +167,11 @@ interface Recipe {
 - [x] 레시피 카드 (이름 / 설명 / 재료 / 단계 접힘)
 - [x] "저장" → localStorage `fridge_saved_recipes`
 - [x] "다시 추천" 동작
+- [x] "처음으로" 버튼 — sessionStorage 초기화 후 `/`로 이동
+- [x] 프로필 알레르기 재료 로드 → 재료 칩에 경고 표시
+- [x] 알레르기 재료 무시 토글 (개인설정, 조건 패널 하단)
+- [x] `excludeAllergies` ON 시 알레르기 재료 제외한 `effectiveIngredients` API 전달
+- [x] 프로필 `specialNote` API 프롬프트에 최우선 반영
+- [x] 탭 이동 후 복귀 시 sessionStorage로 결과 복원 (재료 목록 키 기반)
+- [x] 스텝 인디케이터 (● 채워진 원 = 현재, ○ 빈 원 = 이전, ← 뒤로가기 통합)
+- [x] 프록시 에러 body 파싱 → `error` + `tried` 모델 목록 표시

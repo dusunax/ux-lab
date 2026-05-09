@@ -24,19 +24,13 @@
 
 **모델:** `"auto"` (프록시가 이미지 감지 후 자동 선택)
 
-**이미지 폴백 체인** (프록시가 `model: "auto"` 수신 시 순서대로 시도):
-1. `google/gemma-4-31b-it:free`
-2. `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`
-3. `google/gemma-4-26b-a4b-it:free`
-4. `baidu/qianfan-ocr-fast:free`
-
 > 404(모델 없음) 등 429 이외의 오류는 폴백 없이 그대로 반환된다.
 
 **요청 구조:**
 
 ```json
 {
-  "model": "google/gemma-4-31b-it:free",
+  "model": "auto",
   "messages": [
     {
       "role": "system",
@@ -115,4 +109,8 @@ interface Step1State {
 - [x] API 호출 → 재료 목록 파싱 성공
 - [x] 태그 추가 / 삭제 동작
 - [x] 에러(네트워크, 파싱 실패) 시 사용자에게 메시지 표시
-- [ ] Step 2로 재료 목록 전달
+- [x] Step 2로 재료 목록 전달 (URL 쿼리 파라미터 `?ingredients=...`)
+- [x] 재료 인식 시작 시 이미지 자동 접힘, 버튼으로 다시 펼침
+- [x] 알레르기 재료 칩에 경고 표시 (`IngredientChip` 컴포넌트 공통 사용)
+- [x] 스텝 인디케이터 (● 현재 / ○ 다음 단계, 배경·테두리 없는 텍스트 스타일)
+- [x] 프록시 에러 body 파싱 → `error` + `tried` 모델 목록 표시

@@ -112,7 +112,7 @@ export default function ImageDropzone({ imageUrl, onFile }: Props) {
       </div>
 
       {fileError && (
-        <p className="font-mono text-xs" style={{ color: "#b84040" }}>
+        <p className="font-mono text-xs" style={{ color: "var(--danger)" }}>
           {fileError}
         </p>
       )}

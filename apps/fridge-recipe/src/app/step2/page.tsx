@@ -6,6 +6,8 @@ import ConditionSelector from "@/components/ConditionSelector";
 import RecipeCard from "@/components/RecipeCard";
 import RecipeCardSkeleton from "@/components/RecipeCardSkeleton";
 import { fetchRecipes, type Recipe, type Conditions } from "@/lib/recipeApi";
+import { addSavedRecipe, getProfile } from "@/lib/storage";
+import IngredientChip from "@/components/IngredientChip";
 
 const DEFAULT_CONDITIONS: Conditions = {
   maxTime: null,
@@ -15,16 +17,6 @@ const DEFAULT_CONDITIONS: Conditions = {
 };
 
 
-function saveToLocalStorage(recipe: Recipe): Recipe {
-  const saved = recipe.savedAt ? recipe : { ...recipe, savedAt: new Date().toISOString() };
-  try {
-    const raw = localStorage.getItem("fridge_saved_recipes");
-    const list: Recipe[] = raw ? JSON.parse(raw) : [];
-    const next = [saved, ...list].slice(0, 50);
-    localStorage.setItem("fridge_saved_recipes", JSON.stringify(next));
-  } catch {}
-  return saved;
-}
 
 function isNearBottom(threshold = 80) {
   return window.scrollY + window.innerHeight >= document.body.scrollHeight - threshold;
@@ -41,6 +33,9 @@ export default function Step2Page() {
 
   const [conditions, setConditions] = useState<Conditions>(DEFAULT_CONDITIONS);
   const [conditionsOpen, setConditionsOpen] = useState(true);
+  const [allergies, setAllergies] = useState<string[]>([]);
+  const [excludeAllergies, setExcludeAllergies] = useState(false);
+  const [specialNote, setSpecialNote] = useState("");
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [streamingRecipes, setStreamingRecipes] = useState<Recipe[]>([]);
   const [status, setStatus] = useState<"idle" | "streaming" | "done" | "error">("idle");
@@ -51,8 +46,30 @@ export default function Step2Page() {
 
   const autoScrollRef = useRef(true);
 
+  const sessionKey = `step2_${ingredients.join(",")}`;
+
   useEffect(() => {
     if (ingredients.length === 0) router.replace("/");
+    const profile = getProfile();
+    if (profile) {
+      setAllergies(profile.allergies);
+      setExcludeAllergies(profile.excludeAllergies ?? false);
+      setSpecialNote(profile.specialNote ?? "");
+      if (profile.diet !== "normal") {
+        setConditions((c) => ({ ...c, diet: profile.diet as Conditions["diet"] }));
+      }
+    }
+    try {
+      const cached = sessionStorage.getItem(sessionKey);
+      if (cached) {
+        const { recipes: r, conditions: c, savedIds: s } = JSON.parse(cached);
+        setRecipes(r);
+        setConditions(c);
+        setSavedIds(new Set(s));
+        setStatus("done");
+        setConditionsOpen(false);
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -87,6 +104,10 @@ export default function Step2Page() {
     }
   }, [status]);
 
+  const effectiveIngredients = excludeAllergies && allergies.length > 0
+    ? ingredients.filter((i) => !allergies.some((a) => i.includes(a) || a.includes(i)))
+    : ingredients;
+
   const request = useCallback(async () => {
     const now = Date.now();
     setStatus("streaming");
@@ -96,20 +117,33 @@ export default function Step2Page() {
     setRecipes([]);
     setStreamingRecipes([]);
     try {
-      const result = await fetchRecipes(ingredients, conditions, (found) => {
+      const result = await fetchRecipes(effectiveIngredients, conditions, allergies, excludeAllergies, specialNote, (found) => {
         setStreamingRecipes(found);
       });
       setRecipes(result);
       setStatus("done");
+      try {
+        sessionStorage.setItem(sessionKey, JSON.stringify({ recipes: result, conditions, savedIds: [] }));
+      } catch {}
     } catch (e) {
       setErrorMessage(e instanceof Error ? e.message : "알 수 없는 오류");
       setStatus("error");
     }
-  }, [ingredients, conditions]);
+  }, [effectiveIngredients, conditions, allergies, excludeAllergies, specialNote]);
 
   function handleSave(recipe: Recipe) {
-    saveToLocalStorage(recipe);
-    setSavedIds((prev) => new Set([...prev, recipe.name]));
+    addSavedRecipe(recipe);
+    setSavedIds((prev) => {
+      const next = new Set([...prev, recipe.name]);
+      try {
+        const cached = sessionStorage.getItem(sessionKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          sessionStorage.setItem(sessionKey, JSON.stringify({ ...parsed, savedIds: [...next] }));
+        }
+      } catch {}
+      return next;
+    });
   }
 
   function scrollToBottom() {
@@ -126,21 +160,22 @@ export default function Step2Page() {
 
         {/* Header */}
         <header className="mb-6">
-          <div className="mb-3 flex items-center gap-3">
+          <div className="mb-4 flex items-center gap-3 font-mono text-xs">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-1.5 font-mono text-xs tracking-widest uppercase transition-opacity hover:opacity-60"
+              className="flex items-center gap-1.5 transition-opacity hover:opacity-60"
               style={{ color: "var(--muted)" }}
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="7,1 3,5 7,9" />
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="8,2 4,6 8,10" />
               </svg>
-              Step 01
+              재료 인식
             </button>
-            <span className="font-mono text-xs tracking-widest uppercase" style={{ color: "var(--muted)" }}>
-              / Step 02 / 03
+            <span className="h-px w-6" style={{ background: "var(--border)" }} />
+            <span className="flex items-center gap-1.5" style={{ color: "var(--accent)" }}>
+              <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor" /></svg>
+              <span style={{ fontWeight: 600 }}>레시피 추천</span>
             </span>
-            <span className="h-px flex-1" style={{ background: "var(--border)" }} />
           </div>
           <h1
             className="font-display text-5xl font-light leading-[1.1] tracking-tight"
@@ -159,21 +194,15 @@ export default function Step2Page() {
           style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           <p className="mb-2 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--muted)" }}>
-            인식된 재료 {ingredients.length}가지
+            인식된 재료 {effectiveIngredients.length}가지
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {ingredients.map((item) => (
-              <span
+            {effectiveIngredients.map((item) => (
+              <IngredientChip
                 key={item}
-                className="rounded-sm px-2.5 py-1 font-mono text-xs"
-                style={{
-                  background: "var(--accent-light)",
-                  border: "1px solid color-mix(in srgb, var(--accent-mid) 25%, transparent)",
-                  color: "var(--accent)",
-                }}
-              >
-                {item}
-              </span>
+                label={item}
+                isAllergy={allergies.some((a) => item.includes(a) || a.includes(item))}
+              />
             ))}
           </div>
         </div>
@@ -200,41 +229,59 @@ export default function Step2Page() {
           </button>
           {conditionsOpen && (
             <div className="px-5 pb-5">
-              <ConditionSelector value={conditions} onChange={setConditions} />
+              <ConditionSelector
+                value={conditions}
+                onChange={setConditions}
+                allergies={allergies}
+                excludeAllergies={excludeAllergies}
+                onExcludeAllergiesChange={setExcludeAllergies}
+              />
             </div>
           )}
         </div>
 
         {/* Request button */}
-        <button
-          onClick={request}
-          disabled={status === "streaming"}
-          className="mb-6 w-full rounded-sm py-3.5 text-sm font-medium tracking-wide transition-all duration-200 disabled:opacity-40"
-          style={{
-            background: status === "streaming" ? "var(--accent-mid)" : "var(--accent)",
-            color: "var(--surface)",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {status === "streaming" ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
-              레시피 생성 중…
-            </span>
-          ) : status === "done" ? (
-            "다시 추천"
-          ) : (
-            "레시피 추천"
-          )}
-        </button>
+        <div className="mb-6 flex flex-col gap-2">
+          <button
+            onClick={request}
+            disabled={status === "streaming"}
+            className="w-full rounded-sm py-3.5 text-sm font-medium tracking-wide transition-all duration-200 disabled:opacity-40"
+            style={{
+              background: status === "streaming" ? "var(--accent-mid)" : "var(--accent)",
+              color: "var(--surface)",
+              letterSpacing: "0.05em",
+            }}
+          >
+            {status === "streaming" ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                레시피 생성 중…
+              </span>
+            ) : status === "done" ? (
+              "다시 추천"
+            ) : (
+              "레시피 추천"
+            )}
+          </button>
+          <button
+            onClick={() => {
+              try { sessionStorage.clear(); } catch {}
+              router.push("/");
+            }}
+            className="w-full rounded-sm py-3 text-sm font-medium transition-all duration-200 hover:opacity-70"
+            style={{ border: "1px solid var(--border)", color: "var(--muted)", background: "transparent" }}
+          >
+            처음으로
+          </button>
+        </div>
 
         {/* Error */}
         {status === "error" && errorMessage && (
           <div
             className="mb-6 rounded-sm border px-4 py-3 font-mono text-xs"
-            style={{ borderColor: "#e0b0b0", background: "#fdf5f5", color: "#b84040" }}
+            style={{ borderColor: "var(--danger-mid)", background: "var(--danger-light)", color: "var(--danger)" }}
           >
             {errorMessage}
           </div>
@@ -250,6 +297,7 @@ export default function Step2Page() {
                 recipe={recipe}
                 saved={savedIds.has(recipe.name)}
                 onSave={handleSave}
+                allergies={allergies}
               />
             ))}
             {/* 아직 생성 중인 스켈레톤 */}
@@ -259,7 +307,7 @@ export default function Step2Page() {
           </div>
         )}
 
-        <p className="mt-10 text-center font-mono text-xs" style={{ color: "var(--muted)" }}>
+        <p className="mt-10 mb-8 text-center font-mono text-xs" style={{ color: "var(--muted)" }}>
           powered by openrouter / auto fallback / free tier
         </p>
       </div>
