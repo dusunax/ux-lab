@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import { OpenrouterService } from '../openrouter/openrouter.service';
 import { ChatBody } from './chat.dto';
 
@@ -56,5 +57,52 @@ export class ChatService {
         tried: candidates,
       },
     };
+  }
+
+  async dispatchStream(body: ChatBody, res: Response): Promise<void> {
+    const requestedModel = body.model;
+    const group = this.openrouter.hasImage(body.messages) ? 'image' : 'text';
+    const isAuto = requestedModel === 'auto';
+    const candidates = isAuto
+      ? FALLBACKS[group]
+      : [requestedModel, ...FALLBACKS[group].filter((m) => m !== requestedModel)];
+
+    for (const model of candidates) {
+      const fetchRes = await this.openrouter.callRaw({ ...body, model });
+
+      if (fetchRes.status === 429) {
+        console.warn(`[폴백] ${model} → 429`);
+        continue;
+      }
+
+      if (isAuto) {
+        console.log(`[auto stream] ${group} → ${model}`);
+      } else if (model !== requestedModel) {
+        console.log(`[폴백 성공] ${requestedModel} → ${model}`);
+      }
+
+      res.writeHead(fetchRes.status, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      });
+
+      const reader = fetchRes.body!.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(value);
+        }
+      } finally {
+        res.end();
+      }
+      return;
+    }
+
+    res.status(429).json({
+      error: `모든 폴백 모델(${candidates.length}개)이 rate limit에 걸렸습니다.`,
+      tried: candidates,
+    });
   }
 }

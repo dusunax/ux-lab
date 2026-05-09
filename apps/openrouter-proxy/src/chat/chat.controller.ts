@@ -16,6 +16,9 @@ export class ChatController {
       '요청 모델이 429이면 같은 그룹(image/text) 폴백 모델을 순서대로 자동 시도합니다.',
   })
   async chat(@Body() body: ChatBody, @Res() res: Response) {
+    if (body.stream) {
+      return this.chatService.dispatchStream(body, res);
+    }
     const { status, data } = await this.chatService.dispatch(body);
     res.status(status).json(data);
   }
