@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ImageDropzone from "@/components/ImageDropzone";
 import IngredientTagList from "@/components/IngredientTagList";
 import { recognizeIngredients } from "@/lib/openrouter";
@@ -9,6 +10,7 @@ import { compressImage } from "@/lib/compressImage";
 type Status = "idle" | "loading" | "done" | "error";
 
 export default function Step1Page() {
+  const router = useRouter();
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<string[]>([]);
@@ -42,7 +44,7 @@ export default function Step1Page() {
       <div className="mx-auto max-w-[520px] px-6 py-16">
 
         {/* Header */}
-        <header className="mb-10">
+        <header className="mb-6">
           <div className="mb-3 flex items-center gap-3">
             <span
               className="font-mono text-xs tracking-widest uppercase"
@@ -81,7 +83,7 @@ export default function Step1Page() {
         <button
           onClick={analyze}
           disabled={!imageFile || status === "loading"}
-          className="mb-8 w-full rounded-sm py-3.5 text-sm font-medium tracking-wide transition-all duration-200 disabled:opacity-30"
+          className="mb-6 w-full rounded-sm py-3.5 text-sm font-medium tracking-wide transition-all duration-200 disabled:opacity-30"
           style={{
             background: status === "loading" ? "var(--accent-mid)" : "var(--accent)",
             color: "var(--surface)",
@@ -114,7 +116,7 @@ export default function Step1Page() {
         {/* Ingredient results */}
         {status === "done" && ingredients.length > 0 && (
           <div
-            className="mb-8 rounded-xl p-6"
+            className="mb-6 rounded-xl p-6"
             style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
           >
             <div className="mb-4 flex items-baseline justify-between">
@@ -138,6 +140,10 @@ export default function Step1Page() {
         {/* Next step */}
         <button
           disabled={ingredients.length === 0}
+          onClick={() => {
+            const params = ingredients.map(encodeURIComponent).join(",");
+            router.push(`/step2?ingredients=${params}`);
+          }}
           className="group flex w-full items-center justify-between rounded-sm px-5 py-4 text-sm font-medium transition-all duration-200 disabled:opacity-20"
           style={{
             border: "1.5px solid var(--accent)",

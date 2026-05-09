@@ -25,7 +25,7 @@ export async function recognizeIngredients(imageBase64: string): Promise<string[
           ],
         },
       ],
-      max_tokens: 300,
+      max_tokens: 1000,
       temperature: 0,
     }),
   });
@@ -35,9 +35,8 @@ export async function recognizeIngredients(imageBase64: string): Promise<string[
   const data = await res.json();
   if (data.error) throw new Error(data.error);
 
-  const msg = data.choices?.[0]?.message;
-  const content: string = msg?.content ?? msg?.reasoning ?? "";
-  if (!content) throw new Error("모델 응답이 비어 있습니다.");
+  const content: string = data.choices?.[0]?.message?.content ?? "";
+  if (!content) throw new Error("모델이 응답을 완성하지 못했습니다. 다시 시도해주세요.");
 
   return parseIngredients(content);
 }
