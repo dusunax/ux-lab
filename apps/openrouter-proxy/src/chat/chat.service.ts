@@ -5,6 +5,7 @@ import { ChatBody } from './chat.dto';
 
 const FALLBACKS: Record<'image' | 'text', string[]> = {
   image: [
+    'nvidia/nemotron-nano-12b-v2-vl:free',
     'google/gemma-4-31b-it:free',
     'google/gemma-4-26b-a4b-it:free',
     'baidu/qianfan-ocr-fast:free',
