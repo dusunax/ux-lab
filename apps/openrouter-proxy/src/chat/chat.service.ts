@@ -26,10 +26,10 @@ export class ChatService {
   async dispatch(body: ChatBody): Promise<{ status: number; data: unknown }> {
     const requestedModel = body.model;
     const group = this.openrouter.hasImage(body.messages) ? 'image' : 'text';
-    const candidates = [
-      requestedModel,
-      ...FALLBACKS[group].filter((m) => m !== requestedModel),
-    ];
+    const isAuto = requestedModel === 'auto';
+    const candidates = isAuto
+      ? FALLBACKS[group]
+      : [requestedModel, ...FALLBACKS[group].filter((m) => m !== requestedModel)];
 
     for (const model of candidates) {
       const { status, data } = await this.openrouter.call({ ...body, model });
@@ -42,7 +42,9 @@ export class ChatService {
         continue;
       }
 
-      if (model !== requestedModel) {
+      if (isAuto) {
+        console.log(`[auto] ${group} → ${model}`);
+      } else if (model !== requestedModel) {
         console.log(`[폴백 성공] ${requestedModel} → ${model}`);
       }
       return { status, data };
