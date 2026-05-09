@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f4f1ea;
+  --surface: #faf8f4;
+  --border: #ddd8cc;
+  --text: #1a1916;
+  --text-muted: #6b6457;
+  --accent: #243d2c;
+  --accent-mid: #3d6b4f;
+  --accent-light: #eaf1ec;
+  --warm: #c8a048;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* grain overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+@keyframes tag-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(36, 61, 44, 0.2); }
+  70%  { box-shadow: 0 0 0 10px rgba(36, 61, 44, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(36, 61, 44, 0); }
+}
+
+.tag-animate {
+  animation: tag-in 0.3s ease both;
+}
+
+.pulse-animate {
+  animation: pulse-ring 1.8s ease infinite;
+}
