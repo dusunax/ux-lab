@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ChatBody, Message } from '../chat/chat.dto';
+import { ChatBody, MessageDto } from '../chat/chat.dto';
 
 @Injectable()
 export class OpenrouterService {
@@ -12,11 +12,11 @@ export class OpenrouterService {
     this.port = this.config.get<number>('PORT') ?? 3035;
   }
 
-  hasImage(messages: Message[] = []): boolean {
+  hasImage(messages: MessageDto[] = []): boolean {
     return messages.some(
       (m) =>
         Array.isArray(m.content) &&
-        m.content.some((c) => c.type === 'image_url'),
+        (m.content as unknown as { type: string }[]).some((c) => c.type === 'image_url'),
     );
   }
 

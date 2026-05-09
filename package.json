@@ -23,6 +23,8 @@
     "dev:openrouter": "pnpm --filter @ux-lab/openrouter-proxy run dev",
     "build:openrouter": "pnpm --filter @ux-lab/openrouter-proxy run build",
     "start:openrouter": "pnpm --filter @ux-lab/openrouter-proxy run start",
+    "dev:fridge": "pnpm --filter @ux-lab/fridge-recipe run dev",
+    "build:fridge": "pnpm --filter @ux-lab/fridge-recipe run build",
     "build:all": "pnpm run build:ui && pnpm run build:showcase && pnpm run build:flow && pnpm run build:applications",
     "dev:all": "concurrently \"pnpm run dev:ui\" \"pnpm run dev:showcase\" \"pnpm run dev:flow\" \"pnpm run dev:applications\"",
     "install:all": "pnpm install"

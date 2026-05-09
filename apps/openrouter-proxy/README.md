@@ -34,22 +34,35 @@ apps/openrouter-proxy/
 
 ```bash
 cd apps/openrouter-proxy
-npm install
+pnpm install
 ```
 
 ### 2) 환경변수
 
+앱 루트(`apps/openrouter-proxy/.env`)에 파일을 만들거나, 서버 기동 시 환경변수로 주입합니다.
+
 ```bash
 OPENROUTER_KEY=your_openrouter_api_key
-PORT=3035 # 선택: 기본값 3035
+PORT=3035  # 선택: 기본값 3035
 ```
+
+`.env`는 빌드 결과 `dist/` 기준 상대 경로(`../..env`)로 자동 로드됩니다.  
+배포 환경에서는 `.env` 없이 환경변수를 직접 주입하면 동일하게 동작합니다.
 
 ### 3) 실행/빌드
 
 ```bash
-npm run dev      # 개발 모드
-npm run build    # 컴파일
-npm start        # 빌드 결과 실행
+pnpm dev      # 개발 모드 (nest start --watch)
+pnpm build    # 컴파일 (dist/)
+pnpm start    # 빌드 결과 실행
+```
+
+또는 ux-lab 루트에서:
+
+```bash
+pnpm dev:openrouter    # 개발 모드
+pnpm build:openrouter  # 빌드
+pnpm start:openrouter  # 실행
 ```
 
 기본 실행 주소는 `http://localhost:3035` 입니다.
@@ -100,8 +113,21 @@ Content-Type: application/json
 
 > 요청 본문의 `model`도 fallback 후보의 첫 번째로 포함됩니다.
 
+## 요청 크기 제한
+
+이미지를 base64로 전송하는 경우 body 크기가 커집니다. 기본 설정:
+
+| 항목 | 값 |
+|---|---|
+| JSON body 한도 | **20MB** |
+| 권장 클라이언트 전처리 | 최대 1024px 리사이즈 + JPEG quality 0.82 압축 |
+
+클라이언트에서 이미지를 압축하지 않고 원본을 그대로 전송하면 10MB 이미지가 base64로 ~13.3MB가 되어 한도 내에 들어오지만, 토큰 소비가 불필요하게 늘어납니다.  
+`fridge-recipe` 앱은 Canvas API로 전처리 후 전송합니다.
+
 ## 유의사항
 
-- `OPENROUTER_KEY` 미설정 시 앱 부팅 시 예외가 발생합니다.
+- `OPENROUTER_KEY` 미설정 시 앱 부팅 즉시 종료됩니다.
 - 멀티모달 메시지는 `messages[].content`가 `[{ "type": "image_url", ...}]` 형태로 들어와야 합니다.
+- nvidia nemotron 계열 reasoning 모델은 `content`가 `null`이고 응답이 `message.reasoning`에 담길 수 있습니다. 클라이언트에서 `content ?? reasoning` 순으로 추출하세요.
 - 클라이언트에는 OpenRouter API 키가 노출되지 않습니다.
