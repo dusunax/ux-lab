@@ -37,7 +37,7 @@ export async function recognizeIngredients(imageBase64: string): Promise<string[
       const tried = body?.tried as string[] | undefined;
       throw new Error(tried?.length ? `${msg}\n시도된 모델: ${tried.join(", ")}` : msg);
     } catch (e) {
-      if (e instanceof Error) throw e;
+      if (e instanceof Error && !(e instanceof SyntaxError)) throw e;
       throw new Error(`서버 오류 (${res.status})`);
     }
   }
