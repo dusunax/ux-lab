@@ -90,18 +90,22 @@ export default function Step2Page() {
   }, [streamingRecipes.length]);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
     if (status === "streaming") {
       autoScrollRef.current = true;
       setShowScrollBtn(false);
-      setTimeout(() => {
+      timer = setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       }, 50);
     }
     if (status === "done") {
-      setTimeout(() => {
+      timer = setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       }, 100);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [status]);
 
   const effectiveIngredients = excludeAllergies && allergies.length > 0
@@ -129,7 +133,7 @@ export default function Step2Page() {
       setErrorMessage(e instanceof Error ? e.message : "알 수 없는 오류");
       setStatus("error");
     }
-  }, [effectiveIngredients, conditions, allergies, excludeAllergies, specialNote]);
+  }, [effectiveIngredients, conditions, allergies, excludeAllergies, specialNote, sessionKey]);
 
   function handleSave(recipe: Recipe) {
     addSavedRecipe(recipe);
@@ -205,6 +209,16 @@ export default function Step2Page() {
               />
             ))}
           </div>
+          {(allergies.length > 0 || specialNote) && (
+            <div className="mt-3 pt-3 font-mono text-xs space-y-0.5" style={{ borderTop: "1px solid var(--border)", color: "var(--muted)" }}>
+              {allergies.length > 0 && (
+                <p>프로필 알레르기 반영 중: {allergies.join(", ")}</p>
+              )}
+              {specialNote && (
+                <p>특이사항 반영 중: {specialNote.length > 40 ? specialNote.slice(0, 40) + "…" : specialNote}</p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Condition selector */}
@@ -214,6 +228,8 @@ export default function Step2Page() {
         >
           <button
             onClick={() => setConditionsOpen((v) => !v)}
+            aria-expanded={conditionsOpen}
+            aria-controls="conditions-panel"
             className="flex w-full items-center justify-between px-5 py-4 transition-opacity hover:opacity-70"
           >
             <p className="font-display text-lg font-medium" style={{ color: "var(--text)" }}>
@@ -228,7 +244,7 @@ export default function Step2Page() {
             </svg>
           </button>
           {conditionsOpen && (
-            <div className="px-5 pb-5">
+            <div id="conditions-panel" className="px-5 pb-5">
               <ConditionSelector
                 value={conditions}
                 onChange={setConditions}
@@ -280,20 +296,34 @@ export default function Step2Page() {
         {/* Error */}
         {status === "error" && errorMessage && (
           <div
-            className="mb-6 rounded-sm border px-4 py-3 font-mono text-xs"
+            className="mb-6 rounded-sm border px-4 py-3 font-mono text-xs space-y-2"
             style={{ borderColor: "var(--danger-mid)", background: "var(--danger-light)", color: "var(--danger)" }}
+            role="alert"
           >
-            {errorMessage}
+            <p>{errorMessage}</p>
+            <button
+              onClick={request}
+              className="underline underline-offset-2 hover:opacity-70 transition-opacity"
+            >
+              다시 시도
+            </button>
           </div>
+        )}
+
+        {/* Streaming progress hint */}
+        {status === "streaming" && (
+          <p className="mb-3 font-mono text-xs text-center" style={{ color: "var(--muted)" }}>
+            AI가 레시피를 작성하고 있어요. 완성되는 순서대로 표시됩니다.
+          </p>
         )}
 
         {/* Progressive recipe cards */}
         {(streamingRecipes.length > 0 || skeletonCount > 0 || recipes.length > 0) && (
           <div className="space-y-4">
             {/* 완성된 카드 */}
-            {(status === "streaming" ? streamingRecipes : recipes).map((recipe, i) => (
+            {(status === "streaming" ? streamingRecipes : recipes).map((recipe) => (
               <RecipeCard
-                key={recipe.name + i}
+                key={recipe.name}
                 recipe={recipe}
                 saved={savedIds.has(recipe.name)}
                 onSave={handleSave}

@@ -19,7 +19,7 @@ export default function IngredientTagList({ ingredients, onChange, allergies = [
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") { e.preventDefault(); addIngredient(); }
+    if (e.key === "Enter" && !e.nativeEvent.isComposing) { e.preventDefault(); addIngredient(); }
   }
 
   return (

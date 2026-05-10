@@ -25,6 +25,12 @@ export default function Step1Page() {
     if (profile) setProfileAllergies(profile.allergies);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
+    };
+  }, [imageUrl]);
+
   function handleFile(file: File) {
     setImageFile(file);
     setImageUrl(URL.createObjectURL(file));
@@ -89,6 +95,8 @@ export default function Step1Page() {
           <div className="mb-5">
             <button
               onClick={() => setImageOpen((v) => !v)}
+              aria-expanded={imageOpen}
+              aria-controls="image-preview"
               className="mb-2 flex w-full items-center justify-between transition-opacity hover:opacity-70"
             >
               <span className="font-mono text-xs tracking-widest uppercase" style={{ color: "var(--muted)" }}>
@@ -102,7 +110,7 @@ export default function Step1Page() {
                 <polyline points="2,4 6,8 10,4" />
               </svg>
             </button>
-            {imageOpen && <ImageDropzone imageUrl={imageUrl} onFile={handleFile} />}
+            {imageOpen && <div id="image-preview"><ImageDropzone imageUrl={imageUrl} onFile={handleFile} /></div>}
           </div>
         ) : (
           <div className="mb-5">
@@ -136,10 +144,35 @@ export default function Step1Page() {
         {/* Error */}
         {status === "error" && errorMessage && (
           <div
-            className="mb-6 rounded-sm border px-4 py-3 font-mono text-xs"
+            className="mb-6 rounded-sm border px-4 py-3 font-mono text-xs space-y-2"
             style={{ borderColor: "var(--danger-mid)", background: "var(--danger-light)", color: "var(--danger)" }}
+            role="alert"
           >
-            {errorMessage}
+            <p>{errorMessage}</p>
+            <button
+              onClick={analyze}
+              disabled={!imageFile}
+              className="mt-1 underline underline-offset-2 hover:opacity-70 transition-opacity disabled:opacity-30"
+            >
+              다시 시도
+            </button>
+          </div>
+        )}
+
+        {/* Ingredient results — empty result */}
+        {status === "done" && ingredients.length === 0 && (
+          <div
+            className="mb-6 rounded-sm px-5 py-6 text-center"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <p className="text-sm font-medium mb-1" style={{ color: "var(--text)" }}>
+              재료를 찾지 못했어요
+            </p>
+            <p className="font-mono text-xs leading-relaxed mb-4" style={{ color: "var(--muted)" }}>
+              냉장고가 잘 보이는 사진으로 다시 시도하거나,<br />
+              아래에서 직접 재료를 추가해 보세요.
+            </p>
+            <IngredientTagList ingredients={ingredients} onChange={setIngredients} allergies={profileAllergies} />
           </div>
         )}
 
@@ -168,8 +201,14 @@ export default function Step1Page() {
         )}
 
         {/* Next step */}
+        {ingredients.length === 0 && status === "idle" && imageFile && (
+          <p className="mb-2 text-center font-mono text-xs" style={{ color: "var(--muted)" }}>
+            재료를 인식하거나 직접 추가한 후 레시피를 추천받을 수 있어요
+          </p>
+        )}
         <button
           disabled={ingredients.length === 0}
+          aria-disabled={ingredients.length === 0}
           onClick={() => {
             const params = ingredients.map(encodeURIComponent).join(",");
             router.push(`/step2?ingredients=${params}`);

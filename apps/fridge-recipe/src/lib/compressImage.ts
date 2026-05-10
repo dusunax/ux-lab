@@ -17,7 +17,12 @@ export function compressImage(file: File): Promise<string> {
       const canvas = document.createElement("canvas");
       canvas.width = cw;
       canvas.height = ch;
-      canvas.getContext("2d")!.drawImage(img, 0, 0, cw, ch);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas 2D 컨텍스트를 가져올 수 없습니다."));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, cw, ch);
 
       resolve(canvas.toDataURL("image/jpeg", QUALITY));
     };
