@@ -146,13 +146,19 @@ export default function RecipeCard({ recipe, onSave, saved, allergies = [] }: Pr
         <button
           onClick={() => onSave(recipe)}
           disabled={saved}
-          className="w-full rounded-sm py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-50"
+          aria-label={saved ? `${recipe.name} 저장 완료` : `${recipe.name} 저장`}
+          className="flex w-full items-center justify-center gap-2 rounded-sm py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-50"
           style={{
             background: saved ? "var(--accent-light)" : "transparent",
             color: saved ? "var(--accent-mid)" : "var(--accent)",
             border: `1.5px solid ${saved ? "transparent" : "var(--accent)"}`,
           }}
         >
+          {saved && (
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="2,7 5,10 11,3" />
+            </svg>
+          )}
           {saved ? "저장됨" : "저장"}
         </button>
       </div>

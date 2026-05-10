@@ -31,7 +31,11 @@ export default function ImageDropzone({ imageUrl, onFile }: Props) {
   return (
     <div className="space-y-2">
       <div
+        role="button"
+        tabIndex={0}
+        aria-label={imageUrl ? "다른 사진 선택" : "냉장고 사진 업로드"}
         onClick={() => inputRef.current?.click()}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); inputRef.current?.click(); } }}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={(e) => {
@@ -40,14 +44,15 @@ export default function ImageDropzone({ imageUrl, onFile }: Props) {
           const file = e.dataTransfer.files[0];
           if (file) handle(file);
         }}
-        className="relative cursor-pointer overflow-hidden rounded-xl transition-all duration-300"
+        className="relative cursor-pointer overflow-hidden rounded-xl transition-all duration-300 focus:outline-none focus-visible:ring-2"
         style={{
           height: imageUrl ? 280 : 220,
           background: dragging ? "var(--accent-light)" : "var(--surface)",
           border: dragging
             ? "1.5px dashed var(--accent-mid)"
             : "1.5px dashed var(--border)",
-        }}
+          "--tw-ring-color": "var(--accent-mid)",
+        } as React.CSSProperties}
       >
         {imageUrl ? (
           <>
@@ -112,7 +117,7 @@ export default function ImageDropzone({ imageUrl, onFile }: Props) {
       </div>
 
       {fileError && (
-        <p className="font-mono text-xs" style={{ color: "var(--danger)" }}>
+        <p className="font-mono text-xs" role="alert" style={{ color: "var(--danger)" }}>
           {fileError}
         </p>
       )}

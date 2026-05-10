@@ -111,6 +111,7 @@ export default function ConditionSelector({ value, onChange, allergies = [], exc
               className="relative h-6 w-11 shrink-0 rounded-full transition-all duration-200"
               style={{ background: excludeAllergies ? "var(--accent)" : "var(--border)" }}
               aria-checked={excludeAllergies}
+              aria-label="알레르기 재료 제외"
               role="switch"
             >
               <span

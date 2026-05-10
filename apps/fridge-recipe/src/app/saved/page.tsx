@@ -10,6 +10,7 @@ export default function SavedPage() {
   const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     setRecipes(getSavedRecipes());
@@ -18,8 +19,14 @@ export default function SavedPage() {
   }, []);
 
   function handleDelete(id: string) {
-    deleteSavedRecipe(id);
-    setRecipes((prev) => prev.filter((r) => r.id !== id));
+    setPendingDeleteId(id);
+  }
+
+  function confirmDelete() {
+    if (!pendingDeleteId) return;
+    deleteSavedRecipe(pendingDeleteId);
+    setRecipes((prev) => prev.filter((r) => r.id !== pendingDeleteId));
+    setPendingDeleteId(null);
   }
 
   function handleFavorite(id: string) {
@@ -27,8 +34,54 @@ export default function SavedPage() {
     setRecipes((prev) => prev.map((r) => r.id === id ? { ...r, favorited: !r.favorited } : r));
   }
 
+  const filteredRecipes = favoritesOnly ? recipes.filter((r) => r.favorited) : recipes;
+
+  const pendingRecipeName = pendingDeleteId ? recipes.find((r) => r.id === pendingDeleteId)?.name : null;
+
   return (
     <main className="min-h-screen pb-20" style={{ background: "var(--bg)" }}>
+      {/* Delete confirmation dialog */}
+      {pendingDeleteId && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center pb-6 px-6"
+          style={{ background: "rgba(0,0,0,0.4)" }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-dialog-title"
+        >
+          <div
+            className="w-full max-w-[520px] rounded-sm p-5 space-y-4"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+          >
+            <div>
+              <p id="delete-dialog-title" className="text-sm font-medium" style={{ color: "var(--text)" }}>
+                레시피를 삭제하시겠어요?
+              </p>
+              {pendingRecipeName && (
+                <p className="mt-1 font-mono text-xs" style={{ color: "var(--muted)" }}>
+                  &ldquo;{pendingRecipeName}&rdquo;이(가) 영구적으로 삭제됩니다.
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPendingDeleteId(null)}
+                className="flex-1 rounded-sm py-2.5 text-sm font-medium transition-opacity hover:opacity-70"
+                style={{ border: "1px solid var(--border)", color: "var(--text)", background: "transparent" }}
+              >
+                취소
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 rounded-sm py-2.5 text-sm font-medium transition-opacity hover:opacity-80"
+                style={{ background: "var(--danger)", color: "white", border: "none" }}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-[520px] px-6 py-12">
         <header className="mb-6">
           <div className="mb-3 flex items-center gap-3">
@@ -100,20 +153,27 @@ export default function SavedPage() {
               냉장고 사진 찍으러 가기
             </button>
           </div>
-        ) : (() => {
-          const filtered = favoritesOnly ? recipes.filter((r) => r.favorited) : recipes;
-          return filtered.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-sm" style={{ color: "var(--muted)" }}>즐겨찾기한 레시피가 없습니다</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filtered.map((recipe, i) => (
-                <SavedRecipeCard key={recipe.id} recipe={recipe} onDelete={handleDelete} onFavorite={handleFavorite} allergies={allergies} index={recipes.length - recipes.indexOf(recipe)} />
-              ))}
-            </div>
-          );
-        })()}
+        ) : filteredRecipes.length === 0 ? (
+          <div className="py-16 text-center space-y-3">
+            <p className="text-sm font-medium" style={{ color: "var(--text)" }}>즐겨찾기한 레시피가 없어요</p>
+            <p className="font-mono text-xs" style={{ color: "var(--muted)" }}>
+              레시피 카드의 별 아이콘을 눌러 즐겨찾기에 추가해 보세요.
+            </p>
+            <button
+              onClick={() => setFavoritesOnly(false)}
+              className="mt-2 font-mono text-xs underline underline-offset-2 transition-opacity hover:opacity-60"
+              style={{ color: "var(--accent)" }}
+            >
+              전체 레시피 보기
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredRecipes.map((recipe) => (
+              <SavedRecipeCard key={recipe.id} recipe={recipe} onDelete={handleDelete} onFavorite={handleFavorite} allergies={allergies} index={recipes.length - recipes.indexOf(recipe)} />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

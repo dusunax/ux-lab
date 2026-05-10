@@ -49,7 +49,10 @@ export default function Nav() {
       }}
     >
       {LINKS.map(({ href, label, icon }) => {
-        const active = pathname === href || (href !== "/" && pathname.startsWith(href));
+        const active =
+          pathname === href ||
+          (href === "/" && pathname.startsWith("/step2")) ||
+          (href !== "/" && pathname.startsWith(href));
         return (
           <Link
             key={href}

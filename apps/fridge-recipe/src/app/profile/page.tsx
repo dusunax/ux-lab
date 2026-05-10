@@ -74,6 +74,9 @@ export default function ProfilePage() {
           <h1 className="font-display text-4xl font-light leading-tight" style={{ color: "var(--text)" }}>
             {isEdit ? "프로필 수정" : "프로필 설정"}
           </h1>
+          <p className="mt-2 font-mono text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+            여기서 설정한 식단, 알레르기, 특이사항은 레시피 추천 시 자동으로 반영됩니다.
+          </p>
         </header>
 
         <div className="space-y-6">
@@ -208,13 +211,19 @@ export default function ProfilePage() {
           )}
 
           {/* Save button */}
+          {!nickname.trim() && (
+            <p className="text-center font-mono text-xs" style={{ color: "var(--muted)" }}>
+              닉네임을 입력해야 저장할 수 있어요
+            </p>
+          )}
           <button
             onClick={handleSave}
             disabled={!nickname.trim() || saved}
+            aria-disabled={!nickname.trim() || saved}
             className="w-full rounded-sm py-3.5 text-sm font-medium tracking-wide transition-all duration-200 disabled:opacity-40"
             style={{ background: saved ? "var(--accent-mid)" : "var(--accent)", color: "var(--surface)", letterSpacing: "0.05em" }}
           >
-            {saved ? "저장됨" : "저장"}
+            {saved ? "저장 완료" : "저장"}
           </button>
         </div>
       </div>
