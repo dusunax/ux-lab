@@ -69,6 +69,7 @@
     /* ─── Application Window ─────────────────────── */
     .excel-window {
       width: 960px;
+      height: calc(100vh - 40px);
       background: var(--chrome-bg);
       border: 1px solid #888;
       box-shadow:
@@ -310,6 +311,8 @@
 
     /* ─── Sheet Area ─────────────────────────────── */
     .sheet-area {
+      flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -350,8 +353,8 @@
 
     /* Sheet body */
     .sheet-body {
+      flex: 1;
       overflow-y: auto;
-      max-height: 480px;
       background: var(--cell-bg);
     }
     .sheet-body::-webkit-scrollbar { width: 14px; }
@@ -408,6 +411,8 @@
       border-bottom: 1px solid var(--cell-border);
       cursor: pointer;
       transition: background-color 0.3s ease;
+      align-items: stretch;
+      min-height: var(--row-height);
     }
     /* Chase: animate only newly added rows */
     @keyframes rowSlideIn {
@@ -433,7 +438,7 @@
     .row-num {
       width: var(--row-num-w);
       flex-shrink: 0;
-      height: var(--row-height);
+      min-height: var(--row-height);
       border-right: 1px solid var(--cell-border);
       display: flex;
       align-items: center;
@@ -445,7 +450,7 @@
       transition: background 0.15s;
     }
     .cell {
-      height: var(--row-height);
+      min-height: var(--row-height);
       display: flex;
       align-items: center;
       padding: 0 8px;
@@ -480,6 +485,13 @@
       color: #444;
       font-style: italic;
       letter-spacing: -0.01em;
+      white-space: normal;
+      word-break: break-word;
+      text-overflow: unset;
+      align-items: flex-start;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      line-height: 1.5;
     }
     .cell.col-e { flex: 1; }
 
@@ -924,6 +936,12 @@ let isAnalyzing = false;
 let sortedCache = null;
 let entryMap = new Map();
 
+/* Virtual scroll: activates at VIRTUAL_THRESHOLD entries */
+const VIRTUAL_THRESHOLD = 200;
+const VIRTUAL_ROW_EST = 52; /* estimated px per row (accounts for wrapped empathy text) */
+let virtualActive = false;
+let scrollScheduled = false;
+
 function getSorted() {
   if (!sortedCache) sortedCache = entries.slice().reverse();
   return sortedCache;
@@ -1014,11 +1032,17 @@ function normalizeEmotion(emotion) {
 }
 
 /* ── API ───────────────────────────────────────── */
+function checkHttpError(response) {
+  if (response.ok) return;
+  if (response.status === 429) throw new Error('요청이 너무 많아요. 잠시 후 다시 시도해주세요.');
+  if (response.status >= 500) throw new Error('AI 서버에 일시적인 문제가 있어요. 잠시 후 다시 시도해주세요.');
+  throw new Error(`응답 오류가 발생했어요. (${response.status})`);
+}
+
 async function analyzeEmotion(text) {
   if (!text || typeof text !== 'string' || text.trim().length === 0) {
     throw new Error('입력 텍스트가 비어 있습니다.');
   }
-  /* Sage: 500-char input guard */
   if (text.trim().length > MAX_INPUT_LENGTH) {
     throw new Error('입력이 너무 길어요. 500자 이내로 작성해주세요.');
   }
@@ -1042,16 +1066,7 @@ async function analyzeEmotion(text) {
     throw new Error('서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요.');
   }
 
-  /* Sage: differentiated HTTP error messages */
-  if (!response.ok) {
-    if (response.status === 429) {
-      throw new Error('요청이 너무 많아요. 잠시 후 다시 시도해주세요.');
-    }
-    if (response.status >= 500) {
-      throw new Error('AI 서버에 일시적인 문제가 있어요. 잠시 후 다시 시도해주세요.');
-    }
-    throw new Error(`응답 오류가 발생했어요. (${response.status})`);
-  }
+  checkHttpError(response);
 
   let data;
   try { data = await response.json(); } catch { throw new Error('응답 형식이 올바르지 않아요.'); }
@@ -1066,10 +1081,7 @@ async function analyzeEmotion(text) {
     throw new Error('감정 분석 결과 형식이 예상과 달라요.');
   }
 
-  return {
-    emotion: normalizeEmotion(result.emotion),
-    empathy: result.empathy,
-  };
+  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy };
 }
 
 /* ── Error Toast ───────────────────────────────── */
@@ -1153,18 +1165,39 @@ function renderEmptyGhost() {
 function renderRows() {
   const container = document.getElementById('rows-container');
 
-  /* Riley: ghost row when empty */
   if (entries.length === 0) {
+    virtualActive = false;
+    container.style.paddingTop = '';
+    container.style.paddingBottom = '';
     container.innerHTML = renderEmptyGhost();
     return;
   }
 
-  /* Chase: use cached sorted list */
   const sorted = getSorted();
-  container.innerHTML = sorted
-    .map((entry, i) => buildRow(entry, i + 1))
-    .join('');
-  /* No per-row addEventListener — delegation in bindRowDelegation handles it */
+  virtualActive = sorted.length >= VIRTUAL_THRESHOLD;
+
+  if (virtualActive) {
+    renderVirtual(sorted);
+  } else {
+    container.style.paddingTop = '';
+    container.style.paddingBottom = '';
+    container.innerHTML = sorted.map((entry, i) => buildRow(entry, i + 1)).join('');
+  }
+}
+
+function renderVirtual(sorted) {
+  const body = document.getElementById('sheet-body');
+  const container = document.getElementById('rows-container');
+  const viewportH = body.clientHeight || 480;
+  const BUFFER = 5;
+  const visible = Math.ceil(viewportH / VIRTUAL_ROW_EST) + BUFFER * 2;
+  const scrollTop = body.scrollTop;
+  const start = Math.max(0, Math.floor(scrollTop / VIRTUAL_ROW_EST) - BUFFER);
+  const end = Math.min(sorted.length, start + visible);
+
+  container.style.paddingTop = `${start * VIRTUAL_ROW_EST}px`;
+  container.style.paddingBottom = `${(sorted.length - end) * VIRTUAL_ROW_EST}px`;
+  container.innerHTML = sorted.slice(start, end).map((e, i) => buildRow(e, start + i + 1)).join('');
 }
 
 /* Chase: renumber all real rows after DOM mutation */
@@ -1252,6 +1285,47 @@ function handleRowClick(e) {
   input.value = (entry && !entry._loading) ? entry.text : '';
 }
 
+/* ── Submit Helpers ────────────────────────────── */
+function prependLoadingRow(entry) {
+  const container = document.getElementById('rows-container');
+
+  if (selectedId) {
+    const prevEl = container.querySelector(`[data-id="${selectedId}"]`);
+    if (prevEl) prevEl.classList.remove('selected');
+  }
+  selectedId = entry.id;
+
+  invalidateSort();
+  rebuildEntryMap();
+
+  if (virtualActive) {
+    renderRows();
+  } else {
+    const ghost = container.querySelector('.empty-ghost');
+    if (ghost) ghost.remove();
+    const tmp = document.createElement('template');
+    tmp.innerHTML = buildRow(entry, 1).trim();
+    const newEl = tmp.content.firstChild;
+    newEl.classList.add('row-new');
+    container.prepend(newEl);
+    renumberRows();
+  }
+
+  document.getElementById('sheet-body').scrollTop = 0;
+}
+
+function applyAnalysisResult(entry) {
+  invalidateSort();
+  rebuildEntryMap();
+  scheduleSave();
+  updateStatus('준비');
+  if (virtualActive) {
+    renderRows();
+  } else {
+    updateRowDOM(entry.id);
+  }
+}
+
 /* ── Submit ────────────────────────────────────── */
 async function handleSubmit() {
   const input = document.getElementById('formula-input');
@@ -1267,44 +1341,10 @@ async function handleSubmit() {
   isAnalyzing = true;
   updateStatus('AI 분석 중...');
 
-  const entry = {
-    id: generateId(),
-    date: todayStr(),
-    text,
-    emotion: '',
-    empathy: '',
-    _loading: true,
-  };
-
+  const entry = { id: generateId(), date: todayStr(), text, emotion: '', empathy: '', _loading: true };
   entries.push(entry);
 
-  const container = document.getElementById('rows-container');
-
-  /* Deselect any previously selected row before selecting new entry */
-  if (selectedId) {
-    const prevEl = container.querySelector(`[data-id="${selectedId}"]`);
-    if (prevEl) prevEl.classList.remove('selected');
-  }
-  selectedId = entry.id;
-
-  /* Chase: invalidate cache and rebuild map before DOM update */
-  invalidateSort();
-  rebuildEntryMap();
-
-  /* Chase: prepend new row instead of full re-render */
-  const ghost = container.querySelector('.empty-ghost');
-  if (ghost) ghost.remove();
-
-  const tmp = document.createElement('template');
-  tmp.innerHTML = buildRow(entry, 1).trim();
-  const newEl = tmp.content.firstChild;
-  newEl.classList.add('row-new');
-  container.prepend(newEl);
-  renumberRows();
-
-  /* Scroll to top (newest is first) */
-  document.getElementById('sheet-body').scrollTop = 0;
-
+  prependLoadingRow(entry);
   input.value = '';
   input.blur();
 
@@ -1313,14 +1353,8 @@ async function handleSubmit() {
     entry.emotion = result.emotion;
     entry.empathy = result.empathy;
     delete entry._loading;
-    /* Chase: save on idle; invalidate sort so updateRowDOM uses fresh data */
-    invalidateSort();
-    rebuildEntryMap();
-    scheduleSave();
-    updateStatus('준비');
-    updateRowDOM(entry.id);
+    applyAnalysisResult(entry);
   } catch (err) {
-    /* Remove failed entry */
     entries = entries.filter(en => en.id !== entry.id);
     selectedId = null;
     invalidateSort();
@@ -1330,7 +1364,6 @@ async function handleSubmit() {
     input.value = text;
     renderRows();
   } finally {
-    /* Morgan: removed redundant updateStatus('준비') — handled in try/catch branches */
     isAnalyzing = false;
     input.focus();
   }
@@ -1349,13 +1382,13 @@ function bindEvents() {
     }
     if (e.key === 'Escape') {
       input.value = '';
-      input.blur();
       if (selectedId) {
         const prev = document.getElementById('rows-container').querySelector(`[data-id="${selectedId}"]`);
         if (prev) prev.classList.remove('selected');
       }
       selectedId = null;
       updateNameBox(entries.length + 1, 1);
+      input.focus();
     }
   });
 
@@ -1376,6 +1409,19 @@ function bindEvents() {
     selectedId = null;
     updateNameBox(entries.length + 1, 1);
     updateStatus('준비');
+    input.focus();
+  });
+}
+
+/* ── Virtual Scroll Binding ────────────────────── */
+function bindVirtualScroll() {
+  document.getElementById('sheet-body').addEventListener('scroll', () => {
+    if (!virtualActive || scrollScheduled) return;
+    scrollScheduled = true;
+    requestAnimationFrame(() => {
+      scrollScheduled = false;
+      renderVirtual(getSorted());
+    });
   });
 }
 
@@ -1385,6 +1431,7 @@ function init() {
   rebuildEntryMap();
   renderRows();
   bindRowDelegation();
+  bindVirtualScroll();
   updateStatus('준비');
   bindEvents();
   document.getElementById('formula-input').focus();
