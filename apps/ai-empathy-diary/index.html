@@ -430,6 +430,7 @@
       transition: background-color 0.3s ease;
       align-items: stretch;
       min-height: var(--row-height);
+      background-color: var(--cell-bg);
     }
     /* Chase: animate only newly added rows */
     @keyframes rowSlideIn {
@@ -488,6 +489,13 @@
       font-size: 13px;
       color: #1a1a1a;
       letter-spacing: -0.01em;
+      white-space: normal;
+      word-break: break-word;
+      text-overflow: unset;
+      align-items: flex-start;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      line-height: 1.5;
     }
     .cell.col-c {
       width: var(--col-c-w);
@@ -536,18 +544,20 @@
     .tint-tired    { background-color: var(--tint-tired); }
     .tint-calm     { background-color: var(--tint-calm); }
 
-    /* Loading state */
-    .cell-loading {
-      color: #aaa !important;
-      font-style: italic;
-      font-family: var(--font-chrome) !important;
-      font-size: 11px !important;
+    /* Loading skeleton */
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; }
-      50%       { opacity: 1; }
+    .skeleton-bar {
+      display: block;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
     }
-    .cell-loading { animation: pulse 1.2s ease-in-out infinite; }
+    .skeleton-bar.badge { width: 52px; height: 20px; }
+    .skeleton-bar.line  { width: 85%; height: 13px; margin-top: 1px; }
 
     /* ─── Sheet Tabs ─────────────────────────────── */
     .sheet-tabs {
@@ -1154,12 +1164,12 @@ function buildRow(entry, rowNumber) {
       <div class="cell col-b" role="cell">${escapeHtml(entry.text)}</div>
       <div class="cell col-c" role="cell">
         ${isLoading
-          ? '<span class="cell-loading">분석 중...</span>'
+          ? '<span class="skeleton-bar badge"></span>'
           : (entry.emotion ? buildEmotionBadge(entry.emotion) : '')}
       </div>
       <div class="cell col-d" role="cell" title="${escapeHtml(entry.empathy || '')}">
         ${isLoading
-          ? ''
+          ? '<span class="skeleton-bar line"></span>'
           : escapeHtml(entry.empathy || '')}
       </div>
       <div class="cell col-e" role="cell"></div>
@@ -1394,6 +1404,7 @@ function bindEvents() {
 
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
+      if (e.isComposing || e.keyCode === 229) return;
       e.preventDefault();
       handleSubmit();
     }
