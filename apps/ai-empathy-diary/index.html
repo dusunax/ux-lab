@@ -57,22 +57,7 @@
     body {
       font-family: var(--font-ui);
       font-size: 13px;
-      background-color: #ffffff;
-      background-image:
-        repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 99px,
-          #d0d0d0 99px,
-          #d0d0d0 100px
-        ),
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 19px,
-          #d0d0d0 19px,
-          #d0d0d0 20px
-        );
+      background: #808080;
       display: flex;
       align-items: flex-start;
       justify-content: center;
@@ -370,7 +355,25 @@
     .sheet-body {
       flex: 1;
       overflow-y: auto;
-      background: var(--cell-bg);
+      background-color: var(--cell-bg);
+      /* Empty-cell grid: horizontal rows + vertical column dividers */
+      background-image:
+        repeating-linear-gradient(
+          to bottom,
+          transparent calc(var(--row-height) - 1px),
+          var(--cell-border) calc(var(--row-height) - 1px),
+          var(--cell-border) var(--row-height)
+        ),
+        linear-gradient(
+          to right,
+          transparent 41px, var(--cell-border) 41px 42px,
+          transparent 42px 151px, var(--cell-border) 151px 152px,
+          transparent 152px 431px, var(--cell-border) 431px 432px,
+          transparent 432px 527px, var(--cell-border) 527px 528px,
+          transparent 528px 867px, var(--cell-border) 867px 868px,
+          transparent 868px
+        );
+      background-attachment: local;
     }
     .sheet-body::-webkit-scrollbar { width: 14px; }
     .sheet-body::-webkit-scrollbar-track { background: #f0f0f0; border-left: 1px solid var(--chrome-border); }
