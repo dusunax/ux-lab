@@ -361,19 +361,18 @@
         repeating-linear-gradient(
           to bottom,
           transparent calc(var(--row-height) - 1px),
-          var(--cell-border) calc(var(--row-height) - 1px),
-          var(--cell-border) var(--row-height)
+          #d0d0d0 calc(var(--row-height) - 1px),
+          #d0d0d0 var(--row-height)
         ),
         linear-gradient(
           to right,
-          transparent 41px, var(--cell-border) 41px 42px,
-          transparent 42px 151px, var(--cell-border) 151px 152px,
-          transparent 152px 431px, var(--cell-border) 431px 432px,
-          transparent 432px 527px, var(--cell-border) 527px 528px,
-          transparent 528px 867px, var(--cell-border) 867px 868px,
+          transparent 41px, #d0d0d0 41px 42px,
+          transparent 42px 151px, #d0d0d0 151px 152px,
+          transparent 152px 431px, #d0d0d0 431px 432px,
+          transparent 432px 527px, #d0d0d0 527px 528px,
+          transparent 528px 867px, #d0d0d0 867px 868px,
           transparent 868px
         );
-      background-attachment: local;
     }
     .sheet-body::-webkit-scrollbar { width: 14px; }
     .sheet-body::-webkit-scrollbar-track { background: #f0f0f0; border-left: 1px solid var(--chrome-border); }
