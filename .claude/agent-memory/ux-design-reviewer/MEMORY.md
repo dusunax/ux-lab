@@ -1,0 +1,1 @@
+- [fridge-recipe UX patterns and decisions](project_fridge_recipe_ux.md) — 2026-05-10 전체 UX 검토 완료, 에러/빈상태/접근성/흐름 연속성 수정 패턴 기록
