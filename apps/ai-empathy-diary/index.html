@@ -669,6 +669,57 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* ─── Emotion Filter ─────────────────────────── */
+    .filter-header {
+      position: relative;
+      cursor: pointer;
+      justify-content: center;
+      gap: 4px;
+      user-select: none;
+    }
+    .filter-header:hover { background: #e8e8e8; }
+    .filter-icon {
+      font-size: 10px;
+      color: #999;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .filter-header.active .filter-icon {
+      color: var(--ribbon-bg); /* green */
+    }
+    .filter-header.active {
+      background: #e8f5ee;
+    }
+
+    .filter-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 110px;
+      background: #fff;
+      border: 1px solid var(--chrome-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 100;
+      border-radius: 2px;
+      padding: 3px 0;
+    }
+    .filter-dropdown.open { display: block; }
+
+    .filter-option {
+      padding: 5px 12px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: var(--chrome-text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .filter-option:hover { background: #f0f0f0; }
+    .filter-option.selected {
+      color: var(--ribbon-bg);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -870,7 +921,26 @@
         <div class="sh-num"></div>
         <div class="sh-cell col-a">날짜</div>
         <div class="sh-cell col-b">오늘 있었던 일</div>
-        <div class="sh-cell col-c">감정</div>
+        <div class="sh-cell col-c filter-header" id="filter-trigger">
+          감정
+          <span class="filter-icon" id="filter-icon">▾</span>
+          <div class="filter-dropdown" id="filter-dropdown">
+            <div class="filter-option selected" data-emotion="">전체</div>
+            <div class="filter-option" data-emotion="기쁨">기쁨</div>
+            <div class="filter-option" data-emotion="설렘">설렘</div>
+            <div class="filter-option" data-emotion="뿌듯함">뿌듯함</div>
+            <div class="filter-option" data-emotion="슬픔">슬픔</div>
+            <div class="filter-option" data-emotion="외로움">외로움</div>
+            <div class="filter-option" data-emotion="스트레스">스트레스</div>
+            <div class="filter-option" data-emotion="분노">분노</div>
+            <div class="filter-option" data-emotion="억울함">억울함</div>
+            <div class="filter-option" data-emotion="불안">불안</div>
+            <div class="filter-option" data-emotion="혼란">혼란</div>
+            <div class="filter-option" data-emotion="피로">피로</div>
+            <div class="filter-option" data-emotion="무기력함">무기력함</div>
+            <div class="filter-option" data-emotion="평온">평온</div>
+          </div>
+        </div>
         <div class="sh-cell col-d">AI의 한마디</div>
         <div class="sh-cell col-e"></div>
       </div>
@@ -958,6 +1028,7 @@ const EMOTION_CONFIG = {
 let entries = [];
 let selectedId = null;
 let isAnalyzing = false;
+let filterEmotion = null; // null = show all
 
 /* Chase: sort cache and entry map for O(1) lookups */
 let sortedCache = null;
@@ -972,6 +1043,12 @@ let scrollScheduled = false;
 function getSorted() {
   if (!sortedCache) sortedCache = entries.slice().reverse();
   return sortedCache;
+}
+
+function getFiltered() {
+  const sorted = getSorted();
+  if (!filterEmotion) return sorted;
+  return sorted.filter(e => !e._loading && e.emotion === filterEmotion);
 }
 
 function invalidateSort() {
@@ -1134,9 +1211,16 @@ function updateNameBox(rowIndex, col) {
 /* ── Status Bar ────────────────────────────────── */
 function updateStatus(text) {
   document.getElementById('status-text').textContent = text;
-  const count = entries.length;
-  document.getElementById('status-count').textContent =
-    count > 0 ? `항목 수: ${count}` : '';
+  const total = entries.length;
+  const filtered = getFiltered().length;
+  const countEl = document.getElementById('status-count');
+  if (total === 0) {
+    countEl.textContent = '';
+  } else if (filterEmotion) {
+    countEl.textContent = `${filtered} / ${total}개`;
+  } else {
+    countEl.textContent = `항목 수: ${total}`;
+  }
 }
 
 /* ── Render ────────────────────────────────────── */
@@ -1191,6 +1275,7 @@ function renderEmptyGhost() {
 
 function renderRows() {
   const container = document.getElementById('rows-container');
+  const filtered = getFiltered();
 
   if (entries.length === 0) {
     virtualActive = false;
@@ -1200,15 +1285,33 @@ function renderRows() {
     return;
   }
 
-  const sorted = getSorted();
-  virtualActive = sorted.length >= VIRTUAL_THRESHOLD;
+  if (filtered.length === 0) {
+    // Filter active but no matching entries
+    virtualActive = false;
+    container.style.paddingTop = '';
+    container.style.paddingBottom = '';
+    container.innerHTML = `
+      <div class="data-row empty-ghost" style="opacity:0.5; cursor:default;" aria-live="polite">
+        <div class="row-num">—</div>
+        <div class="cell col-a"></div>
+        <div class="cell col-b" style="color:#999; font-style:italic; white-space:normal;">
+          "${escapeHtml(filterEmotion)}" 감정으로 기록된 일지가 없어요
+        </div>
+        <div class="cell col-c"></div>
+        <div class="cell col-d"></div>
+        <div class="cell col-e"></div>
+      </div>`;
+    return;
+  }
+
+  virtualActive = filtered.length >= VIRTUAL_THRESHOLD;
 
   if (virtualActive) {
-    renderVirtual(sorted);
+    renderVirtual(filtered);
   } else {
     container.style.paddingTop = '';
     container.style.paddingBottom = '';
-    container.innerHTML = sorted.map((entry, i) => buildRow(entry, i + 1)).join('');
+    container.innerHTML = filtered.map((entry, i) => buildRow(entry, i + 1)).join('');
   }
 }
 
@@ -1325,7 +1428,7 @@ function prependLoadingRow(entry) {
   invalidateSort();
   rebuildEntryMap();
 
-  if (virtualActive) {
+  if (virtualActive || filterEmotion) {
     renderRows();
   } else {
     const ghost = container.querySelector('.empty-ghost');
@@ -1346,7 +1449,7 @@ function applyAnalysisResult(entry) {
   rebuildEntryMap();
   scheduleSave();
   updateStatus('준비');
-  if (virtualActive) {
+  if (virtualActive || filterEmotion) {
     renderRows();
   } else {
     updateRowDOM(entry.id);
@@ -1448,8 +1551,45 @@ function bindVirtualScroll() {
     scrollScheduled = true;
     requestAnimationFrame(() => {
       scrollScheduled = false;
-      renderVirtual(getSorted());
+      renderVirtual(getFiltered());
     });
+  });
+}
+
+/* ── Filter Binding ────────────────────────────── */
+function bindFilter() {
+  const trigger = document.getElementById('filter-trigger');
+  const dropdown = document.getElementById('filter-dropdown');
+
+  trigger.addEventListener('click', e => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+
+  dropdown.addEventListener('click', e => {
+    const option = e.target.closest('.filter-option');
+    if (!option) return;
+    e.stopPropagation();
+
+    const emotion = option.dataset.emotion;
+    filterEmotion = emotion || null;
+
+    // Update selected state
+    dropdown.querySelectorAll('.filter-option').forEach(el => {
+      el.classList.toggle('selected', el.dataset.emotion === option.dataset.emotion);
+    });
+
+    // Update header active state
+    trigger.classList.toggle('active', !!filterEmotion);
+
+    dropdown.classList.remove('open');
+    renderRows();
+    updateStatus('준비');
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', () => {
+    dropdown.classList.remove('open');
   });
 }
 
@@ -1460,6 +1600,7 @@ function init() {
   renderRows();
   bindRowDelegation();
   bindVirtualScroll();
+  bindFilter();
   updateStatus('준비');
   bindEvents();
   document.getElementById('formula-input').focus();
