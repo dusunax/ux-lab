@@ -438,6 +438,27 @@
       to   { opacity: 1; transform: translateY(0); }
     }
     .data-row.row-new { animation: rowSlideIn 0.25s ease forwards; }
+    @keyframes rowFadeOut {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(10px); }
+    }
+    .data-row.row-removing { animation: rowFadeOut 0.18s ease forwards; pointer-events: none; }
+
+    /* Delete button */
+    .delete-btn {
+      opacity: 0;
+      transition: opacity 0.15s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #bbb;
+      font-size: 13px;
+      line-height: 1;
+      padding: 4px 6px;
+      border-radius: 2px;
+    }
+    .delete-btn:hover { color: #c0392b; background: #fff0f0; }
+    .data-row:hover .delete-btn { opacity: 1; }
     .data-row:hover .row-num {
       background: #e8e8e8;
     }
@@ -1256,7 +1277,9 @@ function buildRow(entry, rowNumber) {
           ? '<span class="skeleton-bar line"></span>'
           : escapeHtml(entry.empathy || '')}
       </div>
-      <div class="cell col-e" role="cell"></div>
+      <div class="cell col-e" role="cell">
+        ${isLoading ? '' : '<button class="delete-btn" data-action="delete" aria-label="삭제" tabindex="-1">✕</button>'}
+      </div>
     </div>`;
 }
 
@@ -1359,6 +1382,11 @@ function bindRowDelegation() {
   container.addEventListener('click', e => {
     const row = e.target.closest('.data-row');
     if (!row || row.classList.contains('empty-ghost')) return;
+    if (e.target.closest('[data-action="delete"]')) {
+      e.stopPropagation();
+      handleDeleteRow(row.dataset.id);
+      return;
+    }
     handleRowClick({ currentTarget: row, target: e.target });
   });
   container.addEventListener('keydown', e => {
@@ -1368,6 +1396,29 @@ function bindRowDelegation() {
     e.preventDefault();
     handleRowClick({ currentTarget: row, target: e.target });
   });
+}
+
+/* ── Delete ────────────────────────────────────── */
+function handleDeleteRow(id) {
+  const container = document.getElementById('rows-container');
+  const el = container.querySelector(`[data-id="${id}"]`);
+  if (!el) return;
+
+  el.classList.add('row-removing');
+  el.addEventListener('animationend', () => {
+    entries = entries.filter(e => e.id !== id);
+    if (selectedId === id) {
+      selectedId = null;
+      const input = document.getElementById('formula-input');
+      input.value = '';
+      updateNameBox(entries.length + 1, 1);
+    }
+    invalidateSort();
+    rebuildEntryMap();
+    scheduleSave();
+    renderRows();
+    updateStatus('준비');
+  }, { once: true });
 }
 
 /* ── Interaction ───────────────────────────────── */
