@@ -808,6 +808,32 @@
       color: var(--ribbon-bg);
       font-weight: 600;
     }
+    /* ─── Auth Loading Screen ───────────────────── */
+    #auth-loading {
+      position: fixed;
+      inset: 0;
+      background: var(--ribbon-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 2000;
+    }
+    #auth-loading.hidden { display: none; }
+    .auth-loading-icon { opacity: 0.95; }
+    @keyframes authSpin {
+      to { transform: rotate(360deg); }
+    }
+    .auth-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: authSpin 0.75s linear infinite;
+    }
+
     /* ─── Login Overlay ─────────────────────────── */
     .login-overlay {
       position: fixed;
@@ -820,6 +846,7 @@
       backdrop-filter: blur(2px);
     }
     .login-overlay.hidden { display: none; }
+    .excel-window.hidden { display: none; }
     .login-card {
       background: #fff;
       border-radius: 8px;
@@ -902,8 +929,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <body>
 
+<!-- Auth Loading Screen -->
+<div id="auth-loading" role="status" aria-label="인증 상태 확인 중">
+  <svg class="auth-loading-icon" width="48" height="48" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <rect width="16" height="16" rx="2" fill="rgba(255,255,255,0.2)"/>
+    <path d="M3 3l3.5 5L3 13h2.5l2-3.2 2 3.2H12l-3.5-5L12 3H9.5l-2 3.2L5.5 3H3z" fill="#fff"/>
+  </svg>
+  <div class="auth-spinner"></div>
+</div>
+
 <!-- Login Overlay -->
-<div class="login-overlay" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+<div class="login-overlay hidden" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
   <div class="login-card">
     <svg width="40" height="40" viewBox="0 0 16 16" fill="none" aria-hidden="true">
       <rect width="16" height="16" rx="2" fill="#217346"/>
@@ -932,7 +968,7 @@
 <!-- ─────────────────────────────────────────────── -->
 <!--  Excel Window                                  -->
 <!-- ─────────────────────────────────────────────── -->
-<div class="excel-window">
+<div class="excel-window hidden" id="excel-window">
 
   <!-- Title Bar -->
   <div class="title-bar">
@@ -1949,16 +1985,29 @@ const AUTH_ERROR_MESSAGES = {
 /* ── Auth ──────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
   const loginOverlay = document.getElementById('login-overlay');
+  const excelWindow = document.getElementById('excel-window');
+  const authLoading = document.getElementById('auth-loading');
   const userInfo = document.getElementById('user-info');
   const userName = document.getElementById('user-name');
   const signinBtn = document.getElementById('btn-google-signin');
+
+  let authResolved = false;
+
+  function hideAuthLoading() {
+    if (!authResolved) {
+      authResolved = true;
+      authLoading.classList.add('hidden');
+    }
+  }
 
   auth.onAuthStateChanged(async user => {
     currentUser = user;
     if (user) {
       loginOverlay.classList.add('hidden');
+      excelWindow.classList.remove('hidden');
       userName.textContent = user.displayName || user.email;
       userInfo.classList.remove('hidden');
+      hideAuthLoading();
       if (!appInitialized) {
         await initApp();
       } else {
@@ -1972,9 +2021,10 @@ document.addEventListener('DOMContentLoaded', () => {
       entries = [];
       invalidateSort();
       rebuildEntryMap();
-      renderRows();
+      excelWindow.classList.add('hidden');
       loginOverlay.classList.remove('hidden');
       userInfo.classList.add('hidden');
+      hideAuthLoading();
       signinBtn.focus();
     }
   });
