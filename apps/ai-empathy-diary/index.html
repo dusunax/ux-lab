@@ -1248,6 +1248,29 @@ function entriesRef() {
   return db.collection('users').doc(currentUser.uid).collection('entries');
 }
 
+/* ── Logging ───────────────────────────────────── */
+const LOG_ENDPOINT = '/api/log';
+function logEvent(event, params = {}) {
+  try {
+    navigator.sendBeacon(LOG_ENDPOINT, new Blob(
+      [JSON.stringify({ event, params })],
+      { type: 'application/json' }
+    ));
+  } catch { /* never break UX */ }
+}
+function errorReason(err) {
+  const m = err?.message || '';
+  if (m.includes('서버에 연결할 수 없어요')) return 'network';
+  if (m.includes('너무 많아요')) return 'rate_limit';
+  if (m.includes('AI 서버에 일시적인')) return 'upstream_5xx';
+  if (m.includes('응답 오류가 발생했어요')) return 'http_error';
+  if (m.includes('너무 길어요')) return 'input_too_long';
+  if (m.includes('형식이 예상과 달라요')) return 'format_mismatch';
+  if (m.includes('응답 형식이 올바르지')) return 'parse_error';
+  if (m.includes('분석 결과') || m.includes('내용을 찾을 수')) return 'parse_error';
+  return 'unknown';
+}
+
 /* ── Constants ─────────────────────────────────── */
 const PROXY_ENDPOINT = '/api/chat';
 const MODEL = 'auto';
@@ -1818,13 +1841,17 @@ async function handleSubmit() {
   input.value = '';
   input.blur();
 
+  logEvent('entry_submit_attempt', { text_length: text.length });
+
   try {
     const result = await analyzeEmotion(text);
     entry.emotion = result.emotion;
     entry.empathy = result.empathy;
     delete entry._loading;
     applyAnalysisResult(entry);
+    logEvent('entry_submit_success', { text_length: text.length, emotion: result.emotion });
   } catch (err) {
+    logEvent('entry_submit_failure', { reason: errorReason(err), text_length: text.length });
     entries = entries.filter(en => en.id !== entry.id);
     selectedId = null;
     invalidateSort();
@@ -2032,13 +2059,18 @@ document.addEventListener('DOMContentLoaded', () => {
   signinBtn.addEventListener('click', () => {
     signinBtn.disabled = true;
     signinBtn.textContent = '로그인 중...';
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err => {
-      signinBtn.disabled = false;
-      signinBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg> Google로 로그인`;
-      const msg = AUTH_ERROR_MESSAGES[err.code];
-      if (msg !== null) showError(msg || '로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
-      console.error('Auth error:', err);
-    });
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(result => {
+        logEvent('auth_signin_success', { is_new_user: result.additionalUserInfo?.isNewUser ?? false });
+      })
+      .catch(err => {
+        signinBtn.disabled = false;
+        signinBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg> Google로 로그인`;
+        logEvent('auth_signin_failure', { code: err.code || 'unknown' });
+        const msg = AUTH_ERROR_MESSAGES[err.code];
+        if (msg !== null) showError(msg || '로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+        console.error('Auth error:', err);
+      });
   });
 
   const signoutBtn = document.getElementById('btn-signout');
