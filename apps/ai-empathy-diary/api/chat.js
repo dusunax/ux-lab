@@ -6,6 +6,27 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+const FALLBACKS = [
+  'openai/gpt-oss-120b:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'nvidia/nemotron-3-super-120b-a12b:free',
+  'openai/gpt-oss-20b:free',
+  'qwen/qwen3-next-80b-a3b-instruct:free',
+  'minimax/minimax-m2.5:free',
+];
+
+async function callOpenRouter(apiKey, body) {
+  const res = await fetch(OPENROUTER_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  });
+  return res;
+}
+
 export default async function handler(req, res) {
   Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
 
@@ -25,21 +46,28 @@ export default async function handler(req, res) {
     return;
   }
 
-  let upstream;
-  try {
-    upstream = await fetch(OPENROUTER_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(req.body),
-    });
-  } catch {
-    res.status(502).json({ error: '업스트림 서버에 연결할 수 없어요.' });
+  const { model, ...rest } = req.body;
+  const isAuto = !model || model === 'auto';
+  const candidates = isAuto ? FALLBACKS : [model, ...FALLBACKS.filter(m => m !== model)];
+
+  for (const candidate of candidates) {
+    let upstream;
+    try {
+      upstream = await callOpenRouter(apiKey, { ...rest, model: candidate });
+    } catch {
+      res.status(502).json({ error: '업스트림 서버에 연결할 수 없어요.' });
+      return;
+    }
+
+    if (upstream.status === 429) {
+      console.warn(`[fallback] ${candidate} → 429`);
+      continue;
+    }
+
+    const data = await upstream.json();
+    res.status(upstream.status).json(data);
     return;
   }
 
-  const data = await upstream.json();
-  res.status(upstream.status).json(data);
+  res.status(429).json({ error: `모든 모델(${candidates.length}개)이 rate limit에 걸렸어요.` });
 }

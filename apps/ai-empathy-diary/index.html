@@ -1352,7 +1352,9 @@ function extractJson(raw) {
     .replace(/\s*```$/, '')
     .trim();
   try { return JSON.parse(stripped); } catch { /* continue */ }
-  const match = stripped.match(/\{[\s\S]*\}/);
+  // Use [^{}]* to match only the first complete flat JSON object,
+  // preventing greedy match from spanning multiple objects in the response.
+  const match = stripped.match(/\{[^{}]*\}/);
   if (match) { try { return JSON.parse(match[0]); } catch { /* continue */ } }
   throw new Error('JSON 파싱 실패');
 }
