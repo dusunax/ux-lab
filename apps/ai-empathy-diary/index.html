@@ -808,9 +808,116 @@
       color: var(--ribbon-bg);
       font-weight: 600;
     }
+    /* ─── Login Overlay ─────────────────────────── */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(32, 32, 32, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(2px);
+    }
+    .login-overlay.hidden { display: none; }
+    .login-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 40px 48px;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      min-width: 320px;
+    }
+    .login-card h2 {
+      font-family: var(--font-ui);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--chrome-text);
+      margin: 0;
+    }
+    .login-card p {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .btn-google {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      color: #3c4043;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 8px;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+    .btn-google:hover {
+      background: #f8f9fa;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    /* ─── User Info (title bar) ──────────────────── */
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 12px;
+    }
+    .user-info.hidden { display: none; }
+    .user-name {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      color: #555;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .signout-btn {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      color: #666;
+      background: none;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 2px 8px;
+      cursor: pointer;
+    }
+    .signout-btn:hover { background: var(--chrome-hover); }
   </style>
 </head>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <body>
+
+<!-- Login Overlay -->
+<div class="login-overlay" id="login-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="login-card">
+    <svg width="40" height="40" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect width="16" height="16" rx="2" fill="#217346"/>
+      <path d="M3 3l3.5 5L3 13h2.5l2-3.2 2 3.2H12l-3.5-5L12 3H9.5l-2 3.2L5.5 3H3z" fill="#fff"/>
+    </svg>
+    <h2 id="login-title">일지.xlsx</h2>
+    <p>오늘 있었던 일을 적으면<br>AI가 감정을 분석하고 공감해드려요.</p>
+    <p style="font-size:11px; color:#999; margin-top:-8px;">데이터는 내 계정에만 저장됩니다.</p>
+    <button id="btn-google-signin" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg>
+      Google로 로그인
+    </button>
+  </div>
+</div>
 
 <!-- Mobile fallback (hidden above 900px via CSS) -->
 <div class="mobile-overlay" aria-hidden="true">
@@ -828,14 +935,18 @@
 <div class="excel-window">
 
   <!-- Title Bar -->
-  <div class="title-bar" aria-hidden="true">
+  <div class="title-bar">
     <!-- Excel "X" icon -->
     <svg class="title-bar-icon" viewBox="0 0 16 16" fill="none">
       <rect width="16" height="16" rx="2" fill="#217346"/>
       <path d="M3 3l3.5 5L3 13h2.5l2-3.2 2 3.2H12l-3.5-5L12 3H9.5l-2 3.2L5.5 3H3z" fill="#fff"/>
     </svg>
-    <span class="title-bar-text">일지.xlsx - Microsoft Excel</span>
-    <div class="window-controls">
+    <span class="title-bar-text" aria-hidden="true">일지.xlsx - Microsoft Excel</span>
+    <div id="user-info" class="user-info hidden">
+      <span class="user-name" id="user-name"></span>
+      <button class="signout-btn" id="btn-signout">로그아웃</button>
+    </div>
+    <div class="window-controls" aria-hidden="true">
       <div class="wc-btn" tabindex="-1">
         <svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.5"/></svg>
       </div>
@@ -1082,8 +1193,26 @@
 <script>
 'use strict';
 
+/* ── Firebase ──────────────────────────────────── */
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyBW-cxffcIZMxSitSCvtmdw6HB0TlUiYdE',
+  authDomain: 'ux-lab-ai-diary.firebaseapp.com',
+  projectId: 'ux-lab-ai-diary',
+  storageBucket: 'ux-lab-ai-diary.firebasestorage.app',
+  messagingSenderId: '338507163854',
+  appId: '1:338507163854:web:68a048055dbfe27ab7c89f',
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+
+function entriesRef() {
+  if (!currentUser) throw new Error('entriesRef called without authenticated user');
+  return db.collection('users').doc(currentUser.uid).collection('entries');
+}
+
 /* ── Constants ─────────────────────────────────── */
-const STORAGE_KEY = 'ai-diary-entries';
 const PROXY_ENDPOINT = '/api/chat';
 const MODEL = 'auto';
 const TOAST_DURATION_MS = 4000;
@@ -1157,37 +1286,39 @@ function rebuildEntryMap() {
   entryMap = new Map(entries.map(e => [e.id, e]));
 }
 
-/* ── Storage ───────────────────────────────────── */
-function loadEntries() {
+/* ── Storage (Firestore) ───────────────────────── */
+async function loadEntriesFromFirestore() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
+    const snap = await entriesRef().orderBy('createdAt', 'desc').get();
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    console.error('Firestore load failed:', err);
+    showError('일지를 불러오지 못했어요. 새로고침 해주세요.');
     return [];
   }
 }
 
-function saveEntries(list) {
+async function addEntryToFirestore(entry) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  } catch {
-    /* storage unavailable — silent fail */
+    await entriesRef().doc(entry.id).set({
+      date: entry.date,
+      text: entry.text,
+      emotion: entry.emotion,
+      empathy: entry.empathy.slice(0, 300),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    console.error('Firestore write failed:', err);
+    throw new Error('저장에 실패했어요. 다시 시도해주세요.');
   }
 }
 
-/* Chase: defer saves to idle time to keep UI thread free */
-let saveScheduled = false;
-function scheduleSave() {
-  if (saveScheduled) return;
-  saveScheduled = true;
-  const run = () => {
-    saveScheduled = false;
-    saveEntries(entries);
-  };
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(run, { timeout: 2000 });
-  } else {
-    setTimeout(run, 0);
+async function deleteEntryFromFirestore(id) {
+  try {
+    await entriesRef().doc(id).delete();
+  } catch (err) {
+    console.error('Firestore delete failed:', err);
+    throw new Error('삭제에 실패했어요. 다시 시도해주세요.');
   }
 }
 
@@ -1512,9 +1643,18 @@ function handleDeleteRow(id) {
       input.value = '';
       updateNameBox(entries.length + 1, 1);
     }
+    const deleted = entryMap.get(id);
     invalidateSort();
     rebuildEntryMap();
-    scheduleSave();
+    deleteEntryFromFirestore(id).catch(err => {
+      if (deleted) {
+        entries.push(deleted);
+        invalidateSort();
+        rebuildEntryMap();
+        renderRows();
+      }
+      showError(err.message);
+    });
     renderRows();
     updateStatus('준비');
   }, { once: true });
@@ -1597,7 +1737,13 @@ function prependLoadingRow(entry) {
 function applyAnalysisResult(entry) {
   invalidateSort();
   rebuildEntryMap();
-  scheduleSave();
+  addEntryToFirestore(entry).catch(err => {
+    entries = entries.filter(e => e.id !== entry.id);
+    invalidateSort();
+    rebuildEntryMap();
+    renderRows();
+    showError(err.message, entry.text);
+  });
   updateStatus('준비');
   if (virtualActive || filterEmotion) {
     renderRows();
@@ -1760,19 +1906,109 @@ function bindFilter() {
 }
 
 /* ── Init ──────────────────────────────────────── */
-function init() {
-  entries = loadEntries();
+function showLoadingSkeletons(count = 4) {
+  const container = document.getElementById('rows-container');
+  container.innerHTML = Array.from({ length: count }, (_, i) => `
+    <div class="data-row">
+      <div class="row-num">${i + 1}</div>
+      <div class="cell col-a"><span class="skeleton-bar line" style="width:70px"></span></div>
+      <div class="cell col-b"><span class="skeleton-bar line"></span></div>
+      <div class="cell col-c"><span class="skeleton-bar badge"></span></div>
+      <div class="cell col-d"><span class="skeleton-bar line"></span></div>
+      <div class="cell col-e"></div>
+    </div>`).join('');
+}
+
+let appInitialized = false;
+
+async function initApp() {
+  showLoadingSkeletons();
+  entries = await loadEntriesFromFirestore();
   rebuildEntryMap();
   renderRows();
-  bindRowDelegation();
-  bindVirtualScroll();
-  bindFilter();
+  if (!appInitialized) {
+    appInitialized = true;
+    bindRowDelegation();
+    bindVirtualScroll();
+    bindFilter();
+    bindEvents();
+  }
   updateStatus('준비');
-  bindEvents();
   document.getElementById('formula-input').focus();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+const AUTH_ERROR_MESSAGES = {
+  'auth/popup-blocked':       '팝업이 차단됐어요. 브라우저 설정에서 팝업을 허용한 뒤 다시 시도해주세요.',
+  'auth/popup-closed-by-user':'로그인 창이 닫혔어요. 다시 시도해주세요.',
+  'auth/network-request-failed': '네트워크 연결을 확인하고 다시 시도해주세요.',
+  'auth/cancelled-popup-request': null,
+};
+
+/* ── Auth ──────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const loginOverlay = document.getElementById('login-overlay');
+  const userInfo = document.getElementById('user-info');
+  const userName = document.getElementById('user-name');
+  const signinBtn = document.getElementById('btn-google-signin');
+
+  auth.onAuthStateChanged(async user => {
+    currentUser = user;
+    if (user) {
+      loginOverlay.classList.add('hidden');
+      userName.textContent = user.displayName || user.email;
+      userInfo.classList.remove('hidden');
+      if (!appInitialized) {
+        await initApp();
+      } else {
+        entries = await loadEntriesFromFirestore();
+        rebuildEntryMap();
+        renderRows();
+        updateStatus('준비');
+      }
+    } else {
+      appInitialized = false;
+      entries = [];
+      invalidateSort();
+      rebuildEntryMap();
+      renderRows();
+      loginOverlay.classList.remove('hidden');
+      userInfo.classList.add('hidden');
+      signinBtn.focus();
+    }
+  });
+
+  signinBtn.addEventListener('click', () => {
+    signinBtn.disabled = true;
+    signinBtn.textContent = '로그인 중...';
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err => {
+      signinBtn.disabled = false;
+      signinBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg> Google로 로그인`;
+      const msg = AUTH_ERROR_MESSAGES[err.code];
+      if (msg !== null) showError(msg || '로그인에 실패했어요. 잠시 후 다시 시도해주세요.');
+      console.error('Auth error:', err);
+    });
+  });
+
+  const signoutBtn = document.getElementById('btn-signout');
+  signoutBtn.addEventListener('click', function() {
+    if (this.dataset.confirm === 'true') {
+      entries = [];
+      invalidateSort();
+      rebuildEntryMap();
+      auth.signOut().catch(err => {
+        console.error('Sign-out failed:', err);
+        showError('로그아웃에 실패했어요. 다시 시도해주세요.');
+      });
+    } else {
+      this.textContent = '정말 로그아웃?';
+      this.dataset.confirm = 'true';
+      setTimeout(() => {
+        this.textContent = '로그아웃';
+        delete this.dataset.confirm;
+      }, 3000);
+    }
+  });
+});
 </script>
 </body>
 </html>
