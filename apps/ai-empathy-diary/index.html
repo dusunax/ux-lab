@@ -66,6 +66,29 @@
       min-width: 900px;
     }
 
+    /* ─── Mobile Overlay ─────────────────────────── */
+    .mobile-overlay {
+      display: none;
+    }
+    @media (max-width: 899px) {
+      body { min-width: unset; padding: 0; background: #217346; }
+      .excel-window { display: none; }
+      .mobile-overlay {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 32px 24px;
+        text-align: center;
+        color: #fff;
+        gap: 16px;
+      }
+      .mobile-overlay svg { opacity: 0.9; }
+      .mobile-overlay h1 { font-size: 22px; font-weight: 700; }
+      .mobile-overlay p { font-size: 15px; line-height: 1.6; opacity: 0.88; max-width: 300px; }
+    }
+
     /* ─── Application Window ─────────────────────── */
     .excel-window {
       width: 960px;
@@ -580,6 +603,23 @@
     .skeleton-bar.badge { width: 52px; height: 20px; }
     .skeleton-bar.line  { width: 85%; height: 13px; margin-top: 1px; }
 
+    /* ─── Empty State Hint ───────────────────────── */
+    .empty-state-hint {
+      padding: 14px 16px 10px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: #888;
+      border-bottom: 1px dashed #e0e0e0;
+    }
+    .empty-state-hint kbd {
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 11px;
+      font-family: var(--font-chrome);
+    }
+
     /* ─── Sheet Tabs ─────────────────────────────── */
     .sheet-tabs {
       height: 26px;
@@ -685,10 +725,37 @@
       z-index: 9999;
       border-left: 3px solid #c0392b;
       max-width: 420px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .error-toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .toast-retry {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.5);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .toast-retry:hover { background: rgba(255,255,255,0.15); }
+
+    /* formula-input + confirm button during analysis */
+    .formula-input-wrap.analyzing input {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    #btn-confirm.analyzing {
+      opacity: 0.4;
+      pointer-events: none;
+      cursor: default;
     }
 
     /* ─── Emotion Filter ─────────────────────────── */
@@ -745,13 +812,23 @@
 </head>
 <body>
 
+<!-- Mobile fallback (hidden above 900px via CSS) -->
+<div class="mobile-overlay" aria-hidden="true">
+  <svg width="56" height="56" viewBox="0 0 16 16" fill="none">
+    <rect width="16" height="16" rx="2" fill="rgba(255,255,255,0.2)"/>
+    <path d="M3 3l3.5 5L3 13h2.5l2-3.2 2 3.2H12l-3.5-5L12 3H9.5l-2 3.2L5.5 3H3z" fill="#fff"/>
+  </svg>
+  <h1>일지.xlsx</h1>
+  <p>이 앱은 데스크탑 환경에 최적화되어 있어요.<br>PC나 태블릿에서 접속해 주세요.</p>
+</div>
+
 <!-- ─────────────────────────────────────────────── -->
 <!--  Excel Window                                  -->
 <!-- ─────────────────────────────────────────────── -->
 <div class="excel-window">
 
   <!-- Title Bar -->
-  <div class="title-bar">
+  <div class="title-bar" aria-hidden="true">
     <!-- Excel "X" icon -->
     <svg class="title-bar-icon" viewBox="0 0 16 16" fill="none">
       <rect width="16" height="16" rx="2" fill="#217346"/>
@@ -759,43 +836,43 @@
     </svg>
     <span class="title-bar-text">일지.xlsx - Microsoft Excel</span>
     <div class="window-controls">
-      <div class="wc-btn">
+      <div class="wc-btn" tabindex="-1">
         <svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.5"/></svg>
       </div>
-      <div class="wc-btn">
+      <div class="wc-btn" tabindex="-1">
         <svg viewBox="0 0 10 10"><rect x="1.5" y="1.5" width="7" height="7" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
       </div>
-      <div class="wc-btn close">
+      <div class="wc-btn close" tabindex="-1">
         <svg viewBox="0 0 10 10"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5" stroke="currentColor" stroke-width="1.5"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5" stroke="currentColor" stroke-width="1.5"/></svg>
       </div>
     </div>
   </div>
 
   <!-- Menu Bar -->
-  <div class="menu-bar">
-    <div class="menu-item"><u>F</u>ile</div>
-    <div class="menu-item"><u>E</u>dit</div>
-    <div class="menu-item"><u>V</u>iew</div>
-    <div class="menu-item"><u>I</u>nsert</div>
-    <div class="menu-item">F<u>o</u>rmat</div>
-    <div class="menu-item"><u>D</u>ata</div>
-    <div class="menu-item"><u>T</u>ools</div>
-    <div class="menu-item"><u>H</u>elp</div>
+  <div class="menu-bar" aria-hidden="true">
+    <div class="menu-item" tabindex="-1"><u>F</u>ile</div>
+    <div class="menu-item" tabindex="-1"><u>E</u>dit</div>
+    <div class="menu-item" tabindex="-1"><u>V</u>iew</div>
+    <div class="menu-item" tabindex="-1"><u>I</u>nsert</div>
+    <div class="menu-item" tabindex="-1">F<u>o</u>rmat</div>
+    <div class="menu-item" tabindex="-1"><u>D</u>ata</div>
+    <div class="menu-item" tabindex="-1"><u>T</u>ools</div>
+    <div class="menu-item" tabindex="-1"><u>H</u>elp</div>
   </div>
 
   <!-- Ribbon Tabs -->
-  <div class="ribbon-tabs">
-    <div class="ribbon-tab active">Home</div>
-    <div class="ribbon-tab">Insert</div>
-    <div class="ribbon-tab">Page Layout</div>
-    <div class="ribbon-tab">Formulas</div>
-    <div class="ribbon-tab">Data</div>
-    <div class="ribbon-tab">Review</div>
-    <div class="ribbon-tab">View</div>
+  <div class="ribbon-tabs" aria-hidden="true">
+    <div class="ribbon-tab active" tabindex="-1">Home</div>
+    <div class="ribbon-tab" tabindex="-1">Insert</div>
+    <div class="ribbon-tab" tabindex="-1">Page Layout</div>
+    <div class="ribbon-tab" tabindex="-1">Formulas</div>
+    <div class="ribbon-tab" tabindex="-1">Data</div>
+    <div class="ribbon-tab" tabindex="-1">Review</div>
+    <div class="ribbon-tab" tabindex="-1">View</div>
   </div>
 
   <!-- Toolbar -->
-  <div class="toolbar">
+  <div class="toolbar" aria-hidden="true">
     <!-- Save -->
     <div class="tb-btn" title="Save">
       <svg viewBox="0 0 15 15" fill="none">
@@ -973,10 +1050,10 @@
   </div>
 
   <!-- Sheet Tabs -->
-  <div class="sheet-tabs">
-    <div class="sheet-tab active">일지</div>
-    <div class="sheet-tab">Sheet2</div>
-    <div class="sheet-tab">Sheet3</div>
+  <div class="sheet-tabs" aria-hidden="true">
+    <div class="sheet-tab active" tabindex="-1">일지</div>
+    <div class="sheet-tab" tabindex="-1">Sheet2</div>
+    <div class="sheet-tab" tabindex="-1">Sheet3</div>
   </div>
 
   <!-- Status Bar -->
@@ -1007,7 +1084,7 @@
 
 /* ── Constants ─────────────────────────────────── */
 const STORAGE_KEY = 'ai-diary-entries';
-const PROXY_ENDPOINT = 'http://localhost:3035/api/chat';
+const PROXY_ENDPOINT = '/api/chat';
 const MODEL = 'auto';
 const TOAST_DURATION_MS = 4000;
 const MAX_INPUT_LENGTH = 500;
@@ -1211,13 +1288,32 @@ async function analyzeEmotion(text) {
 
 /* ── Error Toast ───────────────────────────────── */
 let toastTimer = null;
+let pendingRetryText = null;
 
-function showError(message) {
+function showError(message, retryText) {
   const toast = document.getElementById('error-toast');
-  toast.textContent = message;
+  pendingRetryText = retryText || null;
+  toast.innerHTML = '';
+
+  const msg = document.createElement('span');
+  msg.textContent = message;
+  toast.appendChild(msg);
+
+  if (retryText) {
+    const btn = document.createElement('button');
+    btn.className = 'toast-retry';
+    btn.textContent = '다시 시도';
+    btn.addEventListener('click', () => {
+      toast.classList.remove('show');
+      const input = document.getElementById('formula-input');
+      input.value = retryText;
+      handleSubmit();
+    });
+    toast.appendChild(btn);
+  }
+
   toast.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
-  /* Morgan: named constant instead of magic number */
   toastTimer = setTimeout(() => toast.classList.remove('show'), TOAST_DURATION_MS);
 }
 
@@ -1278,7 +1374,7 @@ function buildRow(entry, rowNumber) {
           : escapeHtml(entry.empathy || '')}
       </div>
       <div class="cell col-e" role="cell">
-        ${isLoading ? '' : '<button class="delete-btn" data-action="delete" aria-label="삭제" tabindex="-1">✕</button>'}
+        ${isLoading ? '' : '<button class="delete-btn" data-action="delete" aria-label="삭제">✕</button>'}
       </div>
     </div>`;
 }
@@ -1286,6 +1382,9 @@ function buildRow(entry, rowNumber) {
 /* Riley: ghost row for empty state */
 function renderEmptyGhost() {
   return `
+    <div class="empty-state-hint" role="status">
+      <span>formula bar에 오늘 있었던 일을 입력하고 <kbd>Enter</kbd>를 누르세요 ↑</span>
+    </div>
     <div class="data-row empty-ghost" style="opacity:0.35; cursor:default;" aria-hidden="true">
       <div class="row-num">1</div>
       <div class="cell col-a" style="color:#bbb; font-style:italic;">${escapeHtml(todayStr())}</div>
@@ -1510,6 +1609,8 @@ function applyAnalysisResult(entry) {
 /* ── Submit ────────────────────────────────────── */
 async function handleSubmit() {
   const input = document.getElementById('formula-input');
+  const btnConfirm = document.getElementById('btn-confirm');
+  const wrap = document.querySelector('.formula-input-wrap');
   const text = input.value.trim();
 
   if (!text) {
@@ -1520,6 +1621,10 @@ async function handleSubmit() {
   if (isAnalyzing) return;
 
   isAnalyzing = true;
+  btnConfirm.classList.add('analyzing');
+  btnConfirm.setAttribute('aria-disabled', 'true');
+  wrap.classList.add('analyzing');
+  input.placeholder = 'AI가 감정을 분석하고 있어요...';
   updateStatus('AI 분석 중...');
 
   const entry = { id: generateId(), date: todayStr(), text, emotion: '', empathy: '', _loading: true };
@@ -1540,12 +1645,16 @@ async function handleSubmit() {
     selectedId = null;
     invalidateSort();
     rebuildEntryMap();
-    showError(err.message || '오류가 발생했어요. 다시 시도해주세요.');
-    updateStatus('준비');
     input.value = text;
+    showError(err.message || '오류가 발생했어요. 다시 시도해주세요.', text);
+    updateStatus('준비');
     renderRows();
   } finally {
     isAnalyzing = false;
+    btnConfirm.classList.remove('analyzing');
+    btnConfirm.removeAttribute('aria-disabled');
+    wrap.classList.remove('analyzing');
+    input.placeholder = '데이터를 입력하세요';
     input.focus();
   }
 }
@@ -1638,9 +1747,15 @@ function bindFilter() {
     updateStatus('준비');
   });
 
-  // Close dropdown on outside click
   document.addEventListener('click', () => {
     dropdown.classList.remove('open');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && dropdown.classList.contains('open')) {
+      dropdown.classList.remove('open');
+      trigger.focus();
+    }
   });
 }
 
