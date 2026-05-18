@@ -4,3 +4,4 @@
 |------|----------|------|-----------|
 | [2026-05-11-sprint-1.md](./2026-05-11-sprint-1.md) | Sprint 1 | 2026-05-11 | fridge-recipe 리뷰, ai-empathy-diary 킥오프 및 초기 구현 |
 | [2026-05-13-sprint-2.md](./2026-05-13-sprint-2.md) | Sprint 2 | 2026-05-13 | 버그 수정, 셀 그리드 배경, 감정 필터, 삭제 버튼 |
+| [2026-05-18-sprint-3.md](./2026-05-18-sprint-3.md) | Sprint 3 | 2026-05-18 | Vercel 배포, Firebase Google OAuth, Firestore DB, 로그 수집 환경 |
