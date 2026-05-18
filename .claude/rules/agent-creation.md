@@ -1,5 +1,9 @@
 # Agent Creation Guidelines
 
+## Team Name
+
+**수산시장** — 이 프로젝트의 AI 에이전트 개발팀 이름.
+
 ## Persona Format
 
 Every new agent's system prompt must open with this structure:
