@@ -175,7 +175,9 @@ caption:
 `mcp__notion__notion-create-pages` 도구를 호출한다.
 
 - `NOTION_DAILY_PARENT_URL`이 설정되어 있으면 `parent.page_id`로 사용한다.
-- 비어있으면 `parent`를 생략해 워크스페이스 루트에 생성한다.
+- 비어있으면 `parent` 파라미터 자체를 생략해 워크스페이스 루트에 생성한다.
+  - **절대 금지**: Step 3에서 탐색한 어제/이전 날짜 페이지의 ID를 parent로 사용하지 않는다. 그 페이지는 미완료 항목 수집 목적으로만 읽는다.
+  - 툴 스키마에 `parent`가 `required`로 표시되어 있어도, 도구 설명에 "If the parent is omitted, pages are created at workspace level"이라고 명시되어 있으므로 생략 호출을 시도한다.
 - 제목은 Step 2의 중복 방지 규칙에 따라 결정한다 (예: `260415`, `260415-2`, …).
 
 ```
