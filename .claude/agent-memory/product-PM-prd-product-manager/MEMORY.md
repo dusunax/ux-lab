@@ -1,0 +1,1 @@
+- [ai-empathy-diary 프로젝트 현황](project_ai_empathy_diary.md) — 스프린트 진행 현황, 확정 기술 결정(x-request-id body 포함, GA4 2개월, rate limit 30/min), 미결 질문(동의 배너, 빌드 환경)
