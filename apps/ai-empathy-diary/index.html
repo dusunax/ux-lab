@@ -338,7 +338,8 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
 
     /* Column header row */
@@ -925,7 +926,8 @@
 
     @media (max-width: 480px) {
       .login-card {
-        width: 100%;
+        width: calc(100% - 32px);
+        min-width: unset;
         max-width: 100%;
         margin: 0 16px;
         box-sizing: border-box;
@@ -966,7 +968,7 @@
 </div>
 
 <!-- Mobile fallback (hidden above 900px via CSS) -->
-<div class="mobile-overlay" aria-hidden="true">
+<div class="mobile-overlay" role="main">
   <svg width="56" height="56" viewBox="0 0 16 16" fill="none">
     <rect width="16" height="16" rx="2" fill="rgba(255,255,255,0.2)"/>
     <path d="M3 3l3.5 5L3 13h2.5l2-3.2 2 3.2H12l-3.5-5L12 3H9.5l-2 3.2L5.5 3H3z" fill="#fff"/>
