@@ -83,12 +83,15 @@ ls -t docs/meetings/*.md | head -5
 
 ```
 docs/presentations/
+├── ppt-theme.css                      ← 공유 테마 (없으면 생성, 있으면 재사용)
 ├── sprint-{N}-report-{yymmdd}.html   ← HTML 본체
 └── sprint-{N}/                        ← 스크린샷 폴더
     ├── shot-{desc}.png
     └── ...
 ```
 
+- HTML은 `<link rel="stylesheet" href="./ppt-theme.css">` 로 테마를 참조한다 (인라인 `<style>` 금지).
+- `ppt-theme.css`가 이미 존재하면 덮어쓰지 않는다.
 - HTML은 스크린샷을 `./sprint-{N}/shot-{desc}.png` 상대경로로 참조한다 (base64 임베드 금지).
 - 디렉터리가 없으면 생성한다.
 
