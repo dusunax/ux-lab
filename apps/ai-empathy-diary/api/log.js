@@ -11,7 +11,7 @@ const ALLOWED_EVENTS = new Set([
 ]);
 
 const ALLOWED_PARAM_KEYS = new Set([
-  'text_length', 'emotion', 'reason', 'code', 'is_new_user',
+  'text_length', 'emotion', 'reason', 'code', 'is_new_user', 'request_id',
 ]);
 const MAX_VAL_LEN = 256;
 

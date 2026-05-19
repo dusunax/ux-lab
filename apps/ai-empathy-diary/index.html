@@ -72,7 +72,7 @@
     }
     @media (max-width: 899px) {
       body { min-width: unset; padding: 0; background: #217346; }
-      .excel-window { display: none; }
+      .excel-window { display: none !important; }
       .mobile-overlay {
         display: flex;
         flex-direction: column;
@@ -922,6 +922,15 @@
       cursor: pointer;
     }
     .signout-btn:hover { background: var(--chrome-hover); }
+
+    @media (max-width: 480px) {
+      .login-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 16px;
+        box-sizing: border-box;
+      }
+    }
   </style>
 </head>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1261,6 +1270,7 @@ function logEvent(event, params = {}) {
 function errorReason(err) {
   const m = err?.message || '';
   if (m.includes('서버에 연결할 수 없어요')) return 'network';
+  if (m.includes('잠시 쉬고 있어요')) return 'upstream_exhausted';
   if (m.includes('너무 많아요')) return 'rate_limit';
   if (m.includes('AI 서버에 일시적인')) return 'upstream_5xx';
   if (m.includes('응답 오류가 발생했어요')) return 'http_error';
@@ -1352,6 +1362,7 @@ async function loadEntriesFromFirestore() {
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
     console.error('Firestore load failed:', err);
+    logEvent('entry_load_failure', { code: err.code || 'unknown' });
     showError('일지를 불러오지 못했어요. 새로고침 해주세요.');
     return [];
   }
@@ -1460,10 +1471,15 @@ async function analyzeEmotion(text) {
     throw new Error('서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요.');
   }
 
-  checkHttpError(response);
-
   let data;
   try { data = await response.json(); } catch { throw new Error('응답 형식이 올바르지 않아요.'); }
+
+  if (!response.ok) {
+    if (response.status === 429 && typeof data?.error === 'string' && data.error.includes('모든 모델')) {
+      throw new Error('AI가 잠시 쉬고 있어요. 조금 후에 다시 써보세요.');
+    }
+    checkHttpError(response);
+  }
 
   const rawContent = data?.choices?.[0]?.message?.content;
   if (!rawContent) throw new Error('AI 응답에서 내용을 찾을 수 없어요.');
@@ -1475,38 +1491,38 @@ async function analyzeEmotion(text) {
     throw new Error('감정 분석 결과 형식이 예상과 달라요.');
   }
 
-  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy };
+  return {
+    emotion: normalizeEmotion(result.emotion),
+    empathy: result.empathy,
+    requestId: data.request_id ?? null,
+  };
 }
 
 /* ── Error Toast ───────────────────────────────── */
 let toastTimer = null;
-let pendingRetryText = null;
 
-function showError(message, retryText) {
+function showError(message, retryLabel, retryCallback, duration = TOAST_DURATION_MS) {
   const toast = document.getElementById('error-toast');
-  pendingRetryText = retryText || null;
   toast.innerHTML = '';
 
   const msg = document.createElement('span');
   msg.textContent = message;
   toast.appendChild(msg);
 
-  if (retryText) {
+  if (retryLabel) {
     const btn = document.createElement('button');
     btn.className = 'toast-retry';
-    btn.textContent = '다시 시도';
+    btn.textContent = retryLabel;
     btn.addEventListener('click', () => {
       toast.classList.remove('show');
-      const input = document.getElementById('formula-input');
-      input.value = retryText;
-      handleSubmit();
+      if (retryCallback) retryCallback();
     });
     toast.appendChild(btn);
   }
 
   toast.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), TOAST_DURATION_MS);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
 }
 
 /* ── Name Box ──────────────────────────────────── */
@@ -1707,15 +1723,17 @@ function handleDeleteRow(id) {
     const deleted = entryMap.get(id);
     invalidateSort();
     rebuildEntryMap();
-    deleteEntryFromFirestore(id).catch(err => {
-      if (deleted) {
-        entries.push(deleted);
-        invalidateSort();
-        rebuildEntryMap();
-        renderRows();
-      }
-      showError(err.message);
-    });
+    deleteEntryFromFirestore(id)
+      .then(() => { logEvent('entry_delete', {}); })
+      .catch(err => {
+        if (deleted) {
+          entries.push(deleted);
+          invalidateSort();
+          rebuildEntryMap();
+          renderRows();
+        }
+        showError(err.message);
+      });
     renderRows();
     updateStatus('준비');
   }, { once: true });
@@ -1796,6 +1814,7 @@ function prependLoadingRow(entry) {
 }
 
 function applyAnalysisResult(entry) {
+  if (!entryMap.has(entry.id)) entries.push(entry);
   invalidateSort();
   rebuildEntryMap();
   addEntryToFirestore(entry).catch(err => {
@@ -1803,7 +1822,13 @@ function applyAnalysisResult(entry) {
     invalidateSort();
     rebuildEntryMap();
     renderRows();
-    showError(err.message, entry.text);
+    logEvent('entry_save_failure', { code: err.code || 'unknown' });
+    showError(
+      '분석은 완료됐어요. 저장이 안 됐으니 다시 시도해주세요.',
+      '저장 다시 시도',
+      () => applyAnalysisResult(entry),
+      8000
+    );
   });
   updateStatus('준비');
   if (virtualActive || filterEmotion) {
@@ -1849,15 +1874,17 @@ async function handleSubmit() {
     entry.empathy = result.empathy;
     delete entry._loading;
     applyAnalysisResult(entry);
-    logEvent('entry_submit_success', { text_length: text.length, emotion: result.emotion });
+    logEvent('entry_submit_success', { text_length: text.length, emotion: result.emotion, request_id: result.requestId });
   } catch (err) {
     logEvent('entry_submit_failure', { reason: errorReason(err), text_length: text.length });
     entries = entries.filter(en => en.id !== entry.id);
     selectedId = null;
     invalidateSort();
     rebuildEntryMap();
-    input.value = text;
-    showError(err.message || '오류가 발생했어요. 다시 시도해주세요.', text);
+    showError(err.message || '오류가 발생했어요. 다시 시도해주세요.', '다시 분석하기', () => {
+      input.value = text;
+      handleSubmit();
+    });
     updateStatus('준비');
     renderRows();
   } finally {

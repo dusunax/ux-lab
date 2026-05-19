@@ -94,7 +94,7 @@ export default async function handler(req, res) {
       log('chat_upstream_error', { request_id: requestId, model: candidate, status: upstream.status, latency_ms: Date.now() - t0 });
     }
 
-    res.status(upstream.status).json(data);
+    res.status(upstream.status).json(upstream.ok ? { ...data, request_id: requestId } : data);
     return;
   }
 
