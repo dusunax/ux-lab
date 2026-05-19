@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 3 보고 — 수산시장</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./ppt-theme.css">
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover active" data-index="0">
+    <div class="cover-eyebrow">수산시장 · 스프린트 보고</div>
+    <div class="cover-title">Sprint 3 완료 보고</div>
+    <div class="cover-sub">Vercel 배포 · Firebase Auth &amp; Firestore · 로그 파이프라인 설계</div>
+    <div class="cover-date">2026-05-18</div>
+  </div>
+
+  <!-- Slide 2: Sprint Goal -->
+  <div class="slide" data-index="1">
+    <div class="slide-label">Sprint 3</div>
+    <div class="slide-title">스프린트 목표</div>
+    <div class="callout">
+      <p class="callout-goal">
+        "서비스 품질을 다듬고, 웹 배포 · 인증 · DB를 붙여<br>
+        <strong>실 사용자가 쓸 수 있는 기반</strong>을 완성한다."
+      </p>
+    </div>
+    <div class="two-col" style="margin-top:16px;">
+      <div>
+        <ul class="items">
+          <li>Vercel 배포 + 환경 변수 관리</li>
+          <li>Firebase Google OAuth 인증</li>
+          <li>Firestore 컬렉션 구조 + 보안 규칙</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="items">
+          <li>로그 수집 파이프라인 설계 (SRE 제안)</li>
+          <li>P0 이벤트 서버 + 클라이언트 구현</li>
+          <li>QA 리뷰 4건 즉시 수정</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Vercel + Firebase -->
+  <div class="slide" data-index="2">
+    <div class="slide-label">인프라 · 인증</div>
+    <div class="slide-title">Vercel 배포 &amp; Firebase Auth 구성</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">Vercel 배포</div>
+        <ul class="items">
+          <li>ai-empathy-diary Vercel 프로젝트 생성 및 도메인 연결</li>
+          <li>환경 변수 관리 (<code>OPENROUTER_KEY</code> 등)</li>
+          <li>Serverless Function: <code>api/chat.js</code>, <code>api/log.js</code></li>
+          <li>정적 서빙 + 프리뷰 배포 전략 포함</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">Firebase Google OAuth</div>
+        <ul class="items">
+          <li>Firebase 프로젝트 생성 + Authentication 활성화</li>
+          <li>Google Provider — <code>signInWithPopup(new GoogleAuthProvider())</code></li>
+          <li>로그인/로그아웃 상태에 따른 UI 분기</li>
+          <li>로그인 전: 로그인 카드 / 로그인 후: 스프레드시트 뷰</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Firestore -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">데이터베이스</div>
+    <div class="slide-title">Firestore 구조 &amp; 보안 규칙</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">컬렉션 구조</div>
+        <ul class="items">
+          <li><code>users/{uid}/entries/{entryId}</code></li>
+          <li>사용자별 서브컬렉션으로 데이터 격리</li>
+          <li>기존 로컬스토리지 구조와 호환되는 스키마</li>
+          <li>Vercel Serverless → 클라이언트 직접 Firestore 연결</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">보안 규칙</div>
+        <ul class="items">
+          <li>읽기/쓰기: <strong>본인 UID 일치 시에만 허용</strong></li>
+          <li><code>request.auth != null</code> 필수 조건</li>
+          <li><code>request.auth.uid == userId</code> 경로 변수 검증</li>
+          <li>비로그인 접근 전면 차단</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px;">
+      Firestore 로그 컬렉션은 기각 — 쓰기 비용 발생, 쿼리 UX 부재. Firebase Analytics + Vercel Runtime Logs로 대체.
+    </div>
+  </div>
+
+  <!-- Slide 5: Log Pipeline Design -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">로그 파이프라인</div>
+    <div class="slide-title">수집 설계 — SRE 제안 (이중 수집)</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">클라이언트 이벤트 (Firebase Analytics)</div>
+        <table class="data-table" style="font-size:13px;">
+          <thead><tr><th>이벤트</th><th>목적</th></tr></thead>
+          <tbody>
+            <tr><td><code>auth_signin_success/failure</code></td><td>OAuth 전환율 / 오류 추적</td></tr>
+            <tr><td><code>entry_submit_attempt/success/failure</code></td><td>퍼널 진입 / 완료 / 실패</td></tr>
+            <tr><td><code>entry_delete</code></td><td>참여도 측정</td></tr>
+            <tr><td><code>entry_load/save_failure</code></td><td>Firestore I/O 오류</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="col-head">서버 이벤트 (Vercel Runtime Logs)</div>
+        <table class="data-table" style="font-size:13px;">
+          <thead><tr><th>이벤트</th><th>목적</th></tr></thead>
+          <tbody>
+            <tr><td><code>chat_request</code></td><td>모델 요청 추적</td></tr>
+            <tr><td><code>chat_fallback</code></td><td>모델 전환 패턴</td></tr>
+            <tr><td><code>chat_success</code></td><td>latency + token 사용</td></tr>
+            <tr><td><code>chat_upstream_error</code></td><td>업스트림 장애</td></tr>
+            <tr><td><code>chat_exhausted</code></td><td>전체 모델 rate limit</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;font-size:12px;color:#888;"><code>x-request-id</code>로 클라이언트-서버 이벤트 연결</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: P0 Implementation + QA Findings -->
+  <div class="slide" data-index="5">
+    <div class="slide-label">P0 구현 완료</div>
+    <div class="slide-title">로그 P0 구현 &amp; QA 리뷰 수정 4건</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">P0 구현 내용</div>
+        <ul class="items">
+          <li><code>api/chat.js</code> — structured log 헬퍼 + <code>x-request-id</code></li>
+          <li><code>api/log.js</code> 신규 — 클라이언트 이벤트 릴레이, <code>sendBeacon</code> 기반</li>
+          <li>이벤트 allowlist 9개 + 파라미터 키 allowlist</li>
+          <li>5xx도 429와 동일하게 다음 모델 fallback 재시도</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">QA 리뷰 발견 &amp; 즉시 수정</div>
+        <table class="data-table" style="font-size:13px;">
+          <thead><tr><th>발견 항목</th><th>조치</th></tr></thead>
+          <tbody>
+            <tr><td>파라미터 키 인젝션 — <code>event/ts</code> 덮어쓰기 가능</td><td>키 allowlist + 예약 필드 spread 뒤 배치</td></tr>
+            <tr><td><code>crypto.randomUUID()</code> 글로벌 미보장 (Node 18)</td><td><code>import { randomUUID } from 'crypto'</code></td></tr>
+            <tr><td><code>errorReason()</code> 3개 경로 <code>'unknown'</code> 반환</td><td><code>input_too_long</code>, <code>http_error</code>, <code>parse_error</code> 추가</td></tr>
+            <tr><td>5xx fallback 미처리 — 즉시 반환</td><td>429와 동일하게 재시도 처리</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Key Decisions -->
+  <div class="slide" data-index="6">
+    <div class="slide-label">주요 결정</div>
+    <div class="slide-title">이번 스프린트 결정 사항</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>결정 내용</th><th>결과</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>인증: Firebase Google OAuth 확정</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>2</td><td>DB: Firestore — <code>users/{uid}/entries</code> 사용자별 서브컬렉션</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>3</td><td>배포: Vercel, 환경 변수 관리 포함</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>4</td><td>로그: Firebase Analytics + Vercel Runtime Logs 이중 수집</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>5</td><td>Firestore 로그 컬렉션 기각 — 쓰기 비용 대비 효과 없음</td><td><span class="badge badge-green">확정</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Slide 8: Carryover -->
+  <div class="slide" data-index="7">
+    <div class="slide-label">이월 항목</div>
+    <div class="slide-title">Sprint 4로 넘어가는 항목</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>항목</th><th>이유</th><th>상태</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>/api/log Vercel Firewall rate limit</td>
+          <td>공개 엔드포인트 — IP 기반 제한 없어 비용·노이즈 리스크</td>
+          <td><span class="badge badge-yellow">Sprint 4</span></td>
+        </tr>
+        <tr>
+          <td>Firebase Analytics measurementId 연결</td>
+          <td>Firebase Console에서 GA 연결 후 SDK config 업데이트 필요</td>
+          <td><span class="badge badge-yellow">Sprint 4</span></td>
+        </tr>
+        <tr>
+          <td>P1 이벤트 call site 3개</td>
+          <td>allowlist 등록 완료, 클라이언트 호출 지점만 미구현</td>
+          <td><span class="badge badge-yellow">Sprint 4</span></td>
+        </tr>
+        <tr>
+          <td>동의 UX 배너 시점 결정</td>
+          <td>해외 출시 기준 미확정 — 이번 스프린트 논의 대상 아님</td>
+          <td><span class="badge badge-yellow">Sprint 4 논의</span></td>
+        </tr>
+        <tr>
+          <td>x-request-id 전달 방식 결정</td>
+          <td>응답 헤더 vs JSON body — 아키텍처 선택 필요</td>
+          <td><span class="badge badge-yellow">Sprint 4 논의</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa" data-index="8">
+    <div class="qa-big">Q &amp; A</div>
+    <div class="qa-sub">수산시장 팀 · Sprint 3 완료 보고</div>
+  </div>
+
+</div>
+
+<div class="slide-num" id="slideNum">1 / 9</div>
+<div class="nav-hint">← → 키 또는 클릭으로 전환</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(current - 1);
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    if (e.clientX > window.innerWidth / 2) go(current + 1);
+    else go(current - 1);
+  });
+</script>
+</body>
+</html>

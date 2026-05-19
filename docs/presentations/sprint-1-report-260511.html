@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 1 보고 — 수산시장</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./ppt-theme.css">
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover active" data-index="0">
+    <div class="cover-eyebrow">수산시장 · 스프린트 보고</div>
+    <div class="cover-title">Sprint 1 완료 보고</div>
+    <div class="cover-sub">fridge-recipe 코드 리뷰 &amp; ai-empathy-diary 킥오프</div>
+    <div class="cover-date">2026-05-11</div>
+  </div>
+
+  <!-- Slide 2: Two Tracks -->
+  <div class="slide" data-index="1">
+    <div class="slide-label">Sprint 1</div>
+    <div class="slide-title">두 개의 병렬 트랙</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">Track A — 기존 앱 리뷰</div>
+        <ul class="items">
+          <li>fridge-recipe 앱 멀티 에이전트 병렬 리뷰</li>
+          <li>QA · SRE · UX · AI 담당자 동시 투입</li>
+          <li>지적 사항 수정 후 PR 병합</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">Track B — 신규 앱 킥오프</div>
+        <ul class="items">
+          <li>ai-empathy-diary 컨셉 확정</li>
+          <li>기술 스택 전원 합의 후 결정</li>
+          <li>v0.1 당일 구현 완료</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:24px;">
+      <strong>컨셉:</strong> 엑셀 스프레드시트 UI로 위장한 감정 일기 앱 — 단일 HTML 파일, 빌드 불필요
+    </div>
+  </div>
+
+  <!-- Slide 3: fridge-recipe Review Findings -->
+  <div class="slide" data-index="2">
+    <div class="slide-label">Track A — fridge-recipe 리뷰</div>
+    <div class="slide-title">멀티 에이전트 병렬 리뷰 결과</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>담당</th><th>발견 항목</th><th>조치</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>QA</td>
+          <td>타입 안전성 미흡 — <code>any</code> 사용 2건, 컴포넌트 파일 크기 한계 초과</td>
+          <td><span class="badge badge-green">수정 완료</span></td>
+        </tr>
+        <tr>
+          <td>SRE</td>
+          <td>불필요한 re-render 패턴, <code>useCallback</code> 미적용, 이미지 최적화 여지</td>
+          <td><span class="badge badge-green">수정 완료</span></td>
+        </tr>
+        <tr>
+          <td>UX</td>
+          <td>레시피 없음 상태 empty state 미흡, 모바일 터치 타깃 작음</td>
+          <td><span class="badge badge-green">수정 완료</span></td>
+        </tr>
+        <tr>
+          <td>AI</td>
+          <td>AI 응답 파싱 오류 처리 부재, 스트리밍 UI 안정성 개선 여지</td>
+          <td><span class="badge badge-green">수정 완료</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px;font-size:13px;color:#888;">FE 담당자가 전 에이전트 리뷰 취합 후 수정 구현 완료 → PR 병합</p>
+  </div>
+
+  <!-- Slide 4: Architecture Decisions -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">Track B — 기술 결정</div>
+    <div class="slide-title">ai-empathy-diary 아키텍처 확정</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">구조 결정</div>
+        <ul class="items">
+          <li><strong>단일 <code>index.html</code></strong> — 빌드 불필요, 배포 최소화</li>
+          <li>OpenRouter 프록시 경유 <code>auto</code> 모델 (무료 티어)</li>
+          <li>로컬스토리지 저장 — <code>scheduleSave</code> + <code>requestIdleCallback</code></li>
+          <li>이벤트 위임 — <code>#rows-container</code> 리스너 2개만 유지</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">성능 설계</div>
+        <ul class="items">
+          <li>가상 스크롤 임계값 <strong>200개</strong> — 이하는 일반 렌더링</li>
+          <li><code>getSorted()</code> + <code>invalidateSort()</code> — 정렬 결과 캐시</li>
+          <li><code>getFiltered()</code> — 감정 필터 래핑 레이어</li>
+          <li><code>entryMap</code> — O(1) id 조회 (Map 구조)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: v0.1 Implementation -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">Track B — v0.1 구현</div>
+    <div class="slide-title">당일 완성된 기능 목록</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">레이아웃 &amp; UX</div>
+        <ul class="items">
+          <li>엑셀 5컬럼 레이아웃<br><small style="color:#888;">번호 / 날짜 / 오늘 있었던 일 / 감정 / AI 한마디</small></li>
+          <li>로딩 스켈레톤 — shimmer 애니메이션</li>
+          <li>IME guard — <code>e.isComposing || e.keyCode === 229</code></li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">데이터 &amp; AI</div>
+        <ul class="items">
+          <li>13개 감정 분류 + <code>EMOTION_CONFIG</code><br><small style="color:#888;">기쁨 설렘 뿌듯함 슬픔 외로움 스트레스 분노 억울함 불안 혼란 피로 무기력함 평온</small></li>
+          <li><code>extractJson()</code> + <code>normalizeEmotion()</code> — AI 응답 파싱</li>
+          <li>가상 스크롤 <code>renderVirtual()</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Key Decisions Table -->
+  <div class="slide" data-index="5">
+    <div class="slide-label">주요 결정</div>
+    <div class="slide-title">이번 스프린트 결정 사항</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>결정 내용</th><th>결과</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>fridge-recipe 리뷰 수정 사항 전량 구현 후 PR 병합</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>2</td><td>ai-empathy-diary 단일 HTML 파일 구조 채택 (빌드 없음)</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>3</td><td>OpenRouter <code>auto</code> 모델 사용 — 무료 티어 우선</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>4</td><td>가상 스크롤 임계값 200개 — SRE 성능 기준</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>5</td><td>이벤트 위임 (<code>#rows-container</code>) — 리스너 최소화</td><td><span class="badge badge-green">완료</span></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px;font-size:13px;color:#888;">모든 액션 아이템 완료 · 이월 항목 없음</p>
+  </div>
+
+  <!-- Slide 7: Q&A -->
+  <div class="slide slide--qa" data-index="6">
+    <div class="qa-big">Q &amp; A</div>
+    <div class="qa-sub">수산시장 팀 · Sprint 1 완료 보고</div>
+  </div>
+
+</div>
+
+<div class="slide-num" id="slideNum">1 / 7</div>
+<div class="nav-hint">← → 키 또는 클릭으로 전환</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(current - 1);
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    if (e.clientX > window.innerWidth / 2) go(current + 1);
+    else go(current - 1);
+  });
+</script>
+</body>
+</html>

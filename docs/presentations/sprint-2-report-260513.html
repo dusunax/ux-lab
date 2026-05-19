@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 2 보고 — 수산시장</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./ppt-theme.css">
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover active" data-index="0">
+    <div class="cover-eyebrow">수산시장 · 스프린트 보고</div>
+    <div class="cover-title">Sprint 2 완료 보고</div>
+    <div class="cover-sub">버그 수정 4건 · 빈 셀 그리드 · 감정 필터 · 삭제 버튼</div>
+    <div class="cover-date">2026-05-13</div>
+  </div>
+
+  <!-- Slide 2: Sprint Goal -->
+  <div class="slide" data-index="1">
+    <div class="slide-label">Sprint 2</div>
+    <div class="slide-title">스프린트 목표</div>
+    <div class="callout">
+      <p class="callout-goal">
+        "Sprint 1 사용자 피드백 버그 4건을 전량 수정하고,<br>
+        <strong>감정 필터 · 삭제 · 빈 셀 그리드</strong> 3가지 핵심 기능을 완성한다."
+      </p>
+    </div>
+    <ul class="items" style="margin-top:8px;">
+      <li>FE 담당자 면담 — 유저가 직접 발견한 버그 4건 원인 분석 및 수정</li>
+      <li>마지막 행 아래 엑셀 빈 셀처럼 보이는 그리드 배경 구현</li>
+      <li>Excel AutoFilter 스타일 감정 필터 드롭다운</li>
+      <li>행 hover 시 fade-in 삭제 버튼 + 삭제 애니메이션</li>
+    </ul>
+  </div>
+
+  <!-- Slide 3: Bug Fixes -->
+  <div class="slide" data-index="2">
+    <div class="slide-label">버그 수정</div>
+    <div class="slide-title">유저 발견 버그 4건 — 원인 &amp; 해결</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>문제</th><th>원인</th><th>해결</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>col-B 텍스트 가로 잘림</td>
+          <td><code>.cell</code> 기본 <code>white-space: nowrap</code> 미 오버라이드</td>
+          <td>col-b/d에 <code>white-space: normal; word-break: break-word</code></td>
+        </tr>
+        <tr>
+          <td>스켈레톤 색이 너무 진함</td>
+          <td><code>#aaa → #d4d4d4</code> 둘 다 눈에 튀는 회색</td>
+          <td>shimmer 바(<code>#e0e0e0 → #f0f0f0</code>) 애니메이션으로 교체</td>
+        </tr>
+        <tr>
+          <td>한글 IME "딩" 잔류 (Mac)</td>
+          <td>IME 조합 중 <code>input.value = ''</code> 후 조합 완성 문자 삽입</td>
+          <td><code>e.isComposing || e.keyCode === 229</code> 가드 추가</td>
+        </tr>
+        <tr>
+          <td>행 배경 투명</td>
+          <td><code>.data-row</code>에 <code>background-color</code> 미지정</td>
+          <td><code>background-color: var(--cell-bg)</code> 추가</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Slide 4: Grid Background -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">신규 기능 1</div>
+    <div class="slide-title">빈 셀 그리드 배경 — 시도와 해결</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">시도했으나 실패한 방법</div>
+        <ul class="items">
+          <li><code>background-attachment: local</code><br><small style="color:#888;">콘텐츠 영역에만 패턴 적용 — 빈 공간에 안 보임</small></li>
+          <li>CSS 변수(<code>var(--cell-border)</code>)를 gradient 색상 스톱에 사용<br><small style="color:#888;">CSS 변수는 gradient 내 색상 스톱에 미작동</small></li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">최종 해결 — gradient 하드코딩</div>
+        <ul class="items">
+          <li>행 구분선: <code>repeating-linear-gradient</code> 52px 간격</li>
+          <li>열 구분선: <code>linear-gradient</code> 고정 px stops</li>
+          <li>컬럼 경계 stops: 42 / 152 / 432 / 528 / 868px</li>
+          <li><code>background-size: 100% 52px, 100% 100%</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px;">
+      CSS 변수 gradient 한계로 인해 컬럼 너비 값을 직접 하드코딩. 컬럼 너비 변경 시 함께 수정 필요.
+    </div>
+  </div>
+
+  <!-- Slide 5: Emotion Filter -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">신규 기능 2</div>
+    <div class="slide-title">감정 필터 (AutoFilter 스타일) + 버그 수정 3건</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">구현 내용 (UX 설계)</div>
+        <ul class="items">
+          <li>Excel AutoFilter 드롭다운 재현</li>
+          <li>활성 시 ▼ → ▾ + 배지 색상 표시</li>
+          <li><code>전체</code> + 13개 감정 옵션 — 각 EMOTION_CONFIG 색상 적용</li>
+          <li>외부 클릭 시 드롭다운 닫힘</li>
+          <li>결과 없음 시 <code>.no-results</code> 안내 메시지</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">QA 발견 버그 3건 즉시 수정</div>
+        <ul class="items">
+          <li>필터 활성 중 로딩 행 삽입 시 필터 무시<br><small style="color:#888;">→ <code>prependLoadingRow</code>에 필터 분기 추가</small></li>
+          <li>AI 결과 도착 시 필터된 행 DOM 미업데이트<br><small style="color:#888;">→ <code>applyAnalysisResult</code>에 동일 조건 추가</small></li>
+          <li>옵션 클릭 후 드롭다운 즉시 재열림<br><small style="color:#888;">→ 옵션 클릭에 <code>e.stopPropagation()</code> 추가</small></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Delete Button -->
+  <div class="slide" data-index="5">
+    <div class="slide-label">신규 기능 3</div>
+    <div class="slide-title">행 삭제 버튼 — UX 설계 &amp; 구현</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">UX 설계 (디자인 기준)</div>
+        <ul class="items">
+          <li>col-E 우측에 배치 — 기존 레이아웃 영향 없음</li>
+          <li>기본 상태: 투명 (<code>opacity: 0</code>)</li>
+          <li>행 hover 시 fade-in (<code>transition: opacity 0.15s</code>)</li>
+          <li>클릭 시 fade-out 후 행 제거</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">구현 세부</div>
+        <ul class="items">
+          <li><code>.data-row:hover .delete-btn { opacity: 1 }</code></li>
+          <li><code>@keyframes rowFadeOut</code> — opacity 0 + translateX(8px)</li>
+          <li><code>handleDeleteRow()</code>: <code>row-removing</code> 클래스 → <code>animationend</code> 후 배열에서 제거 → <code>renderRows()</code></li>
+          <li>기존 위임 리스너 재사용 (<code>data-action="delete"</code>)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Key Decisions -->
+  <div class="slide" data-index="6">
+    <div class="slide-label">주요 결정</div>
+    <div class="slide-title">이번 스프린트 결정 사항</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>결정 내용</th><th>결과</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>background-attachment: local</code> 제거 → CSS gradient 하드코딩으로 대체</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>2</td><td>감정 필터 구조: <code>getFiltered()</code> → <code>getSorted()</code> 래핑</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>3</td><td>삭제 이벤트: 신규 리스너 추가 않고 기존 위임 재사용</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>4</td><td>필터 상태 중 로딩/결과 삽입 시 <code>renderRows()</code> 강제 호출</td><td><span class="badge badge-green">완료</span></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px;font-size:13px;color:#888;">모든 액션 아이템 완료 · 이월 항목 없음</p>
+  </div>
+
+  <!-- Slide 8: Q&A -->
+  <div class="slide slide--qa" data-index="7">
+    <div class="qa-big">Q &amp; A</div>
+    <div class="qa-sub">수산시장 팀 · Sprint 2 완료 보고</div>
+  </div>
+
+</div>
+
+<div class="slide-num" id="slideNum">1 / 8</div>
+<div class="nav-hint">← → 키 또는 클릭으로 전환</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(current - 1);
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    if (e.clientX > window.innerWidth / 2) go(current + 1);
+    else go(current - 1);
+  });
+</script>
+</body>
+</html>
