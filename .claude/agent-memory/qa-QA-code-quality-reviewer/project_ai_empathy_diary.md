@@ -19,5 +19,12 @@ Single-file HTML app (CSS + JS in one `index.html`, ~1938 lines). This is an int
 - `crypto.randomUUID()` used as a global in chat.js:53; Node 18 support depends on minor version (added in 18.7). Explicit `import { randomUUID }` is safer.
 - Non-429, non-ok upstream responses (e.g. 500, 401) immediately return to client without trying next fallback model — may be intentional for auth errors but not for transient 5xx.
 
+**Known issues found in Sprint 4 (showError refactor, request_id, retry, mobile CSS):**
+- `applyAnalysisResult` retry bug: on Firestore save failure, `entry` is removed from `entries`. The retry callback calls `applyAnalysisResult(entry)` again without re-adding the entry to `entries`. On a successful retry save, the entry is written to Firestore but invisible in the UI (not in entryMap, updateRowDOM finds no element). [C-1]
+- `logEvent('entry_delete', {})` fires before `deleteEntryFromFirestore` resolves — logs deletion even if the Firestore delete subsequently fails and rolls back. [W-1]
+- `showError` dead fallback branch (line ~1520): when `retryLabel` is truthy but `retryCallback` is falsy, the else branch sets `input.value = retryLabel` and calls `handleSubmit()`. No current call site triggers this, but it is a latent bug. [W-2]
+- `errorReason()` missing `upstream_exhausted` coverage was fixed this sprint. `request_id` null is safely dropped by sanitize() (not a bug).
+- Mobile `!important` on `.excel-window` is intentional — desktop JS `.hidden` toggling is unaffected. Not a bug.
+
 **Why:** App is intentionally single-file for deployment simplicity (Vercel static hosting). No bundler.
-**How to apply:** When reviewing this file, watch for event listener accumulation on auth re-fires and for silent catch blocks in all async Firestore functions.
+**How to apply:** When reviewing this file, watch for event listener accumulation on auth re-fires, silent catch blocks in Firestore functions, and optimistic-delete patterns where rollback state must be restored before retry.
