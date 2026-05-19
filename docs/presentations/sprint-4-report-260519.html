@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sprint 4 보고 — 수산시장</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* Slide container */
+  .deck { position: relative; width: 100vw; height: 100vh; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 64px 80px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Cover */
+  .slide--cover {
+    background: #f8faf9;
+    align-items: center;
+    text-align: center;
+    border-top: 6px solid #217346;
+  }
+  .cover-eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #217346;
+    margin-bottom: 20px;
+  }
+  .cover-title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+  }
+  .cover-sub {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 8px;
+  }
+  .cover-date {
+    font-size: 14px;
+    color: #888;
+  }
+
+  /* Section slides */
+  .slide-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #217346;
+    margin-bottom: 12px;
+  }
+  .slide-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 32px;
+    line-height: 1.2;
+  }
+
+  /* List */
+  ul.items { list-style: none; width: 100%; }
+  ul.items li {
+    font-size: 16px;
+    padding: 9px 0 9px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    line-height: 1.5;
+  }
+  ul.items li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 18px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #217346;
+  }
+  ul.items li:last-child { border-bottom: none; }
+  ul.items li strong { color: #217346; }
+
+  /* 2-col layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    width: 100%;
+  }
+  .col-head {
+    font-size: 13px;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Table */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .data-table th {
+    background: #217346;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .data-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .data-table tr:nth-child(even) td { background: #f8faf9; }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .badge-green { background: #e6f2eb; color: #217346; }
+  .badge-yellow { background: #fff8e1; color: #b07c00; }
+
+  /* Callout */
+  .callout {
+    background: #f8faf9;
+    border-left: 4px solid #217346;
+    padding: 16px 20px;
+    border-radius: 0 4px 4px 0;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  .callout-goal {
+    font-size: 18px;
+    font-style: italic;
+    color: #2a2a2a;
+    line-height: 1.65;
+  }
+
+  /* Q&A */
+  .slide--qa {
+    align-items: center;
+    text-align: center;
+  }
+  .qa-big {
+    font-size: 72px;
+    font-weight: 700;
+    color: #217346;
+    margin-bottom: 12px;
+  }
+  .qa-sub { font-size: 18px; color: #555; }
+
+  /* Slide number */
+  .slide-num {
+    position: fixed;
+    bottom: 20px;
+    right: 28px;
+    font-size: 13px;
+    color: #aaa;
+    z-index: 100;
+  }
+
+  /* Nav hint */
+  .nav-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 28px;
+    font-size: 12px;
+    color: #bbb;
+    z-index: 100;
+  }
+
+  /* Status dot */
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    padding: 7px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .status-row:last-child { border-bottom: none; }
+  .dot {
+    width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot-green { background: #217346; }
+  .dot-yellow { background: #f0b429; }
+  .dot-gray { background: #ccc; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover active" data-index="0">
+    <div class="cover-eyebrow">수산시장 · 스프린트 보고</div>
+    <div class="cover-title">Sprint 4 완료 보고</div>
+    <div class="cover-sub">AI 감정 일기 — 로그 파이프라인 완성 &amp; 사용성 개선</div>
+    <div class="cover-date">2026-05-19</div>
+  </div>
+
+  <!-- Slide 2: Sprint Goal -->
+  <div class="slide" data-index="1">
+    <div class="slide-label">Sprint 4</div>
+    <div class="slide-title">스프린트 목표</div>
+    <div class="callout">
+      <p class="callout-goal">
+        "로그 파이프라인을 완성하고, 앱의 핵심 사용성 결함을 해소하여<br>
+        <strong>첫 외부 공유가 가능한 상태</strong>로 만든다."
+      </p>
+    </div>
+    <ul class="items" style="margin-top:8px;">
+      <li>9개 안건 논의 — 7개 즉시 완료, 2개 Out of Scope (스프린트 5 이관)</li>
+      <li>모든 액션 아이템 완료 · 수용 기준 100% 충족</li>
+      <li>앱 현재 상태: <strong>외부 공유 가능</strong></li>
+    </ul>
+  </div>
+
+  <!-- Slide 3: Completed -->
+  <div class="slide" data-index="2">
+    <div class="slide-label">완료 항목</div>
+    <div class="slide-title">이번 스프린트에서 한 일</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">로그 파이프라인</div>
+        <ul class="items">
+          <li>Firebase Analytics 연결 (GA4 이중 수집)</li>
+          <li>P1 이벤트 call site 3개 구현<br><small style="color:#888">entry_load_failure · entry_save_failure · entry_delete</small></li>
+          <li><code style="font-size:13px">x-request-id</code> JSON body 연결 — 서버-클라이언트 요청 추적 가능</li>
+          <li>GA4 데이터 보존 기간 2개월 설정</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">인프라 · 사용성</div>
+        <ul class="items">
+          <li>Vercel Firewall rate limit — IP당 분당 30회</li>
+          <li>모바일 최소 대응 (375px 기준 가로 잘림 방지)</li>
+          <li>AI 실패 · Firestore 실패 오류 메시지 + 재시도 버튼</li>
+          <li>스프린트 5 대비 <code style="font-size:13px">index.html</code> 분리 영역 사전 분석</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Login screens desktop + mobile -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">화면 변경 · 모바일 대응</div>
+    <div class="slide-title">로그인 화면 — Desktop vs Mobile</div>
+    <div class="two-col" style="align-items:flex-start;gap:24px;">
+      <div>
+        <div class="col-head">Desktop (1280px)</div>
+        <img src="./sprint-4/shot-desktop-login.png" alt="Desktop 로그인 화면" style="width:100%;border:1px solid #e0e0e0;border-radius:4px;">
+      </div>
+      <div>
+        <div class="col-head">Mobile (375px) — Sprint 4 수정</div>
+        <img src="./sprint-4/shot-mobile-login.png" alt="Mobile 로그인 화면" style="width:100%;border:1px solid #e0e0e0;border-radius:4px;max-width:200px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Error toast UX -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">화면 변경 · 오류 UX</div>
+    <div class="slide-title">AI 실패 오류 메시지 + 재시도 버튼</div>
+    <img src="./sprint-4/shot-error-toast.png" alt="에러 토스트 UI" style="width:100%;max-height:480px;object-fit:contain;object-position:left bottom;">
+    <p style="margin-top:12px;font-size:13px;color:#888;">하단 토스트: 실패 메시지 + 재시도 버튼. Firestore 저장 실패 시에도 동일 패턴 적용.</p>
+  </div>
+
+    <!-- Slide 4: Key Decisions -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">주요 결정</div>
+    <div class="slide-title">이번 스프린트 결정 사항</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>결정 내용</th>
+          <th>결과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>/api/log Vercel Firewall rate limit — IP당 분당 30회</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>2</td><td>Firebase Analytics measurementId 연결</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>3</td><td>x-request-id를 JSON body에 포함 (헤더 대신)</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>4</td><td>GA4 데이터 보존 기간 2개월 (개인 데이터 최소 보관)</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>5</td><td>모바일 최소 대응 — 그리드는 가로 스크롤 허용</td><td><span class="badge badge-green">완료</span></td></tr>
+        <tr><td>6</td><td>동의 UX 배너 — 해외 출시 결정 시 즉시 추가</td><td><span class="badge badge-yellow">스프린트 5 이관</span></td></tr>
+        <tr><td>7</td><td>index.html 분리 — 빌드 환경 도입 결정 후 진행</td><td><span class="badge badge-yellow">스프린트 5 이관</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Slide 5: Tech Status -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">기술 현황</div>
+    <div class="slide-title">현재 스택 &amp; 인프라 상태</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">프론트엔드 / 배포</div>
+        <div class="status-row"><span class="dot dot-green"></span>Vanilla JS — 싱글 HTML 구조</div>
+        <div class="status-row"><span class="dot dot-green"></span>Vercel 배포 (정적 서빙 + Serverless)</div>
+        <div class="status-row"><span class="dot dot-green"></span>Firebase Auth (Google OAuth)</div>
+        <div class="status-row"><span class="dot dot-green"></span>Firestore (사용자별 일기 저장)</div>
+      </div>
+      <div>
+        <div class="col-head">서버 / 로그 파이프라인</div>
+        <div class="status-row"><span class="dot dot-green"></span>/api/chat — OpenRouter 6모델 fallback</div>
+        <div class="status-row"><span class="dot dot-green"></span>/api/log — allowlist + Firewall 보호</div>
+        <div class="status-row"><span class="dot dot-green"></span>Vercel Runtime Logs (실시간 이벤트)</div>
+        <div class="status-row"><span class="dot dot-green"></span>Firebase Analytics GA4 (행동 분석)</div>
+        <div class="status-row"><span class="dot dot-yellow"></span>index.html ~2,100줄 (분리 검토 중)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Next Sprint -->
+  <div class="slide" data-index="5">
+    <div class="slide-label">다음 스프린트</div>
+    <div class="slide-title">Sprint 5 방향 및 미결 사항</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">Sprint 5 주요 후보</div>
+        <ul class="items">
+          <li><strong>빌드 환경 도입 결정</strong> — Vite 등 (PM + FE 결정)</li>
+          <li>index.html 파일 분리 — CSS 선행, JS는 빌드 도구 결정 후</li>
+          <li>모바일 반응형 심화</li>
+          <li>AI 프롬프트 품질 개선 (AI 담당자 관여 시점 확정 필요)</li>
+          <li>동의 UX 배너 — 외부 공유 범위 확대 시 즉시 추가</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">미결 질문 (스프린트 5 이전 결정)</div>
+        <ul class="items">
+          <li>동의 배너 기준: 국가 수 · 사용자 수 · 도메인 변경?</li>
+          <li>빌드 환경: 싱글 HTML 유지 vs 모듈 분리</li>
+          <li>AI 관여 시점: 모델 선택 또는 프롬프트 개선 시점?</li>
+        </ul>
+        <div style="margin-top:16px; font-size:13px; color:#888;">
+          DAU 50+ 도달 시 P2 이벤트 분석 추가 검토
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Q&A -->
+  <div class="slide slide--qa" data-index="6">
+    <div class="qa-big">Q &amp; A</div>
+    <div class="qa-sub">수산시장 팀 · Sprint 4 완료 보고</div>
+  </div>
+
+</div>
+
+<div class="slide-num" id="slideNum">1 / 7</div>
+<div class="nav-hint">← → 키 또는 클릭으로 전환</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(current - 1);
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const x = e.clientX;
+    if (x > window.innerWidth / 2) go(current + 1);
+    else go(current - 1);
+  });
+</script>
+</body>
+</html>

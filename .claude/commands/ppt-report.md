@@ -82,10 +82,15 @@ ls -t docs/meetings/*.md | head -5
 ### 파일 저장
 
 ```
-docs/presentations/sprint-{N}-report-{yymmdd}.html
+docs/presentations/
+├── sprint-{N}-report-{yymmdd}.html   ← HTML 본체
+└── sprint-{N}/                        ← 스크린샷 폴더
+    ├── shot-{desc}.png
+    └── ...
 ```
 
-디렉터리가 없으면 생성한다.
+- HTML은 스크린샷을 `./sprint-{N}/shot-{desc}.png` 상대경로로 참조한다 (base64 임베드 금지).
+- 디렉터리가 없으면 생성한다.
 
 ---
 
