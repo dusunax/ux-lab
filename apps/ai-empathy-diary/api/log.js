@@ -8,12 +8,29 @@ const ALLOWED_EVENTS = new Set([
   'entry_load_failure', // reserved for future use
   'entry_save_failure', // reserved for future use
   'entry_delete',       // reserved for future use
+  'emotion_label_recorded',
 ]);
 
 const ALLOWED_PARAM_KEYS = new Set([
-  'text_length', 'emotion', 'reason', 'code', 'is_new_user', 'request_id',
+  'text_length', 'emotion', 'reason', 'code', 'is_new_user', 'request_id', 'label',
 ]);
 const MAX_VAL_LEN = 256;
+
+const PRODUCTION_ORIGIN = 'https://ai-empathy-diary.vercel.app';
+const LOCALHOST_ORIGIN_RE = /^http:\/\/localhost(:\d+)?$/;
+
+const ALLOWED_ORIGINS = (() => {
+  const origins = new Set([PRODUCTION_ORIGIN]);
+  const custom = process.env.ALLOWED_ORIGIN;
+  if (custom) origins.add(custom);
+  return origins;
+})();
+
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  if (LOCALHOST_ORIGIN_RE.test(origin)) return true;
+  return ALLOWED_ORIGINS.has(origin);
+}
 
 function sanitize(params) {
   const safe = {};
@@ -26,12 +43,21 @@ function sanitize(params) {
 }
 
 export default function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  const origin = req.headers.origin;
 
-  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+  if (isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Vary', 'Origin');
+  }
+
+  if (req.method === 'OPTIONS') {
+    if (isAllowedOrigin(origin)) { res.status(204).end(); return; }
+    res.status(403).end(); return;
+  }
   if (req.method !== 'POST') { res.status(405).end(); return; }
+  if (origin && !isAllowedOrigin(origin)) { res.status(403).end(); return; }
 
   const { event } = req.body || {};
   const rawParams = req.body?.params;

@@ -1,0 +1,100 @@
+/* ─── Mobile Overlay ─────────────────────────── */
+.mobile-overlay {
+  display: none;
+}
+
+/* ─── Auth Loading Screen ───────────────────── */
+#auth-loading {
+  position: fixed;
+  inset: 0;
+  background: var(--ribbon-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2000;
+}
+#auth-loading.hidden { display: none; }
+.auth-loading-icon { opacity: 0.95; }
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}
+.auth-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: authSpin 0.75s linear infinite;
+}
+
+/* ─── Login Overlay ─────────────────────────── */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(32, 32, 32, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+.login-overlay.hidden { display: none; }
+.excel-window.hidden { display: none; }
+.login-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 40px 48px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-width: 320px;
+}
+.login-card h2 {
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--chrome-text);
+  margin: 0;
+}
+.login-card p {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+.btn-google {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: #3c4043;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 8px;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    width: calc(100% - 32px);
+    min-width: unset;
+    max-width: 100%;
+    margin: 0 16px;
+    box-sizing: border-box;
+  }
+}

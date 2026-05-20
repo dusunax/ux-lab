@@ -4,926 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>일지.xlsx - Microsoft Excel</title>
-  <style>
-    /* ─── CSS Variables ─────────────────────────── */
-    :root {
-      --chrome-bg: #f0f0f0;
-      --chrome-border: #adadad;
-      --chrome-text: #1f1f1f;
-      --chrome-hover: #e1e1e1;
-      --chrome-active: #c8c8c8;
-
-      --ribbon-bg: #217346;
-      --ribbon-tab-active: #ffffff;
-      --ribbon-tab-text: #ffffff;
-
-      --toolbar-bg: #f8f8f8;
-      --toolbar-border: #d4d4d4;
-
-      --formula-bg: #ffffff;
-      --formula-border: #ababab;
-
-      --header-bg: #f2f2f2;
-      --header-border: #d0d0d0;
-      --header-text: #595959;
-
-      --cell-bg: #ffffff;
-      --cell-border: #d0d0d0;
-      --cell-selected-border: #1973c4;
-      --cell-selected-bg: #ddeeff;
-
-      --row-height: 32px;
-      --col-a-w: 110px;
-      --col-b-w: 280px;
-      --col-c-w: 96px;
-      --col-d-w: 340px;
-      --row-num-w: 42px;
-
-      --font-chrome: 'Consolas', 'Courier New', monospace;
-      --font-cell: 'Georgia', 'Times New Roman', serif;
-      --font-ui: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-
-      /* emotion row tints */
-      --tint-joy:      #fffbeb;
-      --tint-sad:      #f0f9ff;
-      --tint-stress:   #fff1f2;
-      --tint-anxiety:  #faf5ff;
-      --tint-tired:    #f9fafb;
-      --tint-calm:     #f0fdf4;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font-ui);
-      font-size: 13px;
-      background: #808080;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-      min-width: 900px;
-    }
-    @media (max-width: 899px) {
-      body { min-width: unset; padding: 0; }
-    }
-
-    /* ─── Mobile Overlay ─────────────────────────── */
-    .mobile-overlay {
-      display: none;
-    }
-
-    /* ─── Application Window ─────────────────────── */
-    .excel-window {
-      width: 960px;
-      height: calc(100vh - 40px);
-      background: var(--chrome-bg);
-      border: 1px solid #888;
-      box-shadow:
-        0 4px 20px rgba(0,0,0,0.45),
-        0 1px 3px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.6);
-      display: flex;
-      flex-direction: column;
-      user-select: none;
-    }
-
-    /* ─── Title Bar ──────────────────────────────── */
-    .title-bar {
-      height: 30px;
-      background: linear-gradient(180deg, #fefefe 0%, #f0f0f0 100%);
-      border-bottom: 1px solid var(--chrome-border);
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      gap: 6px;
-    }
-    .title-bar-icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-    .title-bar-text {
-      flex: 1;
-      text-align: center;
-      font-family: var(--font-ui);
-      font-size: 12px;
-      color: var(--chrome-text);
-      letter-spacing: 0.01em;
-    }
-    .window-controls {
-      display: flex;
-      gap: 2px;
-      margin-left: auto;
-    }
-    .wc-btn {
-      width: 26px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: default;
-      font-size: 10px;
-      color: #555;
-      border: 1px solid transparent;
-    }
-    .wc-btn:hover { background: var(--chrome-hover); border-color: var(--chrome-border); }
-    .wc-btn.close:hover { background: #c42b1c; color: #fff; border-color: #c42b1c; }
-    .wc-btn svg { width: 10px; height: 10px; }
-
-    /* ─── Menu Bar ───────────────────────────────── */
-    .menu-bar {
-      height: 24px;
-      background: var(--chrome-bg);
-      border-bottom: 1px solid var(--chrome-border);
-      display: flex;
-      align-items: stretch;
-      padding: 0 4px;
-    }
-    .menu-item {
-      padding: 0 8px;
-      display: flex;
-      align-items: center;
-      font-family: var(--font-ui);
-      font-size: 12px;
-      color: var(--chrome-text);
-      cursor: default;
-      position: relative;
-    }
-    .menu-item:hover {
-      background: var(--chrome-hover);
-    }
-    .menu-item span { text-decoration-line: none; }
-    .menu-item u { text-decoration: underline; }
-
-    /* ─── Ribbon Tabs ────────────────────────────── */
-    .ribbon-tabs {
-      height: 26px;
-      background: var(--ribbon-bg);
-      display: flex;
-      align-items: flex-end;
-      padding: 0 8px;
-    }
-    .ribbon-tab {
-      padding: 0 14px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      font-family: var(--font-ui);
-      font-size: 11.5px;
-      color: rgba(255,255,255,0.85);
-      cursor: default;
-      border-radius: 3px 3px 0 0;
-    }
-    .ribbon-tab:hover { color: #fff; background: rgba(255,255,255,0.12); }
-    .ribbon-tab.active {
-      background: var(--ribbon-tab-active);
-      color: var(--ribbon-bg);
-      font-weight: 600;
-    }
-
-    /* ─── Toolbar ────────────────────────────────── */
-    .toolbar {
-      height: 36px;
-      background: var(--toolbar-bg);
-      border-bottom: 1px solid var(--toolbar-border);
-      display: flex;
-      align-items: center;
-      padding: 0 6px;
-      gap: 2px;
-    }
-    .tb-btn {
-      width: 28px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid transparent;
-      border-radius: 2px;
-      cursor: default;
-      color: #555;
-    }
-    .tb-btn:hover { background: var(--chrome-hover); border-color: var(--chrome-border); }
-    .tb-btn svg { width: 15px; height: 15px; }
-    .tb-sep {
-      width: 1px;
-      height: 20px;
-      background: var(--chrome-border);
-      margin: 0 3px;
-    }
-    .tb-font-select {
-      height: 22px;
-      width: 120px;
-      border: 1px solid var(--chrome-border);
-      border-radius: 2px;
-      background: #fff;
-      font-family: var(--font-ui);
-      font-size: 11.5px;
-      padding: 0 4px;
-      color: var(--chrome-text);
-      appearance: none;
-    }
-    .tb-font-size {
-      width: 40px;
-      height: 22px;
-      border: 1px solid var(--chrome-border);
-      border-radius: 2px;
-      background: #fff;
-      font-family: var(--font-ui);
-      font-size: 11.5px;
-      padding: 0 4px;
-      text-align: center;
-      color: var(--chrome-text);
-    }
-
-    /* ─── Formula Bar ────────────────────────────── */
-    .formula-bar {
-      height: 28px;
-      background: var(--formula-bg);
-      border-bottom: 1px solid var(--formula-border);
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-    .name-box {
-      width: 82px;
-      height: 100%;
-      border-right: 1px solid var(--formula-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-chrome);
-      font-size: 12px;
-      color: var(--chrome-text);
-      padding: 0 6px;
-      flex-shrink: 0;
-    }
-    .formula-icons {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      border-right: 1px solid var(--formula-border);
-    }
-    .fi-btn {
-      width: 26px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: #666;
-      font-size: 13px;
-    }
-    .fi-btn:hover { background: var(--chrome-hover); }
-    .fi-btn.confirm { color: #217346; font-weight: bold; }
-    .fi-btn.cancel { color: #c0392b; }
-    .fi-fx {
-      width: 28px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-chrome);
-      font-size: 12px;
-      color: #555;
-      border-right: 1px solid var(--formula-border);
-      font-style: italic;
-    }
-    .formula-input-wrap {
-      flex: 1;
-      height: 100%;
-      position: relative;
-    }
-    /* Riley: visible focus ring on formula bar wrapper */
-    .formula-input-wrap:focus-within {
-      outline: 2px solid var(--cell-selected-border);
-      outline-offset: -2px;
-    }
-    #formula-input {
-      width: 100%;
-      height: 100%;
-      border: none;
-      outline: none;
-      padding: 0 8px;
-      font-family: var(--font-chrome);
-      font-size: 13px;
-      color: var(--chrome-text);
-      background: transparent;
-      caret-color: #1973c4;
-    }
-    #formula-input::placeholder {
-      color: #bbb;
-      font-style: italic;
-    }
-
-    /* ─── Sheet Area ─────────────────────────────── */
-    .sheet-area {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      overflow-x: auto;
-      overflow-y: hidden;
-    }
-
-    /* Column header row */
-    .col-headers {
-      display: flex;
-      border-bottom: 1px solid var(--header-border);
-      background: var(--header-bg);
-      flex-shrink: 0;
-    }
-    .ch-corner {
-      width: var(--row-num-w);
-      flex-shrink: 0;
-      height: 20px;
-      border-right: 1px solid var(--header-border);
-      background: var(--header-bg);
-    }
-    .ch-cell {
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-chrome);
-      font-size: 11px;
-      color: var(--header-text);
-      border-right: 1px solid var(--header-border);
-      letter-spacing: 0.05em;
-      font-weight: 500;
-      overflow: hidden;
-    }
-    .ch-cell.col-a { width: var(--col-a-w); }
-    .ch-cell.col-b { width: var(--col-b-w); }
-    .ch-cell.col-c { width: var(--col-c-w); }
-    .ch-cell.col-d { width: var(--col-d-w); }
-    .ch-cell.col-e { flex: 1; }
-
-    /* Sheet body */
-    .sheet-body {
-      flex: 1;
-      overflow-y: auto;
-      background-color: var(--cell-bg);
-      /* Empty-cell grid: horizontal rows + vertical column dividers */
-      background-image:
-        repeating-linear-gradient(
-          to bottom,
-          transparent calc(var(--row-height) - 1px),
-          #d0d0d0 calc(var(--row-height) - 1px),
-          #d0d0d0 var(--row-height)
-        ),
-        linear-gradient(
-          to right,
-          transparent 41px, #d0d0d0 41px 42px,
-          transparent 42px 151px, #d0d0d0 151px 152px,
-          transparent 152px 431px, #d0d0d0 431px 432px,
-          transparent 432px 527px, #d0d0d0 527px 528px,
-          transparent 528px 867px, #d0d0d0 867px 868px,
-          transparent 868px
-        );
-    }
-    .sheet-body::-webkit-scrollbar { width: 14px; }
-    .sheet-body::-webkit-scrollbar-track { background: #f0f0f0; border-left: 1px solid var(--chrome-border); }
-    .sheet-body::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border: 3px solid #f0f0f0;
-      border-radius: 7px;
-    }
-    .sheet-body::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
-
-    /* Subheader row (A / B / C / D labels) */
-    .subheader-row {
-      display: flex;
-      border-bottom: 2px solid #b0b0b0;
-      background: #fafafa;
-    }
-    .sh-num {
-      width: var(--row-num-w);
-      flex-shrink: 0;
-      height: var(--row-height);
-      border-right: 1px solid var(--cell-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-chrome);
-      font-size: 10.5px;
-      color: var(--header-text);
-      background: var(--header-bg);
-    }
-    /* Riley: darker subheader labels so they read as column labels, not placeholders */
-    .sh-cell {
-      height: var(--row-height);
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      border-right: 1px solid var(--cell-border);
-      font-family: var(--font-chrome);
-      font-size: 11px;
-      color: #555;
-      letter-spacing: 0.04em;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    .sh-cell.col-a { width: var(--col-a-w); }
-    .sh-cell.col-b { width: var(--col-b-w); }
-    .sh-cell.col-c { width: var(--col-c-w); }
-    .sh-cell.col-d { width: var(--col-d-w); }
-    .sh-cell.col-e { flex: 1; }
-
-    /* Data rows */
-    .data-row {
-      display: flex;
-      border-bottom: 1px solid var(--cell-border);
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      align-items: stretch;
-      min-height: var(--row-height);
-      background-color: var(--cell-bg);
-    }
-    /* Chase: animate only newly added rows */
-    @keyframes rowSlideIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .data-row.row-new { animation: rowSlideIn 0.25s ease forwards; }
-    @keyframes rowFadeOut {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(10px); }
-    }
-    .data-row.row-removing { animation: rowFadeOut 0.18s ease forwards; pointer-events: none; }
-
-    /* Delete button */
-    .delete-btn {
-      opacity: 0;
-      transition: opacity 0.15s;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #bbb;
-      font-size: 13px;
-      line-height: 1;
-      padding: 4px 6px;
-      border-radius: 2px;
-    }
-    .delete-btn:hover { color: #c0392b; background: #fff0f0; }
-    .data-row:hover .delete-btn { opacity: 1; }
-    .data-row:hover .row-num {
-      background: #e8e8e8;
-    }
-    .data-row.selected .row-num {
-      background: #b8d4f5;
-      color: #1973c4;
-      font-weight: 700;
-    }
-    .data-row.selected {
-      outline: 2px solid var(--cell-selected-border);
-      outline-offset: -1px;
-      z-index: 2;
-      position: relative;
-    }
-
-    .row-num {
-      width: var(--row-num-w);
-      flex-shrink: 0;
-      min-height: var(--row-height);
-      border-right: 1px solid var(--cell-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-chrome);
-      font-size: 11px;
-      color: var(--header-text);
-      background: var(--header-bg);
-      transition: background 0.15s;
-    }
-    .cell {
-      min-height: var(--row-height);
-      display: flex;
-      align-items: center;
-      padding: 0 8px;
-      border-right: 1px solid var(--cell-border);
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-    .cell.col-a {
-      width: var(--col-a-w);
-      font-family: var(--font-chrome);
-      font-size: 11.5px;
-      color: #777;
-    }
-    .cell.col-b {
-      width: var(--col-b-w);
-      font-family: var(--font-cell);
-      font-size: 13px;
-      color: #1a1a1a;
-      letter-spacing: -0.01em;
-      white-space: normal;
-      word-break: break-word;
-      text-overflow: unset;
-      align-items: flex-start;
-      padding-top: 7px;
-      padding-bottom: 7px;
-      line-height: 1.5;
-    }
-    .cell.col-c {
-      width: var(--col-c-w);
-      font-family: var(--font-chrome);
-      font-size: 11.5px;
-      justify-content: center;
-    }
-    .cell.col-d {
-      width: var(--col-d-w);
-      font-family: var(--font-cell);
-      font-size: 12.5px;
-      color: #444;
-      font-style: italic;
-      letter-spacing: -0.01em;
-      white-space: normal;
-      word-break: break-word;
-      text-overflow: unset;
-      align-items: flex-start;
-      padding-top: 7px;
-      padding-bottom: 7px;
-      line-height: 1.5;
-    }
-    .cell.col-e { flex: 1; }
-
-    /* Emotion badge colors */
-    .emotion-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 2px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-    .emo-joy      { background: #fef3c7; color: #92400e; }
-    .emo-sad      { background: #e0f2fe; color: #075985; }
-    .emo-stress   { background: #ffe4e6; color: #9f1239; }
-    .emo-anxiety  { background: #ede9fe; color: #5b21b6; }
-    .emo-tired    { background: #f3f4f6; color: #374151; }
-    .emo-calm     { background: #dcfce7; color: #14532d; }
-
-    /* Row tints */
-    .tint-joy      { background-color: var(--tint-joy); }
-    .tint-sad      { background-color: var(--tint-sad); }
-    .tint-stress   { background-color: var(--tint-stress); }
-    .tint-anxiety  { background-color: var(--tint-anxiety); }
-    .tint-tired    { background-color: var(--tint-tired); }
-    .tint-calm     { background-color: var(--tint-calm); }
-
-    /* Loading skeleton */
-    @keyframes shimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-    .skeleton-bar {
-      display: block;
-      border-radius: 2px;
-      background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s ease-in-out infinite;
-    }
-    .skeleton-bar.badge { width: 52px; height: 20px; }
-    .skeleton-bar.line  { width: 85%; height: 13px; margin-top: 1px; }
-
-    /* ─── Empty State Hint ───────────────────────── */
-    .empty-state-hint {
-      padding: 14px 16px 10px;
-      font-family: var(--font-ui);
-      font-size: 12px;
-      color: #888;
-      border-bottom: 1px dashed #e0e0e0;
-    }
-    .empty-state-hint kbd {
-      background: #f0f0f0;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      padding: 1px 5px;
-      font-size: 11px;
-      font-family: var(--font-chrome);
-    }
-
-    /* ─── Sheet Tabs ─────────────────────────────── */
-    .sheet-tabs {
-      height: 26px;
-      background: var(--chrome-bg);
-      border-top: 1px solid var(--chrome-border);
-      display: flex;
-      align-items: flex-end;
-      padding: 0 8px;
-      gap: 2px;
-    }
-    .sheet-tab {
-      height: 22px;
-      padding: 0 14px;
-      display: flex;
-      align-items: center;
-      font-family: var(--font-ui);
-      font-size: 11.5px;
-      border: 1px solid var(--chrome-border);
-      border-bottom: none;
-      border-radius: 3px 3px 0 0;
-      cursor: default;
-      color: #777;
-      background: #e8e8e8;
-    }
-    .sheet-tab.active {
-      background: #fff;
-      color: var(--chrome-text);
-      border-bottom: 1px solid #fff;
-      margin-bottom: -1px;
-      font-weight: 500;
-    }
-
-    /* ─── Status Bar ─────────────────────────────── */
-    .status-bar {
-      height: 22px;
-      background: var(--ribbon-bg);
-      border-top: 1px solid #1a5e38;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      gap: 16px;
-    }
-    .status-item {
-      font-family: var(--font-ui);
-      font-size: 11px;
-      color: rgba(255,255,255,0.85);
-      letter-spacing: 0.02em;
-    }
-    .status-item.ready { font-weight: 500; }
-    .status-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .zoom-control {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .zoom-track {
-      width: 80px;
-      height: 4px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 2px;
-      position: relative;
-    }
-    /* Riley: zoom updated to 100% */
-    .zoom-fill {
-      width: 100%;
-      height: 100%;
-      background: rgba(255,255,255,0.7);
-      border-radius: 2px;
-    }
-    .zoom-thumb {
-      position: absolute;
-      top: -4px;
-      left: 100%;
-      transform: translateX(-50%);
-      width: 10px;
-      height: 10px;
-      background: #fff;
-      border-radius: 50%;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-
-    /* ─── Error Toast ────────────────────────────── */
-    .error-toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: #2d2d2d;
-      color: #fff;
-      font-family: var(--font-ui);
-      font-size: 12.5px;
-      padding: 10px 20px;
-      border-radius: 4px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-      opacity: 0;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      pointer-events: none;
-      z-index: 9999;
-      border-left: 3px solid #c0392b;
-      max-width: 420px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .error-toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-    .toast-retry {
-      flex-shrink: 0;
-      background: none;
-      border: 1px solid rgba(255,255,255,0.5);
-      color: #fff;
-      font-family: var(--font-ui);
-      font-size: 11.5px;
-      padding: 3px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .toast-retry:hover { background: rgba(255,255,255,0.15); }
-
-    /* formula-input + confirm button during analysis */
-    .formula-input-wrap.analyzing input {
-      opacity: 0.55;
-      pointer-events: none;
-    }
-    #btn-confirm.analyzing {
-      opacity: 0.4;
-      pointer-events: none;
-      cursor: default;
-    }
-
-    /* ─── Emotion Filter ─────────────────────────── */
-    .filter-header {
-      position: relative;
-      cursor: pointer;
-      justify-content: center;
-      gap: 4px;
-      user-select: none;
-    }
-    .filter-header:hover { background: #e8e8e8; }
-    .filter-icon {
-      font-size: 10px;
-      color: #999;
-      line-height: 1;
-      transition: color 0.15s;
-    }
-    .filter-header.active .filter-icon {
-      color: var(--ribbon-bg); /* green */
-    }
-    .filter-header.active {
-      background: #e8f5ee;
-    }
-
-    .filter-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      min-width: 110px;
-      background: #fff;
-      border: 1px solid var(--chrome-border);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 100;
-      border-radius: 2px;
-      padding: 3px 0;
-    }
-    .filter-dropdown.open { display: block; }
-
-    .filter-option {
-      padding: 5px 12px;
-      font-family: var(--font-ui);
-      font-size: 12px;
-      color: var(--chrome-text);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .filter-option:hover { background: #f0f0f0; }
-    .filter-option.selected {
-      color: var(--ribbon-bg);
-      font-weight: 600;
-    }
-    /* ─── Auth Loading Screen ───────────────────── */
-    #auth-loading {
-      position: fixed;
-      inset: 0;
-      background: var(--ribbon-bg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      z-index: 2000;
-    }
-    #auth-loading.hidden { display: none; }
-    .auth-loading-icon { opacity: 0.95; }
-    @keyframes authSpin {
-      to { transform: rotate(360deg); }
-    }
-    .auth-spinner {
-      width: 24px;
-      height: 24px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: authSpin 0.75s linear infinite;
-    }
-
-    /* ─── Login Overlay ─────────────────────────── */
-    .login-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(32, 32, 32, 0.82);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      backdrop-filter: blur(2px);
-    }
-    .login-overlay.hidden { display: none; }
-    .excel-window.hidden { display: none; }
-    .login-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 40px 48px;
-      text-align: center;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.35);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      min-width: 320px;
-    }
-    .login-card h2 {
-      font-family: var(--font-ui);
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--chrome-text);
-      margin: 0;
-    }
-    .login-card p {
-      font-family: var(--font-ui);
-      font-size: 13px;
-      color: #666;
-      line-height: 1.6;
-      margin: 0;
-    }
-    .btn-google {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      padding: 10px 20px;
-      font-family: var(--font-ui);
-      font-size: 14px;
-      color: #3c4043;
-      cursor: pointer;
-      font-weight: 500;
-      margin-top: 8px;
-      transition: background 0.15s, box-shadow 0.15s;
-    }
-    .btn-google:hover {
-      background: #f8f9fa;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-    }
-
-    /* ─── User Info (title bar) ──────────────────── */
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: 12px;
-    }
-    .user-info.hidden { display: none; }
-    .user-name {
-      font-family: var(--font-ui);
-      font-size: 11px;
-      color: #555;
-      max-width: 140px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .signout-btn {
-      font-family: var(--font-ui);
-      font-size: 11px;
-      color: #666;
-      background: none;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      padding: 2px 8px;
-      cursor: pointer;
-    }
-    .signout-btn:hover { background: var(--chrome-hover); }
-
-    @media (max-width: 480px) {
-      .login-card {
-        width: calc(100% - 32px);
-        min-width: unset;
-        max-width: 100%;
-        margin: 0 16px;
-        box-sizing: border-box;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="./styles/base.css" />
+  <link rel="stylesheet" href="./styles/chrome.css" />
+  <link rel="stylesheet" href="./styles/sheet.css" />
+  <link rel="stylesheet" href="./styles/login.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+  <script src="./config.js"></script>
+  <script src="./utils.js"></script>
+  <script src="./ui.js"></script>
 </head>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
 <body>
 
 <!-- Auth Loading Screen -->
@@ -952,7 +44,7 @@
   </div>
 </div>
 
-<!-- Mobile fallback (hidden above 900px via CSS) -->
+<!-- Mobile fallback (permanently hidden via CSS) -->
 <div class="mobile-overlay" role="main">
   <svg width="56" height="56" viewBox="0 0 16 16" fill="none">
     <rect width="16" height="16" rx="2" fill="rgba(255,255,255,0.2)"/>
@@ -969,7 +61,6 @@
 
   <!-- Title Bar -->
   <div class="title-bar">
-    <!-- Excel "X" icon -->
     <svg class="title-bar-icon" viewBox="0 0 16 16" fill="none">
       <rect width="16" height="16" rx="2" fill="#217346"/>
       <path d="M3 3l3.5 5L3 13h2.5l2-3.2 2 3.2H12l-3.5-5L12 3H9.5l-2 3.2L5.5 3H3z" fill="#fff"/>
@@ -1017,98 +108,43 @@
 
   <!-- Toolbar -->
   <div class="toolbar" aria-hidden="true">
-    <!-- Save -->
     <div class="tb-btn" title="Save">
-      <svg viewBox="0 0 15 15" fill="none">
-        <rect x="1.5" y="1.5" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/>
-        <rect x="4" y="1.5" width="5" height="4" fill="currentColor" rx="0.5"/>
-        <rect x="3" y="8" width="9" height="4" rx="0.5" fill="currentColor"/>
-        <rect x="5" y="9" width="2" height="2" fill="white" rx="0.2"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="4" y="1.5" width="5" height="4" fill="currentColor" rx="0.5"/><rect x="3" y="8" width="9" height="4" rx="0.5" fill="currentColor"/><rect x="5" y="9" width="2" height="2" fill="white" rx="0.2"/></svg>
     </div>
-    <!-- Undo -->
     <div class="tb-btn" title="Undo">
-      <svg viewBox="0 0 15 15" fill="none">
-        <path d="M3 7.5C3 5 5 3 7.5 3c2 0 3.8 1.2 4.5 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <polyline points="3,3.5 3,7.5 7,7.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><path d="M3 7.5C3 5 5 3 7.5 3c2 0 3.8 1.2 4.5 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><polyline points="3,3.5 3,7.5 7,7.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/></svg>
     </div>
-    <!-- Redo -->
     <div class="tb-btn" title="Redo">
-      <svg viewBox="0 0 15 15" fill="none">
-        <path d="M12 7.5C12 5 10 3 7.5 3c-2 0-3.8 1.2-4.5 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <polyline points="12,3.5 12,7.5 8,7.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><path d="M12 7.5C12 5 10 3 7.5 3c-2 0-3.8 1.2-4.5 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><polyline points="12,3.5 12,7.5 8,7.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/></svg>
     </div>
     <div class="tb-sep"></div>
-
-    <!-- Font family -->
     <select class="tb-font-select" tabindex="-1">
-      <option>Georgia</option>
-      <option>Calibri</option>
-      <option>Arial</option>
-      <option>Times New Roman</option>
+      <option>Georgia</option><option>Calibri</option><option>Arial</option><option>Times New Roman</option>
     </select>
-    <!-- Font size -->
     <input class="tb-font-size" type="text" value="11" tabindex="-1" readonly />
     <div class="tb-sep"></div>
-
-    <!-- Bold -->
     <div class="tb-btn" title="Bold">
-      <svg viewBox="0 0 15 15" fill="none">
-        <path d="M5 3h4a2.5 2.5 0 010 5H5V3zM5 8h4.5a2.5 2.5 0 010 5H5V8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><path d="M5 3h4a2.5 2.5 0 010 5H5V3zM5 8h4.5a2.5 2.5 0 010 5H5V8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
     </div>
-    <!-- Italic -->
     <div class="tb-btn" title="Italic">
-      <svg viewBox="0 0 15 15" fill="none">
-        <line x1="9" y1="3" x2="6" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="7" y1="3" x2="11" y2="3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <line x1="4" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><line x1="9" y1="3" x2="6" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="3" x2="11" y2="3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="4" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     </div>
-    <!-- Underline -->
     <div class="tb-btn" title="Underline">
-      <svg viewBox="0 0 15 15" fill="none">
-        <path d="M4 3v4.5a3.5 3.5 0 007 0V3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        <line x1="3" y1="13" x2="12" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><path d="M4 3v4.5a3.5 3.5 0 007 0V3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="3" y1="13" x2="12" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
     </div>
     <div class="tb-sep"></div>
-
-    <!-- Align left -->
     <div class="tb-btn" title="Align Left">
-      <svg viewBox="0 0 15 15" fill="none">
-        <line x1="2" y1="4" x2="13" y2="4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <line x1="2" y1="7.5" x2="9" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <line x1="2" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><line x1="2" y1="4" x2="13" y2="4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="2" y1="7.5" x2="9" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="2" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     </div>
-    <!-- Align center -->
     <div class="tb-btn" title="Align Center">
-      <svg viewBox="0 0 15 15" fill="none">
-        <line x1="2" y1="4" x2="13" y2="4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <line x1="4.5" y1="7.5" x2="10.5" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        <line x1="2" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><line x1="2" y1="4" x2="13" y2="4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="4.5" y1="7.5" x2="10.5" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="2" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
     </div>
     <div class="tb-sep"></div>
-
-    <!-- Sum / Sigma (decorative) -->
     <div class="tb-btn" title="AutoSum">
-      <svg viewBox="0 0 15 15" fill="none">
-        <path d="M3 2.5h7M3 2.5L8 7.5 3 12.5M3 12.5h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><path d="M3 2.5h7M3 2.5L8 7.5 3 12.5M3 12.5h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <!-- Sort -->
     <div class="tb-btn" title="Sort">
-      <svg viewBox="0 0 15 15" fill="none">
-        <line x1="2" y1="4" x2="8" y2="4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        <line x1="2" y1="7.5" x2="11" y2="7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        <line x1="2" y1="11" x2="6" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        <polyline points="12,9 13.5,12 15,9" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="13.5" y1="3" x2="13.5" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-      </svg>
+      <svg viewBox="0 0 15 15" fill="none"><line x1="2" y1="4" x2="8" y2="4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="2" y1="7.5" x2="11" y2="7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="2" y1="11" x2="6" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><polyline points="12,9 13.5,12 15,9" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><line x1="13.5" y1="3" x2="13.5" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     </div>
   </div>
 
@@ -1117,35 +153,21 @@
     <div class="name-box" id="name-box">A1</div>
     <div class="formula-icons">
       <div class="fi-btn cancel" title="취소" id="btn-cancel">
-        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-          <line x1="1.5" y1="1.5" x2="9.5" y2="9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <line x1="9.5" y1="1.5" x2="1.5" y2="9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><line x1="1.5" y1="1.5" x2="9.5" y2="9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="9.5" y1="1.5" x2="1.5" y2="9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       </div>
       <div class="fi-btn confirm" title="입력 확인 (Enter)" id="btn-confirm">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <polyline points="1.5,6 4.5,9 10.5,2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9 10.5,2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
     </div>
     <div class="fi-fx">fx</div>
     <!-- Riley: placeholder changed to match Excel idiom -->
     <div class="formula-input-wrap">
-      <input
-        type="text"
-        id="formula-input"
-        placeholder="데이터를 입력하세요"
-        autocomplete="off"
-        spellcheck="false"
-        aria-label="오늘 있었던 일 입력"
-      />
+      <input type="text" id="formula-input" placeholder="데이터를 입력하세요" autocomplete="off" spellcheck="false" aria-label="오늘 있었던 일 입력" />
     </div>
   </div>
 
   <!-- Sheet Area -->
   <div class="sheet-area">
-
-    <!-- Column Headers (A B C D E...) -->
     <div class="col-headers">
       <div class="ch-corner"></div>
       <div class="ch-cell col-a">A</div>
@@ -1154,11 +176,7 @@
       <div class="ch-cell col-d">D</div>
       <div class="ch-cell col-e">E</div>
     </div>
-
-    <!-- Sheet Body -->
     <div class="sheet-body" id="sheet-body">
-
-      <!-- Sub-header row: column names -->
       <div class="subheader-row">
         <div class="sh-num"></div>
         <div class="sh-cell col-a">날짜</div>
@@ -1186,10 +204,7 @@
         <div class="sh-cell col-d">AI의 한마디</div>
         <div class="sh-cell col-e"></div>
       </div>
-
-      <!-- Data rows rendered by JS -->
       <div id="rows-container"></div>
-
     </div>
   </div>
 
@@ -1200,18 +215,14 @@
     <div class="sheet-tab" tabindex="-1">Sheet3</div>
   </div>
 
-  <!-- Status Bar -->
-  <!-- Riley: zoom text updated to 100% -->
+  <!-- Status Bar (Riley: zoom text updated to 100%) -->
   <div class="status-bar">
     <span class="status-item ready" id="status-text">준비</span>
     <span class="status-item" id="status-count"></span>
     <div class="status-right">
       <div class="zoom-control">
         <span class="status-item">100%</span>
-        <div class="zoom-track">
-          <div class="zoom-fill"></div>
-          <div class="zoom-thumb"></div>
-        </div>
+        <div class="zoom-track"><div class="zoom-fill"></div><div class="zoom-thumb"></div></div>
       </div>
     </div>
   </div>
@@ -1258,72 +269,14 @@ function logEvent(event, params = {}) {
   } catch { /* never break UX */ }
   try { analytics.logEvent(event, params); } catch { /* never break UX */ }
 }
-function errorReason(err) {
-  const m = err?.message || '';
-  if (m.includes('서버에 연결할 수 없어요')) return 'network';
-  if (m.includes('잠시 쉬고 있어요')) return 'upstream_exhausted';
-  if (m.includes('너무 많아요')) return 'rate_limit';
-  if (m.includes('AI 서버에 일시적인')) return 'upstream_5xx';
-  if (m.includes('응답 오류가 발생했어요')) return 'http_error';
-  if (m.includes('너무 길어요')) return 'input_too_long';
-  if (m.includes('형식이 예상과 달라요')) return 'format_mismatch';
-  if (m.includes('응답 형식이 올바르지')) return 'parse_error';
-  if (m.includes('분석 결과') || m.includes('내용을 찾을 수')) return 'parse_error';
-  return 'unknown';
-}
 
-/* ── Constants ─────────────────────────────────── */
-const PROXY_ENDPOINT = '/api/chat';
-const MODEL = 'auto';
-const TOAST_DURATION_MS = 4000;
-const MAX_INPUT_LENGTH = 500;
-
-/* Sage: Korean system prompt, 13 emotions, stricter rules */
-const SYSTEM_PROMPT = `당신은 따뜻하고 공감 능력이 뛰어난 감정 동반자입니다. 사용자가 오늘 있었던 일을 공유하면:
-
-1. 다음 감정 목록에서 주된 감정 하나를 파악하세요: 기쁨, 설렘, 뿌듯함, 슬픔, 외로움, 스트레스, 분노, 억울함, 불안, 혼란, 피로, 무기력함, 평온
-2. 상대방의 감정을 인정하고 공감하는 2~3문장의 한국어 응답을 작성하세요. 절대 조언하거나 해결책을 제시하지 마세요. 그냥 함께 있어 주세요.
-
-규칙:
-- JSON 객체만 응답하세요. 마크다운, 설명, 감싸는 텍스트 없이.
-- JSON은 정확히 두 개의 키를 가져야 합니다: "emotion" (string)과 "empathy" (string).
-- "empathy" 값은 한국어로, 따뜻하고 대화체여야 합니다. 딱딱하거나 임상적이지 않게.
-- 입력이 모호하거나 감정적으로 중립적이면 기본 감정을 "평온"으로 설정하세요.
-- empathy는 150자 이내로 작성하세요.
-
-응답 형식 (엄격히):
-{"emotion": "스트레스", "empathy": "오늘 정말 많이 지치셨겠어요. 그 무게를 혼자 감당해왔다는 게 느껴져서 마음이 쓰여요. 수고 많으셨어요."}`;
-
-/* Morgan: merge EMOTION_TINT + EMOTION_BADGE → EMOTION_CONFIG */
-const EMOTION_CONFIG = {
-  '기쁨':     { tint: 'tint-joy',     badge: 'emo-joy'     },
-  '설렘':     { tint: 'tint-joy',     badge: 'emo-joy'     },
-  '뿌듯함':   { tint: 'tint-joy',     badge: 'emo-joy'     },
-  '슬픔':     { tint: 'tint-sad',     badge: 'emo-sad'     },
-  '외로움':   { tint: 'tint-sad',     badge: 'emo-sad'     },
-  '스트레스': { tint: 'tint-stress',  badge: 'emo-stress'  },
-  '분노':     { tint: 'tint-stress',  badge: 'emo-stress'  },
-  '억울함':   { tint: 'tint-stress',  badge: 'emo-stress'  },
-  '불안':     { tint: 'tint-anxiety', badge: 'emo-anxiety' },
-  '혼란':     { tint: 'tint-anxiety', badge: 'emo-anxiety' },
-  '피로':     { tint: 'tint-tired',   badge: 'emo-tired'   },
-  '무기력함': { tint: 'tint-tired',   badge: 'emo-tired'   },
-  '평온':     { tint: 'tint-calm',    badge: 'emo-calm'    },
-};
-
-/* ── State ─────────────────────────────────────── */
+/* ── App State (globals read by ui.js) ─────────── */
 let entries = [];
 let selectedId = null;
 let isAnalyzing = false;
-let filterEmotion = null; // null = show all
-
-/* Chase: sort cache and entry map for O(1) lookups */
+let filterEmotion = null;
 let sortedCache = null;
 let entryMap = new Map();
-
-/* Virtual scroll: activates at VIRTUAL_THRESHOLD entries */
-const VIRTUAL_THRESHOLD = 200;
-const VIRTUAL_ROW_EST = 52; /* estimated px per row (accounts for wrapped empathy text) */
 let virtualActive = false;
 let scrollScheduled = false;
 
@@ -1331,22 +284,15 @@ function getSorted() {
   if (!sortedCache) sortedCache = entries.slice().reverse();
   return sortedCache;
 }
-
 function getFiltered() {
   const sorted = getSorted();
   if (!filterEmotion) return sorted;
   return sorted.filter(e => !e._loading && e.emotion === filterEmotion);
 }
+function invalidateSort() { sortedCache = null; }
+function rebuildEntryMap() { entryMap = new Map(entries.map(e => [e.id, e])); }
 
-function invalidateSort() {
-  sortedCache = null;
-}
-
-function rebuildEntryMap() {
-  entryMap = new Map(entries.map(e => [e.id, e]));
-}
-
-/* ── Storage (Firestore) ───────────────────────── */
+/* ── Firestore ─────────────────────────────────── */
 async function loadEntriesFromFirestore() {
   try {
     const snap = await entriesRef().orderBy('createdAt', 'desc').get();
@@ -1358,13 +304,10 @@ async function loadEntriesFromFirestore() {
     return [];
   }
 }
-
 async function addEntryToFirestore(entry) {
   try {
     await entriesRef().doc(entry.id).set({
-      date: entry.date,
-      text: entry.text,
-      emotion: entry.emotion,
+      date: entry.date, text: entry.text, emotion: entry.emotion,
       empathy: entry.empathy.slice(0, 300),
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -1373,7 +316,6 @@ async function addEntryToFirestore(entry) {
     throw new Error('저장에 실패했어요. 다시 시도해주세요.');
   }
 }
-
 async function deleteEntryFromFirestore(id) {
   try {
     await entriesRef().doc(id).delete();
@@ -1383,50 +325,6 @@ async function deleteEntryFromFirestore(id) {
   }
 }
 
-/* ── Date ──────────────────────────────────────── */
-function todayStr() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-/* Morgan: prefer crypto.randomUUID when available */
-function generateId() {
-  return crypto.randomUUID?.() ?? (Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
-}
-
-/* ── Escape ────────────────────────────────────── */
-/* Morgan + Chase: single-pass, String() cast, single-quote included */
-const HTML_ESCAPE = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => HTML_ESCAPE[c]);
-}
-
-/* ── JSON helpers (Sage) ────────────────────────── */
-function extractJson(raw) {
-  const trimmed = String(raw).trim();
-  try { return JSON.parse(trimmed); } catch { /* continue */ }
-  const stripped = trimmed
-    .replace(/^```(?:json)?\s*/i, '')
-    .replace(/\s*```$/, '')
-    .trim();
-  try { return JSON.parse(stripped); } catch { /* continue */ }
-  // Use [^{}]* to match only the first complete flat JSON object,
-  // preventing greedy match from spanning multiple objects in the response.
-  const match = stripped.match(/\{[^{}]*\}/);
-  if (match) { try { return JSON.parse(match[0]); } catch { /* continue */ } }
-  throw new Error('JSON 파싱 실패');
-}
-
-function normalizeEmotion(emotion) {
-  if (EMOTION_CONFIG[emotion]) return emotion;
-  const keys = Object.keys(EMOTION_CONFIG);
-  const found = keys.find(k => emotion.includes(k) || k.includes(emotion));
-  return found ?? '평온';
-}
-
 /* ── API ───────────────────────────────────────── */
 function checkHttpError(response) {
   if (response.ok) return;
@@ -1434,360 +332,41 @@ function checkHttpError(response) {
   if (response.status >= 500) throw new Error('AI 서버에 일시적인 문제가 있어요. 잠시 후 다시 시도해주세요.');
   throw new Error(`응답 오류가 발생했어요. (${response.status})`);
 }
-
 async function analyzeEmotion(text) {
-  if (!text || typeof text !== 'string' || text.trim().length === 0) {
-    throw new Error('입력 텍스트가 비어 있습니다.');
-  }
-  if (text.trim().length > MAX_INPUT_LENGTH) {
-    throw new Error('입력이 너무 길어요. 500자 이내로 작성해주세요.');
-  }
-
+  if (!text || typeof text !== 'string' || text.trim().length === 0) throw new Error('입력 텍스트가 비어 있습니다.');
+  if (text.trim().length > MAX_INPUT_LENGTH) throw new Error('입력이 너무 길어요. 500자 이내로 작성해주세요.');
   let response;
   try {
     response = await fetch(PROXY_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: text.trim() },
-        ],
-        max_tokens: 256,
-        temperature: 0.3,
-      }),
+      body: JSON.stringify({ model: MODEL, messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: text.trim() }], max_tokens: 256, temperature: 0.3 }),
     });
-  } catch {
-    throw new Error('서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요.');
-  }
-
+  } catch { throw new Error('서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요.'); }
   let data;
   try { data = await response.json(); } catch { throw new Error('응답 형식이 올바르지 않아요.'); }
-
   if (!response.ok) {
-    if (response.status === 429 && typeof data?.error === 'string' && data.error.includes('모든 모델')) {
-      throw new Error('AI가 잠시 쉬고 있어요. 조금 후에 다시 써보세요.');
-    }
+    if (response.status === 429 && typeof data?.error === 'string' && data.error.includes('모든 모델')) throw new Error('AI가 잠시 쉬고 있어요. 조금 후에 다시 써보세요.');
     checkHttpError(response);
   }
-
   const rawContent = data?.choices?.[0]?.message?.content;
   if (!rawContent) throw new Error('AI 응답에서 내용을 찾을 수 없어요.');
-
   let result;
   try { result = extractJson(rawContent); } catch { throw new Error('감정 분석 결과를 읽는 데 실패했어요.'); }
-
-  if (typeof result.emotion !== 'string' || typeof result.empathy !== 'string') {
-    throw new Error('감정 분석 결과 형식이 예상과 달라요.');
-  }
-
-  return {
-    emotion: normalizeEmotion(result.emotion),
-    empathy: result.empathy,
-    requestId: data.request_id ?? null,
-  };
-}
-
-/* ── Error Toast ───────────────────────────────── */
-let toastTimer = null;
-
-function showError(message, retryLabel, retryCallback, duration = TOAST_DURATION_MS) {
-  const toast = document.getElementById('error-toast');
-  toast.innerHTML = '';
-
-  const msg = document.createElement('span');
-  msg.textContent = message;
-  toast.appendChild(msg);
-
-  if (retryLabel) {
-    const btn = document.createElement('button');
-    btn.className = 'toast-retry';
-    btn.textContent = retryLabel;
-    btn.addEventListener('click', () => {
-      toast.classList.remove('show');
-      if (retryCallback) retryCallback();
-    });
-    toast.appendChild(btn);
-  }
-
-  toast.classList.add('show');
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
-}
-
-/* ── Name Box ──────────────────────────────────── */
-const COLUMN_LETTERS = ['A', 'B', 'C', 'D', 'E'];
-
-function updateNameBox(rowIndex, col) {
-  const colLetter = COLUMN_LETTERS[col] || 'A';
-  document.getElementById('name-box').textContent = `${colLetter}${rowIndex}`;
-}
-
-/* ── Status Bar ────────────────────────────────── */
-function updateStatus(text) {
-  document.getElementById('status-text').textContent = text;
-  const total = entries.length;
-  const filtered = getFiltered().length;
-  const countEl = document.getElementById('status-count');
-  if (total === 0) {
-    countEl.textContent = '';
-  } else if (filterEmotion) {
-    countEl.textContent = `${filtered} / ${total}개`;
-  } else {
-    countEl.textContent = `항목 수: ${total}`;
-  }
-}
-
-/* ── Render ────────────────────────────────────── */
-function buildEmotionBadge(emotion) {
-  /* Morgan: use EMOTION_CONFIG */
-  const cls = EMOTION_CONFIG[emotion]?.badge || 'emo-calm';
-  return `<span class="emotion-badge ${cls}">${escapeHtml(emotion)}</span>`;
-}
-
-function buildRow(entry, rowNumber) {
-  /* Morgan: use EMOTION_CONFIG */
-  const tintClass = EMOTION_CONFIG[entry.emotion]?.tint || '';
-  const isSelected = entry.id === selectedId;
-  const selClass = isSelected ? ' selected' : '';
-  const isLoading = entry._loading;
-
-  return `
-    <div class="data-row ${tintClass}${selClass}"
-         data-id="${escapeHtml(entry.id)}"
-         tabindex="0"
-         role="row"
-         aria-label="행 ${rowNumber}: ${escapeHtml(entry.text)}">
-      <div class="row-num" role="rowheader">${rowNumber}</div>
-      <div class="cell col-a" role="cell">${escapeHtml(entry.date)}</div>
-      <div class="cell col-b" role="cell">${escapeHtml(entry.text)}</div>
-      <div class="cell col-c" role="cell">
-        ${isLoading
-          ? '<span class="skeleton-bar badge"></span>'
-          : (entry.emotion ? buildEmotionBadge(entry.emotion) : '')}
-      </div>
-      <div class="cell col-d" role="cell" title="${escapeHtml(entry.empathy || '')}">
-        ${isLoading
-          ? '<span class="skeleton-bar line"></span>'
-          : escapeHtml(entry.empathy || '')}
-      </div>
-      <div class="cell col-e" role="cell">
-        ${isLoading ? '' : '<button class="delete-btn" data-action="delete" aria-label="삭제">✕</button>'}
-      </div>
-    </div>`;
-}
-
-/* Riley: ghost row for empty state */
-function renderEmptyGhost() {
-  return `
-    <div class="empty-state-hint" role="status">
-      <span>formula bar에 오늘 있었던 일을 입력하고 <kbd>Enter</kbd>를 누르세요 ↑</span>
-    </div>
-    <div class="data-row empty-ghost" style="opacity:0.35; cursor:default;" aria-hidden="true">
-      <div class="row-num">1</div>
-      <div class="cell col-a" style="color:#bbb; font-style:italic;">${escapeHtml(todayStr())}</div>
-      <div class="cell col-b" style="color:#bbb; font-style:italic;">데이터를 입력하세요</div>
-      <div class="cell col-c"></div>
-      <div class="cell col-d"></div>
-      <div class="cell col-e"></div>
-    </div>`;
-}
-
-function renderRows() {
-  const container = document.getElementById('rows-container');
-  const filtered = getFiltered();
-
-  if (entries.length === 0) {
-    virtualActive = false;
-    container.style.paddingTop = '';
-    container.style.paddingBottom = '';
-    container.innerHTML = renderEmptyGhost();
-    return;
-  }
-
-  if (filtered.length === 0) {
-    // Filter active but no matching entries
-    virtualActive = false;
-    container.style.paddingTop = '';
-    container.style.paddingBottom = '';
-    container.innerHTML = `
-      <div class="data-row empty-ghost" style="opacity:0.5; cursor:default;" aria-live="polite">
-        <div class="row-num">—</div>
-        <div class="cell col-a"></div>
-        <div class="cell col-b" style="color:#999; font-style:italic; white-space:normal;">
-          "${escapeHtml(filterEmotion)}" 감정으로 기록된 일지가 없어요
-        </div>
-        <div class="cell col-c"></div>
-        <div class="cell col-d"></div>
-        <div class="cell col-e"></div>
-      </div>`;
-    return;
-  }
-
-  virtualActive = filtered.length >= VIRTUAL_THRESHOLD;
-
-  if (virtualActive) {
-    renderVirtual(filtered);
-  } else {
-    container.style.paddingTop = '';
-    container.style.paddingBottom = '';
-    container.innerHTML = filtered.map((entry, i) => buildRow(entry, i + 1)).join('');
-  }
-}
-
-function renderVirtual(sorted) {
-  const body = document.getElementById('sheet-body');
-  const container = document.getElementById('rows-container');
-  const viewportH = body.clientHeight || 480;
-  const BUFFER = 5;
-  const visible = Math.ceil(viewportH / VIRTUAL_ROW_EST) + BUFFER * 2;
-  const scrollTop = body.scrollTop;
-  const start = Math.max(0, Math.floor(scrollTop / VIRTUAL_ROW_EST) - BUFFER);
-  const end = Math.min(sorted.length, start + visible);
-
-  container.style.paddingTop = `${start * VIRTUAL_ROW_EST}px`;
-  container.style.paddingBottom = `${(sorted.length - end) * VIRTUAL_ROW_EST}px`;
-  container.innerHTML = sorted.slice(start, end).map((e, i) => buildRow(e, start + i + 1)).join('');
-}
-
-/* Chase: renumber all real rows after DOM mutation */
-function renumberRows() {
-  const container = document.getElementById('rows-container');
-  container.querySelectorAll('.data-row:not(.empty-ghost)').forEach((row, i) => {
-    const numEl = row.querySelector('.row-num');
-    if (numEl) numEl.textContent = i + 1;
-  });
-}
-
-/* Chase: replace a single row's DOM without full re-render */
-function updateRowDOM(id) {
-  const container = document.getElementById('rows-container');
-  const el = container.querySelector(`[data-id="${id}"]`);
-  if (!el) return;
-  const sorted = getSorted();
-  const idx = sorted.findIndex(e => e.id === id);
-  if (idx < 0) return;
-  const entry = sorted[idx];
-  const tmp = document.createElement('template');
-  tmp.innerHTML = buildRow(entry, idx + 1).trim();
-  el.replaceWith(tmp.content.firstChild);
-}
-
-/* ── Row Event Delegation (Chase) ──────────────── */
-function bindRowDelegation() {
-  const container = document.getElementById('rows-container');
-  container.addEventListener('click', e => {
-    const row = e.target.closest('.data-row');
-    if (!row || row.classList.contains('empty-ghost')) return;
-    if (e.target.closest('[data-action="delete"]')) {
-      e.stopPropagation();
-      handleDeleteRow(row.dataset.id);
-      return;
-    }
-    handleRowClick({ currentTarget: row, target: e.target });
-  });
-  container.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const row = e.target.closest('.data-row');
-    if (!row || row.classList.contains('empty-ghost')) return;
-    e.preventDefault();
-    handleRowClick({ currentTarget: row, target: e.target });
-  });
-}
-
-/* ── Delete ────────────────────────────────────── */
-function handleDeleteRow(id) {
-  const container = document.getElementById('rows-container');
-  const el = container.querySelector(`[data-id="${id}"]`);
-  if (!el) return;
-
-  el.classList.add('row-removing');
-  el.addEventListener('animationend', () => {
-    entries = entries.filter(e => e.id !== id);
-    if (selectedId === id) {
-      selectedId = null;
-      const input = document.getElementById('formula-input');
-      input.value = '';
-      updateNameBox(entries.length + 1, 1);
-    }
-    const deleted = entryMap.get(id);
-    invalidateSort();
-    rebuildEntryMap();
-    deleteEntryFromFirestore(id)
-      .then(() => { logEvent('entry_delete', {}); })
-      .catch(err => {
-        if (deleted) {
-          entries.push(deleted);
-          invalidateSort();
-          rebuildEntryMap();
-          renderRows();
-        }
-        showError(err.message);
-      });
-    renderRows();
-    updateStatus('준비');
-  }, { once: true });
-}
-
-/* ── Interaction ───────────────────────────────── */
-/* Chase: class-toggle only — no full re-render */
-function handleRowClick(e) {
-  const row = e.currentTarget;
-  const id = row.dataset.id;
-  const input = document.getElementById('formula-input');
-  const container = document.getElementById('rows-container');
-
-  if (selectedId === id) {
-    /* Deselect */
-    row.classList.remove('selected');
-    selectedId = null;
-    input.value = '';
-    updateNameBox(entries.length + 1, 1);
-    return;
-  }
-
-  /* Deselect previous row */
-  if (selectedId) {
-    const prev = container.querySelector(`[data-id="${selectedId}"]`);
-    if (prev) prev.classList.remove('selected');
-  }
-
-  selectedId = id;
-  row.classList.add('selected');
-
-  /* Determine clicked column for name box */
-  const cells = Array.from(row.querySelectorAll('.cell'));
-  let clickedCol = 1;
-  for (let i = 0; i < cells.length; i++) {
-    if (cells[i].contains(e.target) || cells[i] === e.target) {
-      clickedCol = Math.min(i, COLUMN_LETTERS.length - 1);
-      break;
-    }
-  }
-
-  const sorted = getSorted();
-  const rowIndex = sorted.findIndex(en => en.id === id) + 1;
-  updateNameBox(rowIndex, clickedCol);
-
-  /* Chase: O(1) lookup via entryMap */
-  const entry = entryMap.get(id);
-  input.value = (entry && !entry._loading) ? entry.text : '';
+  if (typeof result.emotion !== 'string' || typeof result.empathy !== 'string') throw new Error('감정 분석 결과 형식이 예상과 달라요.');
+  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy, requestId: data.request_id ?? null };
 }
 
 /* ── Submit Helpers ────────────────────────────── */
 function prependLoadingRow(entry) {
   const container = document.getElementById('rows-container');
-
   if (selectedId) {
     const prevEl = container.querySelector(`[data-id="${selectedId}"]`);
     if (prevEl) prevEl.classList.remove('selected');
   }
   selectedId = entry.id;
-
   invalidateSort();
   rebuildEntryMap();
-
   if (virtualActive || filterEmotion) {
     renderRows();
   } else {
@@ -1800,7 +379,6 @@ function prependLoadingRow(entry) {
     container.prepend(newEl);
     renumberRows();
   }
-
   document.getElementById('sheet-body').scrollTop = 0;
 }
 
@@ -1808,25 +386,74 @@ function applyAnalysisResult(entry) {
   if (!entryMap.has(entry.id)) entries.push(entry);
   invalidateSort();
   rebuildEntryMap();
-  addEntryToFirestore(entry).catch(err => {
+  addEntryToFirestore(entry).then(() => {
+    logEvent('emotion_label_recorded', { label: entry.emotion });
+  }).catch(err => {
     entries = entries.filter(e => e.id !== entry.id);
     invalidateSort();
     rebuildEntryMap();
     renderRows();
     logEvent('entry_save_failure', { code: err.code || 'unknown' });
-    showError(
-      '분석은 완료됐어요. 저장이 안 됐으니 다시 시도해주세요.',
-      '저장 다시 시도',
-      () => applyAnalysisResult(entry),
-      8000
-    );
+    showError('분석은 완료됐어요. 저장이 안 됐으니 다시 시도해주세요.', '저장 다시 시도', () => applyAnalysisResult(entry), 8000);
   });
   updateStatus('준비');
-  if (virtualActive || filterEmotion) {
+  if (virtualActive || filterEmotion) { renderRows(); } else { updateRowDOM(entry.id); }
+}
+
+/* ── Delete ────────────────────────────────────── */
+function handleDeleteRow(id) {
+  const container = document.getElementById('rows-container');
+  const el = container.querySelector(`[data-id="${id}"]`);
+  if (!el) return;
+  el.classList.add('row-removing');
+  el.addEventListener('animationend', () => {
+    entries = entries.filter(e => e.id !== id);
+    if (selectedId === id) {
+      selectedId = null;
+      document.getElementById('formula-input').value = '';
+      updateNameBox(entries.length + 1, 1);
+    }
+    const deleted = entryMap.get(id);
+    invalidateSort();
+    rebuildEntryMap();
+    deleteEntryFromFirestore(id)
+      .then(() => { logEvent('entry_delete', {}); })
+      .catch(err => {
+        if (deleted) { entries.push(deleted); invalidateSort(); rebuildEntryMap(); renderRows(); }
+        showError(err.message);
+      });
     renderRows();
-  } else {
-    updateRowDOM(entry.id);
+    updateStatus('준비');
+  }, { once: true });
+}
+
+/* ── Row Interaction ───────────────────────────── */
+function handleRowClick(e) {
+  const row = e.currentTarget;
+  const id = row.dataset.id;
+  const input = document.getElementById('formula-input');
+  const container = document.getElementById('rows-container');
+  if (selectedId === id) {
+    row.classList.remove('selected');
+    selectedId = null;
+    input.value = '';
+    updateNameBox(entries.length + 1, 1);
+    return;
   }
+  if (selectedId) {
+    const prev = container.querySelector(`[data-id="${selectedId}"]`);
+    if (prev) prev.classList.remove('selected');
+  }
+  selectedId = id;
+  row.classList.add('selected');
+  const cells = Array.from(row.querySelectorAll('.cell'));
+  let clickedCol = 1;
+  for (let i = 0; i < cells.length; i++) {
+    if (cells[i].contains(e.target) || cells[i] === e.target) { clickedCol = Math.min(i, COLUMN_LETTERS.length - 1); break; }
+  }
+  updateNameBox(getSorted().findIndex(en => en.id === id) + 1, clickedCol);
+  const entry = entryMap.get(id);
+  input.value = (entry && !entry._loading) ? entry.text : '';
 }
 
 /* ── Submit ────────────────────────────────────── */
@@ -1835,30 +462,20 @@ async function handleSubmit() {
   const btnConfirm = document.getElementById('btn-confirm');
   const wrap = document.querySelector('.formula-input-wrap');
   const text = input.value.trim();
-
-  if (!text) {
-    showError('오늘 있었던 일을 입력해주세요.');
-    input.focus();
-    return;
-  }
+  if (!text) { showError('오늘 있었던 일을 입력해주세요.'); input.focus(); return; }
   if (isAnalyzing) return;
-
   isAnalyzing = true;
   btnConfirm.classList.add('analyzing');
   btnConfirm.setAttribute('aria-disabled', 'true');
   wrap.classList.add('analyzing');
   input.placeholder = 'AI가 감정을 분석하고 있어요...';
   updateStatus('AI 분석 중...');
-
   const entry = { id: generateId(), date: todayStr(), text, emotion: '', empathy: '', _loading: true };
   entries.push(entry);
-
   prependLoadingRow(entry);
   input.value = '';
   input.blur();
-
   logEvent('entry_submit_attempt', { text_length: text.length });
-
   try {
     const result = await analyzeEmotion(text);
     entry.emotion = result.emotion;
@@ -1872,10 +489,7 @@ async function handleSubmit() {
     selectedId = null;
     invalidateSort();
     rebuildEntryMap();
-    showError(err.message || '오류가 발생했어요. 다시 시도해주세요.', '다시 분석하기', () => {
-      input.value = text;
-      handleSubmit();
-    });
+    showError(err.message || '오류가 발생했어요. 다시 시도해주세요.', '다시 분석하기', () => { input.value = text; handleSubmit(); });
     updateStatus('준비');
     renderRows();
   } finally {
@@ -1889,121 +503,75 @@ async function handleSubmit() {
 }
 
 /* ── Event Binding ─────────────────────────────── */
-function bindEvents() {
-  const input = document.getElementById('formula-input');
-  const btnConfirm = document.getElementById('btn-confirm');
-  const btnCancel = document.getElementById('btn-cancel');
-
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      if (e.isComposing || e.keyCode === 229) return;
-      e.preventDefault();
-      handleSubmit();
-    }
-    if (e.key === 'Escape') {
-      input.value = '';
-      if (selectedId) {
-        const prev = document.getElementById('rows-container').querySelector(`[data-id="${selectedId}"]`);
-        if (prev) prev.classList.remove('selected');
-      }
-      selectedId = null;
-      updateNameBox(entries.length + 1, 1);
-      input.focus();
-    }
+function bindRowDelegation() {
+  const container = document.getElementById('rows-container');
+  container.addEventListener('click', e => {
+    const row = e.target.closest('.data-row');
+    if (!row || row.classList.contains('empty-ghost')) return;
+    if (e.target.closest('[data-action="delete"]')) { e.stopPropagation(); handleDeleteRow(row.dataset.id); return; }
+    handleRowClick({ currentTarget: row, target: e.target });
   });
-
-  input.addEventListener('focus', () => {
-    if (!selectedId) {
-      updateNameBox(entries.length + 1, 1);
-    }
-  });
-
-  btnConfirm.addEventListener('click', handleSubmit);
-
-  btnCancel.addEventListener('click', () => {
-    input.value = '';
-    if (selectedId) {
-      const prev = document.getElementById('rows-container').querySelector(`[data-id="${selectedId}"]`);
-      if (prev) prev.classList.remove('selected');
-    }
-    selectedId = null;
-    updateNameBox(entries.length + 1, 1);
-    updateStatus('준비');
-    input.focus();
+  container.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target.closest('.data-row');
+    if (!row || row.classList.contains('empty-ghost')) return;
+    e.preventDefault();
+    handleRowClick({ currentTarget: row, target: e.target });
   });
 }
 
-/* ── Virtual Scroll Binding ────────────────────── */
 function bindVirtualScroll() {
   document.getElementById('sheet-body').addEventListener('scroll', () => {
     if (!virtualActive || scrollScheduled) return;
     scrollScheduled = true;
-    requestAnimationFrame(() => {
-      scrollScheduled = false;
-      renderVirtual(getFiltered());
-    });
+    requestAnimationFrame(() => { scrollScheduled = false; renderVirtual(getFiltered()); });
   });
 }
 
-/* ── Filter Binding ────────────────────────────── */
 function bindFilter() {
   const trigger = document.getElementById('filter-trigger');
   const dropdown = document.getElementById('filter-dropdown');
-
-  trigger.addEventListener('click', e => {
-    e.stopPropagation();
-    dropdown.classList.toggle('open');
-  });
-
+  trigger.addEventListener('click', e => { e.stopPropagation(); dropdown.classList.toggle('open'); });
   dropdown.addEventListener('click', e => {
     const option = e.target.closest('.filter-option');
     if (!option) return;
     e.stopPropagation();
-
-    const emotion = option.dataset.emotion;
-    filterEmotion = emotion || null;
-
-    // Update selected state
-    dropdown.querySelectorAll('.filter-option').forEach(el => {
-      el.classList.toggle('selected', el.dataset.emotion === option.dataset.emotion);
-    });
-
-    // Update header active state
+    filterEmotion = option.dataset.emotion || null;
+    dropdown.querySelectorAll('.filter-option').forEach(el => { el.classList.toggle('selected', el.dataset.emotion === option.dataset.emotion); });
     trigger.classList.toggle('active', !!filterEmotion);
-
     dropdown.classList.remove('open');
     renderRows();
     updateStatus('준비');
   });
+  document.addEventListener('click', () => { dropdown.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && dropdown.classList.contains('open')) { dropdown.classList.remove('open'); trigger.focus(); } });
+}
 
-  document.addEventListener('click', () => {
-    dropdown.classList.remove('open');
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && dropdown.classList.contains('open')) {
-      dropdown.classList.remove('open');
-      trigger.focus();
+function bindEvents() {
+  const input = document.getElementById('formula-input');
+  const btnCancel = document.getElementById('btn-cancel');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      if (e.isComposing || e.keyCode === 229) return;
+      e.preventDefault(); handleSubmit();
     }
+    if (e.key === 'Escape') {
+      input.value = '';
+      if (selectedId) { const prev = document.getElementById('rows-container').querySelector(`[data-id="${selectedId}"]`); if (prev) prev.classList.remove('selected'); }
+      selectedId = null; updateNameBox(entries.length + 1, 1); input.focus();
+    }
+  });
+  input.addEventListener('focus', () => { if (!selectedId) updateNameBox(entries.length + 1, 1); });
+  document.getElementById('btn-confirm').addEventListener('click', handleSubmit);
+  btnCancel.addEventListener('click', () => {
+    input.value = '';
+    if (selectedId) { const prev = document.getElementById('rows-container').querySelector(`[data-id="${selectedId}"]`); if (prev) prev.classList.remove('selected'); }
+    selectedId = null; updateNameBox(entries.length + 1, 1); updateStatus('준비'); input.focus();
   });
 }
 
 /* ── Init ──────────────────────────────────────── */
-function showLoadingSkeletons(count = 4) {
-  const container = document.getElementById('rows-container');
-  container.innerHTML = Array.from({ length: count }, (_, i) => `
-    <div class="data-row">
-      <div class="row-num">${i + 1}</div>
-      <div class="cell col-a"><span class="skeleton-bar line" style="width:70px"></span></div>
-      <div class="cell col-b"><span class="skeleton-bar line"></span></div>
-      <div class="cell col-c"><span class="skeleton-bar badge"></span></div>
-      <div class="cell col-d"><span class="skeleton-bar line"></span></div>
-      <div class="cell col-e"></div>
-    </div>`).join('');
-}
-
 let appInitialized = false;
-
 async function initApp() {
   showLoadingSkeletons();
   entries = await loadEntriesFromFirestore();
@@ -2011,18 +579,15 @@ async function initApp() {
   renderRows();
   if (!appInitialized) {
     appInitialized = true;
-    bindRowDelegation();
-    bindVirtualScroll();
-    bindFilter();
-    bindEvents();
+    bindRowDelegation(); bindVirtualScroll(); bindFilter(); bindEvents();
   }
   updateStatus('준비');
   document.getElementById('formula-input').focus();
 }
 
 const AUTH_ERROR_MESSAGES = {
-  'auth/popup-blocked':       '팝업이 차단됐어요. 브라우저 설정에서 팝업을 허용한 뒤 다시 시도해주세요.',
-  'auth/popup-closed-by-user':'로그인 창이 닫혔어요. 다시 시도해주세요.',
+  'auth/popup-blocked': '팝업이 차단됐어요. 브라우저 설정에서 팝업을 허용한 뒤 다시 시도해주세요.',
+  'auth/popup-closed-by-user': '로그인 창이 닫혔어요. 다시 시도해주세요.',
   'auth/network-request-failed': '네트워크 연결을 확인하고 다시 시도해주세요.',
   'auth/cancelled-popup-request': null,
 };
@@ -2035,14 +600,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const userInfo = document.getElementById('user-info');
   const userName = document.getElementById('user-name');
   const signinBtn = document.getElementById('btn-google-signin');
-
   let authResolved = false;
 
   function hideAuthLoading() {
-    if (!authResolved) {
-      authResolved = true;
-      authLoading.classList.add('hidden');
-    }
+    if (!authResolved) { authResolved = true; authLoading.classList.add('hidden'); }
   }
 
   auth.onAuthStateChanged(async user => {
@@ -2053,24 +614,13 @@ document.addEventListener('DOMContentLoaded', () => {
       userName.textContent = user.displayName || user.email;
       userInfo.classList.remove('hidden');
       hideAuthLoading();
-      if (!appInitialized) {
-        await initApp();
-      } else {
-        entries = await loadEntriesFromFirestore();
-        rebuildEntryMap();
-        renderRows();
-        updateStatus('준비');
+      if (!appInitialized) { await initApp(); } else {
+        entries = await loadEntriesFromFirestore(); rebuildEntryMap(); renderRows(); updateStatus('준비');
       }
     } else {
-      appInitialized = false;
-      entries = [];
-      invalidateSort();
-      rebuildEntryMap();
-      excelWindow.classList.add('hidden');
-      loginOverlay.classList.remove('hidden');
-      userInfo.classList.add('hidden');
-      hideAuthLoading();
-      signinBtn.focus();
+      appInitialized = false; entries = []; invalidateSort(); rebuildEntryMap();
+      excelWindow.classList.add('hidden'); loginOverlay.classList.remove('hidden');
+      userInfo.classList.add('hidden'); hideAuthLoading(); signinBtn.focus();
     }
   });
 
@@ -2078,9 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
     signinBtn.disabled = true;
     signinBtn.textContent = '로그인 중...';
     auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(result => {
-        logEvent('auth_signin_success', { is_new_user: result.additionalUserInfo?.isNewUser ?? false });
-      })
+      .then(result => { logEvent('auth_signin_success', { is_new_user: result.additionalUserInfo?.isNewUser ?? false }); })
       .catch(err => {
         signinBtn.disabled = false;
         signinBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/></svg> Google로 로그인`;
@@ -2094,20 +642,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const signoutBtn = document.getElementById('btn-signout');
   signoutBtn.addEventListener('click', function() {
     if (this.dataset.confirm === 'true') {
-      entries = [];
-      invalidateSort();
-      rebuildEntryMap();
-      auth.signOut().catch(err => {
-        console.error('Sign-out failed:', err);
-        showError('로그아웃에 실패했어요. 다시 시도해주세요.');
-      });
+      entries = []; invalidateSort(); rebuildEntryMap();
+      auth.signOut().catch(err => { console.error('Sign-out failed:', err); showError('로그아웃에 실패했어요. 다시 시도해주세요.'); });
     } else {
       this.textContent = '정말 로그아웃?';
       this.dataset.confirm = 'true';
-      setTimeout(() => {
-        this.textContent = '로그아웃';
-        delete this.dataset.confirm;
-      }, 3000);
+      setTimeout(() => { this.textContent = '로그아웃'; delete this.dataset.confirm; }, 3000);
     }
   });
 });

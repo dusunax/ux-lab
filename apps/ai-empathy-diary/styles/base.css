@@ -1,0 +1,73 @@
+/* ─── CSS Variables ─────────────────────────── */
+:root {
+  --chrome-bg: #f0f0f0;
+  --chrome-border: #adadad;
+  --chrome-text: #1f1f1f;
+  --chrome-hover: #e1e1e1;
+  --chrome-active: #c8c8c8;
+
+  --ribbon-bg: #217346;
+  --ribbon-tab-active: #ffffff;
+  --ribbon-tab-text: #ffffff;
+
+  --toolbar-bg: #f8f8f8;
+  --toolbar-border: #d4d4d4;
+
+  --formula-bg: #ffffff;
+  --formula-border: #ababab;
+
+  --header-bg: #f2f2f2;
+  --header-border: #d0d0d0;
+  --header-text: #595959;
+
+  --cell-bg: #ffffff;
+  --cell-border: #d0d0d0;
+  --cell-selected-border: #1973c4;
+  --cell-selected-bg: #ddeeff;
+
+  --row-height: 32px;
+  --col-a-w: 110px;
+  --col-b-w: 280px;
+  --col-c-w: 96px;
+  --col-d-w: 340px;
+  --row-num-w: 42px;
+
+  --font-chrome: 'Consolas', 'Courier New', monospace;
+  --font-cell: 'Georgia', 'Times New Roman', serif;
+  --font-ui: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+
+  /* emotion row tints */
+  --tint-joy:      #fffbeb;
+  --tint-sad:      #f0f9ff;
+  --tint-stress:   #fff1f2;
+  --tint-anxiety:  #faf5ff;
+  --tint-tired:    #f9fafb;
+  --tint-calm:     #f0fdf4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  background: #808080;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  min-width: 900px;
+}
+@media (max-width: 899px) {
+  body { min-width: unset; padding: 0; }
+}
+
+/* ─── Scrollbar ──────────────────────────────── */
+.sheet-body::-webkit-scrollbar { width: 14px; }
+.sheet-body::-webkit-scrollbar-track { background: #f0f0f0; border-left: 1px solid var(--chrome-border); }
+.sheet-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border: 3px solid #f0f0f0;
+  border-radius: 7px;
+}
+.sheet-body::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
