@@ -65,28 +65,13 @@
       padding: 20px;
       min-width: 900px;
     }
+    @media (max-width: 899px) {
+      body { min-width: unset; padding: 0; }
+    }
 
     /* ─── Mobile Overlay ─────────────────────────── */
     .mobile-overlay {
       display: none;
-    }
-    @media (max-width: 899px) {
-      body { min-width: unset; padding: 0; background: #217346; }
-      .excel-window { display: none !important; }
-      .mobile-overlay {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 32px 24px;
-        text-align: center;
-        color: #fff;
-        gap: 16px;
-      }
-      .mobile-overlay svg { opacity: 0.9; }
-      .mobile-overlay h1 { font-size: 22px; font-weight: 700; }
-      .mobile-overlay p { font-size: 15px; line-height: 1.6; opacity: 0.88; max-width: 300px; }
     }
 
     /* ─── Application Window ─────────────────────── */
