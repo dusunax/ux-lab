@@ -7,9 +7,9 @@ metadata:
 
 ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분석 및 공감 응답을 제공한다. 현재 Vercel 배포(https://ai-empathy-diary.vercel.app), Firebase Google OAuth, Firestore, Vercel Runtime Logs 기반 로그 파이프라인이 운영 중이다.
 
-**Why:** 수산시장 AI 에이전트 팀의 실험적 프로덕트. 싱글 HTML 파일(~2100줄) + vanilla JS + Vercel + Firebase 스택 의도.
+**Why:** 수산시장 AI 에이전트 팀의 실험적 프로덕트. 싱글 HTML 파일 + vanilla JS + Vercel + Firebase 스택 의도.
 
-**How to apply:** 빌드 툴 없는 싱글 파일 구조를 전제로 기능 제안 범위를 설정할 것. React/Next.js 컨벤션(파일 크기 800줄 제한 등)을 이 앱에 그대로 적용하면 안 됨.
+**How to apply:** 빌드 툴 없는 싱글 파일 구조를 전제로 기능 제안 범위를 설정할 것. React/Next.js 컨벤션(파일 크기 800줄 제한 등)을 이 앱에 그대로 적용하면 안 됨. CLAUDE.md에 명시적 예외 조항 추가 예정(Sprint 5 TS 액션 아이템).
 
 ---
 
@@ -18,13 +18,26 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 - `x-request-id` 전달 방식: **JSON body에 포함** (헤더 방식 기각). 이유: 싱글 HTML 구조에서 body 파싱 코드가 이미 존재하며 일관성 우선.
 - GA4 데이터 보존 기간: **2개월(62일)**. 이유: 개인 감정 일기 특성상 데이터 최소 보관 원칙.
 - `/api/log` rate limit: **IP당 분당 30회**. 이유: 정상 사용 패턴(일기 제출 1회 = 최대 3 이벤트) 기준.
-- `api/log.js` CORS `Access-Control-Allow-Origin: *` — 현재 allowlist로 인젝션 방어 중, 스프린트 5 이후 도메인 제한 검토 예정.
+- **Vite 도입 보류** (Sprint 5 결정): TypeScript 마이그레이션 필요 또는 기여자 2인 이상 시점에 재검토.
+- **`api/log.js` CORS**: `*` → Vercel 프로덕션 도메인 + localhost로 제한 (Sprint 5). `api/chat.js`는 Firebase Auth 토큰 방어 유지, 스프린트 6 재검토.
+- **파일 분리 방향** (Sprint 5): CSS + config.js + utils.js 분리, index.html 800줄 이하 목표. api.js / storage.js는 Firebase 초기화 순서 문제로 Vite 도입 시까지 보류.
+- **AI 관여 시작** (Sprint 5): 프롬프트 리뷰 문서 + 모델 근거 문서화 + 응답 샘플 기준선 5개 이상 보존. 프롬프트 코드 반영은 PM + UX 승인 후.
+- **`emotion_label_recorded` 이벤트** (Sprint 5): AI 프롬프트 품질 피드백 루프 목적. 파라미터: `{ label: string }`. 텍스트 원문 금지.
+
+## 동의 UX 배너 트리거 기준 (Sprint 5 Resolved)
+
+세 조건 중 하나라도 충족 시 P0 착수:
+1. GA4 기준 non-KR 사용자 누적 50명 초과
+2. 외부 공유 대상에 비한국어권 사용자가 명시적으로 포함
+3. 앱 UI 언어를 한국어 외 언어로 추가
+
+현재 상태: 세 조건 모두 미충족. SRE가 GA4 국가별 모니터링 설정 예정.
 
 ## 이월된 미결 결정 (Open Questions)
 
-- **동의 UX 배너**: 해외 출시 시점까지 보류. 해외 출시 기준 정의 필요 (국가 수, 사용자 수, 도메인 변경 여부). → Owner: Jordan, Due: 스프린트 5 이전.
-- **빌드 환경 도입 여부**: `index.html` 2100줄 초과. Vite 등 도입 vs 싱글 파일 유지. Avery가 분리 가능 영역 사전 조사 중. → Owner: Jordan + Avery, Due: 스프린트 5 이전.
-- **Sage(AI) 관여 시점**: 모델 선택 전략 및 프롬프트 품질 개선 필요 시점 미결. → Owner: Jordan + Sage, Due: 스프린트 5 이후.
+- **모바일 카드 뷰**: 외부 공유 후 GA4 기기 유형별 이탈률 2주치 확보 후 UX 제안. 현재 보류.
+- **P2 이벤트 전체 추가**: DAU 50+ 달성 시. `emotion_label_recorded`만 Sprint 5에 선별 추가.
+- **api/chat.js CORS**: Firebase Auth 토큰으로 방어 중, 스프린트 6 재검토.
 
 ## 스프린트 현황
 
@@ -34,10 +47,12 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 | Sprint 2 | 2026-05-13 | 버그 수정, 셀 그리드, 감정 필터, 삭제 버튼 |
 | Sprint 3 | 2026-05-18 | Vercel 배포, Firebase OAuth, Firestore, P0 로그 구현 |
 | Sprint 4 | 2026-05-19 | 로그 파이프라인 완성, rate limit, GA4 연결, 모바일 최소 대응, 오류 UX |
+| Sprint 5 | 2026-05-20 | Vite 보류, CSS+JS 분리, CORS 제한, AI 프롬프트 리뷰 시작, emotion_label_recorded |
 
-## 로그 아키텍처 (Sprint 3 확정)
+## 로그 아키텍처 (Sprint 3 확정, Sprint 5 업데이트)
 
 - 클라이언트 이벤트: `logEvent()` → `sendBeacon` → `/api/log` → Vercel Runtime Logs
 - 서버 이벤트: `api/chat.js` → `console.log` structured JSON → Vercel Runtime Logs
 - 클라이언트-서버 연결: `request_id` (JSON body, Sprint 4 확정)
 - 절대 수집 금지: 일기 텍스트 원문, AI 응답 원문, 이메일/이름/UID 원문
+- 이벤트 목록: P0(page_view, entry_submit_success 등), P1(entry_load_failure 등), P1.5(emotion_label_recorded, Sprint 5 추가)
