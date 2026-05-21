@@ -9,10 +9,11 @@ const ALLOWED_EVENTS = new Set([
   'entry_save_failure', // reserved for future use
   'entry_delete',       // reserved for future use
   'emotion_label_recorded',
+  'emotion_feedback_recorded',
 ]);
 
 const ALLOWED_PARAM_KEYS = new Set([
-  'text_length', 'emotion', 'reason', 'code', 'is_new_user', 'request_id', 'label',
+  'text_length', 'emotion', 'reason', 'code', 'is_new_user', 'request_id', 'label', 'feedback', 'model',
 ]);
 const MAX_VAL_LEN = 256;
 

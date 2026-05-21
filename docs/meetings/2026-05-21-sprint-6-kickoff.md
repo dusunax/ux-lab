@@ -132,21 +132,21 @@
 ## 액션 아이템
 
 **BE (Blake)**
-- [ ] `/api/chat.js` — OpenRouter 응답에서 `model` 필드 추출 후 클라이언트에 전달, 누락 시 `"unknown"` fallback
-- [ ] `api/log.js` — ALLOWED_EVENTS에 `emotion_feedback_recorded` 추가
-- [ ] `api/log.js` — ALLOWED_PARAM_KEYS에 `feedback`, `model` 추가
+- [x] `/api/chat.js` — OpenRouter 응답에서 `model` 필드 추출 후 클라이언트에 전달, 누락 시 `"unknown"` fallback
+- [x] `api/log.js` — ALLOWED_EVENTS에 `emotion_feedback_recorded` 추가
+- [x] `api/log.js` — ALLOWED_PARAM_KEYS에 `feedback`, `model` 추가
 
 **FE (Avery)**
-- [ ] `ui.js` — 커스텀 SVG 피드백 버튼 `buildRow`에 추가 (AI 응답 있는 행만)
-- [ ] `styles/sheet.css` — 피드백 버튼 CSS (hover, selected-pos, selected-neg, dim 상태)
-- [ ] `index.html` — 피드백 버튼 클릭 이벤트 핸들러 (Firestore update + logEvent)
-- [ ] `index.html` / Firestore — AI 응답 수신 시 `model` 값 entry에 저장
+- [x] `ui.js` — 커스텀 SVG 피드백 버튼 `buildRow`에 추가 (AI 응답 있는 행만)
+- [x] `styles/sheet.css` — 피드백 버튼 CSS (hover, selected-pos, selected-neg, dim 상태)
+- [x] `index.html` — 피드백 버튼 클릭 이벤트 핸들러 (Firestore update + logEvent)
+- [x] `index.html` / Firestore — AI 응답 수신 시 `model` 값 entry에 저장
 
 **QA (Morgan / Quinn)**
-- [ ] 수용 기준 전체 항목 검증
-- [ ] 토글 시나리오: null → positive → null, null → positive → negative
-- [ ] 모델명 누락 시 `"unknown"` fallback 처리 확인
-- [ ] Vercel Runtime Log에서 `emotion_feedback_recorded` 수신 확인
+- [x] 수용 기준 전체 항목 검증
+- [x] 토글 시나리오: null → positive → null, null → positive → negative
+- [x] 모델명 누락 시 `"unknown"` fallback 처리 확인
+- [x] Vercel Runtime Log에서 `emotion_feedback_recorded` 수신 확인
 
 ---
 

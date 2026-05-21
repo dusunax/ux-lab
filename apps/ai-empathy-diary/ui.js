@@ -78,6 +78,28 @@ function buildRow(entry, rowNumber) {
     ? ''
     : '<button class="delete-btn" data-action="delete" aria-label="삭제">✕</button>';
 
+  var feedbackHtml = '';
+  if (!isLoading && entry.empathy) {
+    var posActive = entry.feedback === 'positive';
+    var negActive = entry.feedback === 'negative';
+    var posCls = posActive ? ' selected-pos' : (negActive ? ' dim' : '');
+    var negCls = negActive ? ' selected-neg' : (posActive ? ' dim' : '');
+    var hasFeedback = posActive || negActive;
+    feedbackHtml =
+      '<div class="feedback-pair' + (hasFeedback ? ' has-feedback' : '') + '">' +
+      '<button class="feedback-btn' + posCls + '" data-action="feedback" data-value="positive" aria-label="좋아요" title="좋아요">' +
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M7 2L8.5 5.5H12L9.5 7.5L10.5 11L7 9L3.5 11L4.5 7.5L2 5.5H5.5L7 2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>' +
+      '</svg>' +
+      '</button>' +
+      '<button class="feedback-btn' + negCls + '" data-action="feedback" data-value="negative" aria-label="싫어요" title="싫어요">' +
+      '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M5 3H10.5L11.5 8H8.5L9 11L5 7V3ZM5 3H3V8H5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '</svg>' +
+      '</button>' +
+      '</div>';
+  }
+
   return '<div class="data-row ' + tintClass + selClass + '"' +
     ' data-id="' + escapeHtml(entry.id) + '"' +
     ' tabindex="0" role="row"' +
@@ -87,7 +109,7 @@ function buildRow(entry, rowNumber) {
     '<div class="cell col-b" role="cell">' + escapeHtml(entry.text) + '</div>' +
     '<div class="cell col-c" role="cell">' + emotionCell + '</div>' +
     '<div class="cell col-d" role="cell" title="' + escapeHtml(entry.empathy || '') + '">' + empathyCell + '</div>' +
-    '<div class="cell col-e" role="cell">' + deleteBtn + '</div>' +
+    '<div class="cell col-e" role="cell">' + feedbackHtml + deleteBtn + '</div>' +
     '</div>';
 }
 

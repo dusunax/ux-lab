@@ -309,6 +309,7 @@ async function addEntryToFirestore(entry) {
     await entriesRef().doc(entry.id).set({
       date: entry.date, text: entry.text, emotion: entry.emotion,
       empathy: entry.empathy.slice(0, 300),
+      model: entry.model || 'unknown',
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
   } catch (err) {
@@ -322,6 +323,16 @@ async function deleteEntryFromFirestore(id) {
   } catch (err) {
     console.error('Firestore delete failed:', err);
     throw new Error('삭제에 실패했어요. 다시 시도해주세요.');
+  }
+}
+async function updateEntryInFirestore(id, fields) {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+  try {
+    await entriesRef().doc(id).update(fields);
+  } catch (err) {
+    console.error('Firestore update failed:', err);
+    throw new Error('업데이트에 실패했어요. 다시 시도해주세요.');
   }
 }
 
@@ -354,7 +365,7 @@ async function analyzeEmotion(text) {
   let result;
   try { result = extractJson(rawContent); } catch { throw new Error('감정 분석 결과를 읽는 데 실패했어요.'); }
   if (typeof result.emotion !== 'string' || typeof result.empathy !== 'string') throw new Error('감정 분석 결과 형식이 예상과 달라요.');
-  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy, requestId: data.request_id ?? null };
+  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy, requestId: data.request_id ?? null, model: data.model || 'unknown' };
 }
 
 /* ── Submit Helpers ────────────────────────────── */
@@ -427,6 +438,25 @@ function handleDeleteRow(id) {
   }, { once: true });
 }
 
+/* ── Feedback ──────────────────────────────────── */
+function handleFeedback(id, value) {
+  const entry = entryMap.get(id);
+  if (!entry || entry._loading) return;
+  const prevFeedback = entry.feedback;
+  const newFeedback = entry.feedback === value ? null : value;
+  entry.feedback = newFeedback;
+  updateRowDOM(id);
+  updateEntryInFirestore(id, { feedback: newFeedback })
+    .then(function() {
+      logEvent('emotion_feedback_recorded', { feedback: newFeedback !== null ? newFeedback : 'none', model: entry.model || 'unknown', label: entry.emotion || 'unknown' });
+    })
+    .catch(function() {
+      entry.feedback = prevFeedback;
+      updateRowDOM(id);
+      showError('피드백 저장에 실패했어요.');
+    });
+}
+
 /* ── Row Interaction ───────────────────────────── */
 function handleRowClick(e) {
   const row = e.currentTarget;
@@ -480,6 +510,7 @@ async function handleSubmit() {
     const result = await analyzeEmotion(text);
     entry.emotion = result.emotion;
     entry.empathy = result.empathy;
+    entry.model = result.model;
     delete entry._loading;
     applyAnalysisResult(entry);
     logEvent('entry_submit_success', { text_length: text.length, emotion: result.emotion, request_id: result.requestId });
@@ -509,6 +540,8 @@ function bindRowDelegation() {
     const row = e.target.closest('.data-row');
     if (!row || row.classList.contains('empty-ghost')) return;
     if (e.target.closest('[data-action="delete"]')) { e.stopPropagation(); handleDeleteRow(row.dataset.id); return; }
+    const feedbackBtn = e.target.closest('[data-action="feedback"]');
+    if (feedbackBtn) { e.stopPropagation(); handleFeedback(row.dataset.id, feedbackBtn.dataset.value); return; }
     handleRowClick({ currentTarget: row, target: e.target });
   });
   container.addEventListener('keydown', e => {

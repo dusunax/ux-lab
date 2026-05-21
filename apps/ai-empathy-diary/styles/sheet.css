@@ -371,3 +371,30 @@
   color: var(--ribbon-bg);
   font-weight: 600;
 }
+
+/* ─── Feedback Buttons ───────────────────────── */
+.feedback-pair {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.data-row:hover .feedback-pair { opacity: 1; }
+.data-row .feedback-pair.has-feedback { opacity: 1; }
+
+.feedback-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 3px;
+  color: #bbb;
+  line-height: 0;
+  transition: color 0.12s, background 0.12s;
+}
+.feedback-btn:hover { color: #666; background: #f0f0f0; }
+.feedback-btn.selected-pos { color: #217346; background: #e8f5ee; }
+.feedback-btn.selected-neg { color: #c0392b; background: #fff0f0; }
+.feedback-btn.dim { color: #ddd; }
+.feedback-btn.dim:hover { color: #999; background: #f5f5f5; }
