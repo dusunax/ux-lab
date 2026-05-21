@@ -206,6 +206,100 @@
     z-index: 100;
   }
 
+  /* Goal quote (blockquote variant) */
+  .goal-quote {
+    border-left: 3px solid #217346;
+    padding: 12px 20px;
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #333;
+    background: #f8fdf9;
+    border-radius: 0 6px 6px 0;
+    width: 100%;
+  }
+
+  /* Tags (inline Before/After labels) */
+  .tag {
+    display: inline-block;
+    border-radius: 3px;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .tag-red  { background: #fef2f2; color: #dc2626; }
+  .tag-green { background: #f0fdf4; color: #16a34a; }
+
+  /* Screenshot wrapper */
+  .screenshot-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .screenshot {
+    max-width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+  }
+  .screenshot-mobile { max-height: 340px; width: auto; }
+  .screenshot-cap {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin: 0;
+  }
+
+  /* Runtime log block */
+  .log-block {
+    background: #1e1e2e;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .log-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 13px;
+    font-family: 'Consolas', monospace;
+  }
+  .log-time  { color: #888; min-width: 70px; }
+  .log-status { font-weight: 700; min-width: 32px; }
+  .log-status.ok  { color: #4ade80; }
+  .log-status.err { color: #f87171; }
+  .log-event { color: #e2e8f0; }
+
+  /* Inline code */
+  code {
+    background: #f3f4f6;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', monospace;
+    font-size: 13px;
+    color: #374151;
+  }
+
+  /* Q&A variant (Sprint 5 style — light green bg) */
+  .slide--qa-light { background: #f8fdf9; align-items: center; text-align: center; }
+  .qa-icon  { font-size: 56px; font-weight: 700; color: #217346; margin-bottom: 16px; }
+  .qa-title { font-size: 32px; font-weight: 700; margin: 0 0 8px; color: #1a1a1a; }
+  .qa-links { font-size: 14px; color: #217346; }
+
+  /* Slide counter (alternative to slide-num for "N / total" display) */
+  .slide-counter {
+    position: fixed;
+    bottom: 20px;
+    right: 28px;
+    font-size: 13px;
+    color: #aaa;
+    z-index: 100;
+  }
+
   /* Status dot */
   .status-row {
     display: flex;

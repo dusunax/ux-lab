@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprint 5 Report — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./ppt-theme.css" />
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover active" data-index="0">
+    <div class="cover-eyebrow">수산시장 · 스프린트 보고</div>
+    <div class="cover-title">Sprint 5 완료 보고</div>
+    <div class="cover-sub">코드 구조 정돈 · 보안 강화 · AI 품질 기반</div>
+    <div class="cover-date">2026-05-20 — 2026-05-21</div>
+  </div>
+
+  <!-- Slide 2: Sprint Goal -->
+  <div class="slide" data-index="1">
+    <div class="slide-label">Sprint 5</div>
+    <div class="slide-title">Sprint 5 목표</div>
+    <blockquote class="goal-quote">
+      코드 구조를 정돈하고, 보안 취약점을 닫으며,<br>
+      AI 프롬프트 품질을 높여 앱의 지속 가능한 성장 기반을 만든다.
+    </blockquote>
+    <div class="two-col" style="margin-top:32px;">
+      <div>
+        <div class="col-head">이월 결정</div>
+        <ul class="items">
+          <li>빌드 환경 도입 여부 (Vite vs 싱글 HTML)</li>
+          <li>index.html 파일 분리 방향</li>
+          <li>동의 UX 배너 해외 출시 기준</li>
+          <li>AI 관여 시점</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">신규 안건</div>
+        <ul class="items">
+          <li>CORS 제한 (* → Vercel 도메인)</li>
+          <li>모바일 반응형 심화</li>
+          <li>DAU 50+ 대비 P2 이벤트 검토</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Key Decisions -->
+  <div class="slide" data-index="2">
+    <div class="slide-label">주요 결정</div>
+    <div class="slide-title">주요 결정 사항</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>결정 내용</th><th>담당</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Vite 도입 보류 — 싱글 HTML + 빌드 도구 없는 구조 유지</td><td>PM + FE</td></tr>
+        <tr><td>2</td><td>CSS + config.js + utils.js 분리, index.html 800줄 이하 목표</td><td>FE</td></tr>
+        <tr><td>3</td><td>동의 UX 배너 기준 정의: non-KR 50명 / 비한국어권 공유 / 다국어 UI 중 하나 충족 시</td><td>PM</td></tr>
+        <tr><td>4</td><td>AI 관여 시작: 프롬프트 리뷰 + 모델 근거 문서화 + 응답 샘플 기준선 보존</td><td>AI + QA</td></tr>
+        <tr><td>5</td><td>api/log.js CORS → Vercel 도메인 + localhost 제한</td><td>BE + FE</td></tr>
+        <tr><td>6</td><td>모바일 카드 뷰 보류 → 안내 배너로 임시 대응 (≤599px)</td><td>FE</td></tr>
+        <tr><td>7</td><td>emotion_label_recorded 이벤트 추가 (P1.5)</td><td>BE + FE</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Slide 4: File Split -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">파일 분리</div>
+    <div class="slide-title">파일 분리 — index.html 656줄 달성</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">분리 결과</div>
+        <ul class="items">
+          <li><strong>styles/</strong> — base · chrome · sheet · login</li>
+          <li><strong>config.js</strong> — 프롬프트 · 감정 상수 · COLUMN_LETTERS</li>
+          <li><strong>utils.js</strong> — escapeHtml · extractJson · normalizeEmotion</li>
+          <li><strong>ui.js</strong> — buildRow · renderRows · showError 등</li>
+        </ul>
+        <div class="col-head" style="margin-top:20px;">QA 수정 (H/M/S)</div>
+        <ul class="items">
+          <li>스크립트 태그 &lt;head&gt; 내 이동 (H-1)</li>
+          <li>POST CORS origin 체크 추가 (H-2)</li>
+          <li>ALLOWED_ORIGINS 모듈 스코프 호이스팅 (M-4)</li>
+          <li>emotion_label_recorded → Firestore 성공 후 발화 (S-2)</li>
+        </ul>
+      </div>
+      <div class="screenshot-wrap">
+        <img src="./sprint-5/shot-desktop-main.png" alt="앱 메인 화면" class="screenshot" />
+        <p class="screenshot-cap">배포 후 앱 — 데이터 정상 로드</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: CORS + Log Event -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">보안 강화 · 로그</div>
+    <div class="slide-title">CORS 강화 + emotion_label_recorded</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">CORS (api/log.js)</div>
+        <ul class="items">
+          <li><span class="tag tag-red">Before</span> <code>Access-Control-Allow-Origin: *</code></li>
+          <li><span class="tag tag-green">After</span> Vercel 프로덕션 도메인 + localhost</li>
+          <li>비허용 origin POST → <strong>403</strong> 반환 확인 ✓</li>
+          <li>localhost 204, 프로덕션 204 확인 ✓</li>
+        </ul>
+        <div class="col-head" style="margin-top:20px;">emotion_label_recorded</div>
+        <ul class="items">
+          <li>AI 감정 분석 성공 시 발화 (P1.5 이벤트)</li>
+          <li>파라미터: <code>{ label: string }</code> (텍스트 원문 제외)</li>
+          <li>Firestore write 성공 후 발화 (S-2 수정)</li>
+          <li>Vercel Runtime Log 실사용 수신 확인 ✓</li>
+        </ul>
+      </div>
+      <div class="screenshot-wrap">
+        <div class="col-head">Runtime Log 수신 (05-21)</div>
+        <img src="./sprint-5/shot-vercel-log.png" alt="Vercel Runtime Log" class="screenshot" />
+        <p class="screenshot-cap">204 정상 수신 + 403 CORS 차단 확인</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: GA4 Realtime -->
+  <div class="slide" data-index="5">
+    <div class="slide-label">GA4 실시간 이벤트</div>
+    <div class="slide-title">Google Analytics — 실사용 이벤트 수집 확인</div>
+    <div class="screenshot-wrap" style="width:100%;">
+      <img src="./sprint-5/shot-ga4-realtime.png" alt="GA4 실시간 개요" class="screenshot" style="max-height:480px;width:auto;" />
+      <p class="screenshot-cap">활성 사용자 3명 · emotion_label_recorded · entry_submit_success 실수집 확인 (2026-05-21)</p>
+    </div>
+  </div>
+
+  <!-- Slide 7: Mobile -->
+  <div class="slide" data-index="6">
+    <div class="slide-label">화면 변경 · 모바일 대응</div>
+    <div class="slide-title">모바일 대응 — Before / After</div>
+    <div class="two-col">
+      <div class="screenshot-wrap">
+        <img src="./sprint-5/shot-425px-app.png" alt="425px 깨진 레이아웃" class="screenshot screenshot-mobile" />
+        <p class="screenshot-cap"><span class="tag tag-red">Before</span> 425px — 리본 줄바꿈, 컬럼 잘림</p>
+      </div>
+      <div class="screenshot-wrap">
+        <img src="./sprint-5/shot-375px-notice-v3.png" alt="375px 모바일 안내" class="screenshot screenshot-mobile" />
+        <p class="screenshot-cap"><span class="tag tag-green">After</span> ≤599px — 데스크탑 안내 배너</p>
+      </div>
+    </div>
+    <ul class="items" style="margin-top:20px;">
+      <li>가로 스크롤 제거: <code>.excel-window { width: min(960px, 100%) }</code></li>
+      <li>≤599px: 모바일 안내 배너 표시, excel-window 숨김</li>
+      <li>로그인 화면 375px 정상 동작 유지 (position: fixed, z-index 1000)</li>
+    </ul>
+  </div>
+
+  <!-- Slide 8: Carryover + Next Sprint -->
+  <div class="slide" data-index="7">
+    <div class="slide-label">다음 스프린트</div>
+    <div class="slide-title">이월 항목 / Sprint 6 방향</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">이월 (미완료)</div>
+        <ul class="items">
+          <li>UX — AI 프롬프트 개선안 PM + UX 승인</li>
+          <li>SRE — GA4 국가별 사용자 모니터링 설정</li>
+          <li>PM — GA4 기기 유형별 이탈률 추적 (2주)</li>
+        </ul>
+        <div class="col-head" style="margin-top:20px;">기술 부채</div>
+        <ul class="items">
+          <li>api/chat.js CORS — Sprint 6 재검토</li>
+          <li>api.js / storage.js 분리 — Vite 도입 시 일괄 처리</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">Sprint 6 후보</div>
+        <ul class="items">
+          <li>AI 프롬프트 개선안 반영 (PM + UX 승인 후)</li>
+          <li>외부 공유 범위 확대 검토</li>
+          <li>DAU 추적 시작</li>
+          <li>모바일 카드 뷰 — GA4 데이터 2주치 후 UX 설계</li>
+        </ul>
+        <div class="col-head" style="margin-top:20px;">트리거 조건 (동의 배너)</div>
+        <ul class="items">
+          <li>non-KR 누적 50명 초과</li>
+          <li>비한국어권 사용자에게 명시적 공유</li>
+          <li>다국어 UI 추가 시</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light" data-index="8">
+    <div class="qa-icon">Q&amp;A</div>
+    <div class="qa-title">수산시장</div>
+    <div class="qa-sub">ai-empathy-diary · Sprint 5 · 2026-05-21</div>
+    <div class="qa-links">
+      <span>ai-empathy-diary.vercel.app</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="slide-counter" id="slideNum">1 / 8</div>
+<div class="nav-hint">← → 키 또는 클릭으로 전환</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(current - 1);
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const x = e.clientX;
+    if (x > window.innerWidth / 2) go(current + 1);
+    else go(current - 1);
+  });
+</script>
+</body>
+</html>
