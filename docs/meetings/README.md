@@ -7,3 +7,5 @@
 | [2026-05-18-sprint-3.md](./2026-05-18-sprint-3.md) | Sprint 3 | 2026-05-18 | Vercel 배포, Firebase Google OAuth, Firestore DB, 로그 수집 환경 |
 | [2026-05-19-sprint-4.md](./2026-05-19-sprint-4.md) | Sprint 4 | 2026-05-19 | 로그 파이프라인 완성, rate limit, x-request-id body 포함, GA4 연결, 모바일 최소 대응, 오류 UX |
 | [2026-05-20-sprint-5.md](./2026-05-20-sprint-5.md) | Sprint 5 | 2026-05-20 | 빌드 도구 보류, CSS+JS 파일 분리, CORS 제한, AI 프롬프트 리뷰 시작, emotion_label_recorded 이벤트 추가 |
+| [2026-05-21-sprint-6-pre.md](./2026-05-21-sprint-6-pre.md) | Sprint 6 사전 기획 | 2026-05-21 | 좋아요/싫어요 피드백 수집, 모델 추적, 만족도 대시보드 설계, Open Questions 4개 정의 |
+| [2026-05-21-sprint-process.md](./2026-05-21-sprint-process.md) | 프로세스 정의 | 2026-05-21 | 스프린트 7대 운영 규칙 공식 확정, 회의록 명명 규칙, QA 완료 기준, 프레젠테이션 경로 확정 |
