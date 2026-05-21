@@ -1,6 +1,6 @@
 /* ─── Application Window ─────────────────────── */
 .excel-window {
-  width: 960px;
+  width: min(960px, 100%);
   height: calc(100vh - 40px);
   background: var(--chrome-bg);
   border: 1px solid #888;
