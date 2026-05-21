@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sprint N Report — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./ppt-theme.css" />
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ── SLIDE 1: 표지 ─────────────────────────────────────────────────
+       slide--cover : 흰 배경 + 상단 녹색 보더. 변경 금지.
+       cover-eyebrow: 팀명 · 보고 유형 (소문자 고정)
+       cover-title  : "Sprint N 완료 보고"
+       cover-sub    : 스프린트 한 줄 주제
+       cover-date   : yyyy-mm-dd — yyyy-mm-dd
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide slide--cover active" data-index="0">
+    <div class="cover-eyebrow">수산시장 · 스프린트 보고</div>
+    <div class="cover-title">Sprint N 완료 보고</div>
+    <div class="cover-sub">주제 한 줄 요약</div>
+    <div class="cover-date">yyyy-mm-dd — yyyy-mm-dd</div>
+  </div>
+
+  <!-- ── SLIDE 2: Sprint 목표 ──────────────────────────────────────────
+       goal-quote   : 스프린트 목표 인용구 (blockquote)
+       two-col      : 이월 결정 / 신규 안건 2단 구성
+       col-head     : 컬럼 제목 (소문자 + uppercase CSS)
+       ul.items     : 녹색 불릿 리스트
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide" data-index="1">
+    <div class="slide-label">Sprint N</div>
+    <div class="slide-title">Sprint N 목표</div>
+    <blockquote class="goal-quote">
+      스프린트 목표를 한두 문장으로 작성한다.
+    </blockquote>
+    <div class="two-col" style="margin-top:32px;">
+      <div>
+        <div class="col-head">이월 결정</div>
+        <ul class="items">
+          <li>이월 항목 1</li>
+          <li>이월 항목 2</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">신규 안건</div>
+        <ul class="items">
+          <li>신규 안건 1</li>
+          <li>신규 안건 2</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: 주요 결정 사항 ──────────────────────────────────────
+       data-table   : 헤더 녹색, 짝수행 배경. 결정 번호·내용·담당자.
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide" data-index="2">
+    <div class="slide-label">주요 결정</div>
+    <div class="slide-title">주요 결정 사항</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>결정 내용</th><th>담당</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>결정 내용을 작성한다</td><td>FE</td></tr>
+        <tr><td>2</td><td>결정 내용을 작성한다</td><td>BE + PM</td></tr>
+        <tr><td>3</td><td>결정 내용을 작성한다</td><td>PM</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── SLIDE 4: 완료 항목 (2단 + 스크린샷) ──────────────────────────
+       two-col      : 왼쪽 불릿 / 오른쪽 스크린샷
+       screenshot-wrap / screenshot / screenshot-cap 사용
+       스크린샷 경로: ./sprint-N/shot-xxx.png
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide" data-index="3">
+    <div class="slide-label">완료 항목</div>
+    <div class="slide-title">슬라이드 제목</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">완료 내용</div>
+        <ul class="items">
+          <li>완료 항목 1</li>
+          <li>완료 항목 2</li>
+          <li>완료 항목 3</li>
+        </ul>
+      </div>
+      <div class="screenshot-wrap">
+        <img src="./sprint-N/shot-example.png" alt="화면 설명" class="screenshot" />
+        <p class="screenshot-cap">캡션 텍스트</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: Before / After (스크린샷 2장) ───────────────────────
+       tag tag-red  : Before 레이블
+       tag tag-green: After 레이블
+       screenshot-mobile : 모바일 스크린샷 높이 제한 (max-height: 340px)
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide" data-index="4">
+    <div class="slide-label">화면 변경</div>
+    <div class="slide-title">Before / After</div>
+    <div class="two-col">
+      <div class="screenshot-wrap">
+        <img src="./sprint-N/shot-before.png" alt="변경 전" class="screenshot screenshot-mobile" />
+        <p class="screenshot-cap"><span class="tag tag-red">Before</span> 설명</p>
+      </div>
+      <div class="screenshot-wrap">
+        <img src="./sprint-N/shot-after.png" alt="변경 후" class="screenshot screenshot-mobile" />
+        <p class="screenshot-cap"><span class="tag tag-green">After</span> 설명</p>
+      </div>
+    </div>
+    <ul class="items" style="margin-top:20px;">
+      <li>변경 사항 요약 1</li>
+      <li>변경 사항 요약 2</li>
+    </ul>
+  </div>
+
+  <!-- ── SLIDE 6: 기술 현황 (status-row + dot) ────────────────────────
+       status-row   : 항목별 상태 행
+       dot-green    : 완료 / dot-yellow : 진행 중 / dot-gray : 미정
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide" data-index="5">
+    <div class="slide-label">기술 현황</div>
+    <div class="slide-title">현재 스택 &amp; 인프라 상태</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">프론트엔드 / 배포</div>
+        <div class="status-row"><span class="dot dot-green"></span>항목 1</div>
+        <div class="status-row"><span class="dot dot-green"></span>항목 2</div>
+        <div class="status-row"><span class="dot dot-yellow"></span>진행 중 항목</div>
+      </div>
+      <div>
+        <div class="col-head">서버 / 로그</div>
+        <div class="status-row"><span class="dot dot-green"></span>항목 A</div>
+        <div class="status-row"><span class="dot dot-green"></span>항목 B</div>
+        <div class="status-row"><span class="dot dot-gray"></span>미정 항목</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 7: 이월 / 다음 스프린트 ────────────────────────────────
+       두 컬럼: 이월(미완료) + 다음 스프린트 후보
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide" data-index="6">
+    <div class="slide-label">다음 스프린트</div>
+    <div class="slide-title">이월 항목 / Sprint N+1 방향</div>
+    <div class="two-col">
+      <div>
+        <div class="col-head">이월 (미완료)</div>
+        <ul class="items">
+          <li>이월 항목 1</li>
+          <li>이월 항목 2</li>
+        </ul>
+        <div class="col-head" style="margin-top:20px;">기술 부채</div>
+        <ul class="items">
+          <li>기술 부채 항목</li>
+        </ul>
+      </div>
+      <div>
+        <div class="col-head">Sprint N+1 후보</div>
+        <ul class="items">
+          <li>다음 스프린트 후보 1</li>
+          <li>다음 스프린트 후보 2</li>
+          <li>다음 스프린트 후보 3</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 8: Q&A ──────────────────────────────────────────────────
+       slide--qa-light : 연한 녹색 배경, 중앙 정렬
+       qa-icon  : 대형 Q&A 텍스트
+       qa-title : 팀명
+       qa-sub   : 앱명 · Sprint N · 날짜
+       qa-links : 배포 URL
+  ──────────────────────────────────────────────────────────────────── -->
+  <div class="slide slide--qa-light" data-index="7">
+    <div class="qa-icon">Q&amp;A</div>
+    <div class="qa-title">수산시장</div>
+    <div class="qa-sub">앱명 · Sprint N · yyyy-mm-dd</div>
+    <div class="qa-links">
+      <span>앱-이름.vercel.app</span>
+    </div>
+  </div>
+
+</div><!-- /.deck -->
+
+<div class="slide-counter" id="slideNum">1 / 8</div>
+<div class="nav-hint">← → 키 또는 클릭으로 전환</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNum = document.getElementById('slideNum');
+  let current = 0;
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides[current].classList.add('active');
+    slideNum.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(current - 1);
+  });
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const x = e.clientX;
+    if (x > window.innerWidth / 2) go(current + 1);
+    else go(current - 1);
+  });
+</script>
+</body>
+</html>
