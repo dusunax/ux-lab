@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 6 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · ai-empathy-diary</div>
+        <h1 class="cover-title">Sprint 6</h1>
+        <p class="cover-sub">피드백 수집 인프라 완성</p>
+        <p class="cover-meta">2026-05-21</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Sprint 6 목표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 6 목표</h2>
+      <blockquote class="goal-quote">
+        피드백 수집 인프라를 완성한다.<br>
+        좋아요/싫어요 피드백 UI, Firestore 저장, 이벤트 로깅, 모델 추적을 구현하여<br>
+        <strong>Sprint 7 대시보드의 데이터 기반을 마련한다.</strong>
+      </blockquote>
+      <table class="data-table" style="margin-top:28px;">
+        <thead><tr><th>#</th><th>구분</th><th>항목</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>OQ 결정</td><td>피드백 토글 허용 여부</td></tr>
+          <tr><td>2</td><td>OQ 결정</td><td>대시보드 데이터 범위</td></tr>
+          <tr><td>3</td><td>OQ 결정</td><td>모델명 UI 노출 여부</td></tr>
+          <tr><td>4</td><td>OQ 결정</td><td>대시보드 구현 시점</td></tr>
+          <tr><td>5</td><td>확정</td><td>Sprint 6 스코프 및 수용 기준 확정</td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>결정 내용</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td><strong>피드백 토글 허용</strong></td>
+            <td>변경마다 이벤트 발화, 집계는 최신 값 기준</td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td><strong>대시보드: 본인 데이터만</strong></td>
+            <td>Firestore 현행 보안 규칙 유지</td>
+          </tr>
+          <tr>
+            <td>OQ-3</td>
+            <td><strong>모델명 UI 직접 노출 금지</strong></td>
+            <td>내부 저장 → 대시보드 집계 통계로만 표시</td>
+          </tr>
+          <tr>
+            <td>OQ-4</td>
+            <td><strong>대시보드 Sprint 7 이연</strong></td>
+            <td>데이터 2주치 축적 후 시각화</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료</div>
+      <h2 class="slide-title">액션 아이템 완료 현황</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">BE</p>
+          <ul class="check-list">
+            <li class="done"><code>api/chat.js</code> — model 필드 + 3단계 fallback</li>
+            <li class="done"><code>api/log.js</code> — <code>emotion_feedback_recorded</code> 이벤트 등록</li>
+            <li class="done"><code>api/log.js</code> — <code>feedback</code>, <code>model</code> 파라미터 허용</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">FE</p>
+          <ul class="check-list">
+            <li class="done"><code>ui.js</code> — 커스텀 SVG 피드백 버튼 (AI 응답 행만)</li>
+            <li class="done"><code>sheet.css</code> — hover / selected / dim 상태 CSS</li>
+            <li class="done"><code>index.html</code> — 클릭 핸들러 + Firestore + logEvent</li>
+            <li class="done"><code>index.html</code> — AI 응답 시 model 필드 Firestore 저장</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">QA</p>
+        <ul class="check-list" style="column-count:2; column-gap:24px;">
+          <li class="done">수용 기준 11개 항목 전체 검증</li>
+          <li class="done">토글 시나리오 (null→pos→null, null→pos→neg)</li>
+          <li class="done">model fallback <code>"unknown"</code> 처리 확인</li>
+          <li class="done">Vercel Runtime Log 이벤트 수신 확인</li>
+        </ul>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 구현 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현</div>
+      <h2 class="slide-title">Sprint 6 구현 현황</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">피드백 버튼 UI</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">SVG</span><span class="log-event">커스텀 아이콘 (이모지 금지)</span></div>
+            <div class="log-row"><span class="log-status ok">토글</span><span class="log-event">재클릭 → null 초기화</span></div>
+            <div class="log-row"><span class="log-status ok">반전</span><span class="log-event">좋아요 → 싫어요 직접 전환</span></div>
+            <div class="log-row"><span class="log-status ok">hover</span><span class="log-event">피드백 없는 행은 hover 시만 표시</span></div>
+            <div class="log-row"><span class="log-status ok">고정</span><span class="log-event">선택된 행은 항상 표시</span></div>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">데이터 파이프라인</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">API</span><span class="log-event">chat.js → model 필드 반환</span></div>
+            <div class="log-row"><span class="log-status ok">DB</span><span class="log-event">Firestore entry에 model 저장</span></div>
+            <div class="log-row"><span class="log-status ok">DB</span><span class="log-event">피드백 클릭 시 feedback 필드 update</span></div>
+            <div class="log-row"><span class="log-status ok">LOG</span><span class="log-event">emotion_feedback_recorded 발화</span></div>
+            <div class="log-row"><span class="log-status ok">LOG</span><span class="log-event">Firestore 저장 성공 후 발화 (QA fix)</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase;">Firestore entry 스키마 확장</p>
+        <code style="display:block; background:#f5f5f5; padding:10px 14px; border-radius:3px; font-size:12px; color:#333;">{ date, text, emotion, empathy, <strong style="color:#217346;">model</strong>, <strong style="color:#217346;">feedback</strong>, createdAt }</code>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: QA 검증 결과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">QA</div>
+      <h2 class="slide-title">QA 검증 결과</h2>
+      <div style="display:flex; gap:12px; margin-bottom:16px;">
+        <span class="tag tag-green">11/11 PASS</span>
+        <span class="tag">수용 기준 전항목 통과</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>구분</th><th>QA 발견 사항</th><th>조치</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-red">HIGH</span></td>
+            <td><code>logEvent</code>가 Firestore 저장 전 발화 — 저장 실패 시 이벤트 오발화</td>
+            <td><code>.then()</code> 내부로 이동 ✓ 수정 완료</td>
+          </tr>
+          <tr>
+            <td><span class="tag">PARTIAL</span></td>
+            <td>CSS <code>:has()</code> — Firefox 120 이하 미지원 (AC#7)</td>
+            <td><code>.has-feedback</code> 클래스로 대체 ✓ 수정 완료</td>
+          </tr>
+          <tr>
+            <td><span class="tag">MEDIUM</span></td>
+            <td><code>feedback: null</code>이 sanitize에서 drop → toggle-off 이벤트 미기록</td>
+            <td><code>'none'</code> 문자열로 변환 ✓ 수정 완료</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 이월 / Sprint 7 방향 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">다음</div>
+      <h2 class="slide-title">Sprint 7 방향</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">Sprint 7 후보</p>
+          <ul class="bullet-list">
+            <li>모델별 만족도 집계 <strong>대시보드 시각화</strong></li>
+            <li>본인 데이터 기준 (Firestore 현행 규칙 유지)</li>
+            <li>피드백 데이터 2주치 축적 후 착수</li>
+          </ul>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 10px; text-transform:uppercase;">Open Questions</p>
+          <ul class="bullet-list">
+            <li>만족도 대시보드 시각화 방식 (FE + BE)</li>
+            <li>전체 익명 집계 도입 여부 (사용자 수 증가 후)</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">기술 부채</p>
+          <ul class="bullet-list">
+            <li><code>api/chat.js</code> CORS — Firebase Auth 토큰으로 방어 중, Sprint 7 재검토</li>
+            <li>전체 익명 집계 시 Cloud Function 설계 필요 (별도 스프린트)</li>
+          </ul>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 10px; text-transform:uppercase;">데이터 축적 플랜</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-time">Sprint 6</span><span class="log-event">피드백 수집 인프라 완성 · 배포</span></div>
+            <div class="log-row"><span class="log-time">~2주</span><span class="log-event">실 사용자 피드백 · 모델 데이터 축적</span></div>
+            <div class="log-row"><span class="log-time">Sprint 7</span><span class="log-event">대시보드 시각화 착수</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 앱 스크린샷 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">피드백 버튼 — 실제 동작</h2>
+      <div class="screenshot-wrap">
+        <img class="screenshot" src="./sprint-6/shot-app-feedback.png" alt="ai-empathy-diary Sprint 6 피드백 버튼 스크린샷" style="max-height:58vh; width:auto; max-width:100%;">
+        <p class="screenshot-cap">좋아요(☆) / 싫어요(▽) 버튼 — 행 3에 싫어요 선택 상태, 피드백 있는 행은 항상 표시</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: GA4 이벤트 수신 확인 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">GA4 — emotion_feedback_recorded 수신 확인</h2>
+      <div class="screenshot-wrap">
+        <img class="screenshot" src="./sprint-6/shot-ga4-feedback-event.png" alt="GA4 이벤트 현황 — emotion_feedback_recorded 수신 확인" style="max-height:58vh; width:auto; max-width:100%;">
+        <p class="screenshot-cap">emotion_feedback_recorded 5회 수신 확인 (이벤트 4위) — Sprint 6 로그 파이프라인 정상 동작</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Vercel Runtime Log -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">Vercel Runtime Log — 로그 파이프라인 동작 확인</h2>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:32px; align-items:center; width:100%;">
+        <div class="screenshot-wrap">
+          <img class="screenshot" src="./sprint-6/shot-vercel-log.png" alt="Vercel Runtime Log" style="max-height:52vh; width:auto; max-width:100%;">
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:12px; text-transform:uppercase; letter-spacing:.04em;">확인 사항</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">204</span><span class="log-event">POST /api/log — 이벤트 수신 정상</span></div>
+            <div class="log-row"><span class="log-status ok">200</span><span class="log-event">POST /api/chat — AI 응답 정상</span></div>
+            <div class="log-row"><span class="log-status ok">JSON</span><span class="log-event">event, label, ts 구조화 로그 출력</span></div>
+          </div>
+          <p style="margin-top:16px; font-size:13px; color:#888; line-height:1.6;">
+            <code>emotion_feedback_recorded</code> 이벤트도 동일 파이프라인(<code>/api/log</code>)으로 전송됨.<br>
+            GA4에서 수신 확인 (이전 슬라이드).
+          </p>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Firestore 데이터 확인 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">Firestore — model 필드 저장 확인</h2>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:32px; align-items:center; width:100%;">
+        <div class="screenshot-wrap">
+          <img class="screenshot" src="./sprint-6/shot-firestore-model-field.png" alt="Firestore entry — model 필드 저장 확인" style="max-height:52vh; width:auto; max-width:100%;">
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:12px; text-transform:uppercase; letter-spacing:.04em;">확인 사항</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">AC#9</span><span class="log-event">model 필드 Firestore 저장 ✓</span></div>
+            <div class="log-row"><span class="log-status ok">값</span><span class="log-event">openai/gpt-oss-120b:free</span></div>
+            <div class="log-row"><span class="log-status ok">경로</span><span class="log-event">users/{uid}/entries/{id}</span></div>
+          </div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:20px 0 12px; text-transform:uppercase; letter-spacing:.04em;">entry 스키마</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-time">createdAt</span><span class="log-event" style="color:#94a3b8;">timestamp</span></div>
+            <div class="log-row"><span class="log-time">date</span><span class="log-event" style="color:#94a3b8;">"2026-05-22"</span></div>
+            <div class="log-row"><span class="log-time">emotion</span><span class="log-event" style="color:#94a3b8;">"평온"</span></div>
+            <div class="log-row"><span class="log-time">empathy</span><span class="log-event" style="color:#94a3b8;">string</span></div>
+            <div class="log-row"><span class="log-time" style="color:#4ade80; font-weight:700;">model</span><span class="log-event" style="color:#4ade80; font-weight:600;">"openai/gpt-oss-120b:free" ✓</span></div>
+            <div class="log-row"><span class="log-time">text</span><span class="log-event" style="color:#94a3b8;">string</span></div>
+            <div class="log-row"><span class="log-time" style="color:#60a5fa;">feedback</span><span class="log-event" style="color:#60a5fa;">피드백 클릭 시 저장</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>ai-empathy-diary · Sprint 6</span>
+        <span>2026-05-21</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

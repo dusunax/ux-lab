@@ -17,6 +17,19 @@
   /* Slide container */
   .deck { position: relative; width: 100vw; height: 100vh; }
 
+  /* Content wrapper — constrains inner content width without affecting slide background */
+  .slide-inner {
+    width: 100%;
+    max-width: 1240px;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .slide--cover .slide-inner,
+  .slide--qa .slide-inner,
+  .slide--qa-light .slide-inner { align-items: center; }
+
   .slide {
     position: absolute;
     inset: 0;
@@ -237,9 +250,12 @@
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    width: 100%;
   }
   .screenshot {
-    max-width: 100%;
+    max-width: 72%;
+    max-height: 60vh;
+    object-fit: contain;
     border-radius: 6px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     border: 1px solid #e0e0e0;
@@ -316,3 +332,48 @@
   .dot-green { background: #217346; }
   .dot-yellow { background: #f0b429; }
   .dot-gray { background: #ccc; }
+
+  /* Cover inner wrapper */
+  .cover-inner { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .cover-meta { font-size: 14px; color: #888; margin-top: 4px; }
+
+  /* Check list (action items) */
+  .check-list { list-style: none; width: 100%; }
+  .check-list li {
+    font-size: 14px;
+    padding: 6px 0 6px 22px;
+    border-bottom: 1px solid #f0f0f0;
+    position: relative;
+    line-height: 1.5;
+    color: #333;
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    color: #bbb;
+    font-size: 13px;
+  }
+  .check-list li.done::before { content: '✓'; color: #217346; font-weight: 700; }
+  .check-list li.done { color: #555; }
+
+  /* Bullet list */
+  .bullet-list { list-style: none; width: 100%; }
+  .bullet-list li {
+    font-size: 14px;
+    padding: 5px 0 5px 16px;
+    position: relative;
+    line-height: 1.6;
+    color: #333;
+  }
+  .bullet-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: #217346;
+    font-weight: 700;
+  }
+
+  /* qa-links flex layout */
+  .qa-links { display: flex; gap: 20px; justify-content: center; margin-top: 4px; }
