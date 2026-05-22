@@ -2,7 +2,7 @@
 description: 회의록 기반 상위 보고용 HTML 프레젠테이션 자동 생성. Jordan(PM)이 스프린트 완료 후 상위 보고에 사용.
 ---
 
-# PPT Report 하네스
+# /sprint:report 하네스
 
 **인수:** $ARGUMENTS
 
@@ -102,7 +102,7 @@ docs/presentations/
 생성 완료 후 출력:
 
 ```
-PPT 생성 완료
+프레젠테이션 생성 완료
 파일: docs/presentations/sprint-{N}-report-{yymmdd}.html
 슬라이드: {N}장
 조작: ← → 키 또는 클릭으로 전환

@@ -75,7 +75,7 @@
 - 90% 룰 기준 충족(액션아이템 완료 체크박스 업데이트 완료) 후 PM이 착수한다.
 - 저장 경로: `docs/presentations/sprint-N-report-YYMMDD.html`
 - 사용 템플릿: `docs/presentations/sprint-template.html`
-- 작성 도구: `/ppt-report` 스킬 사용.
+- 작성 도구: `/sprint:report` 커맨드 사용.
 
 ---
 
@@ -107,13 +107,13 @@
 **TS (Alex)**
 - [x] 이 회의록 작성 및 저장 (`docs/meetings/2026-05-21-sprint-process.md`)
 - [x] 프로세스 문서 작성 (`docs/process/sprint-process.md`)
-- [ ] `docs/meetings/README.md`에 이 회의록 및 프로세스 문서 링크 추가
+- [x] `docs/meetings/README.md`에 이 회의록 및 프로세스 문서 링크 추가
 
 **FE (Avery)**
-- [ ] 피드백 UI 코드 — Sprint 6 액션아이템 확정 후 재착수. 그 전까지 미완성 상태 유지
+- [x] 피드백 UI 코드 — Sprint 6 액션아이템 확정 후 재착수. 그 전까지 미완성 상태 유지
 
 **PM (Jordan)**
-- [ ] Sprint 6 회의 소집 (스프린트 프로세스 정의 완료 후 즉시)
+- [x] Sprint 6 회의 소집 (스프린트 프로세스 정의 완료 후 즉시)
 
 ---
 
