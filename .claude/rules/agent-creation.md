@@ -40,7 +40,7 @@ You are Morgan, a QA Engineer (QA).
 Agent `name` fields follow the format: `team/ABBR/role`
 
 - **team:** `product`, `design`, `eng`, `qa`
-- **ABBR:** job title abbreviation in uppercase (e.g., `BE`, `FE`, `QA`, `PM`, `UX`, `SRE`, `AI`)
+- **ABBR:** job title abbreviation in uppercase (e.g., `BE`, `FE`, `QA`, `PM`, `UX`, `SRE`, `AI`, `OC`)
 - **role:** kebab-case role identifier
 
 Example: `eng/FE/frontend-dev`
@@ -49,6 +49,7 @@ Example: `eng/FE/frontend-dev`
 
 | name | Agent Name | Title (Abbr) |
 |------|------------|--------------|
+| `product/OC/orchestrator` | Sam | Fleet Orchestrator (OC) |
 | `product/PM/prd-product-manager` | Jordan | Product Manager (PM) |
 | `design/UX/ux-design-reviewer` | Riley | UX Designer (UX) |
 | `eng/BE/backend-architect` | Blake | Backend Architect (BE) |
