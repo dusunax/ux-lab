@@ -26,5 +26,13 @@ Single-file HTML app (CSS + JS in one `index.html`, ~1938 lines). This is an int
 - `errorReason()` missing `upstream_exhausted` coverage was fixed this sprint. `request_id` null is safely dropped by sanitize() (not a bug).
 - Mobile `!important` on `.excel-window` is intentional — desktop JS `.hidden` toggling is unaffected. Not a bug.
 
+**Known issues found in Sprint 6 (handleFeedback, updateEntryInFirestore, analyzeEmotion, bindRowDelegation, ui.js buildRow, api/log.js ALLOWED_EVENTS, api/chat.js model field):**
+- `logEvent('emotion_feedback_recorded')` passes `feedback: null` on toggle-off. `sanitize()` in api/log.js silently drops null values (not a string/number/boolean), so toggle-off events are never recorded server-side. Fix: guard logEvent call behind `if (newFeedback !== null)`.
+- `handleFeedback` directly mutates `entry.feedback` on the shared object reference from `entryMap`. Rollback path (`entry.feedback = prevFeedback`) also mutates the same reference without calling `rebuildEntryMap()`. Works today because `getSorted()` reads the same reference, but fragile — any `rebuildEntryMap()` call between optimistic update and rollback would lose the rollback value.
+- `applyAnalysisResult:407` — `logEvent('entry_save_failure', { code: err.code || 'unknown' })` always logs `'unknown'` because `addEntryToFirestore` re-throws a plain `new Error(...)` without preserving the original Firestore `err.code`. Save-failure logs are not diagnosable.
+- `api/chat.js` CORS header is `'Access-Control-Allow-Origin': '*'` (wildcard), unlike `api/log.js` which enforces an allowlist. chat.js proxies OPENROUTER_KEY usage — wildcard allows any origin to trigger API calls and exhaust rate limits.
+- `bindRowDelegation` keydown handler calls `e.preventDefault()` before checking if the focused element is a `[data-action]` button. Keyboard activation of feedback buttons may be swallowed by the row keydown handler.
+- CSS `:has()` used in sheet.css for feedback-pair visibility — requires Chrome 105+, Firefox 121+, Safari 15.4+. Acceptable for desktop-only app; no fallback needed given deployment context.
+
 **Why:** App is intentionally single-file for deployment simplicity (Vercel static hosting). No bundler.
-**How to apply:** When reviewing this file, watch for event listener accumulation on auth re-fires, silent catch blocks in Firestore functions, and optimistic-delete patterns where rollback state must be restored before retry.
+**How to apply:** When reviewing this file, watch for event listener accumulation on auth re-fires, silent catch blocks in Firestore functions, and optimistic-delete patterns where rollback state must be restored before retry. Also watch for logEvent calls that pass null values — sanitize() drops them silently without warning.
