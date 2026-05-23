@@ -123,6 +123,30 @@ Sprint [NEXT_SPRINT] 킥오프에 이월 항목을 포함합니다.
 
 ---
 
+## Step 1.5 — 스프린트 브랜치 생성
+
+게이트 통과 후, `sprint/[NEXT_SPRINT]` 브랜치를 생성하고 체크아웃한다.
+
+```bash
+git branch --list sprint/[NEXT_SPRINT]
+```
+
+- 브랜치가 **없으면**: `git checkout -b sprint/[NEXT_SPRINT]`
+- 브랜치가 **이미 있으면**: `git checkout sprint/[NEXT_SPRINT]` 후 아래 경고 출력
+
+```
+⚠️ sprint/[NEXT_SPRINT] 브랜치가 이미 존재합니다. 해당 브랜치로 전환합니다.
+```
+
+정상 생성 시 출력:
+
+```
+🌿 브랜치 생성: sprint/[NEXT_SPRINT]
+   이후 모든 커밋은 이 브랜치에서 진행합니다.
+```
+
+---
+
 ## Step 2 — 컨텍스트 보강
 
 Jordan에게 전달할 배경 정보를 수집한다.
@@ -273,9 +297,12 @@ Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘.
 🚀 Sprint [NEXT_SPRINT] 시작
 
 ✅ Sprint [PREV_SPRINT] 완료 검증 통과
+🌿 브랜치:  sprint/[NEXT_SPRINT]
 Jordan(PM): 스프린트 플랜 작성 완료
 Alex(TS):   docs/meetings/[파일명] 생성 완료
             README.md 인덱스 업데이트 완료
 
 목표: [Jordan의 한 줄 목표]
+
+참고: docs/process/sprint-git-workflow.md
 ```

@@ -97,18 +97,30 @@ docs/presentations/
 
 ---
 
-## Step 4 — 생성 확인
+## Step 4 — 생성 확인 및 파이프라인 핸드오프
 
-생성 완료 후 출력:
+생성 완료 후:
+
+1. **state 파일 저장** — 생성된 HTML 경로를 `docs/presentations/.last-report`에 한 줄로 저장한다.
+
+   ```
+   docs/presentations/sprint-{N}-report-{yymmdd}.html
+   ```
+
+   이 파일은 `/sprint:review`가 `--report-url` 없이도 보고서 경로를 자동으로 읽는 데 사용된다.
+
+2. **완료 메시지 출력**:
 
 ```
 프레젠테이션 생성 완료
-파일: docs/presentations/sprint-{N}-report-{yymmdd}.html
+파일:     docs/presentations/sprint-{N}-report-{yymmdd}.html
 슬라이드: {N}장
-조작: ← → 키 또는 클릭으로 전환
+조작:     ← → 키 또는 클릭으로 전환
 
 브라우저에서 열기:
 open docs/presentations/sprint-{N}-report-{yymmdd}.html
+
+다음 단계: /sprint:review 실행 시 보고서가 자동으로 첨부됩니다.
 ```
 
 ---
