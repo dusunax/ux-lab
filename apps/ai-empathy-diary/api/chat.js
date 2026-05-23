@@ -1,12 +1,31 @@
-import { randomUUID } from 'crypto';
+import { randomUUID, createHash } from 'crypto';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+// CORS 정책: api/log.js와 동일하게 프로덕션 도메인 + localhost로 제한한다.
+// [한계] CORS는 브라우저 Same-Origin 정책 강제이므로 curl/서버 직접 호출을 막지 않는다.
+// [한계] origin 헤더가 없는 요청(curl, server-to-server)은 CORS 검사를 통과한다.
+// 완전한 방어를 위해서는 Authorization 헤더 기반 Firebase ID Token 검증이 필요하다.
+// 참조: OQ-3 결정 (2026-05-23 Sprint 7 킥오프)
+const PRODUCTION_ORIGIN = 'https://ai-empathy-diary.vercel.app';
+const LOCALHOST_ORIGIN_RE = /^http:\/\/localhost(:\d+)?$/;
+
+const ALLOWED_ORIGINS = (() => {
+  const origins = new Set([PRODUCTION_ORIGIN]);
+  const custom = process.env.ALLOWED_ORIGIN;
+  if (custom) origins.add(custom);
+  return origins;
+})();
+
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  if (LOCALHOST_ORIGIN_RE.test(origin)) return true;
+  return ALLOWED_ORIGINS.has(origin);
+}
+
+function generateModelLabel(modelId) {
+  return 'MDL-' + createHash('sha256').update(modelId).digest('hex').slice(0, 4);
+}
 
 const FALLBACKS = [
   'openai/gpt-oss-120b:free',
@@ -34,15 +53,31 @@ async function callOpenRouter(apiKey, body) {
 }
 
 export default async function handler(req, res) {
-  Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
+  // TODO(Sprint 8): Firebase Admin SDK로 Firebase ID Token 검증 추가
+  // const idToken = req.headers.authorization?.replace('Bearer ', '')
+  // const decoded = await adminAuth.verifyIdToken(idToken)
+
+  const origin = req.headers.origin;
+
+  if (isAllowedOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Vary', 'Origin');
+  }
 
   if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
+    if (isAllowedOrigin(origin)) { res.status(204).end(); return; }
+    res.status(403).end(); return;
   }
 
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  if (origin && !isAllowedOrigin(origin)) {
+    res.status(403).json({ error: 'Forbidden' });
     return;
   }
 
@@ -94,8 +129,9 @@ export default async function handler(req, res) {
       log('chat_upstream_error', { request_id: requestId, model: candidate, status: upstream.status, latency_ms: Date.now() - t0 });
     }
 
+    const usedModel = data.model || candidate || 'unknown';
     res.status(upstream.status).json(upstream.ok
-      ? { ...data, model: data.model || candidate || 'unknown', request_id: requestId }
+      ? { ...data, model: usedModel, modelLabel: generateModelLabel(usedModel), request_id: requestId }
       : data);
     return;
   }

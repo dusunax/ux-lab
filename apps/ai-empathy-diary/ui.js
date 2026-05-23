@@ -203,6 +203,52 @@ function updateRowDOM(id) {
   el.replaceWith(tmp.content.firstChild);
 }
 
+/* ── Stats Dashboard ───────────────────────────── */
+function renderStats() {
+  var container = document.getElementById('stats-container');
+  if (!container) return;
+  var stats = computeModelStats();
+
+  if (stats.size === 0) {
+    container.innerHTML =
+      '<div class="stats-empty">데이터가 아직 충분하지 않습니다.<br>' +
+      '<span>피드백을 남긴 일기가 생기면 여기에 모델별 통계가 표시됩니다.</span></div>';
+    return;
+  }
+
+  var rows = '';
+  stats.forEach(function(s, label) {
+    var feedbackTotal = s.positive + s.negative;
+    var pct = feedbackTotal === 0 ? null : Math.round(s.positive / feedbackTotal * 100);
+    var insufficient = feedbackTotal < FEEDBACK_MIN_SAMPLE;
+
+    var barHtml = '';
+    if (insufficient) {
+      barHtml = '<span class="stats-insufficient">데이터 부족 (' + feedbackTotal + '개)</span>';
+    } else if (pct === null) {
+      barHtml = '<span class="stats-insufficient">피드백 없음</span>';
+    } else {
+      barHtml =
+        '<div class="stats-bar-wrap" aria-label="' + escapeHtml(label) + ' 만족도 ' + pct + ' 퍼센트">' +
+        '<div class="stats-bar-fill" style="width:' + pct + '%"></div>' +
+        '</div>' +
+        '<span class="stats-pct">' + pct + '%</span>';
+    }
+
+    rows +=
+      '<div class="stats-row">' +
+      '<div class="stats-label">' + escapeHtml(label) + '</div>' +
+      '<div class="stats-bar-area">' + barHtml + '</div>' +
+      '<div class="stats-count">👍 ' + s.positive + ' / 👎 ' + s.negative + '</div>' +
+      '</div>';
+  });
+
+  container.innerHTML =
+    '<div class="stats-header">모델별 만족도</div>' +
+    '<div class="stats-note">본인 피드백 기준 · null 제외 · ' + FEEDBACK_MIN_SAMPLE + '개 미만은 데이터 부족</div>' +
+    rows;
+}
+
 /* ── Loading Skeletons ─────────────────────────── */
 function showLoadingSkeletons(count) {
   var n = (count !== undefined) ? count : 4;
