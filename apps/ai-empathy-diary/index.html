@@ -301,7 +301,7 @@ function rebuildEntryMap() { entryMap = new Map(entries.map(e => [e.id, e])); }
 /* ── Firestore ─────────────────────────────────── */
 async function loadEntriesFromFirestore() {
   try {
-    const snap = await entriesRef().orderBy('createdAt', 'desc').get();
+    const snap = await entriesRef().orderBy('createdAt', 'asc').get();
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
     console.error('Firestore load failed:', err);
