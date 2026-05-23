@@ -28,20 +28,20 @@
 - PDF 저장
 - Firebase 기반 일일 요청 횟수 제한
 
-<img width="800" height="2072" alt="image" src="https://github.com/user-attachments/assets/b147b4f0-2df6-46c0-8a1e-d955069c99e4" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/b147b4f0-2df6-46c0-8a1e-d955069c99e4" />
 
-<img width="800" height="877" alt="image" src="https://github.com/user-attachments/assets/565b7146-3047-40f3-b80a-7a8855fb0b5d" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/565b7146-3047-40f3-b80a-7a8855fb0b5d" />
 
 ### 📍 @ux-lab/applications
 
 - 원티드 PDF 파싱 후 리스트 생성
 - 로컬 스토리지 기반 리스트 데이터 관리
 
-<img width="800" height="1394" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
 
 ### 📍 @ux-lab/flow
 
-<img width="800" height="917" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
 
 
 ## 🚀 시작하기
