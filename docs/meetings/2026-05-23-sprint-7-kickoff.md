@@ -61,38 +61,38 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] 대시보드에서 본인 entry 기준 모델별 만족도(%)가 CSS/SVG 바 차트로 표시됨
-- [ ] `feedback: null`인 entry는 만족도 계산에서 제외됨 (분모: positive + negative만)
-- [ ] 데이터가 0건이거나 피드백 있는 entry가 없을 때 "데이터가 아직 충분하지 않습니다" 상태가 표시됨
-- [ ] 피드백 5개 미만 모델은 "데이터 부족" 상태로 표시됨
-- [ ] 모델명이 사용자에게 직접 노출되지 않음 — `MDL-xxxx` 해시 숏코드로만 표시
-- [ ] Firestore entry에 `modelLabel` 필드가 저장됨 (AI 응답 수신 시)
-- [ ] 토글로 변경된 피드백은 마지막(최신) 값만 집계에 반영됨
-- [ ] `api/chat.js` CORS가 프로덕션 도메인 + localhost로 제한됨 (`api/log.js` 패턴 적용)
-- [ ] `api/chat.js`에 Auth 검증 부재 한계를 주석으로 명시하고 TODO가 삽입됨
-- [ ] 대시보드 모든 엣지 케이스(0건, 혼재, 편중)에서 UI 오류 없이 렌더링됨
+- [x] 대시보드에서 본인 entry 기준 모델별 만족도(%)가 CSS/SVG 바 차트로 표시됨
+- [x] `feedback: null`인 entry는 만족도 계산에서 제외됨 (분모: positive + negative만)
+- [x] 데이터가 0건이거나 피드백 있는 entry가 없을 때 "데이터가 아직 충분하지 않습니다" 상태가 표시됨
+- [x] 피드백 5개 미만 모델은 "데이터 부족" 상태로 표시됨
+- [x] 모델명이 사용자에게 직접 노출되지 않음 — `MDL-xxxx` 해시 숏코드로만 표시
+- [x] Firestore entry에 `modelLabel` 필드가 저장됨 (AI 응답 수신 시)
+- [x] 토글로 변경된 피드백은 마지막(최신) 값만 집계에 반영됨
+- [x] `api/chat.js` CORS가 프로덕션 도메인 + localhost로 제한됨 (`api/log.js` 패턴 적용)
+- [x] `api/chat.js`에 Auth 검증 부재 한계를 주석으로 명시하고 TODO가 삽입됨
+- [x] 대시보드 모든 엣지 케이스(0건, 혼재, 편중)에서 UI 오류 없이 렌더링됨
 
 ---
 
 ## 액션 아이템
 
 **BE (Blake)**
-- [ ] `api/chat.js` — CORS를 `api/log.js` 패턴으로 변경 (프로덕션 도메인 + localhost 제한)
-- [ ] `api/chat.js` — Auth 검증 부재 한계 주석 + Firebase ID Token 검증 TODO 삽입
-- [ ] `api/chat.js` — AI 응답 시 `modelLabel` 생성 로직 추가 (sha256 4자리 해시)
-- [ ] Firestore entry 저장 시 `modelLabel` 필드 포함
+- [x] `api/chat.js` — CORS를 `api/log.js` 패턴으로 변경 (프로덕션 도메인 + localhost 제한)
+- [x] `api/chat.js` — Auth 검증 부재 한계 주석 + Firebase ID Token 검증 TODO 삽입
+- [x] `api/chat.js` — AI 응답 시 `modelLabel` 생성 로직 추가 (sha256 4자리 해시)
+- [x] Firestore entry 저장 시 `modelLabel` 필드 포함
 
 **FE (Avery)**
-- [ ] 대시보드 탭/섹션 추가 — Firestore entry 조회 → 모델별 집계 → 만족도(%) 계산
-- [ ] CSS/SVG 기반 바 차트 렌더링 구현 (CDN 없이)
-- [ ] 데이터 부족 상태 UI 구현 (0건, 피드백 5개 미만 분기)
-- [ ] `config.js` — 모델 익명화 레이블 매핑 상수 추가
+- [x] 대시보드 탭/섹션 추가 — Firestore entry 조회 → 모델별 집계 → 만족도(%) 계산
+- [x] CSS/SVG 기반 바 차트 렌더링 구현 (CDN 없이)
+- [x] 데이터 부족 상태 UI 구현 (0건, 피드백 5개 미만 분기)
+- [x] `config.js` — 모델 익명화 레이블 매핑 상수 추가
 
 **QA (Morgan / Quinn)**
-- [ ] 수용 기준 전체 항목 검증
-- [ ] 0건 / `feedback: null` 혼재 / 데이터 편중 시나리오 검증
-- [ ] CORS 제한 후 프로덕션 도메인에서 정상 동작 확인
-- [ ] `modelLabel` 필드가 Firestore에 올바르게 저장되는지 확인
+- [x] 수용 기준 전체 항목 검증
+- [x] 0건 / `feedback: null` 혼재 / 데이터 편중 시나리오 검증
+- [ ] CORS 제한 후 프로덕션 도메인에서 정상 동작 확인 (배포 후 확인 필요)
+- [x] `modelLabel` 필드가 Firestore에 올바르게 저장되는지 확인 (코드 검증 완료)
 
 ---
 
