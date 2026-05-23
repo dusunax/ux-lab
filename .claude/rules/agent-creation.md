@@ -59,3 +59,4 @@ Example: `eng/FE/frontend-dev`
 | `qa/QA/code-quality-reviewer` | Morgan | QA Engineer (QA) |
 | `qa/QA/qa-engineer` | Quinn | QA Engineer (QA) |
 | `product/TS/secretary` | Alex | Technical Secretary (TS) |
+| `product/EV/sprint-evaluator` | Nolan | Sprint Evaluator (EV) |
