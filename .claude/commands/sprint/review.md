@@ -19,6 +19,7 @@ description: 스프린트 완료 후 PR을 생성하고 결과를 요약한다. 
 |------|------|
 | (없음) | 현재 브랜치 또는 최신 kickoff 파일에서 N 자동 추론 |
 | `--sprint N` | 지정 N 사용 |
+| `--type TYPE` | PR 제목 prefix 타입 지정 (기본: `feat` / 워크플로우 PR: `chore`) |
 | `--report-url URL` | 보고서 공개 URL 첨부 |
 | `--draft` | Draft PR로 생성 |
 
@@ -139,7 +140,11 @@ git ls-remote --heads origin sprint/N
 | `{{DECISIONS_TABLE}}` | `## 결정 사항 요약` 테이블 (없으면 섹션 생략) |
 | `{{REPORT_LINK}}` | Step 3 탐지 결과 |
 
-PR 제목: 템플릿 `PR 제목` 섹션에서 `{{N}}`, `{{GOAL_ONE_LINE}}` 채워 사용.
+PR 제목: 템플릿 `PR 제목` 섹션에서 플레이스홀더를 채워 사용.
+
+- `{{TYPE}}`: `--type` 인수 값. 없으면 스프린트 번호가 있을 때 `feat`, 없을 때 `chore`
+- `{{N}}`: Step 1에서 탐지한 스프린트 번호. 없으면 `workflow`
+- 결과 예: `feat(sprint/6): 피드백 수집 인프라 완성` / `chore(workflow): 브랜치 전략 정비`
 
 `mcp__github__create_pull_request`를 호출한다.
 

@@ -12,8 +12,11 @@
 ## PR 제목
 
 ```
-Sprint {{N}} — {{GOAL_ONE_LINE}}
+{{TYPE}}(sprint/{{N}}): {{GOAL_ONE_LINE}}
 ```
+
+- `{{TYPE}}` 기본값: `feat`. `--type` 인수로 오버라이드 (`chore`, `fix` 등).
+- 스프린트 번호가 없는 워크플로우 PR: `chore(workflow): {{GOAL_ONE_LINE}}`
 
 ---
 
@@ -68,6 +71,7 @@ _(이월 항목 없으면 "없음 (Sprint {{N}} {{COMPLETION_RATE}}% 완료)"으
 
 | 플레이스홀더 | 소스 | 비고 |
 |-------------|------|------|
+| `{{TYPE}}` | `--type` 인수 | 기본값 `feat`, 워크플로우 PR은 `chore` |
 | `{{N}}` | 스프린트 번호 | Step 1에서 탐지 |
 | `{{GOAL_ONE_LINE}}` | `## Sprint N 목표` 첫 줄 | `>` 마커 제거 후 사용 |
 | `{{GOAL_FULL}}` | `## Sprint N 목표` 전체 | 여러 줄이면 그대로 유지 |
