@@ -272,9 +272,15 @@
   border: 1px solid var(--chrome-border);
   border-bottom: none;
   border-radius: 3px 3px 0 0;
-  cursor: default;
+  cursor: pointer;
   color: #777;
   background: #e8e8e8;
+  outline: none;
+}
+.sheet-tab:hover:not(.active) { background: #d8d8d8; color: #444; }
+.sheet-tab:focus-visible {
+  outline: 2px solid var(--ribbon-bg);
+  outline-offset: -2px;
 }
 .sheet-tab.active {
   background: #fff;
@@ -282,6 +288,7 @@
   border-bottom: 1px solid #fff;
   margin-bottom: -1px;
   font-weight: 500;
+  cursor: default;
 }
 
 /* ─── Status Bar ─────────────────────────────── */

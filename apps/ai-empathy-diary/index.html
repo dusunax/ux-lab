@@ -166,53 +166,59 @@
     </div>
   </div>
 
-  <!-- Sheet Area -->
-  <div class="sheet-area">
-    <div class="col-headers">
-      <div class="ch-corner"></div>
-      <div class="ch-cell col-a">A</div>
-      <div class="ch-cell col-b">B</div>
-      <div class="ch-cell col-c">C</div>
-      <div class="ch-cell col-d">D</div>
-      <div class="ch-cell col-e">E</div>
-    </div>
-    <div class="sheet-body" id="sheet-body">
-      <div class="subheader-row">
-        <div class="sh-num"></div>
-        <div class="sh-cell col-a">날짜</div>
-        <div class="sh-cell col-b">오늘 있었던 일</div>
-        <div class="sh-cell col-c filter-header" id="filter-trigger">
-          감정
-          <span class="filter-icon" id="filter-icon">▾</span>
-          <div class="filter-dropdown" id="filter-dropdown">
-            <div class="filter-option selected" data-emotion="">전체</div>
-            <div class="filter-option" data-emotion="기쁨">기쁨</div>
-            <div class="filter-option" data-emotion="설렘">설렘</div>
-            <div class="filter-option" data-emotion="뿌듯함">뿌듯함</div>
-            <div class="filter-option" data-emotion="슬픔">슬픔</div>
-            <div class="filter-option" data-emotion="외로움">외로움</div>
-            <div class="filter-option" data-emotion="스트레스">스트레스</div>
-            <div class="filter-option" data-emotion="분노">분노</div>
-            <div class="filter-option" data-emotion="억울함">억울함</div>
-            <div class="filter-option" data-emotion="불안">불안</div>
-            <div class="filter-option" data-emotion="혼란">혼란</div>
-            <div class="filter-option" data-emotion="피로">피로</div>
-            <div class="filter-option" data-emotion="무기력함">무기력함</div>
-            <div class="filter-option" data-emotion="평온">평온</div>
-          </div>
-        </div>
-        <div class="sh-cell col-d">AI의 한마디</div>
-        <div class="sh-cell col-e"></div>
+  <!-- Tab Contents -->
+  <div id="tab-diary" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-diary">
+    <!-- Sheet Area -->
+    <div class="sheet-area">
+      <div class="col-headers">
+        <div class="ch-corner"></div>
+        <div class="ch-cell col-a">A</div>
+        <div class="ch-cell col-b">B</div>
+        <div class="ch-cell col-c">C</div>
+        <div class="ch-cell col-d">D</div>
+        <div class="ch-cell col-e">E</div>
       </div>
-      <div id="rows-container"></div>
+      <div class="sheet-body" id="sheet-body">
+        <div class="subheader-row">
+          <div class="sh-num"></div>
+          <div class="sh-cell col-a">날짜</div>
+          <div class="sh-cell col-b">오늘 있었던 일</div>
+          <div class="sh-cell col-c filter-header" id="filter-trigger">
+            감정
+            <span class="filter-icon" id="filter-icon">▾</span>
+            <div class="filter-dropdown" id="filter-dropdown">
+              <div class="filter-option selected" data-emotion="">전체</div>
+              <div class="filter-option" data-emotion="기쁨">기쁨</div>
+              <div class="filter-option" data-emotion="설렘">설렘</div>
+              <div class="filter-option" data-emotion="뿌듯함">뿌듯함</div>
+              <div class="filter-option" data-emotion="슬픔">슬픔</div>
+              <div class="filter-option" data-emotion="외로움">외로움</div>
+              <div class="filter-option" data-emotion="스트레스">스트레스</div>
+              <div class="filter-option" data-emotion="분노">분노</div>
+              <div class="filter-option" data-emotion="억울함">억울함</div>
+              <div class="filter-option" data-emotion="불안">불안</div>
+              <div class="filter-option" data-emotion="혼란">혼란</div>
+              <div class="filter-option" data-emotion="피로">피로</div>
+              <div class="filter-option" data-emotion="무기력함">무기력함</div>
+              <div class="filter-option" data-emotion="평온">평온</div>
+            </div>
+          </div>
+          <div class="sh-cell col-d">AI의 한마디</div>
+          <div class="sh-cell col-e"></div>
+        </div>
+        <div id="rows-container"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Sheet Tabs -->
-  <div class="sheet-tabs" aria-hidden="true">
-    <div class="sheet-tab active" tabindex="-1">일지</div>
-    <div class="sheet-tab" tabindex="-1">Sheet2</div>
-    <div class="sheet-tab" tabindex="-1">Sheet3</div>
+  <div id="tab-stats" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-stats" hidden>
+    <div class="stats-container" id="stats-container"></div>
+  </div>
+
+  <!-- Sheet Tabs (functional) -->
+  <div class="sheet-tabs" role="tablist" aria-label="시트 탭">
+    <button id="tab-btn-diary" class="sheet-tab active" data-tab="diary" role="tab" aria-selected="true" aria-controls="tab-diary">일기 시트</button>
+    <button id="tab-btn-stats" class="sheet-tab" data-tab="stats" role="tab" aria-selected="false" aria-controls="tab-stats">모델 통계</button>
   </div>
 
   <!-- Status Bar (Riley: zoom text updated to 100%) -->
@@ -295,7 +301,7 @@ function rebuildEntryMap() { entryMap = new Map(entries.map(e => [e.id, e])); }
 /* ── Firestore ─────────────────────────────────── */
 async function loadEntriesFromFirestore() {
   try {
-    const snap = await entriesRef().orderBy('createdAt', 'desc').get();
+    const snap = await entriesRef().orderBy('createdAt', 'asc').get();
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
     console.error('Firestore load failed:', err);
@@ -310,6 +316,7 @@ async function addEntryToFirestore(entry) {
       date: entry.date, text: entry.text, emotion: entry.emotion,
       empathy: entry.empathy.slice(0, 300),
       model: entry.model || 'unknown',
+      modelLabel: entry.modelLabel || null,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
   } catch (err) {
@@ -365,7 +372,7 @@ async function analyzeEmotion(text) {
   let result;
   try { result = extractJson(rawContent); } catch { throw new Error('감정 분석 결과를 읽는 데 실패했어요.'); }
   if (typeof result.emotion !== 'string' || typeof result.empathy !== 'string') throw new Error('감정 분석 결과 형식이 예상과 달라요.');
-  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy, requestId: data.request_id ?? null, model: data.model || 'unknown' };
+  return { emotion: normalizeEmotion(result.emotion), empathy: result.empathy, requestId: data.request_id ?? null, model: data.model || 'unknown', modelLabel: data.modelLabel || null };
 }
 
 /* ── Submit Helpers ────────────────────────────── */
@@ -409,6 +416,9 @@ function applyAnalysisResult(entry) {
   });
   updateStatus('준비');
   if (virtualActive || filterEmotion) { renderRows(); } else { updateRowDOM(entry.id); }
+  /* stats 탭이 활성화 상태이면 통계도 즉시 갱신 */
+  var activeTab = document.querySelector('.sheet-tab.active');
+  if (activeTab && activeTab.dataset.tab === 'stats') renderStats();
 }
 
 /* ── Delete ────────────────────────────────────── */
@@ -511,6 +521,7 @@ async function handleSubmit() {
     entry.emotion = result.emotion;
     entry.empathy = result.empathy;
     entry.model = result.model;
+    entry.modelLabel = result.modelLabel || null;
     delete entry._loading;
     applyAnalysisResult(entry);
     logEvent('entry_submit_success', { text_length: text.length, emotion: result.emotion, request_id: result.requestId });
@@ -603,6 +614,61 @@ function bindEvents() {
   });
 }
 
+/* ── Model Stats ───────────────────────────────── */
+function computeModelStats() {
+  var stats = new Map(); /* modelLabel → { positive: 0, negative: 0 } */
+  entries.forEach(function(e) {
+    var label = e.modelLabel || null;
+    if (!label) return; /* modelLabel 없는 구 데이터는 제외 */
+    if (e.feedback !== 'positive' && e.feedback !== 'negative') return; /* 피드백 없는 entry는 집계에서 제외 */
+    if (!stats.has(label)) stats.set(label, { positive: 0, negative: 0 });
+    var s = stats.get(label);
+    if (e.feedback === 'positive') s.positive++;
+    if (e.feedback === 'negative') s.negative++;
+  });
+  return stats;
+}
+
+/* ── Tab Switch ────────────────────────────────── */
+function activateTab(target) {
+  document.querySelectorAll('.sheet-tab').forEach(function(b) {
+    var isActive = b.dataset.tab === target;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    b.setAttribute('tabindex', isActive ? '0' : '-1');
+  });
+  document.querySelectorAll('.tab-content').forEach(function(c) {
+    c.classList.toggle('active', c.id === 'tab-' + target);
+    c.hidden = c.id !== 'tab-' + target;
+  });
+  if (target === 'stats') renderStats();
+}
+
+function bindTabs() {
+  var tabs = Array.from(document.querySelectorAll('.sheet-tab'));
+  tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() { activateTab(btn.dataset.tab); });
+    btn.addEventListener('keydown', function(e) {
+      var idx = tabs.indexOf(btn);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var next = tabs[(idx + 1) % tabs.length];
+        next.focus(); activateTab(next.dataset.tab);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+        prev.focus(); activateTab(prev.dataset.tab);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        tabs[0].focus(); activateTab(tabs[0].dataset.tab);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        tabs[tabs.length - 1].focus(); activateTab(tabs[tabs.length - 1].dataset.tab);
+      }
+    });
+  });
+}
+
 /* ── Init ──────────────────────────────────────── */
 let appInitialized = false;
 async function initApp() {
@@ -612,7 +678,7 @@ async function initApp() {
   renderRows();
   if (!appInitialized) {
     appInitialized = true;
-    bindRowDelegation(); bindVirtualScroll(); bindFilter(); bindEvents();
+    bindRowDelegation(); bindVirtualScroll(); bindFilter(); bindEvents(); bindTabs();
   }
   updateStatus('준비');
   document.getElementById('formula-input').focus();
