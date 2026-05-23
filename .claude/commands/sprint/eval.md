@@ -69,6 +69,30 @@ Nolan의 평가 결과를 PR에 코멘트로 등록한다.
 
 ---
 
+## Step 3.5 — 라벨 자동 업데이트
+
+PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
+
+**제거:**
+- `eval: pending`
+
+**추가 — finding 등급 (Nolan 평가 결과 기준):**
+
+| 조건 | 추가 라벨 |
+|------|-----------|
+| 🔴 Blocker 항목 존재 | `eval: done` + `finding: blocker` |
+| 🟡 Major만 존재 (Blocker 없음) | `eval: done` + `finding: major` |
+| 🟢 Minor 이하만 / 지적 없음 | `eval: done` + `finding: clear` + `ready to merge` |
+
+**라벨 업데이트 방법 (우선순위):**
+
+- `mcp__github__update_pull_request` (labels 파라미터) 우선 시도
+- 미연결 시: `gh pr edit [NUMBER] --remove-label "eval: pending" --add-label "eval: done,finding: [등급]" --repo [REPO]`
+
+> `finding: blocker` → `finding: major` → `finding: clear` 는 상호 배타적이다. 이전 finding 라벨이 있으면 먼저 제거 후 새 라벨 부착.
+
+---
+
 ## Step 4 — 완료 보고
 
 ```
@@ -78,4 +102,5 @@ Nolan의 평가 결과를 PR에 코멘트로 등록한다.
 PR:       [URL]
 관점:     [ops / marketing / business / all]
 코멘트:   [URL]
+라벨:     eval: done + finding: [blocker | major | clear]
 ```
