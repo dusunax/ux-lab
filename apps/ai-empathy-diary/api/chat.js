@@ -23,8 +23,17 @@ function isAllowedOrigin(origin) {
   return ALLOWED_ORIGINS.has(origin);
 }
 
+// 셀 참조 풀 — 해시로 결정론적 선택 (모델 ID가 같으면 항상 같은 이름)
+const MODEL_LABEL_POOL = [
+  '$A$1', '$B$2', '$C$3', '$D$4', '$E$5',
+  '$F$6', '$G$7', '$H$8', '$I$9', '$J$10',
+  '$A$2', '$B$1', '$C$2', '$D$3', '$E$4',
+];
+
 function generateModelLabel(modelId) {
-  return 'MDL-' + createHash('sha256').update(modelId).digest('hex').slice(0, 4);
+  const hash = createHash('sha256').update(modelId).digest('hex');
+  const idx = parseInt(hash.slice(0, 8), 16) % MODEL_LABEL_POOL.length;
+  return MODEL_LABEL_POOL[idx];
 }
 
 const FALLBACKS = [
