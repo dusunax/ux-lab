@@ -42,8 +42,10 @@ _(보고서 미생성 시: "보고서 미생성 — `/sprint:report` 실행 후 
 
 ---
 
+### ✅ 완료 항목
+
 <details>
-<summary>✅ 완료 항목 ({{DONE_COUNT}}개)</summary>
+<summary>완료율: {{DONE_COUNT}}/{{TOTAL_COUNT}}개 ({{COMPLETION_RATE}}%)</summary>
 
 {{COMPLETED_ITEMS}}
 
