@@ -620,6 +620,7 @@ function computeModelStats() {
   entries.forEach(function(e) {
     var label = e.modelLabel || null;
     if (!label) return; /* modelLabel 없는 구 데이터는 제외 */
+    if (e.feedback !== 'positive' && e.feedback !== 'negative') return; /* 피드백 없는 entry는 집계에서 제외 */
     if (!stats.has(label)) stats.set(label, { positive: 0, negative: 0 });
     var s = stats.get(label);
     if (e.feedback === 'positive') s.positive++;
@@ -629,19 +630,41 @@ function computeModelStats() {
 }
 
 /* ── Tab Switch ────────────────────────────────── */
+function activateTab(target) {
+  document.querySelectorAll('.sheet-tab').forEach(function(b) {
+    var isActive = b.dataset.tab === target;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    b.setAttribute('tabindex', isActive ? '0' : '-1');
+  });
+  document.querySelectorAll('.tab-content').forEach(function(c) {
+    c.classList.toggle('active', c.id === 'tab-' + target);
+    c.hidden = c.id !== 'tab-' + target;
+  });
+  if (target === 'stats') renderStats();
+}
+
 function bindTabs() {
-  document.querySelectorAll('.sheet-tab').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var target = btn.dataset.tab;
-      document.querySelectorAll('.sheet-tab').forEach(function(b) {
-        b.classList.toggle('active', b.dataset.tab === target);
-        b.setAttribute('aria-selected', b.dataset.tab === target ? 'true' : 'false');
-      });
-      document.querySelectorAll('.tab-content').forEach(function(c) {
-        c.classList.toggle('active', c.id === 'tab-' + target);
-        c.hidden = c.id !== 'tab-' + target;
-      });
-      if (target === 'stats') renderStats();
+  var tabs = Array.from(document.querySelectorAll('.sheet-tab'));
+  tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() { activateTab(btn.dataset.tab); });
+    btn.addEventListener('keydown', function(e) {
+      var idx = tabs.indexOf(btn);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var next = tabs[(idx + 1) % tabs.length];
+        next.focus(); activateTab(next.dataset.tab);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+        prev.focus(); activateTab(prev.dataset.tab);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        tabs[0].focus(); activateTab(tabs[0].dataset.tab);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        tabs[tabs.length - 1].focus(); activateTab(tabs[tabs.length - 1].dataset.tab);
+      }
     });
   });
 }

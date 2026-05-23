@@ -245,7 +245,7 @@ function renderStats() {
 
   container.innerHTML =
     '<div class="stats-header">모델별 만족도</div>' +
-    '<div class="stats-note">본인 피드백 기준 · null 제외 · 피드백 없는 모델은 집계 제외</div>' +
+    '<div class="stats-note">본인 피드백 기준 · null 제외 · 피드백 없는 모델은 집계 제외 · Sprint 7 이전 데이터는 집계에 포함되지 않습니다</div>' +
     rows;
 }
 

@@ -31,6 +31,7 @@
 | 2 | 모델 익명화: 해시 기반 숏코드 (`MDL-xxxx`). Firestore에 `model`(실제 ID) + `modelLabel`(표시용) 이중 필드 저장 | AI + PM |
 | 3 | CORS 정책: `api/log.js` 패턴으로 도메인 제한 적용 + 한계 주석 명시 (Auth 검증 미존재 TODO 삽입) | BE |
 | 4 | `api/chat.js`에 Firebase Auth 검증 없음 확인 — 이번 스프린트 CORS 제한으로 일부 보완, 완전한 Auth 방어는 Sprint 8 후보 등록 | BE + PM |
+| 5 | `FEEDBACK_MIN_SAMPLE` 임시 완화: 5 → 1 (2026-05-24). 근거: Sprint 7 시점 피드백 데이터 미축적. 복원 조건: DAU 50+ 또는 2주치 피드백 충분 확보 시 Sprint 8에서 재검토 | PM |
 
 ---
 
