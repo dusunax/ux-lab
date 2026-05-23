@@ -74,14 +74,30 @@ N을 확정하지 못하면:
 
 ## Step 3 — 보고서 경로 탐지
 
-`--report-url`이 없으면 로컬 파일을 탐색한다:
+아래 우선순위로 보고서 경로를 결정한다:
+
+| 우선순위 | 조건 | 동작 |
+|---------|------|------|
+| 1 | `--report-url URL` 인수 있음 | 해당 URL 사용 |
+| 2 | `docs/presentations/.last-report` 파일 있음 | 파일에서 경로 읽기 |
+| 3 | 로컬 glob 탐색 | 아래 명령으로 가장 최근 파일 탐지 |
+
+**우선순위 3 — 로컬 glob:**
 
 ```bash
-ls docs/presentations/sprint-N-report-*.html 2>/dev/null | head -1
+ls -t docs/presentations/sprint-N-report-*.html 2>/dev/null | head -1
 ```
 
-- 파일이 있으면 상대 경로를 PR 본문에 첨부.
-- 없으면 `(보고서 미생성 — /sprint:report 실행 후 --report-url로 첨부하세요)` 표시 후 계속.
+(`ls -t`: 수정 시각 역순, 가장 최근 파일이 첫 번째)
+
+- 경로가 확정되면 `{{REPORT_LINK}}`에 해당 경로를 채운다.
+- 어느 방법으로도 경로를 찾지 못하면:
+
+```
+(보고서 미생성 — /sprint:report 실행 후 /sprint:review를 재실행하세요)
+```
+
+표시 후 계속 진행한다.
 
 ---
 
