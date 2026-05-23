@@ -28,9 +28,13 @@ Sprint {{N}} — {{GOAL_ONE_LINE}}
 
 ---
 
-### ✅ 완료 항목
+### 📋 주요 결정 사항
 
-{{COMPLETED_ITEMS}}
+{{DECISIONS_TABLE}}
+
+_(결정 사항 테이블이 없으면 이 섹션 생략)_
+
+---
 
 ### ⏭️ 이월 항목
 
@@ -38,13 +42,9 @@ Sprint {{N}} — {{GOAL_ONE_LINE}}
 
 _(이월 항목 없으면 "없음 (Sprint {{N}} {{COMPLETION_RATE}}% 완료)"으로 대체)_
 
----
+### ✅ 완료 항목
 
-### 📋 주요 결정 사항
-
-{{DECISIONS_TABLE}}
-
-_(결정 사항 테이블이 없으면 이 섹션 생략)_
+{{COMPLETED_ITEMS}}
 
 ### 📊 보고서
 
