@@ -4,7 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
-| **ai-empathy-diary** | Excel 위장 AI 감정 일기 앱 ([배포](https://ux-lab-ai-empathy-diary.vercel.app/)) | 2026-05-11 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-217346?logoColor=white) | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
+| **ai-empathy-diary** | Excel 위장 AI 감정 일기 앱 ([배포](https://ux-lab-ai-empathy-diary.vercel.app/)) | 2026-05-11 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **@ux-lab/stellas-archive** | 게임 ([개발 일지](https://github.com/dusunax/ux-lab/wiki/Development-Log#stellas-archive-game), [배포](https://ux-lab-stellas-archive.vercel.app/)) | 2026-03-14 | dusunax | |
 | **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | 2026-02-23 | dusunax | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
 | **@ux-lab/seasonal-project-2025** | AI 기반 연말 사진 회고 웹 서비스 | 2025-12-20 | dusunax | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) |
@@ -29,20 +29,20 @@
 - PDF 저장
 - Firebase 기반 일일 요청 횟수 제한
 
-<img width="800" height="2072" alt="image" src="https://github.com/user-attachments/assets/b147b4f0-2df6-46c0-8a1e-d955069c99e4" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/b147b4f0-2df6-46c0-8a1e-d955069c99e4" />
 
-<img width="800" height="877" alt="image" src="https://github.com/user-attachments/assets/565b7146-3047-40f3-b80a-7a8855fb0b5d" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/565b7146-3047-40f3-b80a-7a8855fb0b5d" />
 
 ### 📍 @ux-lab/applications
 
 - 원티드 PDF 파싱 후 리스트 생성
 - 로컬 스토리지 기반 리스트 데이터 관리
 
-<img width="800" height="1394" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/dd01ff33-fd8d-4911-bb4e-d22fc619a600" />
 
 ### 📍 @ux-lab/flow
 
-<img width="800" height="917" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/014fb138-ca0e-4de7-95cf-461613507091" />
 
 
 ## 🚀 시작하기
