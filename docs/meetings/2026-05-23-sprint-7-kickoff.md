@@ -105,6 +105,7 @@
 | 모델 익명화 레이블 방식 (모델 A/B vs 해시 vs 내부 코드명) | PM Jordan + AI Sage | Sprint 7 킥오프 | ✅ Resolved (sha256 해시 숏코드 `MDL-xxxx`, 이중 필드 저장) |
 | `api/chat.js` CORS 강화 — 프로덕션 도메인 제한 적용 여부 | BE Blake | Sprint 7 킥오프 | ✅ Resolved (도메인 제한 적용 + Auth 미존재 주석 + TODO 삽입) |
 | `api/chat.js` Firebase Auth 검증 완전 방어 | BE Blake + PM | Sprint 8 검토 | ⚠️ Open (이번 스프린트 범위 외, Sprint 8 후보) |
+| `model_labels` Firestore 컬렉션 분리 — 레이블 변경 시 재배포 없이 적용 가능하도록 | BE Blake | Sprint 8 검토 | ⚠️ Open (BE 설계 검토 완료, Sprint 8 구현 후보) |
 
 ---
 
@@ -141,11 +142,45 @@
 
 **미래 후보**: 사용자가 풀에서 직접 라벨 선택하는 설정 UI (Sprint 8 이후)
 
+### `model_labels` 컬렉션 분리 설계 (2026-05-24 BE 검토)
+
+PM 질의: "모델이름과 모델 라벨을 별도 테이블로 관리하면 레이블 변경 시 재배포 없이 적용 가능하지 않나?"
+
+**BE(Blake) 검토 결과:**
+
+**제안 스키마** — `model_labels/{modelId}`
+
+```
+- label: string        // "$A$1"
+- isActive: boolean    // 현재 FALLBACKS에 있는지 여부
+- createdAt / updatedAt
+```
+
+접근 권한: 인증된 사용자 읽기 가능, 클라이언트 쓰기 차단 (`allow write: if false`)
+
+**현행 하드코딩 vs 별도 컬렉션 비교:**
+
+| 항목 | 현행 하드코딩 | 별도 컬렉션 |
+|------|-------------|------------|
+| 레이블 변경 | 재배포 필요 | Console에서만 변경, 재배포 불필요 |
+| 구 entry 통계 포함 | `modelLabel` 없으면 제외 | 폴백으로 포함 가능 |
+| 운영 복잡도 | 낮음 | seeding + rules 변경 필요 |
+
+**Sprint 8 권장 구현 (3개 파일, 30줄 이내):**
+
+1. Firebase Console에서 현재 모델 6개 `model_labels` 수동 seeding
+2. `firestore.rules`에 읽기 권한 추가
+3. `initApp()`에 `loadModelLabels()` — 초기 1회 Map 캐시
+4. `computeModelStats()`에 폴백: `e.modelLabel || modelLabelsCache.get(e.model)` → Sprint 6 이전 데이터도 통계 포함
+
+**이후로 미루는 것:** `api/chat.js` 하드코딩 제거는 Firebase ID Token 검증(Auth) 선행 후 Admin SDK 도입 시 함께 처리.
+
 ### 다음 단계 방향성
 
 - BE Blake: `api/chat.js` CORS 제한 + `modelLabel` 생성 로직 구현 우선
 - FE Avery: 대시보드 탭 구조 설계 후 CSS/SVG 바 차트 구현
 - Sprint 8 후보: Firebase ID Token 검증 완전 방어 (`api/chat.js`)
+- Sprint 8 후보: `model_labels` 컬렉션 분리 + `computeModelStats()` 폴백 처리 (레거시 데이터 통계 포함)
 
 ---
 
