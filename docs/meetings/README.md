@@ -26,3 +26,4 @@
 |------|------|
 | [../process/sprint-process.md](../process/sprint-process.md) | 스프린트 운영 7대 규칙, 완료 기준, 파일 컨벤션 |
 | [../process/sprint-git-workflow.md](../process/sprint-git-workflow.md) | 브랜치 전략, `/sprint:start` → `/sprint:review` Git 흐름, PR 규칙 |
+| [../process/pr-template.md](../process/pr-template.md) | `/sprint:review` PR 제목·본문 템플릿 (플레이스홀더 정의 포함) |
