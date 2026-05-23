@@ -115,17 +115,17 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] AI 응답이 있는 행에만 피드백 버튼 렌더링 (응답 없는 행에 미표시)
-- [ ] 좋아요 클릭 → Firestore `feedback: 'positive'` 저장 + `emotion_feedback_recorded` 이벤트 발화
-- [ ] 싫어요 클릭 → Firestore `feedback: 'negative'` 저장 + 이벤트 발화
-- [ ] 토글: 이미 선택된 값 재클릭 시 `feedback: null`로 초기화
-- [ ] 반전: 좋아요 선택 후 싫어요 클릭 시 `feedback: 'negative'`로 변경
-- [ ] 선택된 버튼 시각적 구분 (색상/상태), 미선택 버튼 dimming
-- [ ] 피드백 없는 row는 hover 시에만 버튼 표시, 피드백 있는 row는 항상 표시
-- [ ] `/api/chat.js` 응답 바디에 `model: string` 포함 (누락 시 `"unknown"` fallback)
-- [ ] Firestore entry에 `model` 저장 (AI 응답 수신 시)
-- [ ] Vercel Runtime Log에서 `emotion_feedback_recorded` 이벤트 수신 확인
-- [ ] 피드백 버튼: 이모지 금지, 커스텀 SVG 사용
+- [x] AI 응답이 있는 행에만 피드백 버튼 렌더링 (응답 없는 행에 미표시)
+- [x] 좋아요 클릭 → Firestore `feedback: 'positive'` 저장 + `emotion_feedback_recorded` 이벤트 발화
+- [x] 싫어요 클릭 → Firestore `feedback: 'negative'` 저장 + 이벤트 발화
+- [x] 토글: 이미 선택된 값 재클릭 시 `feedback: null`로 초기화
+- [x] 반전: 좋아요 선택 후 싫어요 클릭 시 `feedback: 'negative'`로 변경
+- [x] 선택된 버튼 시각적 구분 (색상/상태), 미선택 버튼 dimming
+- [x] 피드백 없는 row는 hover 시에만 버튼 표시, 피드백 있는 row는 항상 표시
+- [x] `/api/chat.js` 응답 바디에 `model: string` 포함 (누락 시 `"unknown"` fallback)
+- [x] Firestore entry에 `model` 저장 (AI 응답 수신 시)
+- [x] Vercel Runtime Log에서 `emotion_feedback_recorded` 이벤트 수신 확인
+- [x] 피드백 버튼: 이모지 금지, 커스텀 SVG 사용
 
 ---
 

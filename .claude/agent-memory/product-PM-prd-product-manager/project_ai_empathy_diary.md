@@ -37,7 +37,10 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 
 - **모바일 카드 뷰**: 외부 공유 후 GA4 기기 유형별 이탈률 2주치 확보 후 UX 제안. 현재 보류.
 - **P2 이벤트 전체 추가**: DAU 50+ 달성 시. `emotion_label_recorded`만 Sprint 5에 선별 추가.
-- **api/chat.js CORS**: Firebase Auth 토큰으로 방어 중, 스프린트 6 재검토.
+- **api/chat.js CORS**: Firebase Auth 토큰으로 방어 중. Sprint 7 킥오프 재검토 예정.
+- **만족도 대시보드 시각화 방식**: 차트 vs 숫자 테이블, 라이브러리 사용 여부 — Sprint 7 킥오프 결정 필요. 담당: FE Avery + UX Riley.
+- **모델 익명화 레이블 방식**: 모델 A/B vs 해시 vs 내부 코드명 — Sprint 7 킥오프 결정 필요. 담당: PM + AI Sage.
+- **전체 익명 집계 도입 여부**: Firestore 규칙 변경 + Cloud Function 설계 필요. 사용자 수 증가 후 별도 검토. 담당: PM + BE Blake.
 
 ## 스프린트 현황
 
@@ -48,6 +51,7 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 | Sprint 3 | 2026-05-18 | Vercel 배포, Firebase OAuth, Firestore, P0 로그 구현 |
 | Sprint 4 | 2026-05-19 | 로그 파이프라인 완성, rate limit, GA4 연결, 모바일 최소 대응, 오류 UX |
 | Sprint 5 | 2026-05-20 | Vite 보류, CSS+JS 분리, CORS 제한, AI 프롬프트 리뷰 시작, emotion_label_recorded |
+| Sprint 6 | 2026-05-21 | 피드백 버튼(커스텀 SVG), Firestore feedback/model 필드, emotion_feedback_recorded 이벤트, 모델 추적 |
 
 ## 로그 아키텍처 (Sprint 3 확정, Sprint 5 업데이트)
 
