@@ -23,6 +23,17 @@
 
 ---
 
+## 결정 사항 요약
+
+| # | 결정 내용 | 담당 |
+|---|-----------|------|
+| 1 | 대시보드 시각화: CSS/SVG 기반 바 차트 (CDN 라이브러리 없이, 싱글 HTML 구조 호환) | FE + UX |
+| 2 | 모델 익명화: 해시 기반 숏코드 (`MDL-xxxx`). Firestore에 `model`(실제 ID) + `modelLabel`(표시용) 이중 필드 저장 | AI + PM |
+| 3 | CORS 정책: `api/log.js` 패턴으로 도메인 제한 적용 + 한계 주석 명시 (Auth 검증 미존재 TODO 삽입) | BE |
+| 4 | `api/chat.js`에 Firebase Auth 검증 없음 확인 — 이번 스프린트 CORS 제한으로 일부 보완, 완전한 Auth 방어는 Sprint 8 후보 등록 | BE + PM |
+
+---
+
 ## Sprint 7 확정 스코프
 
 ### 포함
@@ -30,10 +41,10 @@
 | # | 항목 |
 |---|------|
 | 1 | 만족도 대시보드 UI 구현 — Firestore entry 조회 → 클라이언트 사이드 모델별 그룹핑 → 만족도(%) 계산 |
-| 2 | 대시보드 시각화 방식 결정 및 구현 (차트 vs 숫자 테이블, 라이브러리 사용 여부) |
-| 3 | 데이터 부족 상태 UI 정의 및 구현 (`feedback: null` 혼재, 0건 엣지 케이스 포함) |
-| 4 | 모델 익명화 레이블 방식 결정 및 적용 (모델 A/B vs 해시 vs 내부 코드명) |
-| 5 | `api/chat.js` CORS 정책 강화 — `*` 허용 또는 프로덕션 도메인 + localhost 제한 여부 확정 |
+| 2 | 대시보드 시각화: CSS/SVG 기반 바 차트 (CDN 없이 구현) |
+| 3 | 데이터 부족 상태 UI — `feedback: null` 제외, 피드백 5개 미만 모델은 "데이터 부족" 표시 |
+| 4 | 모델 익명화: sha256 해시 4자리 숏코드, `config.js`에 매핑 상수 추가, Firestore `modelLabel` 필드 저장 |
+| 5 | `api/chat.js` CORS 제한 + 한계 주석 명시 + Firebase Auth TODO 삽입 |
 | 6 | 대시보드 QA — 0건, `feedback: null` 혼재, 모델별 데이터 편중 시나리오 검증 |
 | 7 | `emotion_feedback_recorded` 집계 로직 검증 — 토글 시 최신 값 기준 집계 동작 확인 |
 
@@ -50,19 +61,38 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] 대시보드에서 본인 entry 기준 모델별 만족도(%)가 표시됨
-- [ ] `feedback: null`인 entry는 만족도 계산에서 제외됨
+- [ ] 대시보드에서 본인 entry 기준 모델별 만족도(%)가 CSS/SVG 바 차트로 표시됨
+- [ ] `feedback: null`인 entry는 만족도 계산에서 제외됨 (분모: positive + negative만)
 - [ ] 데이터가 0건이거나 피드백 있는 entry가 없을 때 "데이터가 아직 충분하지 않습니다" 상태가 표시됨
-- [ ] 모델명이 사용자에게 직접 노출되지 않음 — 익명화 레이블(A/B 또는 내부 코드명)로만 표시
+- [ ] 피드백 5개 미만 모델은 "데이터 부족" 상태로 표시됨
+- [ ] 모델명이 사용자에게 직접 노출되지 않음 — `MDL-xxxx` 해시 숏코드로만 표시
+- [ ] Firestore entry에 `modelLabel` 필드가 저장됨 (AI 응답 수신 시)
 - [ ] 토글로 변경된 피드백은 마지막(최신) 값만 집계에 반영됨
-- [ ] `api/chat.js` CORS 정책이 `*`에서 명시적 도메인으로 제한되거나, 제한 불가 근거가 문서화됨
+- [ ] `api/chat.js` CORS가 프로덕션 도메인 + localhost로 제한됨 (`api/log.js` 패턴 적용)
+- [ ] `api/chat.js`에 Auth 검증 부재 한계를 주석으로 명시하고 TODO가 삽입됨
 - [ ] 대시보드 모든 엣지 케이스(0건, 혼재, 편중)에서 UI 오류 없이 렌더링됨
 
 ---
 
 ## 액션 아이템
 
-(킥오프 후 역할별 담당자와 함께 채울 것)
+**BE (Blake)**
+- [ ] `api/chat.js` — CORS를 `api/log.js` 패턴으로 변경 (프로덕션 도메인 + localhost 제한)
+- [ ] `api/chat.js` — Auth 검증 부재 한계 주석 + Firebase ID Token 검증 TODO 삽입
+- [ ] `api/chat.js` — AI 응답 시 `modelLabel` 생성 로직 추가 (sha256 4자리 해시)
+- [ ] Firestore entry 저장 시 `modelLabel` 필드 포함
+
+**FE (Avery)**
+- [ ] 대시보드 탭/섹션 추가 — Firestore entry 조회 → 모델별 집계 → 만족도(%) 계산
+- [ ] CSS/SVG 기반 바 차트 렌더링 구현 (CDN 없이)
+- [ ] 데이터 부족 상태 UI 구현 (0건, 피드백 5개 미만 분기)
+- [ ] `config.js` — 모델 익명화 레이블 매핑 상수 추가
+
+**QA (Morgan / Quinn)**
+- [ ] 수용 기준 전체 항목 검증
+- [ ] 0건 / `feedback: null` 혼재 / 데이터 편중 시나리오 검증
+- [ ] CORS 제한 후 프로덕션 도메인에서 정상 동작 확인
+- [ ] `modelLabel` 필드가 Firestore에 올바르게 저장되는지 확인
 
 ---
 
@@ -70,9 +100,10 @@
 
 | 질문 | 담당 | 기한 | 상태 |
 |------|------|------|------|
-| 만족도 대시보드 시각화 방식 (차트 vs 숫자 테이블, 라이브러리 사용 여부) | FE Avery + UX Riley | Sprint 7 킥오프 | ⚠️ Open |
-| 모델 익명화 레이블 방식 (모델 A/B vs 해시 vs 내부 코드명) | PM Jordan + AI Sage | Sprint 7 킥오프 | ⚠️ Open |
-| `api/chat.js` CORS 강화 — 프로덕션 도메인 제한 적용 여부 | BE Blake | Sprint 7 킥오프 | ⚠️ Open |
+| 만족도 대시보드 시각화 방식 (차트 vs 숫자 테이블, 라이브러리 사용 여부) | FE Avery + UX Riley | Sprint 7 킥오프 | ✅ Resolved (CSS/SVG 바 차트, CDN 없이) |
+| 모델 익명화 레이블 방식 (모델 A/B vs 해시 vs 내부 코드명) | PM Jordan + AI Sage | Sprint 7 킥오프 | ✅ Resolved (sha256 해시 숏코드 `MDL-xxxx`, 이중 필드 저장) |
+| `api/chat.js` CORS 강화 — 프로덕션 도메인 제한 적용 여부 | BE Blake | Sprint 7 킥오프 | ✅ Resolved (도메인 제한 적용 + Auth 미존재 주석 + TODO 삽입) |
+| `api/chat.js` Firebase Auth 검증 완전 방어 | BE Blake + PM | Sprint 8 검토 | ⚠️ Open (이번 스프린트 범위 외, Sprint 8 후보) |
 
 ---
 
@@ -80,16 +111,16 @@
 
 ### 리스크
 
-- **데이터 충분성:** Sprint 6 완료 후 2주치 피드백 데이터가 충분히 쌓이지 않으면 대시보드 시각화의 통계적 유의미성이 낮다. 최소 의미 있는 entry 건수 기준을 킥오프에서 PM이 명확히 정의해야 한다.
-- **집계 로직 사전 합의 미완:** 토글 시 중복 이벤트 발화 → "최신 값 기준" 집계 방식을 대시보드 구현 전 BE와 AI Sage가 명시적으로 재확인해야 한다. 미합의 시 대시보드 수치 오염 가능성이 있다.
-- **모델 익명화 결정 지연:** 레이블 방식이 킥오프 전에 결정되지 않으면 FE UI 설계가 블로킹된다. PM + AI Sage의 결정이 크리티컬 패스에 있다.
-- **`api/chat.js` CORS:** Firebase Auth 토큰 방어로 현재까지 유지했으나, Sprint 7에서도 결정이 미뤄지면 보안 기술 부채가 누적된다. BE Blake가 킥오프 전 현재 위험 수준을 평가해야 한다.
+- **데이터 충분성:** Sprint 6 완료(2026-05-21) 기준 2주치 피드백이 쌓이는 시점은 2026-06-04 전후. 피드백 있는 entry가 모델별 5개 미만이면 대시보드가 "데이터 부족" 상태로 표시. 최소 기준 5개로 킥오프에서 확정함.
+- **집계 로직:** 토글 시 중복 이벤트 발화 → "최신 값 기준" 집계. `feedback: null`은 분모에서 제외. 킥오프에서 BE + AI Sage 재확인 완료.
+- **`api/chat.js` 보안 공백:** Auth 검증 없음 확인. CORS 제한으로 브라우저 오리진 차단, curl/서버 직접 호출은 여전히 가능. Sprint 8에서 Firebase ID Token 검증 추가 예정.
+- **`modelLabel` 하위 호환:** 기존 Firestore entry에는 `modelLabel` 필드 없음. 대시보드는 `modelLabel` 없는 entry는 "이전 데이터" 처리 또는 `model` 필드에서 실시간 변환으로 대응.
 
 ### 다음 단계 방향성
 
-- Sprint 7 킥오프: Open Questions 결정 → 액션 아이템 확정 → 대시보드 설계 시작
-- BE Blake: 킥오프 당일 Firestore 현황 브리핑 (feedback 필드가 있는 entry 건수 확인)
-- PM Jordan + AI Sage: 킥오프 전 모델 익명화 레이블 방식 사전 합의
+- BE Blake: `api/chat.js` CORS 제한 + `modelLabel` 생성 로직 구현 우선
+- FE Avery: 대시보드 탭 구조 설계 후 CSS/SVG 바 차트 구현
+- Sprint 8 후보: Firebase ID Token 검증 완전 방어 (`api/chat.js`)
 
 ---
 
