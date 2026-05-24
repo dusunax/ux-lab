@@ -1,6 +1,41 @@
 import { randomUUID, createHash } from 'crypto';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+// ── Firebase Admin SDK 초기화 (1회만) ────────────────────────────────────────
+// FIREBASE_SERVICE_ACCOUNT: Vercel 환경변수에 Service Account JSON 문자열로 등록
+// 미등록 시 토큰 검증 불가 → 501 반환
+function getAdminAuth() {
+  if (getApps().length === 0) {
+    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!raw) return null;
+    try {
+      initializeApp({ credential: cert(JSON.parse(raw)) });
+    } catch {
+      return null;
+    }
+  }
+  return getAuth();
+}
+
+// ── Firebase ID Token 검증 ────────────────────────────────────────────────────
+// Authorization: Bearer <idToken> 헤더에서 토큰 추출 후 검증
+// 반환값: { uid } | null (검증 실패)
+async function verifyIdToken(req) {
+  const auth = getAdminAuth();
+  if (!auth) return null; // 환경변수 미설정 — 501로 처리
+  const header = req.headers.authorization ?? '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return null;
+  try {
+    const decoded = await auth.verifyIdToken(token);
+    return { uid: decoded.uid };
+  } catch {
+    return null;
+  }
+}
 
 // CORS 정책: api/log.js와 동일하게 프로덕션 도메인 + localhost로 제한한다.
 // [한계] CORS는 브라우저 Same-Origin 정책 강제이므로 curl/서버 직접 호출을 막지 않는다.
@@ -62,16 +97,25 @@ async function callOpenRouter(apiKey, body) {
 }
 
 export default async function handler(req, res) {
-  // TODO(Sprint 8): Firebase Admin SDK로 Firebase ID Token 검증 추가
-  // const idToken = req.headers.authorization?.replace('Bearer ', '')
-  // const decoded = await adminAuth.verifyIdToken(idToken)
+  // ── Firebase ID Token 검증 ─────────────────────────────────────────────────
+  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // 환경변수 미설정: 개발 중 또는 설정 누락 상태 — 명시적 501 반환
+    res.status(501).json({ error: 'FIREBASE_SERVICE_ACCOUNT 환경변수가 설정되지 않았습니다.' });
+    return;
+  }
+
+  const decoded = await verifyIdToken(req);
+  if (!decoded) {
+    res.status(401).json({ error: '인증이 필요합니다. 로그인 후 다시 시도해주세요.' });
+    return;
+  }
 
   const origin = req.headers.origin;
 
   if (isAllowedOrigin(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Vary', 'Origin');
   }
 
