@@ -12,6 +12,7 @@
 | [2026-05-21-sprint-6-pre.md](./2026-05-21-sprint-6-pre.md) | Sprint 6 사전 기획 | 2026-05-21 | 좋아요/싫어요 피드백 수집, 모델 추적, 만족도 대시보드 설계, Open Questions 4개 정의 |
 | [2026-05-21-sprint-6-kickoff.md](./2026-05-21-sprint-6-kickoff.md) | Sprint 6 킥오프 | 2026-05-21 | OQ 4개 결정, 피드백 토글 허용, 본인 데이터 범위, 모델명 UI 미노출, 대시보드 Sprint 7 이연 |
 | [2026-05-23-sprint-7-kickoff.md](./2026-05-23-sprint-7-kickoff.md) | Sprint 7 킥오프 | 2026-05-23 | 모델별 만족도 대시보드 구현 + CORS 정책 강화 |
+| [2026-05-24-sprint-8-kickoff.md](./2026-05-24-sprint-8-kickoff.md) | Sprint 8 킥오프 | 2026-05-24 | Firebase Auth 서버사이드 검증 + model_labels 컬렉션 분리 |
 
 ## 프로세스 회의록
 
