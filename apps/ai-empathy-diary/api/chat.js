@@ -100,21 +100,9 @@ async function callOpenRouter(apiKey, body) {
 }
 
 export default async function handler(req, res) {
-  // ── Firebase ID Token 검증 ─────────────────────────────────────────────────
-  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // 환경변수 미설정: 개발 중 또는 설정 누락 상태 — 명시적 501 반환
-    res.status(501).json({ error: 'FIREBASE_SERVICE_ACCOUNT 환경변수가 설정되지 않았습니다.' });
-    return;
-  }
-
-  const decoded = await verifyIdToken(req);
-  if (!decoded) {
-    res.status(401).json({ error: '인증이 필요합니다. 로그인 후 다시 시도해주세요.' });
-    return;
-  }
-
   const origin = req.headers.origin;
 
+  // ── CORS 헤더 설정 (OPTIONS preflight 포함, 인증 검사 전에 처리) ──────────
   if (isAllowedOrigin(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -134,6 +122,18 @@ export default async function handler(req, res) {
 
   if (origin && !isAllowedOrigin(origin)) {
     res.status(403).json({ error: 'Forbidden' });
+    return;
+  }
+
+  // ── Firebase ID Token 검증 ─────────────────────────────────────────────────
+  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    res.status(501).json({ error: 'FIREBASE_SERVICE_ACCOUNT 환경변수가 설정되지 않았습니다.' });
+    return;
+  }
+
+  const decoded = await verifyIdToken(req);
+  if (!decoded) {
+    res.status(401).json({ error: '인증이 필요합니다. 로그인 후 다시 시도해주세요.' });
     return;
   }
 
