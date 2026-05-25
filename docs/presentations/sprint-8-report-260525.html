@@ -31,7 +31,31 @@
     </div>
   </div>
 
-  <!-- Slide 2: 목표 + 안건 -->
+  <!-- Slide 2: 목차 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목차</div>
+      <h2 class="slide-title">Contents</h2>
+      <div class="toc-grid">
+        <div>
+          <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">목표 &amp; 안건</span></div>
+          <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">주요 결정 사항</span></div>
+          <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">액션 아이템 완료 현황</span></div>
+          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">Firebase Auth 검증 구조</span></div>
+          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">레거시 마이그레이션</span></div>
+        </div>
+        <div>
+          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">QA 검증 결과</span></div>
+          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">Review Findings</span></div>
+          <div class="toc-item"><span class="toc-num">8</span><span class="toc-label">Preview — CORS 403</span></div>
+          <div class="toc-item"><span class="toc-num toc-num--faded">9</span><span class="toc-label toc-label--faded">Q&amp;A</span></div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 목표 + 안건 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">목표</div>
@@ -228,67 +252,33 @@
     </div>
   </div>
 
-  <!-- Slide 7: QA 검증 결과 -->
+  <!-- Slide 8: QA 검증 결과 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">QA</div>
       <h2 class="slide-title">QA 검증 결과</h2>
       <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
-        <span class="tag tag-red">🔴 H-1 발견 → 즉시 수정</span>
-        <span class="tag tag-green">QA-1 E2E PASS</span>
-        <span class="tag tag-green">QA-3 CORS PASS</span>
-        <span class="tag tag-green">M-2 · S-1 수정 완료</span>
-        <span class="tag tag-yellow">이월 1건 (M-1)</span>
+        <span class="tag tag-green">QA-1 E2E 통과</span>
+        <span class="tag tag-green">QA-3 CORS 통과</span>
+        <span class="tag tag-yellow">QA-2 부분 통과 (model 없는 5건 제외)</span>
       </div>
       <table class="data-table">
-        <thead><tr><th>등급</th><th>항목</th><th>결과</th></tr></thead>
+        <thead><tr><th>#</th><th>항목</th><th>결과</th></tr></thead>
         <tbody>
-          <tr style="background:#fff5f5;">
-            <td><span class="tag tag-red">🔴 Blocker</span></td>
-            <td>
-              <strong>H-1 — OPTIONS preflight → 401</strong><br>
-              <span style="font-size:12px; color:#888;">CORS 처리 전에 verifyIdToken() 호출됨. 브라우저 preflight가 인증 헤더 미전송으로 401 반환.</span>
-            </td>
-            <td><span class="tag tag-green">✅ 수정 완료</span><br><span style="font-size:11px; color:#888;">OPTIONS 분기를 auth 검사 앞으로 이동</span></td>
-          </tr>
           <tr>
-            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
-            <td>
-              <strong>M-1 — model 필드 없는 entry 5건 누락</strong><br>
-              <span style="font-size:12px; color:#888;">Sprint 5 이전 entry — model/modelLabel 모두 없음. 대시보드 통계 미반영.</span>
-            </td>
-            <td><span class="badge badge-yellow">⚠ 이월</span></td>
-          </tr>
-          <tr>
-            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
-            <td>
-              <strong>M-2 — qwen · minimax 라벨 충돌 ($H$8)</strong><br>
-              <span style="font-size:12px; color:#888;">model_labels seeding 시 두 모델이 동일 해시 버킷 → Firestore 직접 수정.</span>
-            </td>
-            <td><span class="tag tag-green">✅ 수정 완료</span></td>
-          </tr>
-          <tr>
-            <td><span class="tag tag-green">🟢 Minor</span></td>
-            <td>
-              <strong>S-1 — favicon 404</strong><br>
-              <span style="font-size:12px; color:#888;">SVG data URI favicon 추가 — 앱 로고와 동일한 엑셀 스타일 아이콘 적용.</span>
-            </td>
-            <td><span class="tag tag-green">✅ 적용 완료</span></td>
-          </tr>
-          <tr>
-            <td>QA-1</td>
+            <td>1</td>
             <td>E2E — 로그인 → AI 응답 → 피드백 → 대시보드 전체 플로우 (Preview)</td>
-            <td><span class="tag tag-green">✅ PASS</span></td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
           </tr>
           <tr>
-            <td>QA-2</td>
+            <td>2</td>
             <td>Firestore model_labels 캐시 6개 · 레거시 폴백 (model 보유 entry)</td>
-            <td><span class="tag tag-green">✅ PASS</span> <span style="font-size:11px; color:#b07c00;">(model 없는 5건 제외)</span></td>
+            <td><span class="tag tag-green">✅ 통과</span> <span style="font-size:11px; color:#b07c00;">(model 없는 5건 제외)</span></td>
           </tr>
           <tr>
-            <td>QA-3</td>
+            <td>3</td>
             <td>CORS — api/log 미허용 오리진 403 · 브라우저 오류 없음</td>
-            <td><span class="tag tag-green">✅ PASS</span></td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
           </tr>
         </tbody>
       </table>
@@ -296,7 +286,53 @@
     </div>
   </div>
 
-  <!-- Slide 8: 데모 — CORS 403 스크린샷 -->
+  <!-- Slide 9: Review Findings -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Review</div>
+      <h2 class="slide-title">Review Findings</h2>
+      <table class="data-table">
+        <thead><tr><th>등급</th><th>항목</th><th>처리</th></tr></thead>
+        <tbody>
+          <tr style="background:#fff5f5;">
+            <td><span class="tag tag-red">🔴 Blocker</span></td>
+            <td>
+              <strong>H-1 — OPTIONS preflight → 401</strong><br>
+              <span style="font-size:12px; color:#888;">CORS 처리 전에 verifyIdToken() 호출 → 브라우저 preflight 401 반환</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span><br><span style="font-size:11px; color:#888;">OPTIONS 분기를 auth 검사 앞으로 이동</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>M-1 — model 필드 없는 entry 5건 집계 제외</strong><br>
+              <span style="font-size:12px; color:#888;">Sprint 5 이전 entry — 기록 시점에 model 정보 미존재, 복원 불가</span>
+            </td>
+            <td><span class="badge badge-yellow">미반영 (설계 한계)</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>M-2 — qwen · minimax 라벨 충돌 ($H$8)</strong><br>
+              <span style="font-size:12px; color:#888;">model_labels seeding 시 두 모델이 동일 해시 버킷</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">🟢 Minor</span></td>
+            <td>
+              <strong>S-1 — favicon 404</strong><br>
+              <span style="font-size:12px; color:#888;">싱글 HTML 앱에 favicon 미정의 → 콘솔 오류</span>
+            </td>
+            <td><span class="tag tag-green">✅ 적용 완료</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Preview — CORS 403 스크린샷 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">데모</div>
@@ -318,7 +354,7 @@
     </div>
   </div>
 
-  <!-- Slide 9: Q&A -->
+  <!-- Slide 11: Q&A -->
   <div class="slide slide--qa-light">
     <div class="slide-inner">
       <div class="qa-icon">Q&amp;A</div>

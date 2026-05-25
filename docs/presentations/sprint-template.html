@@ -14,14 +14,16 @@
   │                                                                 │
   │  표준 슬라이드 순서:                                            │
   │  1. 표지          slide--cover                                  │
-  │  2. 목표 + 안건   goal-quote + data-table (결과 컬럼 포함)      │
-  │  3. 결정 사항     data-table (OQ 결정 내용 + 담당)              │
-  │  4. 액션 아이템   BE/FE 2열 그리드 + QA 섹션                   │
-  │  5. 아키텍처      log-block 기반 흐름 다이어그램                │
-  │  6. 세부 슬라이드 스크린샷 / 테이블 / 마이그레이션 등           │
-  │  7. QA 검증 결과  상태 배지 + data-table (발견 사항)            │
-  │  8. 데모          screenshot-wrap (풀 스크린샷)                 │
-  │  9. Q&A           slide--qa-light                               │
+  │  2. 목차          toc-grid + toc-item                           │
+  │  3. 목표 + 안건   goal-quote + data-table (결과 컬럼 포함)      │
+  │  4. 결정 사항     data-table (OQ 결정 내용 + 담당)              │
+  │  5. 액션 아이템   BE/FE 2열 그리드 + QA 섹션                   │
+  │  6. 아키텍처      log-block 기반 흐름 다이어그램                │
+  │  7. 세부 슬라이드 스크린샷 / 테이블 / 마이그레이션 등           │
+  │  8. Review Findings  등급 태그 + data-table (발견 사항)         │
+  │  9. QA 검증 결과     순번(#) + data-table (통과/실패)           │
+  │  10. 데모            screenshot-wrap (풀 스크린샷)              │
+  │  11. Q&A             slide--qa-light                            │
   │                                                                 │
   │  사용 가능한 유틸리티 클래스 → ppt-theme.css 참조              │
   │  ─ 우선순위 뱃지: .p0 .p1 .p2                                  │
@@ -30,6 +32,8 @@
   │  ─ 흐름 다이어그램: .log-block > .log-row > .log-status .ok    │
   │  ─ 2열 레이아웃: .two-col                                      │
   │  ─ 스크린샷: .screenshot-wrap .screenshot .screenshot-cap      │
+  │  ─ 목차: .toc-grid > .toc-item > .toc-num + .toc-label        │
+  │    흐린 항목(Q&A): .toc-num--faded .toc-label--faded           │
   └─────────────────────────────────────────────────────────────────┘
   -->
   <style>
@@ -65,7 +69,38 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 2: 목표 + 안건
+       SLIDE 2: 목차
+       toc-grid:        2열 그리드 컨테이너 (좌열 1~N/2, 우열 N/2+1~N)
+       toc-item:        번호 + 항목명 행
+       toc-num:         녹색 번호 / toc-num--faded: Q&A 등 흐린 항목
+       toc-label:       항목명 / toc-label--faded: 흐린 항목명
+       번호 규칙:       콘텐츠 섹션만 1부터 순번 (표지·목차·Q&A 제외)
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목차</div>
+      <h2 class="slide-title">Contents</h2>
+      <div class="toc-grid">
+        <div>
+          <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">목표 &amp; 안건</span></div>
+          <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">결정 사항</span></div>
+          <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">액션 아이템</span></div>
+          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">아키텍처</span></div>
+        </div>
+        <div>
+          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">세부 슬라이드</span></div>
+          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">QA 검증 결과</span></div>
+          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">Review Findings</span></div>
+          <div class="toc-item"><span class="toc-num">8</span><span class="toc-label">데모</span></div>
+          <div class="toc-item"><span class="toc-num toc-num--faded">9</span><span class="toc-label toc-label--faded">Q&amp;A</span></div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 3: 목표 + 안건
        goal-quote: 스프린트 목표 인용구 (blockquote.goal-quote)
        data-table: 안건 목록 — 결과 컬럼(badge badge-green / badge-yellow) 포함
        안건 구분: "OQ 결정" | "결정" | "확정"
@@ -92,7 +127,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 3: 결정 사항
+       SLIDE 4: 결정 사항
        data-table: # | 결정 내용 (주요 결정 bold + 부연 span) | 담당
        OQ 번호는 "OQ-1" 형식, 일반 결정은 "결정-N" 형식
   ────────────────────────────────────────────────────────────────── -->
@@ -134,7 +169,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 4: 액션 아이템 완료 현황
+       SLIDE 5: 액션 아이템 완료 현황
        BE / FE: 2열 그리드 + check-list (완료: li.done, 이월: style 직접)
        QA: 1열, column-count:2 로 2단 체크리스트
        이월·경고: color:#b07c00; ⚠ 접두어 사용
@@ -174,7 +209,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 5: 아키텍처 / 기술 세부
+       SLIDE 6: 아키텍처 / 기술 세부
        log-block: 흐름 단계 다이어그램 (log-row > log-status + log-event)
        log-status ok: 녹색 원 번호 / log-time: 타임스탬프·상태 레이블
        2열: 클라이언트 흐름 / 서버 흐름 or Before/After
@@ -213,7 +248,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 6: 세부 슬라이드 (자유 형식)
+       SLIDE 7: 세부 슬라이드 (자유 형식)
        용도: 스크린샷 2장 비교 / 마이그레이션 결과 / 보안 세부 등
        스크린샷 2장: two-col > screenshot-wrap 두 개
        테이블 세부: data-table + 보조 설명 div
@@ -262,11 +297,10 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 7: QA 검증 결과
-       상단 요약 배지: tag tag-green (통과) / tag-yellow (이월)
-       data-table: 우선순위 | QA 항목 | 결과
-       우선순위: tag tag-red (HIGH) / 인라인 style (MED/LOW)
-       결과: "완료 ✓" or badge badge-yellow "⚠ 이월"
+       SLIDE 8: QA 검증 결과
+       상단 요약 배지: tag tag-green (통과 ✓) / tag-yellow (이월)
+       data-table: # | QA 항목 | 결과
+       결과: tag tag-green (✅ 통과) / badge badge-yellow (⚠ 이월)
   ────────────────────────────────────────────────────────────────── -->
   <div class="slide">
     <div class="slide-inner">
@@ -277,20 +311,20 @@
         <span class="tag tag-yellow">이월 N건</span>
       </div>
       <table class="data-table">
-        <thead><tr><th>우선순위</th><th>QA 항목</th><th>결과</th></tr></thead>
+        <thead><tr><th>#</th><th>QA 항목</th><th>결과</th></tr></thead>
         <tbody>
           <tr>
-            <td><span class="tag tag-red">HIGH</span></td>
+            <td>1</td>
             <td>QA 발견 사항 또는 검증 항목</td>
-            <td>코드 검증 완료 ✓</td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
           </tr>
           <tr>
-            <td><span class="tag" style="background:#fff3e0;color:#e65100;">MED</span></td>
+            <td>2</td>
             <td>QA 발견 사항 또는 검증 항목</td>
-            <td>수정 완료 ✓</td>
+            <td><span class="tag tag-green">✅ 수정 완료</span></td>
           </tr>
           <tr>
-            <td><span class="tag" style="background:#f3f4f6;color:#555;">LOW</span></td>
+            <td>3</td>
             <td>이월 QA 항목</td>
             <td><span class="badge badge-yellow">⚠ 이월 (배포 후)</span></td>
           </tr>
@@ -301,7 +335,50 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 8: 데모 (스크린샷 단독)
+       SLIDE 9: Review Findings
+       data-table: 등급 | 항목 | 처리
+       등급: tag tag-red (🔴 Blocker) / 인라인 style (🟡 Major) / tag tag-green (🟢 Minor)
+       처리: tag tag-green (✅ 수정 완료) / badge badge-yellow (미반영/이월)
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Review</div>
+      <h2 class="slide-title">Review Findings</h2>
+      <table class="data-table">
+        <thead><tr><th>등급</th><th>항목</th><th>처리</th></tr></thead>
+        <tbody>
+          <tr style="background:#fff5f5;">
+            <td><span class="tag tag-red">🔴 Blocker</span></td>
+            <td>
+              <strong>발견 항목 — 핵심 설명</strong><br>
+              <span style="font-size:12px; color:#888;">원인 · 재현 조건 등 부연 설명</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>발견 항목 — 핵심 설명</strong><br>
+              <span style="font-size:12px; color:#888;">원인 · 재현 조건 등 부연 설명</span>
+            </td>
+            <td><span class="badge badge-yellow">⚠ 이월</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">🟢 Minor</span></td>
+            <td>
+              <strong>발견 항목 — 핵심 설명</strong><br>
+              <span style="font-size:12px; color:#888;">원인 · 재현 조건 등 부연 설명</span>
+            </td>
+            <td><span class="tag tag-green">✅ 적용 완료</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 10: 데모 (스크린샷 단독)
        screenshot-wrap: 풀 너비 스크린샷 + 캡션
        이미지: max-height:60vh로 세로 제한
   ────────────────────────────────────────────────────────────────── -->
@@ -318,7 +395,7 @@
   </div>
 
   <!-- ──────────────────────────────────────────────────────────────
-       SLIDE 9: Q&A
+       SLIDE 11: Q&A
        slide--qa-light: 연한 녹색 배경, 중앙 정렬 — 변경 금지
        qa-icon:  "Q&A" 대형 텍스트
        qa-title: "감사합니다"
