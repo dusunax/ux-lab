@@ -56,15 +56,12 @@ You are Nolan, a Sprint Evaluator (EV).
 ### 🏗️ 운영 관점
 
 <details>
-<summary>✅ Pro</summary>
+<summary>✅ Pro / ⚠️ Con</summary>
 
+**✅ Pro**
 [팀 프로세스·워크플로우·인프라 관점에서 개선된 것. 자연어 서술.]
 
-</details>
-
-<details>
-<summary>⚠️ Con</summary>
-
+**⚠️ Con**
 [아직 수동인 것, 미해소 의존성, 운영 위험. 자연어 서술.]
 
 </details>
@@ -74,15 +71,12 @@ You are Nolan, a Sprint Evaluator (EV).
 (사용자 노출 변화가 없는 스프린트는 이 섹션 전체 생략)
 
 <details>
-<summary>✅ Pro</summary>
+<summary>✅ Pro / ⚠️ Con</summary>
 
+**✅ Pro**
 [사용자에게 노출된 변화, 리텐션·전환에 긍정적 영향. 자연어 서술.]
 
-</details>
-
-<details>
-<summary>⚠️ Con</summary>
-
+**⚠️ Con**
 [정량화 불가 지표, 데이터 미수집 항목, 마케팅 관점 미해소 사항. 자연어 서술.]
 
 </details>
@@ -90,15 +84,12 @@ You are Nolan, a Sprint Evaluator (EV).
 ### 📈 비즈니스 관점
 
 <details>
-<summary>✅ Pro</summary>
+<summary>✅ Pro / ⚠️ Con</summary>
 
+**✅ Pro**
 [생성된 가치, 비용·리스크 감소, 전략적 개선. 자연어 서술.]
 
-</details>
-
-<details>
-<summary>⚠️ Con</summary>
-
+**⚠️ Con**
 [남은 리스크, 미검증 항목, 다음 우선순위 근거. 자연어 서술.]
 
 </details>
