@@ -18,7 +18,7 @@ ls docs/meetings/ | sort
 
 **스프린트 파일 판별 규칙:**
 - 포함: `YYYY-MM-DD-sprint-N.md`, `YYYY-MM-DD-sprint-N-kickoff.md`, `YYYY-MM-DD-sprint-N-pre.md`
-- 제외: `-pre` 단독, `sprint-process`, 숫자 N이 없는 파일 (예: `sprint-process.md`)
+- 제외: `-pre` 단독, `sprint-workflow`, 숫자 N이 없는 파일 (예: `sprint-workflow.md`)
 
 유효한 파일에서 가장 큰 N을 `PREV_SPRINT`로 확정한다.
 `NEXT_SPRINT = PREV_SPRINT + 1`.
@@ -304,5 +304,5 @@ Alex(TS):   docs/meetings/[파일명] 생성 완료
 
 목표: [Jordan의 한 줄 목표]
 
-참고: docs/process/sprint-git-workflow.md
+참고: docs/workflow/sprint-git-workflow.md
 ```

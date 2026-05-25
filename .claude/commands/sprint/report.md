@@ -38,7 +38,95 @@ ls -t docs/meetings/*.md | head -5
 
 ---
 
-## Step 2 — 슬라이드 구성 설계
+## Step 2 — 구조 레퍼런스 읽기
+
+HTML을 생성하기 전에 반드시 기존 sprint HTML 파일을 읽어 클래스 구조를 파악한다.
+
+```bash
+ls -t docs/presentations/sprint-*.html | head -1
+```
+
+파일이 존재하면 Read 도구로 전체를 읽는다.
+파일이 없으면 아래 **필수 클래스 레퍼런스**만으로 진행한다.
+
+### 필수 클래스 레퍼런스 (ppt-theme.css 기준)
+
+아래 클래스는 `ppt-theme.css`에 정의된 실제 이름이다. **임의로 클래스를 발명하지 않는다.**
+
+| 용도 | 사용법 |
+|------|--------|
+| 전체 슬라이드 컨테이너 | `<div class="deck">` |
+| 표지 슬라이드 | `<div class="slide slide--cover">` |
+| 일반 슬라이드 | `<div class="slide">` |
+| Q&A 슬라이드 | `<div class="slide slide--qa-light">` |
+| 슬라이드 내부 래퍼 | `<div class="slide-inner">` |
+| 슬라이드 번호 | `<div class="slide-counter"></div>` ← JS가 자동으로 채움 (직접 텍스트 쓰지 않음) |
+| 섹션 레이블 (작은 대문자) | `<div class="slide-label">레이블</div>` |
+| 슬라이드 제목 | `<h2 class="slide-title">제목</h2>` |
+| 표지 내부 래퍼 | `<div class="cover-inner">` |
+| 표지 제목 | `<h1 class="cover-title">` |
+| 표지 부제목 | `<p class="cover-sub">` |
+| 표지 날짜/메타 | `<p class="cover-meta">` |
+| 목표 블록 (인용) | `<blockquote class="goal-quote">` |
+| 데이터 테이블 | `<table class="data-table">` |
+| 2컬럼 레이아웃 | `<div class="two-col">` |
+| 배지 (녹색) | `<span class="badge badge-green">` |
+| 배지 (노란색) | `<span class="badge badge-yellow">` |
+| 태그 (빨강) | `<span class="tag tag-red">` |
+| 태그 (녹색) | `<span class="tag tag-green">` |
+| 태그 (노랑) | `<span class="tag tag-yellow">` |
+| 체크 리스트 | `<ul class="check-list">` |
+| 불렛 리스트 | `<ul class="bullet-list">` |
+| 일반 아이템 리스트 | `<ul class="items">` |
+| Callout 블록 | `<div class="callout">` |
+| 인라인 코드 | `<code>텍스트</code>` |
+| Q&A 큰 아이콘 | `<div class="qa-icon">Q&A</div>` |
+| Q&A 제목 | `<p class="qa-title">` |
+| Q&A 링크/메타 | `<div class="qa-links">` |
+
+### 필수 헤드 태그
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./ppt-theme.css">
+```
+
+### 필수 JS 패턴
+
+```javascript
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+```
+
+---
+
+## Step 3 — 슬라이드 구성 설계
 
 추출한 내용을 다음 슬라이드 구조로 매핑한다:
 
@@ -57,7 +145,7 @@ ls -t docs/meetings/*.md | head -5
 
 ---
 
-## Step 3 — HTML 프레젠테이션 생성
+## Step 4 — HTML 프레젠테이션 생성
 
 다음 기준으로 단독 실행 가능한 HTML 파일을 생성한다.
 
@@ -69,15 +157,17 @@ ls -t docs/meetings/*.md | head -5
 - **레이아웃**: 전체 화면 슬라이드 (100vw × 100vh), 키보드(← →) 또는 클릭으로 전환.
 - **전환 효과**: fade-in만 사용. 슬라이드별 별도 애니메이션 없음.
 - **슬라이드 수**: 최대 10장. 내용이 적으면 장표를 합친다.
-- **슬라이드 번호**: 우하단에 `현재/전체` 표시.
+- **슬라이드 번호**: `<div class="slide-counter">` 사용, JS가 자동으로 `N / 전체` 형식으로 채운다.
 
 ### 슬라이드 타입별 레이아웃
 
-- **표지**: 중앙 정렬, 큰 제목, 부제목(날짜·팀명), 배경 그래디언트 또는 패턴
-- **목록형**: 왼쪽 정렬, 아이콘 불렛, 항목별 딜레이 애니메이션
-- **테이블형**: 헤더 강조, 짝수 행 배경 구분
-- **2컬럼**: 완료 vs 미완료 등 대비 표현 시 사용
-- **Q&A**: 팀 정보 + 심플 레이아웃
+- **표지**: `slide--cover` 클래스. `cover-inner` → `slide-label` + `cover-title` + `cover-sub` + `cover-meta` 순서.
+- **목록형**: `slide-label` + `slide-title` + `ul.items` 또는 `ul.check-list` / `ul.bullet-list`
+- **테이블형**: `slide-label` + `slide-title` + `table.data-table`
+- **2컬럼**: `slide-label` + `slide-title` + `div.two-col`
+- **Q&A**: `slide--qa-light` 클래스. `qa-icon` + `qa-title` + `qa-links` 순서.
+
+> **⚠️ 클래스 발명 금지**: Step 2에서 확인한 레퍼런스에 없는 클래스가 필요하면 `<style>` 블록에 추가 정의한다. `ppt-theme.css`를 덮어쓰지 않는다.
 
 ### 파일 저장
 
@@ -90,14 +180,15 @@ docs/presentations/
     └── ...
 ```
 
-- HTML은 `<link rel="stylesheet" href="./ppt-theme.css">` 로 테마를 참조한다 (인라인 `<style>` 금지).
+- HTML은 Step 2의 필수 헤드 태그를 그대로 사용한다 (Google Fonts + ppt-theme.css).
+- `ppt-theme.css`에 없는 스타일만 `<style>` 블록에 추가 정의한다.
 - `ppt-theme.css`가 이미 존재하면 덮어쓰지 않는다.
 - HTML은 스크린샷을 `./sprint-{N}/shot-{desc}.png` 상대경로로 참조한다 (base64 임베드 금지).
 - 디렉터리가 없으면 생성한다.
 
 ---
 
-## Step 4 — 생성 확인 및 파이프라인 핸드오프
+## Step 5 — 생성 확인 및 파이프라인 핸드오프
 
 생성 완료 후:
 

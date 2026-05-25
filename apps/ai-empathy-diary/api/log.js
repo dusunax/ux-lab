@@ -19,6 +19,11 @@ const MAX_VAL_LEN = 256;
 
 const PRODUCTION_ORIGIN = 'https://ai-empathy-diary.vercel.app';
 const LOCALHOST_ORIGIN_RE = /^http:\/\/localhost(:\d+)?$/;
+// Vercel preview URLs: 기본 패턴 또는 VERCEL_PREVIEW_URL_PATTERN 환경변수로 외부화
+// 예) VERCEL_PREVIEW_URL_PATTERN=^https://my-app-[a-z0-9]+-team\.vercel\.app$
+const VERCEL_PREVIEW_RE = process.env.VERCEL_PREVIEW_URL_PATTERN
+  ? new RegExp(process.env.VERCEL_PREVIEW_URL_PATTERN)
+  : /^https:\/\/ai-empathy-diary-[a-z0-9]+-d-x\.vercel\.app$/;
 
 const ALLOWED_ORIGINS = (() => {
   const origins = new Set([PRODUCTION_ORIGIN]);
@@ -30,6 +35,7 @@ const ALLOWED_ORIGINS = (() => {
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   if (LOCALHOST_ORIGIN_RE.test(origin)) return true;
+  if (VERCEL_PREVIEW_RE.test(origin)) return true;
   return ALLOWED_ORIGINS.has(origin);
 }
 

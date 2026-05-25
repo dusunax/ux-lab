@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 8 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .p0 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fee2e2; color:#991b1b; }
+    .p1 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fef9c3; color:#854d0e; }
+    .p2 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
+    .done { color:#217346; font-weight:600; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · ai-empathy-diary</div>
+        <h1 class="cover-title">Sprint 8</h1>
+        <p class="cover-sub">Firebase Auth 서버사이드 검증 + model_labels 마이그레이션</p>
+        <p class="cover-meta">2026-05-24 킥오프 · 2026-05-25 완료</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 목차 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목차</div>
+      <h2 class="slide-title">Contents</h2>
+      <div class="toc-grid">
+        <div>
+          <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">목표 &amp; 안건</span></div>
+          <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">주요 결정 사항</span></div>
+          <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">액션 아이템 완료 현황</span></div>
+          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">Firebase Auth 검증 구조</span></div>
+          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">레거시 마이그레이션</span></div>
+        </div>
+        <div>
+          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">QA 검증 결과</span></div>
+          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">Review Findings</span></div>
+          <div class="toc-item"><span class="toc-num">8</span><span class="toc-label">Preview — CORS 403</span></div>
+          <div class="toc-item"><span class="toc-num toc-num--faded">9</span><span class="toc-label toc-label--faded">Q&amp;A</span></div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 목표 + 안건 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 8 목표</h2>
+      <blockquote class="goal-quote">
+        Firebase Auth Admin SDK 서버사이드 토큰 검증으로 <strong><code>api/chat.js</code> 보안 공백을 해소</strong>하고,<br>
+        레거시 entry <code>modelLabel</code> 전수 마이그레이션으로 <strong>폴백 로직 없이 데이터를 일관화</strong>한다.
+      </blockquote>
+      <table class="data-table" style="margin-top:28px;">
+        <thead><tr><th>#</th><th>구분</th><th>안건</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>OQ 결정</td><td><code>FIREBASE_SERVICE_ACCOUNT</code> Preview / Production 분리 여부</td><td><span class="badge badge-green">✅ 결정 완료</span></td></tr>
+          <tr><td>2</td><td>OQ 결정</td><td>레거시 entry 처리 — 폴백 vs 마이그레이션</td><td><span class="badge badge-green">✅ 결정 완료</span></td></tr>
+          <tr><td>3</td><td>OQ 결정</td><td>Auth 검증 실패 시 클라이언트 재시도 전략</td><td><span class="badge badge-green">✅ 결정 완료</span></td></tr>
+          <tr><td>4</td><td>OQ 결정</td><td>FEEDBACK_MIN_SAMPLE 복원 기준 충족 여부</td><td><span class="badge badge-green">✅ 결정 완료</span></td></tr>
+          <tr><td>5</td><td>확정</td><td>Sprint 8 스코프 및 수용 기준 확정</td><td><span class="badge badge-green">✅ 확정</span></td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>결정 내용</th><th>담당</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td>
+              <strong>동일 환경변수를 Preview + Production 양쪽 등록</strong><br>
+              <span style="font-size:13px; color:#888;">FIREBASE_SERVICE_ACCOUNT JSON 문자열 — 동일 Firebase 프로젝트 사용, 분리 불필요</span>
+            </td>
+            <td>BE</td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td>
+              <strong>레거시 entry: 폴백 대신 전수 마이그레이션</strong><br>
+              <span style="font-size:13px; color:#888;">26건 중 model 보유 3건 직접 업데이트 · loadModelLabels() / modelLabelCache 제거 · computeModelStats() 단순화</span>
+            </td>
+            <td>BE + PM</td>
+          </tr>
+          <tr>
+            <td>OQ-3</td>
+            <td>
+              <strong>자동 토큰 갱신 후 1회 재시도, 재실패 시 에러 메시지 표시</strong><br>
+              <span style="font-size:13px; color:#888;">Firebase ID Token 만료(1h) 시 forceRefresh → retry. 2회 실패 시 사용자 안내</span>
+            </td>
+            <td>FE</td>
+          </tr>
+          <tr>
+            <td>OQ-4</td>
+            <td>
+              <strong>FEEDBACK_MIN_SAMPLE = 1 확정</strong><br>
+              <span style="font-size:13px; color:#888;">Sprint 7 임시 완화 → Sprint 8 기준 재검토 완료, 확정으로 전환 — 데이터 수집 민감도 우선</span>
+            </td>
+            <td>PM</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 액션 아이템 완료 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현</div>
+      <h2 class="slide-title">액션 아이템 완료 현황</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">BE</p>
+          <ul class="check-list">
+            <li class="done">Firebase Admin SDK 설치 + <code>api/chat.js</code> 서버사이드 초기화</li>
+            <li class="done"><code>FIREBASE_SERVICE_ACCOUNT</code> Vercel 등록 (Preview + Production)</li>
+            <li class="done">Bearer 토큰 → <code>verifyIdToken()</code> 검증, 실패 시 401 반환</li>
+            <li class="done">Firestore <code>model_labels</code> 컬렉션 seeding (6개 모델)</li>
+            <li class="done"><code>firestore.rules</code> — 인증 사용자 읽기 허용, 쓰기 차단</li>
+            <li class="done">레거시 entry <code>modelLabel</code> 전수 마이그레이션 (3건)</li>
+            <li class="done"><strong>H-1 수정</strong> — OPTIONS preflight 401 → CORS를 auth 검사 앞으로 이동</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">FE</p>
+          <ul class="check-list">
+            <li class="done">클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</li>
+            <li class="done">토큰 만료 시 자동 갱신 후 1회 재시도 로직</li>
+            <li class="done">Vercel preview URL CORS 허용 (<code>VERCEL_PREVIEW_RE</code> 추가)</li>
+            <li class="done"><code>loadModelLabels()</code> / <code>modelLabelCache</code> 제거</li>
+            <li class="done"><code>computeModelStats()</code> 폴백 체인 → <code>e.modelLabel</code> 단일 조회</li>
+            <li class="done"><code>initApp()</code> 초기화 경량화 (Firestore 왕복 1회 감소)</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">QA</p>
+        <ul class="check-list" style="column-count:2; column-gap:24px;">
+          <li class="done">수용 기준 전 항목 코드 검증</li>
+          <li class="done">Preview 환경 E2E Auth 동작 확인</li>
+          <li class="done">미허용 오리진 → 403 반환 확인 (DevTools 스크린샷)</li>
+          <li class="done">마이그레이션 결과 코드 검증</li>
+          <li class="done"><strong style="color:#dc2626;">H-1</strong> OPTIONS preflight 401 발견 → BE 즉시 수정 · 재배포 확인</li>
+          <li style="color:#b07c00;">⚠ 프로덕션 E2E (main 머지 후)</li>
+          <li style="color:#b07c00;">⚠ CORS 프로덕션 도메인 (Sprint 7 이월)</li>
+        </ul>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Firebase Auth 아키텍처 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">아키텍처</div>
+      <h2 class="slide-title">Firebase Auth 검증 구조</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">클라이언트 흐름</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">1</span><span class="log-event">Firebase Auth → <code>getIdToken()</code></span></div>
+            <div class="log-row"><span class="log-status ok">2</span><span class="log-event"><code>Authorization: Bearer &lt;idToken&gt;</code> 헤더 첨부</span></div>
+            <div class="log-row"><span class="log-status ok">3</span><span class="log-event"><code>POST /api/chat</code> 요청</span></div>
+            <div class="log-row"><span class="log-time" style="color:#f0b429;">401</span><span class="log-event">forceRefresh → 1회 재시도</span></div>
+          </div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 10px; text-transform:uppercase;">서버 흐름</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">1</span><span class="log-event">Bearer 토큰 추출</span></div>
+            <div class="log-row"><span class="log-status ok">2</span><span class="log-event"><code>auth.verifyIdToken()</code> — 로컬 JWT 검증</span></div>
+            <div class="log-row"><span class="log-time" style="color:#ef4444;">실패</span><span class="log-event">401 Unauthorized 반환</span></div>
+            <div class="log-row"><span class="log-time" style="color:#4ade80;">성공</span><span class="log-event">OpenRouter 호출 진행</span></div>
+          </div>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">보안 계층 현황</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">✓</span><span class="log-event">CORS — 허용된 오리진만 접근</span></div>
+            <div class="log-row"><span class="log-status ok">✓</span><span class="log-event">Firebase ID Token — 미인증 요청 401</span></div>
+            <div class="log-row"><span class="log-status ok">✓</span><span class="log-event">OPENROUTER_KEY — env 격리, 노출 없음</span></div>
+            <div class="log-row"><span class="log-time" style="color:#94a3b8;">INFO</span><span class="log-event"><code>api/log.js</code> — rate limit만 적용 (Auth 불필요)</span></div>
+          </div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 10px; text-transform:uppercase;">비용 영향</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-time" style="color:#4ade80; font-weight:700;">$0</span><span class="log-event"><code>verifyIdToken()</code> — 로컬 JWT 검증, Firebase API 호출 없음</span></div>
+            <div class="log-row"><span class="log-time" style="color:#94a3b8;">1h</span><span class="log-event">Google 공개키 캐시 TTL (SDK 자동 갱신)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 마이그레이션 결과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">마이그레이션</div>
+      <h2 class="slide-title">레거시 <code>modelLabel</code> 전수 마이그레이션</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">Firestore 업데이트 결과</p>
+          <table class="data-table">
+            <thead><tr><th>구분</th><th>건수</th><th>처리</th></tr></thead>
+            <tbody>
+              <tr><td>전체 entry</td><td>26건</td><td>—</td></tr>
+              <tr><td>이미 완료 (modelLabel 있음)</td><td>15건</td><td><span class="tag tag-green">유지</span></td></tr>
+              <tr><td>model 보유, modelLabel 없음</td><td>3건</td><td><span class="tag tag-green">업데이트</span></td></tr>
+              <tr><td>model 필드 없음 (Sprint 5 이전)</td><td>8건</td><td><span class="tag" style="background:#f3f4f6;color:#555;">집계 제외</span></td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:16px; font-size:13px; color:#555; line-height:1.8;">
+            업데이트 모델: <code style="color:#217346;">openai/gpt-oss-120b:free</code> → <code style="color:#217346;">$C$3</code><br>
+            sha256 해시 기반 결정론적 매핑 (Sprint 7 동일 로직)
+          </div>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:10px; text-transform:uppercase;">코드 제거 영향</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">제거</span><span class="log-event"><code>loadModelLabels()</code> 함수 전체</span></div>
+            <div class="log-row"><span class="log-status ok">제거</span><span class="log-event"><code>modelLabelCache</code> Map 전역 변수</span></div>
+            <div class="log-row"><span class="log-status ok">제거</span><span class="log-event"><code>await loadModelLabels()</code> in <code>initApp()</code></span></div>
+            <div class="log-row"><span class="log-status ok">단순화</span><span class="log-event"><code>computeModelStats()</code> 폴백 체인 3단 → 1단</span></div>
+          </div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 10px; text-transform:uppercase;">Before / After</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-time" style="color:#ef4444; font-size:11px;">Before</span><span class="log-event" style="color:#94a3b8; font-size:11px;">modelLabel || cache.get(model) || model || null</span></div>
+            <div class="log-row"><span class="log-time" style="color:#4ade80; font-size:11px;">After &nbsp;</span><span class="log-event" style="color:#4ade80; font-size:11px;">modelLabel || null</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: QA 검증 결과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">QA</div>
+      <h2 class="slide-title">QA 검증 결과</h2>
+      <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
+        <span class="tag tag-green">QA-1 E2E 통과</span>
+        <span class="tag tag-green">QA-3 CORS 통과</span>
+        <span class="tag tag-green">QA-2 통과 (model 없는 8건 집계 제외)</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>항목</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>E2E — 로그인 → AI 응답 → 피드백 → 대시보드 전체 플로우 (Preview)</td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>model_labels seeding 6개 · 전수 마이그레이션 (model 보유 3건 업데이트) · <code>modelLabel</code> 없는 8건 집계 제외</td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>CORS — api/log 미허용 오리진 403 · 브라우저 오류 없음</td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Review Findings -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Review</div>
+      <h2 class="slide-title">Review Findings</h2>
+      <table class="data-table">
+        <thead><tr><th>등급</th><th>항목</th><th>처리</th></tr></thead>
+        <tbody>
+          <tr style="background:#fff5f5;">
+            <td><span class="tag tag-red">🔴 Blocker</span></td>
+            <td>
+              <strong>H-1 — OPTIONS preflight → 401</strong><br>
+              <span style="font-size:12px; color:#888;">CORS 처리 전에 verifyIdToken() 호출 → 브라우저 preflight 401 반환</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span><br><span style="font-size:11px; color:#888;">OPTIONS 분기를 auth 검사 앞으로 이동</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>M-1 — model 필드 없는 entry 8건 집계 제외</strong><br>
+              <span style="font-size:12px; color:#888;">Sprint 5 이전 entry — 기록 시점에 model 정보 미존재, 복원 불가</span>
+            </td>
+            <td><span class="badge badge-yellow">미반영 (설계 한계)</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>M-2 — qwen · minimax 라벨 충돌 ($H$8)</strong><br>
+              <span style="font-size:12px; color:#888;">model_labels seeding 시 두 모델이 동일 해시 버킷</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-green">🟢 Minor</span></td>
+            <td>
+              <strong>S-1 — favicon 404</strong><br>
+              <span style="font-size:12px; color:#888;">싱글 HTML 앱에 favicon 미정의 → 콘솔 오류</span>
+            </td>
+            <td><span class="tag tag-green">✅ 적용 완료</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Preview — CORS 403 스크린샷 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">CORS 도메인 제한 — 403 Forbidden 확인</h2>
+      <div class="two-col" style="align-items:start; gap:32px;">
+        <ul class="check-list">
+          <li><span class="done">✅</span> 허용되지 않은 오리진의 <code>/api/chat</code> 요청 → <strong>403 Forbidden</strong> 반환</li>
+          <li><span class="done">✅</span> 허용 오리진: 프로덕션 도메인 · <code>localhost</code> · Vercel preview URL</li>
+          <li><span class="done">✅</span> <code>VERCEL_PREVIEW_RE</code> 정규식 패턴으로 preview 환경 허용</li>
+          <li><span class="done">✅</span> OPTIONS preflight → Auth 검사 앞에서 CORS 헤더 반환 (H-1 수정)</li>
+          <li><span class="done">✅</span> Firebase ID Token 검증 추가로 curl 직접 호출도 차단</li>
+        </ul>
+        <div class="screenshot-wrap">
+          <img class="screenshot" src="./sprint-8/cors-403-evidence.png" alt="허용되지 않은 오리진의 /api/chat 요청 403 Forbidden 반환 확인">
+          <p class="screenshot-cap">허용되지 않은 오리진의 <code>/api/chat</code> 요청 → 403 Forbidden 반환 확인</p>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 11: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>ai-empathy-diary · Sprint 8</span>
+        <span>2026-05-25</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

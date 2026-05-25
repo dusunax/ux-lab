@@ -1,6 +1,41 @@
 import { randomUUID, createHash } from 'crypto';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+// ── Firebase Admin SDK 초기화 (1회만) ────────────────────────────────────────
+// FIREBASE_SERVICE_ACCOUNT: Vercel 환경변수에 Service Account JSON 문자열로 등록
+// 미등록 시 토큰 검증 불가 → 501 반환
+function getAdminAuth() {
+  if (getApps().length === 0) {
+    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!raw) return null;
+    try {
+      initializeApp({ credential: cert(JSON.parse(raw)) });
+    } catch {
+      return null;
+    }
+  }
+  return getAuth();
+}
+
+// ── Firebase ID Token 검증 ────────────────────────────────────────────────────
+// Authorization: Bearer <idToken> 헤더에서 토큰 추출 후 검증
+// 반환값: { uid } | null (검증 실패)
+async function verifyIdToken(req) {
+  const auth = getAdminAuth();
+  if (!auth) return null; // 환경변수 미설정 — 501로 처리
+  const header = req.headers.authorization ?? '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!token) return null;
+  try {
+    const decoded = await auth.verifyIdToken(token);
+    return { uid: decoded.uid };
+  } catch {
+    return null;
+  }
+}
 
 // CORS 정책: api/log.js와 동일하게 프로덕션 도메인 + localhost로 제한한다.
 // [한계] CORS는 브라우저 Same-Origin 정책 강제이므로 curl/서버 직접 호출을 막지 않는다.
@@ -9,6 +44,11 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 // 참조: OQ-3 결정 (2026-05-23 Sprint 7 킥오프)
 const PRODUCTION_ORIGIN = 'https://ai-empathy-diary.vercel.app';
 const LOCALHOST_ORIGIN_RE = /^http:\/\/localhost(:\d+)?$/;
+// Vercel preview URLs: 기본 패턴 또는 VERCEL_PREVIEW_URL_PATTERN 환경변수로 외부화
+// 예) VERCEL_PREVIEW_URL_PATTERN=^https://my-app-[a-z0-9]+-team\.vercel\.app$
+const VERCEL_PREVIEW_RE = process.env.VERCEL_PREVIEW_URL_PATTERN
+  ? new RegExp(process.env.VERCEL_PREVIEW_URL_PATTERN)
+  : /^https:\/\/ai-empathy-diary-[a-z0-9]+-d-x\.vercel\.app$/;
 
 const ALLOWED_ORIGINS = (() => {
   const origins = new Set([PRODUCTION_ORIGIN]);
@@ -20,6 +60,7 @@ const ALLOWED_ORIGINS = (() => {
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   if (LOCALHOST_ORIGIN_RE.test(origin)) return true;
+  if (VERCEL_PREVIEW_RE.test(origin)) return true;
   return ALLOWED_ORIGINS.has(origin);
 }
 
@@ -62,16 +103,13 @@ async function callOpenRouter(apiKey, body) {
 }
 
 export default async function handler(req, res) {
-  // TODO(Sprint 8): Firebase Admin SDK로 Firebase ID Token 검증 추가
-  // const idToken = req.headers.authorization?.replace('Bearer ', '')
-  // const decoded = await adminAuth.verifyIdToken(idToken)
-
   const origin = req.headers.origin;
 
+  // ── CORS 헤더 설정 (OPTIONS preflight 포함, 인증 검사 전에 처리) ──────────
   if (isAllowedOrigin(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Vary', 'Origin');
   }
 
@@ -87,6 +125,25 @@ export default async function handler(req, res) {
 
   if (origin && !isAllowedOrigin(origin)) {
     res.status(403).json({ error: 'Forbidden' });
+    return;
+  }
+
+  // ── Firebase ID Token 검증 ─────────────────────────────────────────────────
+  if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    res.status(501).json({ error: 'FIREBASE_SERVICE_ACCOUNT 환경변수가 설정되지 않았습니다.' });
+    return;
+  }
+
+  // 환경변수가 있어도 JSON 파싱 실패 등 초기화 오류 시 501 반환 (401과 구분)
+  const adminAuth = getAdminAuth();
+  if (!adminAuth) {
+    res.status(501).json({ error: 'Firebase Admin 초기화에 실패했습니다. 환경변수 형식을 확인해주세요.' });
+    return;
+  }
+
+  const decoded = await verifyIdToken(req);
+  if (!decoded) {
+    res.status(401).json({ error: '인증이 필요합니다. 로그인 후 다시 시도해주세요.' });
     return;
   }
 

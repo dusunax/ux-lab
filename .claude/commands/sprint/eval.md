@@ -7,7 +7,7 @@ description: 스프린트 평가. Nolan(EV)이 운영/마케팅/비즈니스 관
 **인수:** $ARGUMENTS
 
 **평가자:** Nolan (EV) — `product/EV/sprint-evaluator`
-**사양 문서:** `docs/process/sprint-git-workflow.md`
+**사양 문서:** `docs/workflow/sprint-git-workflow.md`
 
 ---
 
