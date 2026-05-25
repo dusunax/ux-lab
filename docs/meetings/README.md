@@ -18,7 +18,7 @@
 
 | 파일 | 날짜 | 주요 결정 |
 |------|------|-----------|
-| [2026-05-21-sprint-process.md](./2026-05-21-sprint-process.md) | 2026-05-21 | 스프린트 7대 운영 규칙 공식 확정, 회의록 명명 규칙, QA 완료 기준, 프레젠테이션 경로 확정 |
+| [2026-05-21-sprint-workflow.md](./2026-05-21-sprint-workflow.md) | 2026-05-21 | 스프린트 7대 운영 규칙 공식 확정, 회의록 명명 규칙, QA 완료 기준, 프레젠테이션 경로 확정 |
 
 ## 프로세스 문서
 
@@ -26,6 +26,6 @@
 
 | 파일 | 설명 |
 |------|------|
-| [../process/sprint-process.md](../process/sprint-process.md) | 스프린트 운영 7대 규칙, 완료 기준, 파일 컨벤션 |
+| [../process/sprint-workflow.md](../process/sprint-workflow.md) | 스프린트 운영 7대 규칙, 완료 기준, 파일 컨벤션 |
 | [../process/sprint-git-workflow.md](../process/sprint-git-workflow.md) | 브랜치 전략, `/sprint:start` → `/sprint:review` Git 흐름, PR 규칙 |
 | [../process/pr-template.md](../process/pr-template.md) | `/sprint:review` PR 제목·본문 템플릿 (플레이스홀더 정의 포함) |

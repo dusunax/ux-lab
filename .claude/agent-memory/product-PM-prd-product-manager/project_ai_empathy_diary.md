@@ -37,10 +37,35 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 
 - **모바일 카드 뷰**: 외부 공유 후 GA4 기기 유형별 이탈률 2주치 확보 후 UX 제안. 현재 보류.
 - **P2 이벤트 전체 추가**: DAU 50+ 달성 시. `emotion_label_recorded`만 Sprint 5에 선별 추가.
-- **api/chat.js CORS**: Firebase Auth 토큰으로 방어 중. Sprint 7 킥오프 재검토 예정.
-- **만족도 대시보드 시각화 방식**: 차트 vs 숫자 테이블, 라이브러리 사용 여부 — Sprint 7 킥오프 결정 필요. 담당: FE Avery + UX Riley.
-- **모델 익명화 레이블 방식**: 모델 A/B vs 해시 vs 내부 코드명 — Sprint 7 킥오프 결정 필요. 담당: PM + AI Sage.
+- **만족도 대시보드**: Sprint 7에서 CSS/SVG 바 차트로 구현 완료. CDN 라이브러리 없음, 싱글 HTML 호환.
+- **모델 익명화**: Sprint 7에서 셀 참조 계열 라벨($A$1 등) 채택. Firestore `model` + `modelLabel` 이중 필드 저장.
 - **전체 익명 집계 도입 여부**: Firestore 규칙 변경 + Cloud Function 설계 필요. 사용자 수 증가 후 별도 검토. 담당: PM + BE Blake.
+
+## Sprint 8 스코프 (2026-05-25 예정)
+
+### P0 — Firebase Auth ID Token 서버사이드 검증
+- `api/chat.js`에 Firebase Admin SDK로 Bearer 토큰 검증 추가
+- 미인증/위조 토큰 → 401 반환. 유효 토큰 → OpenRouter 호출 진행
+- 클라이언트: `getIdToken()` → `Authorization: Bearer {token}` 헤더 추가
+- `FIREBASE_SERVICE_ACCOUNT` 환경변수(JSON 문자열)를 Vercel에 등록
+
+### P1 — model_labels Firestore 컬렉션 분리
+- 컬렉션 스키마: `model_labels/{modelId}` — `label`, `isActive`, `createdAt`, `updatedAt`
+- 현재 모델 6개 Firebase Console에서 수동 seeding
+- `firestore.rules` — 인증된 사용자 읽기 허용, 쓰기 차단(`allow write: if false`)
+- `initApp()`에 `loadModelLabels()` 추가 — 앱 초기화 1회 Map 캐시
+- `computeModelStats()` 폴백: `entry.modelLabel → cache.get(entry.model) → entry.model`
+- 레거시 entry(Sprint 6 이전, `modelLabel` 없음)가 대시보드 통계에 포함됨
+
+### P2 — FEEDBACK_MIN_SAMPLE 복원 검토
+- Sprint 8 킥오프 시 GA4 DAU + Firestore 피드백 누적량 확인
+- DAU 50+ 또는 2주치 피드백 충분 시 1→5 복원. 기준 미충족 시 현행 유지
+
+### Sprint 8 Out of Scope
+- `api/log.js` Auth 검증 (rate limit으로 충분)
+- 전체 익명 집계 (Cloud Function 설계 별도 필요)
+- 사용자 레이블 선택 설정 UI
+- Vite 빌드 파이프라인
 
 ## 스프린트 현황
 
@@ -52,6 +77,8 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 | Sprint 4 | 2026-05-19 | 로그 파이프라인 완성, rate limit, GA4 연결, 모바일 최소 대응, 오류 UX |
 | Sprint 5 | 2026-05-20 | Vite 보류, CSS+JS 분리, CORS 제한, AI 프롬프트 리뷰 시작, emotion_label_recorded |
 | Sprint 6 | 2026-05-21 | 피드백 버튼(커스텀 SVG), Firestore feedback/model 필드, emotion_feedback_recorded 이벤트, 모델 추적 |
+| Sprint 7 | 2026-05-24 | 모델별 만족도 대시보드(CSS/SVG 바 차트), CORS 강화(api/chat.js 도메인 제한), 모델 익명화 레이블, FEEDBACK_MIN_SAMPLE 임시 완화(5→1) |
+| Sprint 8 | 2026-05-25 (예정) | Firebase Auth Admin SDK 서버사이드 검증(P0), model_labels Firestore 컬렉션 분리(P1), FEEDBACK_MIN_SAMPLE 복원 검토(P2) |
 
 ## 로그 아키텍처 (Sprint 3 확정, Sprint 5 업데이트)
 

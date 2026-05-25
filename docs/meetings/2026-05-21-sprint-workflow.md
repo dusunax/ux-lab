@@ -52,7 +52,7 @@
 - 회의록 저장 경로: `docs/meetings/YYYY-MM-DD-sprint-N.md` (고정)
 - 사전 기획 회의(pre-sprint): `-pre` 접미사 사용 (예: `2026-05-21-sprint-6-pre.md`)
 - 이 규칙은 이미 관행으로 운용 중이었으나 이번 회의를 통해 공식 문서로 확정한다.
-- 프로세스 정의 등 스프린트 번호와 무관한 회의는 주제 키워드를 파일명에 사용한다 (예: `2026-05-21-sprint-process.md`).
+- 프로세스 정의 등 스프린트 번호와 무관한 회의는 주제 키워드를 파일명에 사용한다 (예: `2026-05-21-sprint-workflow.md`).
 
 ---
 
@@ -97,7 +97,7 @@
 | 2 | 회의록 경로 및 파일 명명 규칙 확정 (기존 관행 공식화) | TS |
 | 3 | QA 완료 기준: 수용 기준 전항목 통과 + 개발자 승인 | QA |
 | 4 | 보고 프레젠테이션: 90% 룰 충족 후 PM 착수, 경로 고정 | PM |
-| 5 | 프로세스 문서 신규 작성: `docs/process/sprint-process.md` | TS |
+| 5 | 프로세스 문서 신규 작성: `docs/workflow/sprint-workflow.md` | TS |
 | 6 | Sprint 6 시작 전 피드백 UI 코드 착수 건 — 반성 사항으로 기록, FE가 액션아이템 확정 후 재착수 | FE |
 
 ---
@@ -105,8 +105,8 @@
 ## 액션 아이템
 
 **TS (Alex)**
-- [x] 이 회의록 작성 및 저장 (`docs/meetings/2026-05-21-sprint-process.md`)
-- [x] 프로세스 문서 작성 (`docs/process/sprint-process.md`)
+- [x] 이 회의록 작성 및 저장 (`docs/meetings/2026-05-21-sprint-workflow.md`)
+- [x] 프로세스 문서 작성 (`docs/workflow/sprint-workflow.md`)
 - [x] `docs/meetings/README.md`에 이 회의록 및 프로세스 문서 링크 추가
 
 **FE (Avery)**
@@ -125,7 +125,7 @@
 
 **프로세스 문서 위치**
 
-이 회의를 통해 확정된 규칙의 전문은 `docs/process/sprint-process.md`에 보관된다. 회의록은 결정 사항의 맥락과 논의 이력을 담고, 프로세스 문서는 규칙 자체를 담는 역할을 분리한다.
+이 회의를 통해 확정된 규칙의 전문은 `docs/workflow/sprint-workflow.md`에 보관된다. 회의록은 결정 사항의 맥락과 논의 이력을 담고, 프로세스 문서는 규칙 자체를 담는 역할을 분리한다.
 
 ---
 

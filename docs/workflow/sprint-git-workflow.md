@@ -3,14 +3,14 @@
 **확정일:** 2026-05-23
 **작성:** TS (Alex)
 **근거 회의:** PM Jordan 컨설팅 (2026-05-23)
-**관련 문서:** `docs/process/sprint-process.md`
+**관련 문서:** `docs/workflow/sprint-workflow.md`
 
 ---
 
 ## 개요
 
 이 문서는 스프린트 단위 Git 브랜치 전략과 PR 기반 병합 절차를 정의한다.
-`sprint-process.md`의 7대 운영 규칙을 기술 실행 레벨에서 보완한다.
+`sprint-workflow.md`의 7대 운영 규칙을 기술 실행 레벨에서 보완한다.
 
 ---
 
@@ -134,8 +134,8 @@ main
 | 스프린트 커맨드 | `.claude/commands/sprint/` |
 | 킥오프 회의록 | `docs/meetings/YYYY-MM-DD-sprint-N-kickoff.md` |
 | 보고서 HTML | `docs/presentations/sprint-N-report-YYMMDD.html` |
-| 운영 규칙 원문 | `docs/process/sprint-process.md` |
-| Git 워크플로우 (이 문서) | `docs/process/sprint-git-workflow.md` |
+| 운영 규칙 원문 | `docs/workflow/sprint-workflow.md` |
+| Git 워크플로우 (이 문서) | `docs/workflow/sprint-git-workflow.md` |
 
 ---
 

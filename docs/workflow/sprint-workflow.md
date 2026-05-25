@@ -2,7 +2,7 @@
 
 **확정일:** 2026-05-21
 **작성:** TS (Alex)
-**근거 회의록:** `docs/meetings/2026-05-21-sprint-process.md`
+**근거 회의록:** `docs/meetings/2026-05-21-sprint-workflow.md`
 
 ---
 
@@ -88,7 +88,7 @@ PM 보고용 프레젠테이션 작성
 |------|-----------|------|
 | 정규 스프린트 회의 | `docs/meetings/YYYY-MM-DD-sprint-N.md` | `2026-05-21-sprint-6.md` |
 | 사전 기획 회의 | `docs/meetings/YYYY-MM-DD-sprint-N-pre.md` | `2026-05-21-sprint-6-pre.md` |
-| 스프린트 외 주제 회의 | `docs/meetings/YYYY-MM-DD-[주제키워드].md` | `2026-05-21-sprint-process.md` |
+| 스프린트 외 주제 회의 | `docs/meetings/YYYY-MM-DD-[주제키워드].md` | `2026-05-21-sprint-workflow.md` |
 
 ### 보고 프레젠테이션
 

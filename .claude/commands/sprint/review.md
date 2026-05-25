@@ -6,8 +6,8 @@ description: 스프린트 완료 후 PR을 생성하고 결과를 요약한다. 
 
 **인수:** $ARGUMENTS
 
-**사양 문서:** `docs/process/sprint-git-workflow.md`
-**PR 템플릿:** `docs/process/pr-template.md`
+**사양 문서:** `docs/workflow/sprint-git-workflow.md`
+**PR 템플릿:** `docs/workflow/pr-template.md`
 
 ---
 
@@ -126,7 +126,7 @@ git ls-remote --heads origin sprint/N
 
 ## Step 5 — PR 본문 구성 및 생성 (GitHub MCP)
 
-`docs/process/pr-template.md`의 템플릿을 읽고, Step 1–3에서 수집한 데이터로 플레이스홀더를 채운다.
+`docs/workflow/pr-template.md`의 템플릿을 읽고, Step 1–3에서 수집한 데이터로 플레이스홀더를 채운다.
 
 | 플레이스홀더 | 채울 값 |
 |-------------|---------|
