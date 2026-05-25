@@ -44,8 +44,11 @@ async function verifyIdToken(req) {
 // 참조: OQ-3 결정 (2026-05-23 Sprint 7 킥오프)
 const PRODUCTION_ORIGIN = 'https://ai-empathy-diary.vercel.app';
 const LOCALHOST_ORIGIN_RE = /^http:\/\/localhost(:\d+)?$/;
-// Vercel preview URLs: https://ai-empathy-diary-{hash}-d-x.vercel.app
-const VERCEL_PREVIEW_RE = /^https:\/\/ai-empathy-diary-[a-z0-9]+-d-x\.vercel\.app$/;
+// Vercel preview URLs: 기본 패턴 또는 VERCEL_PREVIEW_URL_PATTERN 환경변수로 외부화
+// 예) VERCEL_PREVIEW_URL_PATTERN=^https://my-app-[a-z0-9]+-team\.vercel\.app$
+const VERCEL_PREVIEW_RE = process.env.VERCEL_PREVIEW_URL_PATTERN
+  ? new RegExp(process.env.VERCEL_PREVIEW_URL_PATTERN)
+  : /^https:\/\/ai-empathy-diary-[a-z0-9]+-d-x\.vercel\.app$/;
 
 const ALLOWED_ORIGINS = (() => {
   const origins = new Set([PRODUCTION_ORIGIN]);
@@ -128,6 +131,13 @@ export default async function handler(req, res) {
   // ── Firebase ID Token 검증 ─────────────────────────────────────────────────
   if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
     res.status(501).json({ error: 'FIREBASE_SERVICE_ACCOUNT 환경변수가 설정되지 않았습니다.' });
+    return;
+  }
+
+  // 환경변수가 있어도 JSON 파싱 실패 등 초기화 오류 시 501 반환 (401과 구분)
+  const adminAuth = getAdminAuth();
+  if (!adminAuth) {
+    res.status(501).json({ error: 'Firebase Admin 초기화에 실패했습니다. 환경변수 형식을 확인해주세요.' });
     return;
   }
 
