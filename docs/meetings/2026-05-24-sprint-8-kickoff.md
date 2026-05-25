@@ -77,14 +77,14 @@
 ## 액션 아이템
 
 **BE (Blake)**
-- [ ] `FIREBASE_SERVICE_ACCOUNT` 환경변수 Vercel 등록 (Preview + Production)
-- [ ] Firebase Admin SDK 설치 및 `api/chat.js` 초기화
-- [ ] Bearer 토큰 검증 로직 구현 — 401 반환
+- [x] `FIREBASE_SERVICE_ACCOUNT` 환경변수 Vercel 등록 (Preview + Production)
+- [x] Firebase Admin SDK 설치 및 `api/chat.js` 초기화
+- [x] Bearer 토큰 검증 로직 구현 — 401 반환
 - [ ] Firestore `model_labels` 컬렉션 seeding (모델 6개)
 - [ ] `firestore.rules` 읽기 허용 + 쓰기 차단 규칙 추가
 
 **FE (Avery)**
-- [ ] 클라이언트 `getIdToken()` → `Authorization: Bearer` 헤더 첨부
+- [x] 클라이언트 `getIdToken()` → `Authorization: Bearer` 헤더 첨부
 - [ ] `initApp()`에 `loadModelLabels()` 추가
 - [ ] `computeModelStats()` 폴백 로직 추가 (레거시 데이터 포함)
 

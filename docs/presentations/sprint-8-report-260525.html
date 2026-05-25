@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 8 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .p0 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fee2e2; color:#991b1b; }
+    .p1 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fef9c3; color:#854d0e; }
+    .p2 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
+    .risk-block { border-left:3px solid #217346; padding:8px 14px; margin-bottom:14px; background:#f8fdf9; border-radius:0 4px 4px 0; }
+    .risk-block strong { font-size:14px; color:#1a1a1a; display:block; margin-bottom:3px; }
+    .risk-block span { font-size:13px; color:#555; line-height:1.55; }
+    .role-label { display:inline-block; background:#217346; color:#fff; padding:2px 9px; border-radius:3px; font-size:12px; font-weight:700; margin-bottom:8px; }
+    .done { color:#217346; font-weight:600; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · ai-empathy-diary</div>
+        <h1 class="cover-title">Sprint 8</h1>
+        <p class="cover-sub">Firebase Auth 서버사이드 검증 + model_labels 컬렉션 분리</p>
+        <p class="cover-meta">2026-05-24 킥오프 · 2026-05-25 진행 중</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Sprint 8 목표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 8 목표</h2>
+      <blockquote class="goal-quote">
+        Firebase Auth Admin SDK 서버사이드 토큰 검증으로 <strong><code>api/chat.js</code> 보안 공백을 해소</strong>하고,<br>
+        <code>model_labels</code> Firestore 컬렉션 분리로 <strong>모델 레이블 관리를 재배포 없이</strong> 가능하게 한다.
+      </blockquote>
+      <table class="data-table" style="margin-top:28px;">
+        <thead><tr><th>#</th><th>구분</th><th>안건</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>OQ 결정</td><td><code>FIREBASE_SERVICE_ACCOUNT</code> 환경변수 등록 방식 및 Preview/Production 분리 여부</td></tr>
+          <tr><td>2</td><td>OQ 결정</td><td>FEEDBACK_MIN_SAMPLE 복원 기준 충족 여부</td></tr>
+          <tr><td>3</td><td>결정</td><td>Auth 검증 실패 시 클라이언트 재시도 전략</td></tr>
+          <tr><td>4</td><td>확정</td><td>Sprint 8 스코프 및 수용 기준 확정</td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료</div>
+      <h2 class="slide-title">완료된 항목 (P0)</h2>
+      <ul class="check-list">
+        <li><span class="done">✅</span> <code>FIREBASE_SERVICE_ACCOUNT</code> 환경변수 Vercel 등록 (Preview + Production)</li>
+        <li><span class="done">✅</span> Firebase Admin SDK 설치 및 <code>api/chat.js</code> 서버사이드 초기화</li>
+        <li><span class="done">✅</span> Bearer 토큰 추출 → <code>verifyIdToken()</code> 검증 — 실패 시 401 반환</li>
+        <li><span class="done">✅</span> 클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</li>
+        <li><span class="done">✅</span> 토큰 만료 시 자동 갱신 후 1회 재시도 로직 구현</li>
+        <li><span class="done">✅</span> Vercel preview URL CORS 허용 — <code>VERCEL_PREVIEW_RE</code> 추가 (<code>api/chat.js</code>, <code>api/log.js</code>)</li>
+      </ul>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 확정 스코프 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">스코프</div>
+      <h2 class="slide-title">확정 스코프</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>항목</th><th>우선순위</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Firebase Admin SDK 설치 및 <code>api/chat.js</code> 초기화</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>2</td><td><code>FIREBASE_SERVICE_ACCOUNT</code> 환경변수 Vercel 등록</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>3</td><td>Bearer 토큰 → <code>verifyIdToken()</code> 검증, 실패 시 401 반환</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>4</td><td>클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>5</td><td>Firestore <code>model_labels/{modelId}</code> 컬렉션 seeding (모델 6개)</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
+          <tr><td>6</td><td><code>firestore.rules</code> 인증 사용자 읽기 허용, 쓰기 차단</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
+          <tr><td>7</td><td><code>loadModelLabels()</code> — 초기 1회 Map 캐시</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
+          <tr><td>8</td><td><code>computeModelStats()</code> 폴백: modelLabel → cache → model 필드</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
+          <tr><td>9</td><td>GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 결정</td><td><span class="p2">P2</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
+          <tr><td>10</td><td>Auth 검증 추가 후 프로덕션 E2E 동작 확인</td><td><span class="p0">P0</span></td><td><span class="tag tag-yellow">진행 중</span></td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 수용 기준 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">수용 기준</div>
+      <h2 class="slide-title">Acceptance Criteria</h2>
+      <div class="two-col" style="align-items:start;">
+        <ul class="check-list">
+          <li>유효한 Firebase ID Token 없는 <code>/api/chat</code> 요청은 401을 반환한다</li>
+          <li>위조 / 만료 토큰 요청도 401을 반환한다</li>
+          <li>유효 토큰 요청은 기존과 동일하게 OpenRouter 호출로 진행된다</li>
+          <li><code>FIREBASE_SERVICE_ACCOUNT</code>가 하드코딩 없이 Vercel에서 로드된다</li>
+          <li>클라이언트가 <code>getIdToken()</code>으로 토큰을 발급해 헤더에 첨부한다</li>
+          <li>Firestore <code>model_labels</code>에 운용 모델 6개가 seeding되어 있다</li>
+        </ul>
+        <ul class="check-list">
+          <li>인증된 사용자는 <code>model_labels</code>를 읽을 수 있고, 쓰기는 차단된다</li>
+          <li><code>loadModelLabels()</code>가 초기화 시 1회 실행되어 Map 캐시에 저장된다</li>
+          <li>Sprint 6 이전 레거시 entry가 대시보드 통계에 포함된다 (폴백 로직)</li>
+          <li>FEEDBACK_MIN_SAMPLE 복원 여부가 GA4 수치 기반으로 문서화된다</li>
+          <li>프로덕션 전체 플로우 (일기 → AI → 피드백 → 대시보드) 오류 없이 동작한다</li>
+        </ul>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 미완료 / 이월 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">진행 예정</div>
+      <h2 class="slide-title">남은 액션 아이템</h2>
+      <div class="two-col" style="align-items:start;">
+        <div>
+          <div class="role-label">BE</div>
+          <ul class="bullet-list" style="margin-bottom:20px;">
+            <li>Firestore <code>model_labels</code> 컬렉션 seeding (모델 6개) <span class="p1">P1</span></li>
+            <li><code>firestore.rules</code> 읽기 허용 + 쓰기 차단 규칙 추가 <span class="p1">P1</span></li>
+          </ul>
+          <div class="role-label">FE</div>
+          <ul class="bullet-list" style="margin-bottom:20px;">
+            <li><code>initApp()</code>에 <code>loadModelLabels()</code> 추가 <span class="p1">P1</span></li>
+            <li><code>computeModelStats()</code> 폴백 로직 (레거시 데이터 포함) <span class="p1">P1</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="role-label">PM</div>
+          <ul class="bullet-list" style="margin-bottom:20px;">
+            <li>GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 여부 결정 및 문서화 <span class="p2">P2</span></li>
+          </ul>
+          <div class="role-label">QA</div>
+          <ul class="bullet-list">
+            <li>Auth 검증 후 프로덕션 E2E 동작 확인</li>
+            <li>레거시 entry 폴백 로직 검증</li>
+            <li>CORS 프로덕션 도메인 정상 동작 확인 <span class="tag tag-yellow">Sprint 7 이월</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Open Questions + 리스크 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">미결 · 리스크</div>
+      <h2 class="slide-title">Open Questions &amp; 리스크</h2>
+      <div class="two-col" style="align-items:start;">
+        <div>
+          <ul class="bullet-list" style="margin-bottom:0;">
+            <li>FEEDBACK_MIN_SAMPLE 복원 기준 충족 여부 (DAU 50+ / 2주치 피드백) <span class="badge badge-yellow">⚠️ Open</span></li>
+            <li><code>model_labels</code> seeding 대상 모델 목록 최종 확인 (6개 modelId) <span class="badge badge-yellow">⚠️ Open</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="risk-block">
+            <strong>🔐 토큰 만료 처리</strong>
+            <span>Firebase ID Token 유효 시간 1시간. 만료 시 자동 갱신 후 1회 재시도 로직 구현 완료.</span>
+          </div>
+          <div class="risk-block">
+            <strong>📦 레거시 데이터 폴백</strong>
+            <span>Sprint 6 이전 entry의 <code>model</code> 필드 형식 불일치 가능성. Firestore 실데이터 샘플 확인 필요.</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>ai-empathy-diary · Sprint 8</span>
+        <span>2026-05-25</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
