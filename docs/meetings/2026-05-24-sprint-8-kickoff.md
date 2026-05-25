@@ -69,7 +69,7 @@
 - [ ] 인증된 사용자는 `model_labels`를 읽을 수 있고, 쓰기는 차단된다
 - [ ] 앱 초기화 시 `loadModelLabels()`가 1회 실행되어 Map 캐시에 저장된다
 - [ ] Sprint 6 이전 레거시 entry(`modelLabel` 없음)가 대시보드 통계에 포함된다 (폴백 로직 동작 확인)
-- [ ] DAU + 피드백 누적량 확인 후 FEEDBACK_MIN_SAMPLE 복원 여부가 문서화된다
+- [x] DAU + 피드백 누적량 확인 후 FEEDBACK_MIN_SAMPLE 복원 여부가 문서화된다
 - [ ] 배포 후 프로덕션 도메인에서 일기 작성 → AI 응답 → 피드백 → 대시보드 전체 플로우가 오류 없이 동작한다
 
 ---
@@ -89,7 +89,8 @@
 - [ ] `computeModelStats()` 폴백 로직 추가 (레거시 데이터 포함)
 
 **PM (Jordan)**
-- [ ] GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 여부 결정 및 문서화
+- [x] GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 여부 결정 및 문서화
+  - **결정:** `FEEDBACK_MIN_SAMPLE = 1` 현행 유지 (복원 없음). 데이터 수집 민감도 우선.
 
 **QA (Morgan / Quinn)**
 - [x] Auth 검증 후 E2E 동작 확인 (일기 작성 → 피드백 → 대시보드) — preview 환경 확인 완료
@@ -102,7 +103,7 @@
 
 | 질문 | 담당 | 기한 | 상태 |
 |------|------|------|------|
-| FEEDBACK_MIN_SAMPLE 복원 기준(DAU 50+ 또는 2주치 피드백) 충족 여부 | PM Jordan + BE Blake | Sprint 8 킥오프 | ⚠️ Open |
+| FEEDBACK_MIN_SAMPLE 복원 기준(DAU 50+ 또는 2주치 피드백) 충족 여부 | PM Jordan + BE Blake | Sprint 8 킥오프 | ✅ 결정: `FEEDBACK_MIN_SAMPLE = 1` 현행 유지 (데이터 수집 민감도 우선) |
 | `FIREBASE_SERVICE_ACCOUNT` JSON 문자열 Vercel 등록 방식 — Preview/Production 환경변수 분리 필요 여부 | BE Blake | Sprint 8 킥오프 | ✅ 결정: 동일 환경변수를 Preview + Production 양쪽에 등록 |
 | Auth 검증 실패 시 클라이언트 재시도 전략 — 자동 토큰 갱신 후 1회 재시도 vs 에러 메시지 표시 | FE Avery + UX Riley | Sprint 8 구현 전 | ✅ 결정: 자동 갱신 후 1회 재시도, 재실패 시 에러 메시지 |
 | `model_labels` seeding 대상 모델 목록 최종 확인 (현재 6개 — 정확한 modelId 목록 확정 필요) | BE Blake + AI Sage | Sprint 8 킥오프 | ⚠️ Open |
