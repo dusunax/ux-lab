@@ -44,6 +44,8 @@ async function verifyIdToken(req) {
 // 참조: OQ-3 결정 (2026-05-23 Sprint 7 킥오프)
 const PRODUCTION_ORIGIN = 'https://ai-empathy-diary.vercel.app';
 const LOCALHOST_ORIGIN_RE = /^http:\/\/localhost(:\d+)?$/;
+// Vercel preview URLs: https://ai-empathy-diary-{hash}-d-x.vercel.app
+const VERCEL_PREVIEW_RE = /^https:\/\/ai-empathy-diary-[a-z0-9]+-d-x\.vercel\.app$/;
 
 const ALLOWED_ORIGINS = (() => {
   const origins = new Set([PRODUCTION_ORIGIN]);
@@ -55,6 +57,7 @@ const ALLOWED_ORIGINS = (() => {
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   if (LOCALHOST_ORIGIN_RE.test(origin)) return true;
+  if (VERCEL_PREVIEW_RE.test(origin)) return true;
   return ALLOWED_ORIGINS.has(origin);
 }
 
