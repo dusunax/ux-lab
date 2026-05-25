@@ -49,13 +49,16 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 - 클라이언트: `getIdToken()` → `Authorization: Bearer {token}` 헤더 추가
 - `FIREBASE_SERVICE_ACCOUNT` 환경변수(JSON 문자열)를 Vercel에 등록
 
-### P1 — model_labels Firestore 컬렉션 분리
-- 컬렉션 스키마: `model_labels/{modelId}` — `label`, `isActive`, `createdAt`, `updatedAt`
-- 현재 모델 6개 Firebase Console에서 수동 seeding
-- `firestore.rules` — 인증된 사용자 읽기 허용, 쓰기 차단(`allow write: if false`)
-- `initApp()`에 `loadModelLabels()` 추가 — 앱 초기화 1회 Map 캐시
-- `computeModelStats()` 폴백: `entry.modelLabel → cache.get(entry.model) → entry.model`
-- 레거시 entry(Sprint 6 이전, `modelLabel` 없음)가 대시보드 통계에 포함됨
+### P1 — model_labels Firestore 컬렉션 분리 ✅ 완료 (2026-05-25)
+- `model_labels/{modelId}` 컬렉션 seeding 완료 — 6개 모델: `openai/gpt-oss-120b:free($C$3)`, `meta-llama/llama-3.3-70b-instruct:free($J$10)`, `nvidia/nemotron-3-super-120b-a12b:free($C$2)`, `openai/gpt-oss-20b:free($B$2)`, `qwen/qwen3-next-80b-a3b-instruct:free($H$8)`, `minimax/minimax-m2.5:free($H$8)`
+- `firestore.rules` — `model_labels` 인증 사용자 읽기 허용, 쓰기 전면 차단 (`allow write: if false`) 배포 완료
+- **레거시 entry 전수 마이그레이션** (폴백 대신 직접 업데이트 채택):
+  - 유저1: 3건 업데이트 (`openai/gpt-oss-120b:free` → `$C$3`) — 2026-05-22/23 entry
+  - 유저2: 0건 (model 필드 없는 3건 — 마이그레이션 불가, 집계 제외)
+  - model 필드 없는 entry 8건(Sprint 5 이전): 원천 모델 정보 없어 변경 불가, `computeModelStats()` 집계에서 자연스럽게 제외
+- `loadModelLabels()` / `modelLabelCache` **제거** — 런타임 Firestore 조회 불필요 (마이그레이션으로 대체)
+- `computeModelStats()` 단순화: `e.modelLabel || cache.get(e.model) || e.model || null` → `e.modelLabel || null`
+- `initApp()`에서 `await loadModelLabels()` 호출 제거 → 초기화 시 Firestore 왕복 1회 감소
 
 ### P2 — FEEDBACK_MIN_SAMPLE 복원 검토
 - Sprint 8 킥오프 시 GA4 DAU + Firestore 피드백 누적량 확인
@@ -78,7 +81,7 @@ ai-empathy-diary는 개인 감정 일기 앱이다. OpenRouter LLM이 감정 분
 | Sprint 5 | 2026-05-20 | Vite 보류, CSS+JS 분리, CORS 제한, AI 프롬프트 리뷰 시작, emotion_label_recorded |
 | Sprint 6 | 2026-05-21 | 피드백 버튼(커스텀 SVG), Firestore feedback/model 필드, emotion_feedback_recorded 이벤트, 모델 추적 |
 | Sprint 7 | 2026-05-24 | 모델별 만족도 대시보드(CSS/SVG 바 차트), CORS 강화(api/chat.js 도메인 제한), 모델 익명화 레이블, FEEDBACK_MIN_SAMPLE 임시 완화(5→1) |
-| Sprint 8 | 2026-05-25 (예정) | Firebase Auth Admin SDK 서버사이드 검증(P0), model_labels Firestore 컬렉션 분리(P1), FEEDBACK_MIN_SAMPLE 복원 검토(P2) |
+| Sprint 8 | 2026-05-25 | Firebase Auth Admin SDK 서버사이드 검증(P0 완료), model_labels 컬렉션 seeding + firestore.rules + 레거시 3건 마이그레이션 + computeModelStats 단순화(P1 완료), FEEDBACK_MIN_SAMPLE 복원 검토(P2 미결) |
 
 ## 로그 아키텍처 (Sprint 3 확정, Sprint 5 업데이트)
 

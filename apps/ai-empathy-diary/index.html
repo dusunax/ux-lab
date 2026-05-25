@@ -258,7 +258,6 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const analytics = firebase.analytics();
 let currentUser = null;
-var modelLabelCache = new Map(); /* modelId → label (Firestore model_labels 캐시) */
 
 function entriesRef() {
   if (!currentUser) throw new Error('entriesRef called without authenticated user');
@@ -639,25 +638,12 @@ function bindEvents() {
   });
 }
 
-/* ── Model Labels Cache ────────────────────────── */
-async function loadModelLabels() {
-  try {
-    var snap = await db.collection('model_labels').get();
-    snap.forEach(function(doc) {
-      var d = doc.data();
-      if (d.modelId && d.label) modelLabelCache.set(d.modelId, d.label);
-    });
-  } catch (err) {
-    console.warn('model_labels 로드 실패 — 서버사이드 라벨로 폴백합니다.', err);
-  }
-}
-
 /* ── Model Stats ───────────────────────────────── */
 function computeModelStats() {
   var stats = new Map(); /* modelLabel → { positive: 0, negative: 0 } */
   entries.forEach(function(e) {
-    /* 폴백 순서: entry.modelLabel → Firestore 캐시 → entry.model(레거시) */
-    var label = e.modelLabel || modelLabelCache.get(e.model) || e.model || null;
+    /* 마이그레이션 완료 — modelLabel이 없는 entry는 집계 대상 아님 */
+    var label = e.modelLabel || null;
     if (!label) return;
     if (e.feedback !== 'positive' && e.feedback !== 'negative') return; /* 피드백 없는 entry는 집계에서 제외 */
     if (!stats.has(label)) stats.set(label, { positive: 0, negative: 0 });
@@ -712,7 +698,6 @@ function bindTabs() {
 let appInitialized = false;
 async function initApp() {
   showLoadingSkeletons();
-  await loadModelLabels(); /* Firestore model_labels → modelLabelCache (1회) */
   entries = await loadEntriesFromFirestore();
   rebuildEntryMap();
   renderRows();

@@ -74,8 +74,8 @@
         <ul class="check-list">
           <li><span class="done">✅</span> Firestore <code>model_labels</code> 컬렉션 seeding (6개 모델)</li>
           <li><span class="done">✅</span> <code>firestore.rules</code> — 인증 사용자 읽기 허용, 쓰기 차단</li>
-          <li><span class="done">✅</span> <code>loadModelLabels()</code> — <code>initApp()</code> 1회 Map 캐시 로딩</li>
-          <li><span class="done">✅</span> <code>computeModelStats()</code> 폴백: <code>modelLabel → cache → model</code></li>
+          <li><span class="done">✅</span> 레거시 entry <code>modelLabel</code> 전수 마이그레이션 — 3건 직접 업데이트 (model 없는 8건은 집계 제외)</li>
+          <li><span class="done">✅</span> <code>loadModelLabels()</code> / <code>modelLabelCache</code> 제거, <code>computeModelStats()</code> 폴백 체인 → 단일 조회 단순화</li>
           <li><span class="done">✅</span> <code>FEEDBACK_MIN_SAMPLE = 1</code> 현행 유지 결정 (데이터 민감도 우선)</li>
           <li><span class="done">✅</span> Preview 환경 E2E Auth 동작 확인 완료</li>
         </ul>
@@ -98,8 +98,8 @@
           <tr><td>4</td><td>클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
           <tr><td>5</td><td>Firestore <code>model_labels/{modelId}</code> 컬렉션 seeding (모델 6개)</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
           <tr><td>6</td><td><code>firestore.rules</code> 인증 사용자 읽기 허용, 쓰기 차단</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
-          <tr><td>7</td><td><code>loadModelLabels()</code> — 초기 1회 Map 캐시</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
-          <tr><td>8</td><td><code>computeModelStats()</code> 폴백: modelLabel → cache → model 필드</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>7</td><td>레거시 entry <code>modelLabel</code> 전수 마이그레이션 — 3건 직접 업데이트 (<code>loadModelLabels()</code> / <code>modelLabelCache</code> 제거)</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>8</td><td><code>computeModelStats()</code> 폴백 체인 제거 — <code>e.modelLabel</code> 단일 조회로 단순화</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
           <tr><td>9</td><td><code>FEEDBACK_MIN_SAMPLE = 1</code> 현행 유지 결정 및 문서화</td><td><span class="p2">P2</span></td><td><span class="tag tag-green">완료</span></td></tr>
           <tr><td>10</td><td>Auth 검증 추가 후 프로덕션 E2E 동작 확인</td><td><span class="p0">P0</span></td><td><span class="tag tag-yellow">main 머지 후</span></td></tr>
         </tbody>
@@ -124,8 +124,8 @@
         </ul>
         <ul class="check-list">
           <li>인증된 사용자는 <code>model_labels</code>를 읽을 수 있고, 쓰기는 차단된다</li>
-          <li><code>loadModelLabels()</code>가 초기화 시 1회 실행되어 Map 캐시에 저장된다</li>
-          <li>Sprint 6 이전 레거시 entry가 대시보드 통계에 포함된다 (폴백 로직)</li>
+          <li>레거시 entry <code>modelLabel</code> 전수 마이그레이션 완료 — 3건 업데이트, model 없는 8건은 집계 제외</li>
+          <li><code>loadModelLabels()</code> / <code>modelLabelCache</code> 제거 — 런타임 Firestore 조회 불필요</li>
           <li>FEEDBACK_MIN_SAMPLE 복원 여부가 GA4 수치 기반으로 문서화된다</li>
           <li>프로덕션 전체 플로우 (일기 → AI → 피드백 → 대시보드) 오류 없이 동작한다</li>
         </ul>
@@ -145,7 +145,7 @@
       <div class="role-label">QA</div>
       <ul class="check-list">
         <li>프로덕션 E2E 동작 확인 — 일기 작성 → AI 응답 → 피드백 → 대시보드 전체 플로우</li>
-        <li>레거시 entry 폴백 로직 검증 — Sprint 6 이전 데이터 대시보드 통계 포함 여부</li>
+        <li>마이그레이션 결과 검증 — 26건 중 3건 업데이트 반영, 대시보드 통계 정상 집계 확인</li>
         <li>CORS 프로덕션 도메인 정상 동작 확인 <span class="tag tag-yellow">Sprint 7 이월</span></li>
       </ul>
       <div class="slide-counter"></div>
