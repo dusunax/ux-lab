@@ -73,26 +73,35 @@ N을 확정하지 못하면:
 
 ---
 
-## Step 3 — 보고서 경로 탐지
+## Step 3 — 보고서 경로 탐지 및 URL 변환
 
 아래 우선순위로 보고서 경로를 결정한다:
 
 | 우선순위 | 조건 | 동작 |
 |---------|------|------|
-| 1 | `--report-url URL` 인수 있음 | 해당 URL 사용 |
-| 2 | `docs/presentations/.last-report` 파일 있음 | 파일에서 경로 읽기 |
-| 3 | 로컬 glob 탐색 | 아래 명령으로 가장 최근 파일 탐지 |
+| 1 | `--report-url URL` 인수 있음 | 해당 URL 그대로 사용 |
+| 2 | `docs/presentations/.last-report` 파일 있음 | 파일에서 경로 읽기 후 아래 변환 적용 |
+| 3 | 로컬 glob 탐색 | 아래 명령으로 가장 최근 파일 탐지 후 변환 |
 
-**우선순위 3 — 로컬 glob:**
+**우선순위 2·3 — 로컬 경로 → GitHub Pages URL 변환:**
 
 ```bash
 ls -t docs/presentations/sprint-N-report-*.html 2>/dev/null | head -1
 ```
 
-(`ls -t`: 수정 시각 역순, 가장 최근 파일이 첫 번째)
+탐지된 로컬 경로(`docs/presentations/sprint-N-report-yymmdd.html`)를 아래 규칙으로 GitHub Pages URL로 변환한다:
 
-- 경로가 확정되면 `{{REPORT_LINK}}`에 해당 경로를 채운다.
-- 어느 방법으로도 경로를 찾지 못하면:
+```
+docs/presentations/{파일명} → https://dusunax.github.io/ux-lab/presentations/{파일명}
+```
+
+`{{REPORT_LINK}}`에는 변환된 URL을 마크다운 링크 형식으로 채운다:
+
+```
+[📊 Sprint N 보고서](https://dusunax.github.io/ux-lab/presentations/sprint-N-report-yymmdd.html)
+```
+
+어느 방법으로도 경로를 찾지 못하면:
 
 ```
 (보고서 미생성 — /sprint:report 실행 후 /sprint:review를 재실행하세요)

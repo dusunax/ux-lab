@@ -41,6 +41,7 @@ _(결정 사항 테이블이 없으면 이 섹션 생략)_
 
 {{REPORT_LINK}}
 
+_(형식: `[📊 Sprint N 보고서](https://dusunax.github.io/ux-lab/presentations/sprint-N-report-yymmdd.html)`)_
 _(보고서 미생성 시: "보고서 미생성 — `/sprint:report` 실행 후 `--report-url`로 첨부 예정")_
 
 ---
