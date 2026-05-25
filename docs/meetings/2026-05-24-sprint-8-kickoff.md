@@ -60,11 +60,11 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] 유효한 Firebase ID Token 없는 `/api/chat` 요청은 401을 반환한다
-- [ ] 위조/만료 토큰 요청은 401을 반환한다
-- [ ] 유효 토큰 요청은 기존과 동일하게 OpenRouter 호출로 진행된다
-- [ ] `FIREBASE_SERVICE_ACCOUNT` 환경변수가 하드코딩 없이 Vercel에서 로드된다
-- [ ] 클라이언트가 로그인 상태에서 `getIdToken()`으로 토큰을 발급해 헤더에 첨부한다
+- [x] 유효한 Firebase ID Token 없는 `/api/chat` 요청은 401을 반환한다
+- [x] 위조/만료 토큰 요청은 401을 반환한다
+- [x] 유효 토큰 요청은 기존과 동일하게 OpenRouter 호출로 진행된다
+- [x] `FIREBASE_SERVICE_ACCOUNT` 환경변수가 하드코딩 없이 Vercel에서 로드된다
+- [x] 클라이언트가 로그인 상태에서 `getIdToken()`으로 토큰을 발급해 헤더에 첨부한다
 - [ ] Firestore `model_labels` 컬렉션에 현재 운용 모델 6개가 seeding되어 있다
 - [ ] 인증된 사용자는 `model_labels`를 읽을 수 있고, 쓰기는 차단된다
 - [ ] 앱 초기화 시 `loadModelLabels()`가 1회 실행되어 Map 캐시에 저장된다
@@ -92,7 +92,7 @@
 - [ ] GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 여부 결정 및 문서화
 
 **QA (Morgan / Quinn)**
-- [ ] Auth 검증 후 프로덕션 E2E 동작 확인 (일기 작성 → 피드백 → 대시보드)
+- [x] Auth 검증 후 E2E 동작 확인 (일기 작성 → 피드백 → 대시보드) — preview 환경 확인 완료
 - [ ] 레거시 entry 폴백 로직 검증 (Sprint 6 이전 데이터 대시보드 포함 여부)
 - [ ] CORS 제한 후 프로덕션 도메인 정상 동작 확인 (Sprint 7 이월)
 
@@ -103,8 +103,8 @@
 | 질문 | 담당 | 기한 | 상태 |
 |------|------|------|------|
 | FEEDBACK_MIN_SAMPLE 복원 기준(DAU 50+ 또는 2주치 피드백) 충족 여부 | PM Jordan + BE Blake | Sprint 8 킥오프 | ⚠️ Open |
-| `FIREBASE_SERVICE_ACCOUNT` JSON 문자열 Vercel 등록 방식 — Preview/Production 환경변수 분리 필요 여부 | BE Blake | Sprint 8 킥오프 | ⚠️ Open |
-| Auth 검증 실패 시 클라이언트 재시도 전략 — 자동 토큰 갱신 후 1회 재시도 vs 에러 메시지 표시 | FE Avery + UX Riley | Sprint 8 구현 전 | ⚠️ Open |
+| `FIREBASE_SERVICE_ACCOUNT` JSON 문자열 Vercel 등록 방식 — Preview/Production 환경변수 분리 필요 여부 | BE Blake | Sprint 8 킥오프 | ✅ 결정: 동일 환경변수를 Preview + Production 양쪽에 등록 |
+| Auth 검증 실패 시 클라이언트 재시도 전략 — 자동 토큰 갱신 후 1회 재시도 vs 에러 메시지 표시 | FE Avery + UX Riley | Sprint 8 구현 전 | ✅ 결정: 자동 갱신 후 1회 재시도, 재실패 시 에러 메시지 |
 | `model_labels` seeding 대상 모델 목록 최종 확인 (현재 6개 — 정확한 modelId 목록 확정 필요) | BE Blake + AI Sage | Sprint 8 킥오프 | ⚠️ Open |
 
 ---
