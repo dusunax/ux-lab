@@ -115,6 +115,7 @@
             <li class="done">Firestore <code>model_labels</code> 컬렉션 seeding (6개 모델)</li>
             <li class="done"><code>firestore.rules</code> — 인증 사용자 읽기 허용, 쓰기 차단</li>
             <li class="done">레거시 entry <code>modelLabel</code> 전수 마이그레이션 (3건)</li>
+            <li class="done"><strong>H-1 수정</strong> — OPTIONS preflight 401 → CORS를 auth 검사 앞으로 이동</li>
           </ul>
         </div>
         <div>
@@ -136,6 +137,7 @@
           <li class="done">Preview 환경 E2E Auth 동작 확인</li>
           <li class="done">미허용 오리진 → 403 반환 확인 (DevTools 스크린샷)</li>
           <li class="done">마이그레이션 결과 코드 검증</li>
+          <li class="done"><strong style="color:#dc2626;">H-1</strong> OPTIONS preflight 401 발견 → BE 즉시 수정 · 재배포 확인</li>
           <li style="color:#b07c00;">⚠ 프로덕션 E2E (main 머지 후)</li>
           <li style="color:#b07c00;">⚠ CORS 프로덕션 도메인 (Sprint 7 이월)</li>
         </ul>
@@ -231,43 +233,62 @@
     <div class="slide-inner">
       <div class="slide-label">QA</div>
       <h2 class="slide-title">QA 검증 결과</h2>
-      <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
-        <span class="tag tag-green">AC 9/10 코드 검증 완료</span>
-        <span class="tag tag-yellow">E2E 1건 — main 머지 후</span>
-        <span class="tag tag-yellow">이월 1건 (Sprint 7)</span>
+      <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
+        <span class="tag tag-red">🔴 H-1 발견 → 즉시 수정</span>
+        <span class="tag tag-green">QA-1 E2E PASS</span>
+        <span class="tag tag-green">QA-3 CORS PASS</span>
+        <span class="tag tag-green">M-2 · S-1 수정 완료</span>
+        <span class="tag tag-yellow">이월 1건 (M-1)</span>
       </div>
       <table class="data-table">
-        <thead><tr><th>우선순위</th><th>QA 항목</th><th>결과</th></tr></thead>
+        <thead><tr><th>등급</th><th>항목</th><th>결과</th></tr></thead>
         <tbody>
-          <tr>
-            <td><span class="tag tag-red">HIGH</span></td>
-            <td>미인증 / 위조 / 만료 토큰 요청 → 401 반환</td>
-            <td>코드 검증 완료 ✓</td>
+          <tr style="background:#fff5f5;">
+            <td><span class="tag tag-red">🔴 Blocker</span></td>
+            <td>
+              <strong>H-1 — OPTIONS preflight → 401</strong><br>
+              <span style="font-size:12px; color:#888;">CORS 처리 전에 verifyIdToken() 호출됨. 브라우저 preflight가 인증 헤더 미전송으로 401 반환.</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span><br><span style="font-size:11px; color:#888;">OPTIONS 분기를 auth 검사 앞으로 이동</span></td>
           </tr>
           <tr>
-            <td><span class="tag tag-red">HIGH</span></td>
-            <td>미허용 오리진 → 403 반환 (DevTools 증거 확보)</td>
-            <td>스크린샷 확보 ✓</td>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>M-1 — model 필드 없는 entry 5건 누락</strong><br>
+              <span style="font-size:12px; color:#888;">Sprint 5 이전 entry — model/modelLabel 모두 없음. 대시보드 통계 미반영.</span>
+            </td>
+            <td><span class="badge badge-yellow">⚠ 이월</span></td>
           </tr>
           <tr>
-            <td><span class="tag tag-red">HIGH</span></td>
-            <td>유효 토큰 → OpenRouter 정상 호출 (Preview E2E)</td>
-            <td>Preview 환경 확인 ✓</td>
+            <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
+            <td>
+              <strong>M-2 — qwen · minimax 라벨 충돌 ($H$8)</strong><br>
+              <span style="font-size:12px; color:#888;">model_labels seeding 시 두 모델이 동일 해시 버킷 → Firestore 직접 수정.</span>
+            </td>
+            <td><span class="tag tag-green">✅ 수정 완료</span></td>
           </tr>
           <tr>
-            <td><span class="tag" style="background:#fff3e0;color:#e65100;">MED</span></td>
-            <td>마이그레이션 결과 — 대시보드 통계 정상 집계 (e.modelLabel 단일 조회)</td>
-            <td>코드 검증 완료 ✓</td>
+            <td><span class="tag tag-green">🟢 Minor</span></td>
+            <td>
+              <strong>S-1 — favicon 404</strong><br>
+              <span style="font-size:12px; color:#888;">SVG data URI favicon 추가 — 앱 로고와 동일한 엑셀 스타일 아이콘 적용.</span>
+            </td>
+            <td><span class="tag tag-green">✅ 적용 완료</span></td>
           </tr>
           <tr>
-            <td><span class="tag" style="background:#f3f4f6;color:#555;">LOW</span></td>
-            <td>프로덕션 E2E 전체 플로우 (일기 → AI → 피드백 → 대시보드)</td>
-            <td><span class="badge badge-yellow">⚠ main 머지 후</span></td>
+            <td>QA-1</td>
+            <td>E2E — 로그인 → AI 응답 → 피드백 → 대시보드 전체 플로우 (Preview)</td>
+            <td><span class="tag tag-green">✅ PASS</span></td>
           </tr>
           <tr>
-            <td><span class="tag" style="background:#f3f4f6;color:#555;">LOW</span></td>
-            <td>CORS 프로덕션 도메인 동작 확인</td>
-            <td><span class="badge badge-yellow">⚠ 이월 (Sprint 7)</span></td>
+            <td>QA-2</td>
+            <td>Firestore model_labels 캐시 6개 · 레거시 폴백 (model 보유 entry)</td>
+            <td><span class="tag tag-green">✅ PASS</span> <span style="font-size:11px; color:#b07c00;">(model 없는 5건 제외)</span></td>
+          </tr>
+          <tr>
+            <td>QA-3</td>
+            <td>CORS — api/log 미허용 오리진 403 · 브라우저 오류 없음</td>
+            <td><span class="tag tag-green">✅ PASS</span></td>
           </tr>
         </tbody>
       </table>
@@ -280,9 +301,18 @@
     <div class="slide-inner">
       <div class="slide-label">데모</div>
       <h2 class="slide-title">CORS 도메인 제한 — 403 Forbidden 확인</h2>
-      <div class="screenshot-wrap" style="margin-top:16px;">
-        <img class="screenshot" src="./sprint-8/cors-403-evidence.png" alt="허용되지 않은 오리진의 /api/chat 요청 403 Forbidden 반환 확인" style="max-height:60vh; width:100%; max-width:100%; object-fit:contain;">
-        <p class="screenshot-cap">허용되지 않은 오리진의 <code>/api/chat</code> 요청 → 403 Forbidden 반환 확인 (Chrome DevTools Network)</p>
+      <div class="two-col" style="align-items:start; gap:32px;">
+        <ul class="check-list">
+          <li><span class="done">✅</span> 허용되지 않은 오리진의 <code>/api/chat</code> 요청 → <strong>403 Forbidden</strong> 반환</li>
+          <li><span class="done">✅</span> 허용 오리진: 프로덕션 도메인 · <code>localhost</code> · Vercel preview URL</li>
+          <li><span class="done">✅</span> <code>VERCEL_PREVIEW_RE</code> 정규식 패턴으로 preview 환경 허용</li>
+          <li><span class="done">✅</span> OPTIONS preflight → Auth 검사 앞에서 CORS 헤더 반환 (H-1 수정)</li>
+          <li><span class="done">✅</span> Firebase ID Token 검증 추가로 curl 직접 호출도 차단</li>
+        </ul>
+        <div class="screenshot-wrap">
+          <img class="screenshot" src="./sprint-8/cors-403-evidence.png" alt="허용되지 않은 오리진의 /api/chat 요청 403 Forbidden 반환 확인">
+          <p class="screenshot-cap">허용되지 않은 오리진의 <code>/api/chat</code> 요청 → 403 Forbidden 반환 확인</p>
+        </div>
       </div>
       <div class="slide-counter"></div>
     </div>
