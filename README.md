@@ -15,6 +15,15 @@
 
 ## 📸 스크린샷
 
+### 📍 ai-empathy-diary
+
+- Excel UI로 위장한 AI 감정 일기
+- 일기 입력 시 AI가 감정 분석 후 한마디 응답
+- Firebase Auth 기반 인증 + Firestore 저장
+- 모델별 피드백 통계 대시보드
+
+<img width="800" src="./docs/screenshots/ai-empathy-diary.png" />
+
 ### 📍 @ux-lab/cad-viewer
 
 - DXF 도면 업로드 및 2D 뷰어
