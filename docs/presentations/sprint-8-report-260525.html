@@ -61,15 +61,25 @@
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">완료</div>
-      <h2 class="slide-title">완료된 항목 (P0)</h2>
-      <ul class="check-list">
-        <li><span class="done">✅</span> <code>FIREBASE_SERVICE_ACCOUNT</code> 환경변수 Vercel 등록 (Preview + Production)</li>
-        <li><span class="done">✅</span> Firebase Admin SDK 설치 및 <code>api/chat.js</code> 서버사이드 초기화</li>
-        <li><span class="done">✅</span> Bearer 토큰 추출 → <code>verifyIdToken()</code> 검증 — 실패 시 401 반환</li>
-        <li><span class="done">✅</span> 클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</li>
-        <li><span class="done">✅</span> 토큰 만료 시 자동 갱신 후 1회 재시도 로직 구현</li>
-        <li><span class="done">✅</span> Vercel preview URL CORS 허용 — <code>VERCEL_PREVIEW_RE</code> 추가 (<code>api/chat.js</code>, <code>api/log.js</code>)</li>
-      </ul>
+      <h2 class="slide-title">완료된 항목 (P0 + P1)</h2>
+      <div class="two-col" style="align-items:start;">
+        <ul class="check-list">
+          <li><span class="done">✅</span> <code>FIREBASE_SERVICE_ACCOUNT</code> 환경변수 Vercel 등록 (Preview + Production)</li>
+          <li><span class="done">✅</span> Firebase Admin SDK 설치 및 <code>api/chat.js</code> 서버사이드 초기화</li>
+          <li><span class="done">✅</span> Bearer 토큰 → <code>verifyIdToken()</code> 검증, 실패 시 401 반환</li>
+          <li><span class="done">✅</span> 클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</li>
+          <li><span class="done">✅</span> 토큰 만료 시 자동 갱신 후 1회 재시도 로직</li>
+          <li><span class="done">✅</span> Vercel preview URL CORS 허용 — <code>VERCEL_PREVIEW_RE</code> 추가</li>
+        </ul>
+        <ul class="check-list">
+          <li><span class="done">✅</span> Firestore <code>model_labels</code> 컬렉션 seeding (6개 모델)</li>
+          <li><span class="done">✅</span> <code>firestore.rules</code> — 인증 사용자 읽기 허용, 쓰기 차단</li>
+          <li><span class="done">✅</span> <code>loadModelLabels()</code> — <code>initApp()</code> 1회 Map 캐시 로딩</li>
+          <li><span class="done">✅</span> <code>computeModelStats()</code> 폴백: <code>modelLabel → cache → model</code></li>
+          <li><span class="done">✅</span> <code>FEEDBACK_MIN_SAMPLE = 1</code> 현행 유지 결정 (데이터 민감도 우선)</li>
+          <li><span class="done">✅</span> Preview 환경 E2E Auth 동작 확인 완료</li>
+        </ul>
+      </div>
       <div class="slide-counter"></div>
     </div>
   </div>
@@ -86,12 +96,12 @@
           <tr><td>2</td><td><code>FIREBASE_SERVICE_ACCOUNT</code> 환경변수 Vercel 등록</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
           <tr><td>3</td><td>Bearer 토큰 → <code>verifyIdToken()</code> 검증, 실패 시 401 반환</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
           <tr><td>4</td><td>클라이언트 <code>getIdToken()</code> → <code>Authorization: Bearer</code> 헤더 첨부</td><td><span class="p0">P0</span></td><td><span class="tag tag-green">완료</span></td></tr>
-          <tr><td>5</td><td>Firestore <code>model_labels/{modelId}</code> 컬렉션 seeding (모델 6개)</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
-          <tr><td>6</td><td><code>firestore.rules</code> 인증 사용자 읽기 허용, 쓰기 차단</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
-          <tr><td>7</td><td><code>loadModelLabels()</code> — 초기 1회 Map 캐시</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
-          <tr><td>8</td><td><code>computeModelStats()</code> 폴백: modelLabel → cache → model 필드</td><td><span class="p1">P1</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
-          <tr><td>9</td><td>GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 결정</td><td><span class="p2">P2</span></td><td><span class="tag tag-yellow">예정</span></td></tr>
-          <tr><td>10</td><td>Auth 검증 추가 후 프로덕션 E2E 동작 확인</td><td><span class="p0">P0</span></td><td><span class="tag tag-yellow">진행 중</span></td></tr>
+          <tr><td>5</td><td>Firestore <code>model_labels/{modelId}</code> 컬렉션 seeding (모델 6개)</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>6</td><td><code>firestore.rules</code> 인증 사용자 읽기 허용, 쓰기 차단</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>7</td><td><code>loadModelLabels()</code> — 초기 1회 Map 캐시</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>8</td><td><code>computeModelStats()</code> 폴백: modelLabel → cache → model 필드</td><td><span class="p1">P1</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>9</td><td><code>FEEDBACK_MIN_SAMPLE = 1</code> 현행 유지 결정 및 문서화</td><td><span class="p2">P2</span></td><td><span class="tag tag-green">완료</span></td></tr>
+          <tr><td>10</td><td>Auth 검증 추가 후 프로덕션 E2E 동작 확인</td><td><span class="p0">P0</span></td><td><span class="tag tag-yellow">main 머지 후</span></td></tr>
         </tbody>
       </table>
       <div class="slide-counter"></div>
@@ -124,64 +134,50 @@
     </div>
   </div>
 
-  <!-- Slide 6: 미완료 / 이월 -->
+  <!-- Slide 6: 잔여 항목 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">진행 예정</div>
-      <h2 class="slide-title">남은 액션 아이템</h2>
-      <div class="two-col" style="align-items:start;">
-        <div>
-          <div class="role-label">BE</div>
-          <ul class="bullet-list" style="margin-bottom:20px;">
-            <li>Firestore <code>model_labels</code> 컬렉션 seeding (모델 6개) <span class="p1">P1</span></li>
-            <li><code>firestore.rules</code> 읽기 허용 + 쓰기 차단 규칙 추가 <span class="p1">P1</span></li>
-          </ul>
-          <div class="role-label">FE</div>
-          <ul class="bullet-list" style="margin-bottom:20px;">
-            <li><code>initApp()</code>에 <code>loadModelLabels()</code> 추가 <span class="p1">P1</span></li>
-            <li><code>computeModelStats()</code> 폴백 로직 (레거시 데이터 포함) <span class="p1">P1</span></li>
-          </ul>
-        </div>
-        <div>
-          <div class="role-label">PM</div>
-          <ul class="bullet-list" style="margin-bottom:20px;">
-            <li>GA4 DAU + 피드백 누적량 확인 → FEEDBACK_MIN_SAMPLE 복원 여부 결정 및 문서화 <span class="p2">P2</span></li>
-          </ul>
-          <div class="role-label">QA</div>
-          <ul class="bullet-list">
-            <li>Auth 검증 후 프로덕션 E2E 동작 확인</li>
-            <li>레거시 entry 폴백 로직 검증</li>
-            <li>CORS 프로덕션 도메인 정상 동작 확인 <span class="tag tag-yellow">Sprint 7 이월</span></li>
-          </ul>
-        </div>
+      <div class="slide-label">잔여</div>
+      <h2 class="slide-title">main 머지 후 확인 항목</h2>
+      <div class="callout" style="margin-bottom:24px;">
+        P0 · P1 · P2 구현 완료 — <strong>main 브랜치 머지 → 프로덕션 배포 후 QA 검증</strong>만 남음
       </div>
+      <div class="role-label">QA</div>
+      <ul class="check-list">
+        <li>프로덕션 E2E 동작 확인 — 일기 작성 → AI 응답 → 피드백 → 대시보드 전체 플로우</li>
+        <li>레거시 entry 폴백 로직 검증 — Sprint 6 이전 데이터 대시보드 통계 포함 여부</li>
+        <li>CORS 프로덕션 도메인 정상 동작 확인 <span class="tag tag-yellow">Sprint 7 이월</span></li>
+      </ul>
       <div class="slide-counter"></div>
     </div>
   </div>
 
-  <!-- Slide 7: Open Questions + 리스크 -->
+  <!-- Slide 7: OQ 결정 결과 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">미결 · 리스크</div>
-      <h2 class="slide-title">Open Questions &amp; 리스크</h2>
-      <div class="two-col" style="align-items:start;">
-        <div>
-          <ul class="bullet-list" style="margin-bottom:0;">
-            <li>FEEDBACK_MIN_SAMPLE 복원 기준 충족 여부 (DAU 50+ / 2주치 피드백) <span class="badge badge-yellow">⚠️ Open</span></li>
-            <li><code>model_labels</code> seeding 대상 모델 목록 최종 확인 (6개 modelId) <span class="badge badge-yellow">⚠️ Open</span></li>
-          </ul>
-        </div>
-        <div>
-          <div class="risk-block">
-            <strong>🔐 토큰 만료 처리</strong>
-            <span>Firebase ID Token 유효 시간 1시간. 만료 시 자동 갱신 후 1회 재시도 로직 구현 완료.</span>
-          </div>
-          <div class="risk-block">
-            <strong>📦 레거시 데이터 폴백</strong>
-            <span>Sprint 6 이전 entry의 <code>model</code> 필드 형식 불일치 가능성. Firestore 실데이터 샘플 확인 필요.</span>
-          </div>
-        </div>
-      </div>
+      <div class="slide-label">결정 사항</div>
+      <h2 class="slide-title">Open Questions — 전원 결정 완료</h2>
+      <table class="data-table">
+        <thead><tr><th>질문</th><th>결정</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>FIREBASE_SERVICE_ACCOUNT</code> Preview/Production 분리 여부</td>
+            <td><span class="badge badge-green">✅</span> 동일 환경변수를 Preview + Production 양쪽에 등록</td>
+          </tr>
+          <tr>
+            <td>Auth 검증 실패 시 재시도 전략</td>
+            <td><span class="badge badge-green">✅</span> 자동 토큰 갱신 후 1회 재시도, 재실패 시 에러 메시지</td>
+          </tr>
+          <tr>
+            <td><code>model_labels</code> seeding 모델 목록 확정</td>
+            <td><span class="badge badge-green">✅</span> <code>api/chat.js</code> FALLBACKS 6개 모델로 확정, Firestore seeding 완료</td>
+          </tr>
+          <tr>
+            <td>FEEDBACK_MIN_SAMPLE 복원 기준 충족 여부</td>
+            <td><span class="badge badge-green">✅</span> <code>FEEDBACK_MIN_SAMPLE = 1</code> 현행 유지 — 데이터 수집 민감도 우선</td>
+          </tr>
+        </tbody>
+      </table>
       <div class="slide-counter"></div>
     </div>
   </div>
