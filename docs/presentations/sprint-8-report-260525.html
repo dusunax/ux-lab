@@ -260,7 +260,7 @@
       <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
         <span class="tag tag-green">QA-1 E2E 통과</span>
         <span class="tag tag-green">QA-3 CORS 통과</span>
-        <span class="tag tag-yellow">QA-2 부분 통과 (model 없는 5건 제외)</span>
+        <span class="tag tag-green">QA-2 통과 (model 없는 8건 집계 제외)</span>
       </div>
       <table class="data-table">
         <thead><tr><th>#</th><th>항목</th><th>결과</th></tr></thead>
@@ -272,8 +272,8 @@
           </tr>
           <tr>
             <td>2</td>
-            <td>Firestore model_labels 캐시 6개 · 레거시 폴백 (model 보유 entry)</td>
-            <td><span class="tag tag-green">✅ 통과</span> <span style="font-size:11px; color:#b07c00;">(model 없는 5건 제외)</span></td>
+            <td>model_labels seeding 6개 · 전수 마이그레이션 (model 보유 3건 업데이트) · <code>modelLabel</code> 없는 8건 집계 제외</td>
+            <td><span class="tag tag-green">✅ 통과</span></td>
           </tr>
           <tr>
             <td>3</td>
@@ -305,7 +305,7 @@
           <tr>
             <td><span class="tag" style="background:#fff3e0;color:#e65100;">🟡 Major</span></td>
             <td>
-              <strong>M-1 — model 필드 없는 entry 5건 집계 제외</strong><br>
+              <strong>M-1 — model 필드 없는 entry 8건 집계 제외</strong><br>
               <span style="font-size:12px; color:#888;">Sprint 5 이전 entry — 기록 시점에 model 정보 미존재, 복원 불가</span>
             </td>
             <td><span class="badge badge-yellow">미반영 (설계 한계)</span></td>
