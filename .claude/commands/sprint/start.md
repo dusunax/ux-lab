@@ -218,9 +218,11 @@ Jordan의 결과물을 저장한다.
 
 ---
 
-## Step 4 — Alex(TS) 소환: 킥오프 MD 생성
+## Step 4 — Alex(TS) 소환: 킥오프 MD 생성 (worktree 격리)
 
-`product/TS/secretary` 에이전트를 소환한다.
+`product/TS/secretary` 에이전트를 **`isolation: "worktree"`** 옵션으로 소환한다.
+
+> Alex는 `docs/meetings/` 아래 파일을 생성하므로 메인 워크트리와 충돌을 방지하기 위해 격리된 worktree에서 실행한다.
 
 Alex에게 전달할 프롬프트:
 
@@ -287,6 +289,33 @@ Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘.
 
 파일 생성 후 docs/meetings/README.md 인덱스 테이블에도 한 줄 추가해줘:
 | [파일명] | Sprint [NEXT_SPRINT] 킥오프 | [오늘날짜] | [목표 한 줄 요약] |
+```
+
+---
+
+## Step 4.5 — worktree 병합 및 정리
+
+Alex의 worktree 작업이 완료되면 변경사항을 `sprint/[NEXT_SPRINT]` 브랜치로 병합한다.
+
+```bash
+# 1. 현재 worktree 목록 확인
+git worktree list
+
+# 2. Alex worktree의 브랜치 이름 확인 후 커밋 목록 조회
+git log --oneline <alex-worktree-branch> ^sprint/[NEXT_SPRINT]
+
+# 3. 변경사항을 sprint/[NEXT_SPRINT]로 가져오기
+git merge <alex-worktree-branch> --no-ff -m "docs(sprint-[NEXT_SPRINT]): Alex worktree 병합 — 킥오프 MD 생성"
+
+# 4. worktree 정리 (자동 정리되지 않은 경우)
+git worktree remove <alex-worktree-path> --force
+git branch -d <alex-worktree-branch>
+```
+
+병합 확인:
+```bash
+git log --oneline -3
+ls docs/meetings/ | grep sprint-[NEXT_SPRINT]
 ```
 
 ---
