@@ -16,10 +16,9 @@
 
 | # | 구분 | 항목 |
 |---|------|------|
-| 1 | Open Question 결정 | `FEEDBACK_MIN_SAMPLE` 복원 기준 충족 여부 (DAU + 피드백 누적량 확인) |
-| 2 | Open Question 결정 | 파일 영역 제약 위반 시 Sam의 처리 방식 — 경고만? 또는 작업 거부? |
-| 3 | 결정 | 단일 파일이 FE+BE 경계에 걸치는 경우 소유권 결정 기준 |
-| 4 | 확정 | Sprint 9 스코프 및 수용 기준 확정 |
+| 1 | Open Question 결정 | 파일 영역 제약 위반 시 Sam의 처리 방식 — 경고만? 또는 작업 거부? |
+| 2 | 결정 | 단일 파일이 FE+BE 경계에 걸치는 경우 소유권 결정 기준 |
+| 3 | 확정 | Sprint 9 스코프 및 수용 기준 확정 |
 
 ---
 
@@ -39,7 +38,6 @@
 | 2 | `product/OC/orchestrator` 에이전트 시스템 프롬프트 업데이트 — 브리핑 시 각 에이전트에게 "담당 파일 범위 외 수정 금지" 명시적 제약 삽입 로직 추가 | P0 | OC Sam |
 | 3 | 에이전트별 영역 충돌 감지 규칙 문서화 — `.claude/rules/agent-scope.md` 신규 작성 (FE/BE/QA 파일 소유권 명시) | P0 | PM Jordan |
 | 4 | `/orchestrate` (및 `/oc`) 커맨드 스모크 테스트 — Sprint 8에서 발생한 실제 충돌 시나리오 재현 후 개선 검증 | P1 | QA Morgan/Quinn |
-| 5 | Sprint 8 P2 이월 — `FEEDBACK_MIN_SAMPLE` 복원 여부 판단 (GA4 DAU + Firestore 피드백 누적량 확인 후 결정) | P2 | PM Jordan + SRE Chase |
 
 ### 제외 (이연)
 
@@ -60,7 +58,6 @@
 - [ ] BE 에이전트가 `apps/**/components/` 하위 UI 파일을 수정하려 시도하는 브리핑이 생성되지 않는다
 - [ ] `agent-scope.md`가 `.claude/rules/`에 존재하고, 모든 에이전트 역할의 파일 소유권이 표로 정리돼 있다
 - [ ] `/oc [태스크]` 실행 시 오케스트레이터가 영역 분리된 브리핑을 출력한다 (스모크 테스트 1회 이상 통과)
-- [ ] `FEEDBACK_MIN_SAMPLE` 복원 여부가 데이터 기반으로 결정되고 결과가 미팅 MD에 기록된다
 
 ---
 
@@ -72,10 +69,6 @@
 
 **PM (Jordan)**
 - [ ] `.claude/rules/agent-scope.md` 신규 작성 — FE/BE/QA 파일 소유권 표 포함
-- [ ] GA4 DAU + Firestore 피드백 누적량 확인 → `FEEDBACK_MIN_SAMPLE` 복원 여부 결정 및 문서화
-
-**SRE (Chase)**
-- [ ] GA4 DAU 지표 확인 및 PM Jordan에게 데이터 전달
 
 **QA (Morgan / Quinn)**
 - [ ] Sprint 8 실제 충돌 시나리오 기반 `/oc` 스모크 테스트 1회 이상 실행
@@ -87,7 +80,6 @@
 
 | 질문 | 담당 | 기한 | 상태 |
 |------|------|------|------|
-| `FEEDBACK_MIN_SAMPLE` 복원 기준 충족 여부 (DAU + 피드백 누적량 확인) | PM Jordan + SRE Chase | Sprint 9 킥오프 | ⚠️ Open |
 | 파일 영역 제약 위반 시 Sam의 처리 방식 — 경고만? 또는 작업 거부? | PM Jordan + OC Sam | Sprint 9 킥오프 | ⚠️ Open |
 | 단일 파일이 FE+BE 경계에 걸치는 경우 (예: Next.js API Route) 소유권 결정 기준 | PM Jordan + BE Blake + FE Avery | Sprint 9 중반 | ⚠️ Open |
 
@@ -99,7 +91,6 @@
 
 - **프롬프트 레벨 제약의 강제력 부재:** 파일 영역 제약이 프롬프트에만 존재하므로 에이전트가 이를 무시할 경우 기술적 강제 수단이 없음 — 준수율을 스모크 테스트로 검증해야 하며, 위반 시 fallback 정책 사전 정의 필요.
 - **`agent-scope.md` 구조 불일치:** 규칙이 실제 `apps/` 디렉터리 구조와 맞지 않을 경우 오히려 브리핑 오류 유발 가능 — 작성 전 현재 디렉터리 구조 확인 필수.
-- **GA4 접근 권한 지연:** `FEEDBACK_MIN_SAMPLE` 판단을 위한 GA4 접근 권한이 킥오프 시점에 없을 경우 P2 결정 지연 발생 가능.
 
 ### 제외 범위
 
