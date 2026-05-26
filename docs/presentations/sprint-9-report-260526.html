@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 9 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .p0 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fee2e2; color:#991b1b; }
+    .p1 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fef9c3; color:#854d0e; }
+    .p2 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
+    .done { color:#217346; font-weight:600; }
+    .role-label {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #f0fdf4;
+      color: #217346;
+      border: 1px solid #bbf7d0;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .scope-col-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .risk-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fffbeb;
+      border-left: 3px solid #f0b429;
+      padding: 10px 14px;
+      border-radius: 0 4px 4px 0;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .risk-note strong { color: #92400e; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · 개발팀 운영</div>
+        <h1 class="cover-title">Sprint 9</h1>
+        <p class="cover-sub">에이전트 파일 영역 분리 &amp; 병렬 작업 안정성</p>
+        <p class="cover-meta">2026-05-26 킥오프 · 2026-05-26 완료</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 목차 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목차</div>
+      <h2 class="slide-title">Contents</h2>
+      <div class="toc-grid">
+        <div>
+          <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">목표 &amp; 안건</span></div>
+          <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">주요 결정 사항</span></div>
+          <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">액션 아이템 완료 현황</span></div>
+          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">파일 소유권 구조</span></div>
+        </div>
+        <div>
+          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">수용 기준 달성</span></div>
+          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">이연 항목</span></div>
+          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">리스크</span></div>
+          <div class="toc-item"><span class="toc-num toc-num--faded">8</span><span class="toc-label toc-label--faded">Q&amp;A</span></div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 목표 + 안건 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 9 목표</h2>
+      <blockquote class="goal-quote">
+        오케스트레이터(OC) 파일 영역 분리 제약 도입으로 <strong>에이전트 간 충돌을 제거</strong>하고,<br>
+        수산시장 개발팀 <strong>병렬 작업 안정성을 확보</strong>한다.
+      </blockquote>
+      <table class="data-table" style="margin-top:28px;">
+        <thead><tr><th>#</th><th>구분</th><th>안건</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>OQ 결정</td>
+            <td>파일 범위 제약 위반 시 OC의 처리 방식</td>
+            <td><span class="badge badge-green">✅ 결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>OQ 결정</td>
+            <td>FE·BE 경계 파일 소유권 결정 기준</td>
+            <td><span class="badge badge-green">✅ 결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>확정</td>
+            <td>Sprint 9 스코프 및 수용 기준 확정</td>
+            <td><span class="badge badge-green">✅ 확정</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>결정 내용</th><th>담당</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td>
+              <strong>파일 범위 제약 위반 시 — 경고 출력 후 계속 진행 (작업 거부 없음)</strong><br>
+              <span style="font-size:13px; color:#888;">프롬프트 레벨 제약의 기술적 강제 불가 인정. 경고를 통해 사용자가 판단할 기회 부여.</span>
+            </td>
+            <td>OC</td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td>
+              <strong>FE·BE 경계 파일 기준 확립</strong><br>
+              <span style="font-size:13px; color:#888;">
+                Next.js <code>app/api/**/route.ts</code> → BE 소유<br>
+                <code>package.json</code> 의존성 → 요청자 역할 (FE 추가면 FE, BE 추가면 BE, 빌드 설정이면 SRE)
+              </span>
+            </td>
+            <td>PM + BE + FE</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 액션 아이템 완료 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현</div>
+      <h2 class="slide-title">액션 아이템 완료 현황 <span style="font-size:14px; color:#217346; font-weight:600;">5 / 5</span></h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">OC</p>
+          <ul class="check-list">
+            <li class="done">오케스트레이터 브리핑 프롬프트에 파일 영역 제약 블록 추가 (FE/BE/QA 영역 분리)</li>
+            <li class="done"><code>product/OC/orchestrator</code> 시스템 프롬프트 업데이트 — 브리핑 내 파일 범위 제약 삽입 로직</li>
+          </ul>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 8px; text-transform:uppercase; letter-spacing:.04em;">PM</p>
+          <ul class="check-list">
+            <li class="done"><code>.claude/rules/agent-scope.md</code> 신규 작성 — FE/BE/QA 파일 소유권 표 포함</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">QA</p>
+          <ul class="check-list">
+            <li class="done">Sprint 8 실제 충돌 시나리오 기반 <code>/oc</code> 스모크 테스트 1회 이상 실행</li>
+            <li class="done">스모크 테스트 결과 문서화 — <code>agent-scope.md</code> + orchestrator 업데이트로 검증 완료</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 파일 소유권 구조 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">아키텍처</div>
+      <h2 class="slide-title">파일 소유권 구조</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:12px;">
+        <div>
+          <p class="scope-col-title">쓰기 허용 역할</p>
+          <div style="margin-bottom:14px;">
+            <span class="role-label">FE</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/app/**</code> (API 제외)</span></div>
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/components/**</code></span></div>
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/styles/**</code></span></div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <span class="role-label">BE</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/api/**</code></span></div>
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/lib/**</code></span></div>
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/app/api/**</code></span></div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <span class="role-label">SRE</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>*.config.js/ts</code>, <code>vercel.json</code></span></div>
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>package.json</code>, <code>.env*</code></span></div>
+            </div>
+          </div>
+          <div>
+            <span class="role-label">AI</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/openrouter-proxy/**</code></span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="scope-col-title">관리 / 읽기 전용</p>
+          <div style="margin-bottom:14px;">
+            <span class="role-label">PM</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>docs/**</code>, <code>.claude/agent-memory/**</code></span></div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <span class="role-label">TS</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>docs/meetings/**</code></span></div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <span class="role-label">OC</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>.claude/agents/**</code></span></div>
+              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>.claude/commands/**</code>, <code>.claude/rules/**</code></span></div>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <span class="role-label" style="background:#f9fafb; color:#6b7280; border-color:#e5e7eb;">UX / QA</span>
+            <div class="log-block">
+              <div class="log-row"><span class="log-time" style="color:#94a3b8;">R</span><span class="log-event" style="color:#94a3b8;">읽기 전용 — 파일 수정 금지</span></div>
+            </div>
+          </div>
+          <div class="risk-note">
+            <span style="font-size:16px;">📌</span>
+            <span><strong>경계 파일 기준 (OQ-2)</strong><br>
+            <code>app/api/**/route.ts</code> → BE 소유<br>
+            <code>package.json</code> 의존성 → 요청자 역할</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 수용 기준 달성 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">수용 기준 달성 <span style="font-size:14px; color:#217346; font-weight:600;">5 / 5</span></h2>
+      <ul class="check-list" style="margin-top:20px;">
+        <li class="done">OC가 멀티 에이전트 브리핑 시 각 에이전트에게 파일 범위 제약을 명시적으로 전달한다</li>
+        <li class="done">FE 에이전트가 <code>api/</code> 하위 파일을 수정하려 시도하는 브리핑이 생성되지 않는다</li>
+        <li class="done">BE 에이전트가 <code>apps/**/components/</code> 하위 UI 파일을 수정하려 시도하는 브리핑이 생성되지 않는다</li>
+        <li class="done"><code>agent-scope.md</code>가 <code>.claude/rules/</code>에 존재하고, 모든 에이전트 역할의 파일 소유권이 표로 정리돼 있다</li>
+        <li class="done"><code>/oc [태스크]</code> 실행 시 오케스트레이터가 영역 분리된 브리핑을 출력한다 (스모크 테스트 1회 이상 통과)</li>
+      </ul>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 이연 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">이연</div>
+      <h2 class="slide-title">이연 항목</h2>
+      <table class="data-table" style="margin-top:16px;">
+        <thead><tr><th>항목</th><th>이연 사유</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Git worktree 기반 병렬 실행</td>
+            <td>운영 복잡도 증가 대비 현재 구조로 충분 — 에이전트 수 증가 시 재검토</td>
+          </tr>
+          <tr>
+            <td>에이전트 실시간 상태 동기화 채널</td>
+            <td>순차 라우팅 구조에서 불필요</td>
+          </tr>
+          <tr>
+            <td><code>api/log.js</code> Auth 검증 추가</td>
+            <td>Sprint 8 Out of Scope 유지</td>
+          </tr>
+          <tr>
+            <td>Vite 빌드 파이프라인</td>
+            <td>Sprint 5 결정 유지 — 기여자 2인 이상 또는 TS 마이그레이션 시 재검토</td>
+          </tr>
+          <tr>
+            <td>전체 익명 집계 (Cloud Function)</td>
+            <td>사용자 수 증가 후 별도 설계</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>개발팀 운영 · Sprint 9</span>
+        <span>2026-05-26</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
