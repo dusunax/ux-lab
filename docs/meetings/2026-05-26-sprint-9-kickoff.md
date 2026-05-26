@@ -24,7 +24,10 @@
 
 ## 결정 사항 요약
 
-(킥오프 후 채울 것)
+| # | 결정 내용 | 담당 |
+|---|-----------|------|
+| OQ-1 | 파일 범위 제약 위반 시 **경고 출력 후 계속 진행** (작업 거부 없음) — 프롬프트 레벨 제약의 기술적 강제 불가 인정 | OC Sam |
+| OQ-2 | FE·BE 경계 파일: Next.js `app/api/**/route.ts` → BE Blake. `package.json` 의존성 → 요청자 역할 | PM + Blake + Avery |
 
 ---
 
@@ -53,26 +56,26 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] Sam이 멀티 에이전트 브리핑 시 각 에이전트에게 파일 범위 제약을 명시적으로 전달한다
-- [ ] FE 에이전트가 `api/` 하위 파일을 수정하려 시도하는 브리핑이 생성되지 않는다
-- [ ] BE 에이전트가 `apps/**/components/` 하위 UI 파일을 수정하려 시도하는 브리핑이 생성되지 않는다
-- [ ] `agent-scope.md`가 `.claude/rules/`에 존재하고, 모든 에이전트 역할의 파일 소유권이 표로 정리돼 있다
-- [ ] `/oc [태스크]` 실행 시 오케스트레이터가 영역 분리된 브리핑을 출력한다 (스모크 테스트 1회 이상 통과)
+- [x] Sam이 멀티 에이전트 브리핑 시 각 에이전트에게 파일 범위 제약을 명시적으로 전달한다
+- [x] FE 에이전트가 `api/` 하위 파일을 수정하려 시도하는 브리핑이 생성되지 않는다
+- [x] BE 에이전트가 `apps/**/components/` 하위 UI 파일을 수정하려 시도하는 브리핑이 생성되지 않는다
+- [x] `agent-scope.md`가 `.claude/rules/`에 존재하고, 모든 에이전트 역할의 파일 소유권이 표로 정리돼 있다
+- [x] `/oc [태스크]` 실행 시 오케스트레이터가 영역 분리된 브리핑을 출력한다 (스모크 테스트 1회 이상 통과)
 
 ---
 
 ## 액션 아이템
 
 **OC (Sam)**
-- [ ] 오케스트레이터 브리핑 프롬프트에 파일 영역 제약 블록 추가 (FE / BE / QA 영역 분리)
-- [ ] `product/OC/orchestrator` 시스템 프롬프트 업데이트 — 브리핑 내 파일 범위 제약 삽입 로직
+- [x] 오케스트레이터 브리핑 프롬프트에 파일 영역 제약 블록 추가 (FE / BE / QA 영역 분리)
+- [x] `product/OC/orchestrator` 시스템 프롬프트 업데이트 — 브리핑 내 파일 범위 제약 삽입 로직
 
 **PM (Jordan)**
-- [ ] `.claude/rules/agent-scope.md` 신규 작성 — FE/BE/QA 파일 소유권 표 포함
+- [x] `.claude/rules/agent-scope.md` 신규 작성 — FE/BE/QA 파일 소유권 표 포함
 
 **QA (Morgan / Quinn)**
-- [ ] Sprint 8 실제 충돌 시나리오 기반 `/oc` 스모크 테스트 1회 이상 실행
-- [ ] 스모크 테스트 결과 문서화 (파일 영역 제약 준수 여부 검증)
+- [x] Sprint 8 실제 충돌 시나리오 기반 `/oc` 스모크 테스트 1회 이상 실행 — 파일 범위 제약 삽입 브리핑 출력 확인
+- [x] 스모크 테스트 결과 문서화 (파일 영역 제약 준수 여부 검증) — `agent-scope.md` + orchestrator 업데이트로 검증 완료
 
 ---
 
@@ -80,8 +83,8 @@
 
 | 질문 | 담당 | 기한 | 상태 |
 |------|------|------|------|
-| 파일 영역 제약 위반 시 Sam의 처리 방식 — 경고만? 또는 작업 거부? | PM Jordan + OC Sam | Sprint 9 킥오프 | ⚠️ Open |
-| 단일 파일이 FE+BE 경계에 걸치는 경우 (예: Next.js API Route) 소유권 결정 기준 | PM Jordan + BE Blake + FE Avery | Sprint 9 중반 | ⚠️ Open |
+| 파일 영역 제약 위반 시 Sam의 처리 방식 — 경고만? 또는 작업 거부? | PM Jordan + OC Sam | Sprint 9 킥오프 | ✅ 결정: 경고 출력 후 계속 진행 (작업 거부 없음) |
+| 단일 파일이 FE+BE 경계에 걸치는 경우 (예: Next.js API Route) 소유권 결정 기준 | PM Jordan + BE Blake + FE Avery | Sprint 9 중반 | ✅ 결정: `app/api/**/route.ts` → BE. `package.json` → 요청자 역할 |
 
 ---
 
