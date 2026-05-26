@@ -13,6 +13,7 @@
 | [2026-05-21-sprint-6-kickoff.md](./2026-05-21-sprint-6-kickoff.md) | Sprint 6 킥오프 | 2026-05-21 | OQ 4개 결정, 피드백 토글 허용, 본인 데이터 범위, 모델명 UI 미노출, 대시보드 Sprint 7 이연 |
 | [2026-05-23-sprint-7-kickoff.md](./2026-05-23-sprint-7-kickoff.md) | Sprint 7 킥오프 | 2026-05-23 | 모델별 만족도 대시보드 구현 + CORS 정책 강화 |
 | [2026-05-24-sprint-8-kickoff.md](./2026-05-24-sprint-8-kickoff.md) | Sprint 8 킥오프 | 2026-05-24 | Firebase Auth 서버사이드 검증 + model_labels 컬렉션 분리 |
+| [2026-05-26-sprint-9-kickoff.md](./2026-05-26-sprint-9-kickoff.md) | Sprint 9 킥오프 | 2026-05-26 | 오케스트레이터 파일 영역 분리 제약 도입 + 에이전트 간 충돌 제거 |
 
 ## 프로세스 회의록
 
