@@ -50,6 +50,54 @@
       line-height: 1.6;
     }
     .risk-note strong { color: #92400e; }
+    .layer-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f0fdf4;
+      color: #217346;
+      border: 1px solid #bbf7d0;
+      white-space: nowrap;
+    }
+    .layer-tag--infra { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+    .layer-tag--ai    { background:#fdf4ff; color:#7e22ce; border-color:#e9d5ff; }
+    .layer-tag--docs  { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
+    .layer-tag--meta  { background:#f8fafc; color:#475569; border-color:#cbd5e1; }
+    .layer-tag--ro    { background:#f9fafb; color:#9ca3af; border-color:#e5e7eb; }
+    .conflict-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .conflict-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .conflict-step--detect  { background:#fffbeb; border-left:3px solid #f0b429; }
+    .conflict-step--warn    { background:#fff5f5; border-left:3px solid #ef4444; }
+    .conflict-step--proceed { background:#f0fdf4; border-left:3px solid #217346; }
+    .conflict-step--fallback{ background:#f8fafc; border-left:3px solid #94a3b8; }
+    .step-badge {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .step-badge--warn    { background:#fee2e2; color:#991b1b; }
+    .step-badge--proceed { background:#dcfce7; color:#166534; }
+    .step-badge--fallback{ background:#f1f5f9; color:#64748b; }
   </style>
 </head>
 <body>
@@ -78,12 +126,12 @@
           <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">목표 &amp; 안건</span></div>
           <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">주요 결정 사항</span></div>
           <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">액션 아이템 완료 현황</span></div>
-          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">파일 소유권 구조</span></div>
+          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">레이어 소유권 구조</span></div>
         </div>
         <div>
-          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">수용 기준 달성</span></div>
-          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">이연 항목</span></div>
-          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">리스크</span></div>
+          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">충돌 처리 정책</span></div>
+          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">수용 기준 달성</span></div>
+          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">이연 항목</span></div>
           <div class="toc-item"><span class="toc-num toc-num--faded">8</span><span class="toc-label toc-label--faded">Q&amp;A</span></div>
         </div>
       </div>
@@ -189,84 +237,173 @@
     </div>
   </div>
 
-  <!-- Slide 6: 파일 소유권 구조 -->
+  <!-- Slide 6: 레이어 소유권 구조 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">아키텍처</div>
-      <h2 class="slide-title">파일 소유권 구조</h2>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:12px;">
+      <h2 class="slide-title">레이어 소유권 구조</h2>
+      <table class="data-table" style="margin-top:14px;">
+        <thead>
+          <tr><th>레이어</th><th>역할</th><th>책임자</th><th>쓰기 범위</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="layer-tag">UI</span></td>
+            <td style="font-size:13px;">렌더링, 컴포넌트, 스타일</td>
+            <td><span class="role-label">FE</span></td>
+            <td style="font-size:12px; line-height:1.8;">
+              <code>apps/**/components/**</code><br>
+              <code>apps/**/styles/**</code><br>
+              <code>apps/**/app/**</code> <span style="color:#94a3b8;">(API 제외)</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="layer-tag">API</span></td>
+            <td style="font-size:13px;">서버 로직, DB, 외부 서비스 연동</td>
+            <td><span class="role-label">BE</span></td>
+            <td style="font-size:12px; line-height:1.8;">
+              <code>apps/**/api/**</code><br>
+              <code>apps/**/app/api/**</code><br>
+              <code>apps/**/lib/**</code>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="layer-tag layer-tag--ai">AI</span></td>
+            <td style="font-size:13px;">LLM 통합, 프롬프트, AI 파이프라인</td>
+            <td><span class="role-label">AI</span></td>
+            <td style="font-size:12px; line-height:1.8;">
+              <code>apps/openrouter-proxy/**</code><br>
+              AI 관련 프롬프트·설정 파일
+            </td>
+          </tr>
+          <tr>
+            <td><span class="layer-tag layer-tag--infra">인프라</span></td>
+            <td style="font-size:13px;">빌드, 배포, 의존성 관리</td>
+            <td><span class="role-label">SRE</span></td>
+            <td style="font-size:12px; line-height:1.8;">
+              <code>*.config.js/ts</code>, <code>vercel.json</code><br>
+              <code>package.json</code>, <code>.env*</code>, <code>Dockerfile</code>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="layer-tag layer-tag--docs">문서</span></td>
+            <td style="font-size:13px;">스프린트 기록, 의사결정 문서</td>
+            <td>
+              <span class="role-label">PM</span>&nbsp;
+              <span class="role-label">TS</span>
+            </td>
+            <td style="font-size:12px; line-height:1.8;">
+              <code>docs/**</code>, <code>.claude/agent-memory/**</code><br>
+              <span style="color:#94a3b8; font-size:11px;">TS는 <code>docs/meetings/**</code> 한정</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="layer-tag layer-tag--meta">에이전트 메타</span></td>
+            <td style="font-size:13px;">에이전트 정의, 라우팅 규칙, 소유권 정책</td>
+            <td><span class="role-label">OC</span></td>
+            <td style="font-size:12px; line-height:1.8;">
+              <code>.claude/agents/**</code><br>
+              <code>.claude/commands/**</code>, <code>.claude/rules/**</code>
+            </td>
+          </tr>
+          <tr style="background:#f9fafb;">
+            <td><span class="layer-tag layer-tag--ro">읽기 전용</span></td>
+            <td style="font-size:13px;">검증, 피드백 — 파일 수정 없음</td>
+            <td>
+              <span class="role-label" style="background:#f9fafb;color:#6b7280;border-color:#e5e7eb;">UX</span>&nbsp;
+              <span class="role-label" style="background:#f9fafb;color:#6b7280;border-color:#e5e7eb;">QA</span>
+            </td>
+            <td style="font-size:12px; color:#9ca3af;">모든 레이어 읽기 가능 · 쓰기 금지</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 충돌 처리 정책 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">정책</div>
+      <h2 class="slide-title">충돌 처리 정책</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:14px;">
+
+        <!-- 좌: 소유권 원칙 + 경계 파일 기준 -->
         <div>
-          <p class="scope-col-title">쓰기 허용 역할</p>
-          <div style="margin-bottom:14px;">
-            <span class="role-label">FE</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/app/**</code> (API 제외)</span></div>
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/components/**</code></span></div>
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/styles/**</code></span></div>
+          <p class="scope-col-title">소유권 준수 원칙</p>
+          <div class="log-block" style="margin-bottom:18px;">
+            <div class="log-row"><span class="log-status ok">1</span><span class="log-event">각 에이전트는 자신의 <strong>레이어 범위만 쓰기 허용</strong></span></div>
+            <div class="log-row"><span class="log-status ok">2</span><span class="log-event">레이어 외 수정 불가피 시 → <strong>OC에게 보고</strong> 후 재위임</span></div>
+            <div class="log-row"><span class="log-status ok">3</span><span class="log-event">UX·QA는 <strong>어떤 레이어도 쓰기 금지</strong></span></div>
+          </div>
+
+          <p class="scope-col-title">경계 파일 기준 (OQ-2)</p>
+          <table class="data-table" style="font-size:12px;">
+            <thead><tr><th>파일 패턴</th><th>소유 레이어</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>app/api/**/route.ts</code></td>
+                <td><span class="layer-tag" style="font-size:11px;">API</span> BE 소유</td>
+              </tr>
+              <tr>
+                <td><code>package.json</code> 의존성 추가</td>
+                <td>요청자 레이어 따름</td>
+              </tr>
+              <tr>
+                <td><code>apps/**/app/layout.tsx</code></td>
+                <td><span class="layer-tag" style="font-size:11px;">UI</span> FE 소유</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 우: 위반 감지 처리 흐름 -->
+        <div>
+          <p class="scope-col-title">위반 감지 시 처리 흐름 (OQ-1)</p>
+          <div class="conflict-flow">
+            <div class="conflict-step conflict-step--detect">
+              <span class="step-badge step-badge--warn">!</span>
+              <div>
+                <strong>감지</strong><br>
+                <span style="font-size:12px; color:#666;">레이어 범위 외 파일 수정 시도 탐지</span>
+              </div>
+            </div>
+            <div class="conflict-step conflict-step--warn">
+              <span class="step-badge step-badge--warn">⚠</span>
+              <div>
+                <strong>경고 출력</strong><br>
+                <code style="font-size:11px;">⚠️ [파일명]은 [레이어]의 소유권 범위입니다.<br>필요하다면 [담당 에이전트]와 협의 후 수정하세요.</code>
+              </div>
+            </div>
+            <div class="conflict-step conflict-step--proceed">
+              <span class="step-badge step-badge--proceed">→</span>
+              <div>
+                <strong>계속 진행</strong> — 작업 거부 없음<br>
+                <span style="font-size:12px; color:#666;">사용자에게 판단 위임, 중단 없이 진행</span>
+              </div>
+            </div>
+            <div class="conflict-step conflict-step--fallback">
+              <span class="step-badge step-badge--fallback">↩</span>
+              <div>
+                <strong>Fallback</strong> — 위반 지속 시<br>
+                <span style="font-size:12px; color:#666;">OC가 올바른 레이어 담당으로 재라우팅</span>
+              </div>
             </div>
           </div>
-          <div style="margin-bottom:14px;">
-            <span class="role-label">BE</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/api/**</code></span></div>
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/lib/**</code></span></div>
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/**/app/api/**</code></span></div>
-            </div>
-          </div>
-          <div style="margin-bottom:14px;">
-            <span class="role-label">SRE</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>*.config.js/ts</code>, <code>vercel.json</code></span></div>
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>package.json</code>, <code>.env*</code></span></div>
-            </div>
-          </div>
-          <div>
-            <span class="role-label">AI</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>apps/openrouter-proxy/**</code></span></div>
-            </div>
+          <div class="risk-note" style="margin-top:14px;">
+            <span>⚠️</span>
+            <span><strong>기술적 강제 수단 없음</strong><br>
+            프롬프트 레벨 제약 — 에이전트 준수에 의존.<br>
+            준수율은 스모크 테스트로 주기적 검증 필요.</span>
           </div>
         </div>
-        <div>
-          <p class="scope-col-title">관리 / 읽기 전용</p>
-          <div style="margin-bottom:14px;">
-            <span class="role-label">PM</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>docs/**</code>, <code>.claude/agent-memory/**</code></span></div>
-            </div>
-          </div>
-          <div style="margin-bottom:14px;">
-            <span class="role-label">TS</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>docs/meetings/**</code></span></div>
-            </div>
-          </div>
-          <div style="margin-bottom:14px;">
-            <span class="role-label">OC</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>.claude/agents/**</code></span></div>
-              <div class="log-row"><span class="log-status ok">W</span><span class="log-event"><code>.claude/commands/**</code>, <code>.claude/rules/**</code></span></div>
-            </div>
-          </div>
-          <div style="margin-bottom:14px;">
-            <span class="role-label" style="background:#f9fafb; color:#6b7280; border-color:#e5e7eb;">UX / QA</span>
-            <div class="log-block">
-              <div class="log-row"><span class="log-time" style="color:#94a3b8;">R</span><span class="log-event" style="color:#94a3b8;">읽기 전용 — 파일 수정 금지</span></div>
-            </div>
-          </div>
-          <div class="risk-note">
-            <span style="font-size:16px;">📌</span>
-            <span><strong>경계 파일 기준 (OQ-2)</strong><br>
-            <code>app/api/**/route.ts</code> → BE 소유<br>
-            <code>package.json</code> 의존성 → 요청자 역할</span>
-          </div>
-        </div>
+
       </div>
       <div class="slide-counter"></div>
     </div>
   </div>
 
-  <!-- Slide 7: 수용 기준 달성 -->
+  <!-- Slide 8: 수용 기준 달성 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">검증</div>
@@ -282,7 +419,7 @@
     </div>
   </div>
 
-  <!-- Slide 8: 이연 항목 -->
+  <!-- Slide 9: 이연 항목 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">이연</div>
@@ -316,7 +453,7 @@
     </div>
   </div>
 
-  <!-- Slide 9: Q&A -->
+  <!-- Slide 10: Q&A -->
   <div class="slide slide--qa-light">
     <div class="slide-inner">
       <div class="qa-icon">Q&amp;A</div>
