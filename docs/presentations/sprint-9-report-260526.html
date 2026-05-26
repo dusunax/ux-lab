@@ -98,6 +98,83 @@
     .step-badge--warn    { background:#fee2e2; color:#991b1b; }
     .step-badge--proceed { background:#dcfce7; color:#166534; }
     .step-badge--fallback{ background:#f1f5f9; color:#64748b; }
+
+    /* ── Layer Stack Diagram (Slide 6) ────────────────────────────── */
+    .ls-wrap {
+      display: grid;
+      grid-template-columns: 1fr 36%;
+      gap: 20px;
+      margin-top: 14px;
+    }
+    .ls-col-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .ls-stack { display:flex; flex-direction:column; gap:5px; }
+    .lb {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px 8px 0;
+      border-radius: 7px;
+      border-left: 4px solid transparent;
+    }
+    .lb--ui    { border-left-color:#217346; background:linear-gradient(95deg,#ecfdf5 0%,#f8fafc 55%); }
+    .lb--api   { border-left-color:#2563eb; background:linear-gradient(95deg,#eff6ff 0%,#f8fafc 55%); }
+    .lb--ai    { border-left-color:#9333ea; background:linear-gradient(95deg,#faf5ff 0%,#f8fafc 55%); }
+    .lb--infra { border-left-color:#ea580c; background:linear-gradient(95deg,#fff7ed 0%,#f8fafc 55%); }
+    .lb--docs  { border-left-color:#d97706; background:linear-gradient(95deg,#fefce8 0%,#f8fafc 55%); }
+    .lb--meta  { border-left-color:#64748b; background:linear-gradient(95deg,#f1f5f9 0%,#f8fafc 55%); }
+    .lb--ro    { border-left-color:#d1d5db; background:#f9fafb; opacity:.85; }
+    .lb-layer  { padding-left:12px; }
+    .lb-name   { font-size:12px; font-weight:700; color:#111827; line-height:1.3; }
+    .lb-sublabel { font-size:10px; color:#9ca3af; text-transform:uppercase; letter-spacing:.05em; }
+    .lb-desc   { font-size:11.5px; color:#374151; margin-bottom:3px; line-height:1.4; }
+    .lb-chips  { display:flex; gap:5px; flex-wrap:wrap; }
+    .chip {
+      font-size: 10px; font-family: monospace;
+      background: rgba(0,0,0,.055); color:#4b5563;
+      padding: 1px 5px; border-radius:3px; white-space:nowrap;
+    }
+    .op {
+      display: inline-flex; align-items:center;
+      padding: 2px 10px; border-radius:20px;
+      font-size: 11px; font-weight:700; white-space:nowrap;
+    }
+    .op--fe  { background:#dcfce7; color:#166534; }
+    .op--be  { background:#dbeafe; color:#1e40af; }
+    .op--ai  { background:#f3e8ff; color:#6b21a8; }
+    .op--sre { background:#ffedd5; color:#9a3412; }
+    .op--pm  { background:#fef9c3; color:#854d0e; }
+    .op--ts  { background:#fef9c3; color:#a16207; border:1px solid #fde68a; }
+    .op--oc  { background:#f1f5f9; color:#475569; }
+    .op--ro  { background:#f9fafb; color:#9ca3af; border:1px solid #e5e7eb; }
+    .ls-right  { display:flex; flex-direction:column; gap:5px; }
+    .ls-hook-badge {
+      margin-top: 10px;
+      padding: 12px 15px;
+      background: #0f172a;
+      border-radius: 8px;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+    .ls-hook-badge .hb-title {
+      display: flex; align-items:center; gap:6px;
+      font-size: 12px; font-weight:700; color:#e2e8f0;
+      margin-bottom: 6px;
+    }
+    .hb-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .hb-dot--green  { background:#4ade80; }
+    .hb-dot--red    { background:#f87171; }
+    .hb-dot--yellow { background:#fbbf24; }
+    .hb-row { display:flex; align-items:center; gap:8px; padding:1px 0; }
+    .hb-row code { font-size:10px; color:#94a3b8; }
   </style>
 </head>
 <body>
@@ -242,81 +319,162 @@
     <div class="slide-inner">
       <div class="slide-label">아키텍처</div>
       <h2 class="slide-title">레이어 소유권 구조</h2>
-      <table class="data-table" style="margin-top:14px;">
-        <thead>
-          <tr><th>레이어</th><th>역할</th><th>책임자</th><th>쓰기 범위</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="layer-tag">UI</span></td>
-            <td style="font-size:13px;">렌더링, 컴포넌트, 스타일</td>
-            <td><span class="role-label">FE</span></td>
-            <td style="font-size:12px; line-height:1.8;">
-              <code>apps/**/components/**</code><br>
-              <code>apps/**/styles/**</code><br>
-              <code>apps/**/app/**</code> <span style="color:#94a3b8;">(API 제외)</span>
-            </td>
-          </tr>
-          <tr>
-            <td><span class="layer-tag">API</span></td>
-            <td style="font-size:13px;">서버 로직, DB, 외부 서비스 연동</td>
-            <td><span class="role-label">BE</span></td>
-            <td style="font-size:12px; line-height:1.8;">
-              <code>apps/**/api/**</code><br>
-              <code>apps/**/app/api/**</code><br>
-              <code>apps/**/lib/**</code>
-            </td>
-          </tr>
-          <tr>
-            <td><span class="layer-tag layer-tag--ai">AI</span></td>
-            <td style="font-size:13px;">LLM 통합, 프롬프트, AI 파이프라인</td>
-            <td><span class="role-label">AI</span></td>
-            <td style="font-size:12px; line-height:1.8;">
-              <code>apps/openrouter-proxy/**</code><br>
-              AI 관련 프롬프트·설정 파일
-            </td>
-          </tr>
-          <tr>
-            <td><span class="layer-tag layer-tag--infra">인프라</span></td>
-            <td style="font-size:13px;">빌드, 배포, 의존성 관리</td>
-            <td><span class="role-label">SRE</span></td>
-            <td style="font-size:12px; line-height:1.8;">
-              <code>*.config.js/ts</code>, <code>vercel.json</code><br>
-              <code>package.json</code>, <code>.env*</code>, <code>Dockerfile</code>
-            </td>
-          </tr>
-          <tr>
-            <td><span class="layer-tag layer-tag--docs">문서</span></td>
-            <td style="font-size:13px;">스프린트 기록, 의사결정 문서</td>
-            <td>
-              <span class="role-label">PM</span>&nbsp;
-              <span class="role-label">TS</span>
-            </td>
-            <td style="font-size:12px; line-height:1.8;">
-              <code>docs/**</code>, <code>.claude/agent-memory/**</code><br>
-              <span style="color:#94a3b8; font-size:11px;">TS는 <code>docs/meetings/**</code> 한정</span>
-            </td>
-          </tr>
-          <tr>
-            <td><span class="layer-tag layer-tag--meta">에이전트 메타</span></td>
-            <td style="font-size:13px;">에이전트 정의, 라우팅 규칙, 소유권 정책</td>
-            <td><span class="role-label">OC</span></td>
-            <td style="font-size:12px; line-height:1.8;">
-              <code>.claude/agents/**</code><br>
-              <code>.claude/commands/**</code>, <code>.claude/rules/**</code>
-            </td>
-          </tr>
-          <tr style="background:#f9fafb;">
-            <td><span class="layer-tag layer-tag--ro">읽기 전용</span></td>
-            <td style="font-size:13px;">검증, 피드백 — 파일 수정 없음</td>
-            <td>
-              <span class="role-label" style="background:#f9fafb;color:#6b7280;border-color:#e5e7eb;">UX</span>&nbsp;
-              <span class="role-label" style="background:#f9fafb;color:#6b7280;border-color:#e5e7eb;">QA</span>
-            </td>
-            <td style="font-size:12px; color:#9ca3af;">모든 레이어 읽기 가능 · 쓰기 금지</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <div class="ls-wrap">
+
+        <!-- 좌: 구현 레이어 스택 -->
+        <div>
+          <div class="ls-col-label">구현 레이어</div>
+          <div class="ls-stack">
+
+            <div class="lb lb--ui">
+              <div class="lb-layer">
+                <div class="lb-name">UI</div>
+                <div class="lb-sublabel">표현 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">렌더링 · 컴포넌트 · 스타일</div>
+                <div class="lb-chips">
+                  <span class="chip">components/**</span>
+                  <span class="chip">styles/**</span>
+                  <span class="chip">app/** <span style="color:#9ca3af;">(API 제외)</span></span>
+                </div>
+              </div>
+              <span class="op op--fe">FE</span>
+            </div>
+
+            <div class="lb lb--api">
+              <div class="lb-layer">
+                <div class="lb-name">API</div>
+                <div class="lb-sublabel">서버 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">서버 로직 · DB · 외부 서비스 연동</div>
+                <div class="lb-chips">
+                  <span class="chip">api/**</span>
+                  <span class="chip">app/api/**</span>
+                  <span class="chip">lib/**</span>
+                </div>
+              </div>
+              <span class="op op--be">BE</span>
+            </div>
+
+            <div class="lb lb--ai">
+              <div class="lb-layer">
+                <div class="lb-name">AI</div>
+                <div class="lb-sublabel">추론 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">LLM 통합 · 프롬프트 · AI 파이프라인</div>
+                <div class="lb-chips">
+                  <span class="chip">openrouter-proxy/**</span>
+                  <span class="chip">AI 설정 파일</span>
+                </div>
+              </div>
+              <span class="op op--ai">AI</span>
+            </div>
+
+            <div class="lb lb--infra">
+              <div class="lb-layer">
+                <div class="lb-name">인프라</div>
+                <div class="lb-sublabel">빌드·배포</div>
+              </div>
+              <div>
+                <div class="lb-desc">빌드 · 배포 · 의존성 관리</div>
+                <div class="lb-chips">
+                  <span class="chip">*.config.*</span>
+                  <span class="chip">vercel.json</span>
+                  <span class="chip">package.json</span>
+                  <span class="chip">.env*</span>
+                </div>
+              </div>
+              <span class="op op--sre">SRE</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 우: 지원 레이어 + 훅 배지 -->
+        <div>
+          <div class="ls-col-label">지원 레이어</div>
+          <div class="ls-right">
+
+            <div class="lb lb--docs">
+              <div class="lb-layer">
+                <div class="lb-name">문서</div>
+                <div class="lb-sublabel">기록 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">스프린트 기록 · 의사결정 문서</div>
+                <div class="lb-chips">
+                  <span class="chip">docs/**</span>
+                  <span class="chip">agent-memory/**</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;">
+                <span class="op op--pm">PM</span>
+                <span class="op op--ts" style="font-size:10px;">TS</span>
+              </div>
+            </div>
+
+            <div class="lb lb--meta">
+              <div class="lb-layer">
+                <div class="lb-name">에이전트</div>
+                <div class="lb-sublabel">메타 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">에이전트 정의 · 라우팅 규칙 · 소유권 정책</div>
+                <div class="lb-chips">
+                  <span class="chip">.claude/agents/**</span>
+                  <span class="chip">.claude/rules/**</span>
+                </div>
+              </div>
+              <span class="op op--oc">OC</span>
+            </div>
+
+            <div class="lb lb--ro">
+              <div class="lb-layer">
+                <div class="lb-name">읽기 전용</div>
+                <div class="lb-sublabel">검증 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc" style="color:#9ca3af;">모든 레이어 읽기 · 쓰기 차단</div>
+              </div>
+              <div style="display:flex;gap:4px;">
+                <span class="op op--ro">UX</span>
+                <span class="op op--ro">QA</span>
+              </div>
+            </div>
+
+            <!-- 훅 강제 배지 -->
+            <div class="ls-hook-badge">
+              <div class="hb-title">
+                <span>🔒</span>
+                <span>scope-enforcer.py</span>
+                <span style="font-size:10px;color:#64748b;font-weight:400;">pre-tool-use hook</span>
+              </div>
+              <div class="hb-row">
+                <span class="hb-dot hb-dot--red"></span>
+                <span>deny 패턴 위반 → <strong style="color:#f87171;">⛔ 하드 차단</strong> (exit 2)</span>
+              </div>
+              <div class="hb-row">
+                <span class="hb-dot hb-dot--red"></span>
+                <span>읽기 전용 역할 쓰기 → <strong style="color:#f87171;">⛔ 하드 차단</strong></span>
+              </div>
+              <div class="hb-row">
+                <span class="hb-dot hb-dot--yellow"></span>
+                <span>allow 범위 외 → <strong style="color:#fbbf24;">⚠ 소프트 경고</strong></span>
+              </div>
+              <div class="hb-row" style="margin-top:4px;">
+                <span class="hb-dot hb-dot--green"></span>
+                <span><code>.active-role</code> 없음 → 메인 세션, 제한 없음</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- .ls-wrap -->
       <div class="slide-counter"></div>
     </div>
   </div>
