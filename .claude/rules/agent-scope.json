@@ -1,0 +1,135 @@
+{
+  "_comment": "agent-scope.md의 기계 가독 버전. scope-enforcer.py 훅이 참조한다.",
+  "roles": {
+    "FE": {
+      "layer": "UI",
+      "description": "렌더링, 컴포넌트, 스타일",
+      "allow": [
+        "apps/**/components/**",
+        "apps/**/styles/**",
+        "apps/**/public/**",
+        "apps/**/app/**",
+        "apps/**/src/**",
+        "apps/**/pages/**"
+      ],
+      "deny": [
+        "apps/**/api/**",
+        "apps/**/app/api/**",
+        "apps/**/lib/**",
+        ".claude/**"
+      ]
+    },
+    "BE": {
+      "layer": "API",
+      "description": "서버 로직, DB, 외부 서비스 연동",
+      "allow": [
+        "apps/**/api/**",
+        "apps/**/app/api/**",
+        "apps/**/lib/**",
+        "apps/puppeteer-api/**"
+      ],
+      "deny": [
+        "apps/**/components/**",
+        "apps/**/styles/**",
+        ".claude/**"
+      ]
+    },
+    "SRE": {
+      "layer": "인프라",
+      "description": "빌드, 배포, 의존성 관리",
+      "allow": [
+        "*.config.js",
+        "*.config.ts",
+        "vercel.json",
+        "vercel.ts",
+        "package.json",
+        "pnpm-lock.yaml",
+        ".npmrc",
+        ".env*",
+        "Dockerfile",
+        "**/Dockerfile",
+        "**/package.json",
+        "**/*.config.js",
+        "**/*.config.ts"
+      ],
+      "deny": [
+        ".claude/**"
+      ]
+    },
+    "AI": {
+      "layer": "AI",
+      "description": "LLM 통합, 프롬프트, AI 파이프라인",
+      "allow": [
+        "apps/openrouter-proxy/**"
+      ],
+      "deny": [
+        ".claude/**"
+      ]
+    },
+    "PM": {
+      "layer": "문서",
+      "description": "스프린트 기록, 의사결정 문서",
+      "allow": [
+        "docs/**",
+        ".claude/agent-memory/**"
+      ],
+      "deny": [
+        "apps/**",
+        ".claude/agents/**",
+        ".claude/commands/**",
+        ".claude/rules/**",
+        ".claude/hooks/**"
+      ]
+    },
+    "TS": {
+      "layer": "문서",
+      "description": "회의록, 스프린트 기록",
+      "allow": [
+        "docs/meetings/**",
+        "docs/**"
+      ],
+      "deny": [
+        "apps/**",
+        ".claude/agents/**",
+        ".claude/commands/**",
+        ".claude/rules/**"
+      ]
+    },
+    "OC": {
+      "layer": "에이전트 메타",
+      "description": "에이전트 정의, 라우팅 규칙, 소유권 정책",
+      "allow": [
+        ".claude/agents/**",
+        ".claude/commands/**",
+        ".claude/rules/**",
+        ".claude/hooks/**"
+      ],
+      "deny": [
+        "apps/**",
+        "docs/**"
+      ]
+    },
+    "UX": {
+      "layer": "읽기 전용",
+      "description": "검증, 피드백 — 파일 수정 없음",
+      "allow": [],
+      "deny": [],
+      "readonly": true
+    },
+    "QA": {
+      "layer": "읽기 전용",
+      "description": "검증, 피드백 — 파일 수정 없음",
+      "allow": [],
+      "deny": [],
+      "readonly": true
+    }
+  },
+  "boundary": {
+    "apps/**/app/api/**/route.ts": "BE",
+    "apps/**/pages/api/**": "BE",
+    "apps/**/app/layout.tsx": "FE",
+    "apps/**/app/page.tsx": "FE",
+    "apps/ai-empathy-diary/index.html": "FE",
+    "apps/ai-empathy-diary/api/*.js": "BE"
+  }
+}
