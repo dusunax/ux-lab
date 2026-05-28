@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 9 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .p0 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fee2e2; color:#991b1b; }
+    .p1 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fef9c3; color:#854d0e; }
+    .p2 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
+    .done { color:#217346; font-weight:600; }
+    .role-label {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #f0fdf4;
+      color: #217346;
+      border: 1px solid #bbf7d0;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .scope-col-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .risk-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fffbeb;
+      border-left: 3px solid #f0b429;
+      padding: 10px 14px;
+      border-radius: 0 4px 4px 0;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+    .risk-note strong { color: #92400e; }
+    .layer-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f0fdf4;
+      color: #217346;
+      border: 1px solid #bbf7d0;
+      white-space: nowrap;
+    }
+    .layer-tag--infra { background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe; }
+    .layer-tag--ai    { background:#fdf4ff; color:#7e22ce; border-color:#e9d5ff; }
+    .layer-tag--docs  { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
+    .layer-tag--meta  { background:#f8fafc; color:#475569; border-color:#cbd5e1; }
+    .layer-tag--ro    { background:#f9fafb; color:#9ca3af; border-color:#e5e7eb; }
+    .conflict-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .conflict-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .conflict-step--detect  { background:#fffbeb; border-left:3px solid #f0b429; }
+    .conflict-step--warn    { background:#fff5f5; border-left:3px solid #ef4444; }
+    .conflict-step--proceed { background:#f0fdf4; border-left:3px solid #217346; }
+    .conflict-step--fallback{ background:#f8fafc; border-left:3px solid #94a3b8; }
+    .step-badge {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .step-badge--warn    { background:#fee2e2; color:#991b1b; }
+    .step-badge--proceed { background:#dcfce7; color:#166534; }
+    .step-badge--fallback{ background:#f1f5f9; color:#64748b; }
+
+    /* ── Layer Stack Diagram (Slide 6) ────────────────────────────── */
+    .ls-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1px 34%;
+      gap: 0 20px;
+      margin-top: 14px;
+      align-items: start;
+    }
+    .ls-divider {
+      background: #e5e7eb;
+      align-self: stretch;
+      margin-top: 24px;
+    }
+    .ls-col-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+    /* 좌열: 연결선을 가진 스택 */
+    .ls-stack {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding-left: 28px; /* 번호 배지 공간 */
+    }
+    /* 계층 연결 세로선 */
+    .ls-stack::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 16px;
+      bottom: 16px;
+      width: 2px;
+      background: linear-gradient(to bottom, #217346 0%, #2563eb 33%, #9333ea 66%, #ea580c 100%);
+      opacity: .35;
+      border-radius: 2px;
+    }
+    .lb {
+      position: relative;
+      display: grid;
+      grid-template-columns: 106px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 14px 11px 0;
+      border-radius: 8px;
+      border-left: 5px solid transparent;
+      margin-bottom: 5px;
+    }
+    /* 번호 배지 */
+    .lb-num {
+      position: absolute;
+      left: -28px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      z-index: 1;
+    }
+    .lb--ui    { border-left-color:#217346; background:linear-gradient(92deg,#dcfce7 0%,#f8fafc 50%); }
+    .lb--ui    .lb-num { color:#217346; border-color:#217346; }
+    .lb--api   { border-left-color:#2563eb; background:linear-gradient(92deg,#dbeafe 0%,#f8fafc 50%); }
+    .lb--api   .lb-num { color:#2563eb; border-color:#2563eb; }
+    .lb--ai    { border-left-color:#9333ea; background:linear-gradient(92deg,#ede9fe 0%,#f8fafc 50%); }
+    .lb--ai    .lb-num { color:#9333ea; border-color:#9333ea; }
+    .lb--infra { border-left-color:#ea580c; background:linear-gradient(92deg,#ffedd5 0%,#f8fafc 50%); }
+    .lb--infra .lb-num { color:#ea580c; border-color:#ea580c; }
+    .lb--docs  { border-left-color:#d97706; background:linear-gradient(92deg,#fef9c3 0%,#f8fafc 50%); }
+    .lb--meta  { border-left-color:#64748b; background:linear-gradient(92deg,#e2e8f0 0%,#f8fafc 50%); }
+    .lb--ro    { border-left-color:#d1d5db; background:#f9fafb; }
+    /* 레이어 이름 영역 */
+    .lb-layer  { padding-left: 12px; }
+    .lb-name   {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+    .lb-sublabel {
+      font-size: 10px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-top: 2px;
+    }
+    .lb-desc   { font-size: 11.5px; color: #374151; margin-bottom: 4px; line-height:1.4; }
+    .lb-chips  { display:flex; gap:5px; flex-wrap:wrap; }
+    .chip {
+      font-size: 10px;
+      font-family: monospace;
+      background: rgba(0,0,0,.06);
+      color: #374151;
+      padding: 1px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .op {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .op--fe  { background:#dcfce7; color:#166534; }
+    .op--be  { background:#dbeafe; color:#1e40af; }
+    .op--ai  { background:#f3e8ff; color:#6b21a8; }
+    .op--perf { background:#ffedd5; color:#9a3412; }
+    .op--pm  { background:#fef9c3; color:#854d0e; }
+    .op--ts  { background:#fef9c3; color:#a16207; border:1px solid #fde68a; }
+    .op--oc  { background:#f1f5f9; color:#475569; }
+    .op--ro  { background:#f9fafb; color:#9ca3af; border:1px solid #e5e7eb; }
+    .ls-right  { display:flex; flex-direction:column; gap:5px; }
+    /* 우열 지원 레이어 - 번호 없이, 약간 작게 */
+    .ls-right .lb {
+      grid-template-columns: 86px 1fr auto;
+      padding: 9px 14px 9px 0;
+      margin-bottom: 5px;
+    }
+    .ls-right .lb-name { font-size: 13px; font-weight: 700; }
+    .ls-hook-badge {
+      margin-top: 8px;
+      padding: 12px 15px;
+      background: #0f172a;
+      border-radius: 8px;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+    .ls-hook-badge .hb-title {
+      display: flex; align-items:center; gap:6px;
+      font-size: 12px; font-weight:700; color:#e2e8f0;
+      margin-bottom: 6px;
+    }
+    .hb-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .hb-dot--green  { background:#4ade80; }
+    .hb-dot--red    { background:#f87171; }
+    .hb-dot--yellow { background:#fbbf24; }
+    .hb-row { display:flex; align-items:center; gap:8px; padding:1px 0; }
+    .hb-row code { font-size:10px; color:#94a3b8; }
+
+    /* ── Sequence Diagram (Slide 7 OQ-1) ────────────────────────────── */
+    .seq-diag { font-size: 11px; margin-top: 8px; }
+    .seq-head {
+      display: grid;
+      grid-template-columns: 1fr 2.2fr 1.3fr;
+      gap: 3px;
+      margin-bottom: 0;
+    }
+    .seq-h {
+      padding: 4px 6px;
+      text-align: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .seq-h--a { background:#f1f5f9; color:#374151; border-color:#e2e8f0; }
+    .seq-h--k { background:#0f172a; color:#7dd3fc; border-color:#1e293b; font-family:monospace; font-size:9px; }
+    .seq-h--r { background:#f1f5f9; color:#374151; border-color:#e2e8f0; }
+    .seq-b {
+      display: grid;
+      grid-template-columns: 1fr 2.2fr 1.3fr;
+      margin-top: 2px;
+    }
+    .seq-b > div { min-height: 22px; }
+    .seq-la { border-right: 1px dashed #d1d5db; }
+    .seq-lk { border-left: 1px dashed #d1d5db; border-right: 1px dashed #d1d5db; }
+    .seq-lr { border-left: 1px dashed #d1d5db; }
+    .seq-c-a { padding: 3px 0; }
+    .seq-dec-a, .seq-dec-r { padding: 4px 0; }
+    .seq-dec-k { padding: 4px 8px; }
+    .seq-dec-inner {
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 9.5px;
+      font-family: monospace;
+      padding: 4px 8px;
+      border-radius: 3px;
+      text-align: center;
+    }
+    .seq-c-k {
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .seq-cond {
+      font-size: 9px;
+      color: #64748b;
+      font-style: italic;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .seq-c-arr {
+      flex: 1;
+      height: 1px;
+      position: relative;
+    }
+    .seq-c-arr::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 5px solid;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+    }
+    .seq-c-arr--pass  { background: #217346; }
+    .seq-c-arr--pass::after  { border-left-color: #217346; }
+    .seq-c-arr--block { background: #ef4444; }
+    .seq-c-arr--block::after { border-left-color: #ef4444; }
+    .seq-c-arr--warn  { background: #f59e0b; }
+    .seq-c-arr--warn::after  { border-left-color: #f59e0b; }
+    .seq-c-r {
+      padding: 3px 5px;
+      display: flex;
+      align-items: center;
+    }
+    .seq-out {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .seq-out--pass  { background:#dcfce7; color:#166534; }
+    .seq-out--block { background:#fee2e2; color:#991b1b; }
+    .seq-out--warn  { background:#fef9c3; color:#854d0e; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · 개발팀 운영</div>
+        <h1 class="cover-title">Sprint 9</h1>
+        <p class="cover-sub">에이전트 파일 영역 분리 &amp; 병렬 작업 안정성</p>
+        <p class="cover-meta">2026-05-26 킥오프 · 2026-05-26 완료</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 목차 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목차</div>
+      <h2 class="slide-title">Contents</h2>
+      <div class="toc-grid">
+        <div>
+          <div class="toc-item"><span class="toc-num">1</span><span class="toc-label">목표 &amp; 안건</span></div>
+          <div class="toc-item"><span class="toc-num">2</span><span class="toc-label">주요 결정 사항</span></div>
+          <div class="toc-item"><span class="toc-num">3</span><span class="toc-label">액션 아이템 완료 현황</span></div>
+          <div class="toc-item"><span class="toc-num">4</span><span class="toc-label">레이어 소유권 구조</span></div>
+        </div>
+        <div>
+          <div class="toc-item"><span class="toc-num">5</span><span class="toc-label">충돌 처리 정책</span></div>
+          <div class="toc-item"><span class="toc-num">6</span><span class="toc-label">수용 기준 달성</span></div>
+          <div class="toc-item"><span class="toc-num">7</span><span class="toc-label">이연 항목</span></div>
+          <div class="toc-item"><span class="toc-num toc-num--faded">8</span><span class="toc-label toc-label--faded">Q&amp;A</span></div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 목표 + 안건 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 9 목표</h2>
+      <blockquote class="goal-quote">
+        오케스트레이터(OC) 파일 영역 분리 제약 도입으로 <strong>에이전트 간 충돌을 제거</strong>하고,<br>
+        수산시장 개발팀 <strong>병렬 작업 안정성을 확보</strong>한다.
+      </blockquote>
+      <table class="data-table" style="margin-top:28px;">
+        <thead><tr><th>#</th><th>구분</th><th>안건</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>OQ 결정</td>
+            <td>파일 범위 제약 위반 시 OC의 처리 방식</td>
+            <td><span class="badge badge-green">✅ 결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>OQ 결정</td>
+            <td>FE·BE 경계 파일 소유권 결정 기준</td>
+            <td><span class="badge badge-green">✅ 결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>확정</td>
+            <td>Sprint 9 스코프 및 수용 기준 확정</td>
+            <td><span class="badge badge-green">✅ 확정</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>결정 내용</th><th>담당</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td>
+              <strong>파일 범위 제약 위반 시 — 경고 출력 후 계속 진행 (작업 거부 없음)</strong><br>
+              <span style="font-size:13px; color:#888;">프롬프트 레벨 제약의 기술적 강제 불가 인정. 경고를 통해 사용자가 판단할 기회 부여.</span>
+            </td>
+            <td>OC</td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td>
+              <strong>FE·BE 경계 파일 기준 확립</strong><br>
+              <span style="font-size:13px; color:#888;">
+                Next.js <code>app/api/**/route.ts</code> → BE 소유<br>
+                <code>package.json</code> 의존성 → 요청자 역할 (FE 추가면 FE, BE 추가면 BE, 빌드 설정이면 SRE)
+              </span>
+            </td>
+            <td>PM + BE + FE</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 액션 아이템 완료 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현</div>
+      <h2 class="slide-title">액션 아이템 완료 현황 <span style="font-size:14px; color:#217346; font-weight:600;">5 / 5</span></h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">OC</p>
+          <ul class="check-list">
+            <li class="done">오케스트레이터 브리핑 프롬프트에 파일 영역 제약 블록 추가 (FE/BE/QA 영역 분리)</li>
+            <li class="done"><code>product/OC/orchestrator</code> 시스템 프롬프트 업데이트 — 브리핑 내 파일 범위 제약 삽입 로직</li>
+          </ul>
+          <p style="font-weight:600; font-size:13px; color:#555; margin:16px 0 8px; text-transform:uppercase; letter-spacing:.04em;">PM</p>
+          <ul class="check-list">
+            <li class="done"><code>.claude/rules/agent-scope.md</code> 신규 작성 — FE/BE/QA 파일 소유권 표 포함</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600; font-size:13px; color:#555; margin-bottom:8px; text-transform:uppercase; letter-spacing:.04em;">QA</p>
+          <ul class="check-list">
+            <li class="done">Sprint 8 실제 충돌 시나리오 기반 <code>/oc</code> 스모크 테스트 1회 이상 실행</li>
+            <li class="done">스모크 테스트 결과 문서화 — <code>agent-scope.md</code> + orchestrator 업데이트로 검증 완료</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 레이어 소유권 구조 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">아키텍처</div>
+      <h2 class="slide-title">레이어 소유권 구조</h2>
+
+      <div class="ls-wrap">
+
+        <!-- 좌: 구현 레이어 스택 (번호 + 연결선) -->
+        <div>
+          <div class="ls-col-label">구현 레이어 — 계층 순서</div>
+          <div class="ls-stack">
+
+            <div class="lb lb--ui">
+              <span class="lb-num">1</span>
+              <div class="lb-layer">
+                <div class="lb-name">UI</div>
+                <div class="lb-sublabel">표현 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">렌더링 · 컴포넌트 · 스타일</div>
+                <div class="lb-chips">
+                  <span class="chip">components/**</span>
+                  <span class="chip">styles/**</span>
+                  <span class="chip">app/**</span>
+                </div>
+              </div>
+              <span class="op op--fe">FE</span>
+            </div>
+
+            <div class="lb lb--api">
+              <span class="lb-num">2</span>
+              <div class="lb-layer">
+                <div class="lb-name">API</div>
+                <div class="lb-sublabel">서버 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">서버 로직 · DB · 외부 서비스 연동</div>
+                <div class="lb-chips">
+                  <span class="chip">api/**</span>
+                  <span class="chip">app/api/**</span>
+                  <span class="chip">lib/**</span>
+                </div>
+              </div>
+              <span class="op op--be">BE</span>
+            </div>
+
+            <div class="lb lb--ai">
+              <span class="lb-num">3</span>
+              <div class="lb-layer">
+                <div class="lb-name">AI</div>
+                <div class="lb-sublabel">추론 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">LLM 통합 · 프롬프트 · AI 파이프라인</div>
+                <div class="lb-chips">
+                  <span class="chip">openrouter-proxy/**</span>
+                  <span class="chip">AI 설정</span>
+                </div>
+              </div>
+              <span class="op op--ai">AI</span>
+            </div>
+
+            <div class="lb lb--infra">
+              <span class="lb-num">4</span>
+              <div class="lb-layer">
+                <div class="lb-name">성능</div>
+                <div class="lb-sublabel">최적화 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">성능 최적화 · 번들 분석 · 빌드 설정</div>
+                <div class="lb-chips">
+                  <span class="chip">*.config.*</span>
+                  <span class="chip">vercel.json</span>
+                  <span class="chip">package.json</span>
+                  <span class="chip">.env*</span>
+                </div>
+              </div>
+              <span class="op op--perf">PERF</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 세로 구분선 -->
+        <div class="ls-divider"></div>
+
+        <!-- 우: 지원 레이어 + 훅 배지 -->
+        <div>
+          <div class="ls-col-label">지원 레이어 — 횡단 관심사</div>
+          <div class="ls-right">
+
+            <div class="lb lb--docs">
+              <div class="lb-layer">
+                <div class="lb-name">문서</div>
+                <div class="lb-sublabel">기록 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">스프린트 기록 · 의사결정 문서</div>
+                <div class="lb-chips">
+                  <span class="chip">docs/**</span>
+                  <span class="chip">agent-memory/**</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;">
+                <span class="op op--pm">PM</span>
+                <span class="op op--ts" style="font-size:10px;padding:2px 8px;">TS</span>
+              </div>
+            </div>
+
+            <div class="lb lb--meta">
+              <div class="lb-layer">
+                <div class="lb-name">메타</div>
+                <div class="lb-sublabel">에이전트 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc">에이전트 정의 · 라우팅 · 소유권 정책</div>
+                <div class="lb-chips">
+                  <span class="chip">.claude/agents/**</span>
+                  <span class="chip">.claude/rules/**</span>
+                </div>
+              </div>
+              <span class="op op--oc">OC</span>
+            </div>
+
+            <div class="lb lb--ro">
+              <div class="lb-layer">
+                <div class="lb-name">R/O</div>
+                <div class="lb-sublabel">검증 계층</div>
+              </div>
+              <div>
+                <div class="lb-desc" style="color:#9ca3af;">전 레이어 읽기 · 쓰기 전면 차단</div>
+              </div>
+              <div style="display:flex;gap:4px;">
+                <span class="op op--ro">UX</span>
+                <span class="op op--ro">QA</span>
+              </div>
+            </div>
+
+            <!-- 훅 강제 배지 -->
+            <div class="ls-hook-badge">
+              <div class="hb-title">
+                <span>🔒</span>
+                <span>scope-enforcer.py</span>
+                <span style="font-size:10px;color:#475569;font-weight:400;margin-left:2px;">pre-tool-use</span>
+              </div>
+              <div class="hb-row">
+                <span class="hb-dot hb-dot--red"></span>
+                <span>deny 위반 → <strong style="color:#f87171;">⛔ 하드 차단</strong> (exit 2)</span>
+              </div>
+              <div class="hb-row">
+                <span class="hb-dot hb-dot--red"></span>
+                <span>R/O 역할 쓰기 → <strong style="color:#f87171;">⛔ 하드 차단</strong></span>
+              </div>
+              <div class="hb-row">
+                <span class="hb-dot hb-dot--yellow"></span>
+                <span>allow 범위 외 → <strong style="color:#fbbf24;">⚠ 경고</strong></span>
+              </div>
+              <div class="hb-row" style="margin-top:3px;">
+                <span class="hb-dot hb-dot--green"></span>
+                <span><code>.active-role</code> 없음 → 통과</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- .ls-wrap -->
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 충돌 처리 정책 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">정책</div>
+      <h2 class="slide-title">충돌 처리 정책</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:14px;">
+
+        <!-- 좌: 소유권 원칙 + 경계 파일 기준 -->
+        <div>
+          <p class="scope-col-title">소유권 준수 원칙</p>
+          <div class="log-block" style="margin-bottom:18px;">
+            <div class="log-row"><span class="log-status ok">1</span><span class="log-event">각 에이전트는 자신의 <strong>레이어 범위만 쓰기 허용</strong></span></div>
+            <div class="log-row"><span class="log-status ok">2</span><span class="log-event">레이어 외 수정 불가피 시 → <strong>OC에게 보고</strong> 후 재위임</span></div>
+            <div class="log-row"><span class="log-status ok">3</span><span class="log-event">UX·QA는 <strong>어떤 레이어도 쓰기 금지</strong></span></div>
+          </div>
+
+          <p class="scope-col-title">경계 파일 기준 (OQ-2)</p>
+          <table class="data-table" style="font-size:12px;">
+            <thead><tr><th>파일 패턴</th><th>소유 레이어</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>app/api/**/route.ts</code></td>
+                <td><span class="layer-tag" style="font-size:11px;">API</span> BE 소유</td>
+              </tr>
+              <tr>
+                <td><code>package.json</code> 의존성 추가</td>
+                <td>요청자 레이어 따름</td>
+              </tr>
+              <tr>
+                <td><code>apps/**/app/layout.tsx</code></td>
+                <td><span class="layer-tag" style="font-size:11px;">UI</span> FE 소유</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 우: 위반 감지 처리 흐름 (시퀀스 다이어그램) -->
+        <div>
+          <p class="scope-col-title">위반 감지 처리 흐름 (OQ-1)</p>
+          <div class="seq-diag">
+            <!-- Actor headers -->
+            <div class="seq-head">
+              <div class="seq-h seq-h--a">Agent</div>
+              <div class="seq-h seq-h--k">🔒 scope-enforcer.py</div>
+              <div class="seq-h seq-h--r">결과</div>
+            </div>
+            <!-- Lifeline body: 3-col grid, every 3 children = 1 row -->
+            <div class="seq-b">
+              <!-- Trigger row: agent → hook -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk" style="padding:8px 8px 4px; display:flex; align-items:center;">
+                <div style="width:100%; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:3px; padding:3px 8px; font-size:9.5px; font-weight:600; font-family:monospace; color:#374151; text-align:center;">← Edit / Write 시도</div>
+              </div>
+              <div class="seq-lr seq-c-a"></div>
+              <!-- Decision block -->
+              <div class="seq-la seq-dec-a"></div>
+              <div class="seq-lk seq-dec-k"><div class="seq-dec-inner">.active-role 읽기</div></div>
+              <div class="seq-lr seq-dec-r"></div>
+              <!-- Case 1: no role → pass -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[없음] 메인 세션</span>
+                <span class="seq-c-arr seq-c-arr--pass"></span>
+              </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--pass">✅ 통과</span></div>
+              <!-- Case 2: deny pattern → hard block -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[deny 패턴]</span>
+                <span class="seq-c-arr seq-c-arr--block"></span>
+              </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--block">⛔ exit 2</span></div>
+              <!-- Case 3: readonly role → hard block -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[R/O 역할]</span>
+                <span class="seq-c-arr seq-c-arr--block"></span>
+              </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--block">⛔ exit 2</span></div>
+              <!-- Case 4: outside allow → soft warn -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[allow 범위 외]</span>
+                <span class="seq-c-arr seq-c-arr--warn"></span>
+              </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--warn">⚠️ 경고</span></div>
+            </div>
+          </div>
+          <div class="risk-note" style="margin-top:12px;">
+            <span>⚠️</span>
+            <span><strong>프롬프트 레벨 제약</strong><br>
+            에이전트 준수에 의존 — 스모크 테스트로 주기적 검증.</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 수용 기준 달성 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">수용 기준 달성 <span style="font-size:14px; color:#217346; font-weight:600;">5 / 5</span></h2>
+      <ul class="check-list" style="margin-top:20px;">
+        <li class="done">OC가 멀티 에이전트 브리핑 시 각 에이전트에게 파일 범위 제약을 명시적으로 전달한다</li>
+        <li class="done">FE 에이전트가 <code>api/</code> 하위 파일을 수정하려 시도하는 브리핑이 생성되지 않는다</li>
+        <li class="done">BE 에이전트가 <code>apps/**/components/</code> 하위 UI 파일을 수정하려 시도하는 브리핑이 생성되지 않는다</li>
+        <li class="done"><code>agent-scope.md</code>가 <code>.claude/rules/</code>에 존재하고, 모든 에이전트 역할의 파일 소유권이 표로 정리돼 있다</li>
+        <li class="done"><code>/oc [태스크]</code> 실행 시 오케스트레이터가 영역 분리된 브리핑을 출력한다 (스모크 테스트 1회 이상 통과)</li>
+      </ul>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: 이연 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">이연</div>
+      <h2 class="slide-title">이연 항목</h2>
+      <table class="data-table" style="margin-top:16px;">
+        <thead><tr><th>항목</th><th>이연 사유</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Git worktree 기반 병렬 실행</td>
+            <td>운영 복잡도 증가 대비 현재 구조로 충분 — 에이전트 수 증가 시 재검토</td>
+          </tr>
+          <tr>
+            <td>에이전트 실시간 상태 동기화 채널</td>
+            <td>순차 라우팅 구조에서 불필요</td>
+          </tr>
+          <tr>
+            <td><code>api/log.js</code> Auth 검증 추가</td>
+            <td>Sprint 8 Out of Scope 유지</td>
+          </tr>
+          <tr>
+            <td>Vite 빌드 파이프라인</td>
+            <td>Sprint 5 결정 유지 — 기여자 2인 이상 또는 TS 마이그레이션 시 재검토</td>
+          </tr>
+          <tr>
+            <td>전체 익명 집계 (Cloud Function)</td>
+            <td>사용자 수 증가 후 별도 설계</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>개발팀 운영 · Sprint 9</span>
+        <span>2026-05-26</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
