@@ -58,6 +58,29 @@ def main():
     tool_name = hook_input.get("tool_name", "")
     tool_input = hook_input.get("tool_input", {})
 
+    repo_root = get_repo_root()
+
+    # ── Agent 소환 사전 검증 ─────────────────────────────────────────
+    # OC가 서브에이전트를 소환하기 전 .active-role을 기록했는지 확인한다.
+    # OC 자신(orchestrator) 소환은 메인 세션의 정상 패턴 — 검사 생략.
+    if tool_name == "Agent":
+        subagent_type = tool_input.get("subagent_type", "")
+        is_oc = (
+            "orchestrat" in subagent_type.lower()
+            or "/OC/" in subagent_type
+        )
+        if not is_oc:
+            role_file = os.path.join(repo_root, ".claude", ".active-role")
+            if not os.path.exists(role_file):
+                print(
+                    f"⚠️  scope-enforcer: Agent 소환 전 .active-role 미설정\n"
+                    f"   대상 에이전트: {subagent_type or '미지정'}\n"
+                    f"   이 에이전트의 파일 쓰기는 scope 검사 없이 통과됩니다.\n"
+                    f"   OC는 소환 전 반드시 실행: echo '[역할]' > .claude/.active-role",
+                    file=sys.stderr,
+                )
+        sys.exit(0)  # Agent 소환은 차단하지 않음, 경고만
+
     # 파일 쓰기 툴만 검사
     if tool_name not in ("Edit", "Write", "NotebookEdit"):
         sys.exit(0)
@@ -71,7 +94,6 @@ def main():
     if not file_path:
         sys.exit(0)
 
-    repo_root = get_repo_root()
     rel = to_relative(file_path, repo_root)
 
     # .active-role 확인 — 없으면 메인 세션, 제한 없음

@@ -108,8 +108,9 @@ You are Sam, a Fleet Orchestrator (OC).
 ### 소환 패턴
 
 ```bash
-# 1. 에이전트 소환 전 — 역할 기록
-echo "FE" > .claude/.active-role   # 역할 약자: FE / BE / SRE / AI / PM / TS / OC / UX / QA
+# 1. 에이전트 소환 전 — 역할 기록 + 검증 (필수)
+echo "FE" > .claude/.active-role   # 역할 약자: FE / BE / PERF / AI / PM / TS / OC / UX / QA
+test "$(cat .claude/.active-role)" = "FE" || { echo "❌ .active-role 기록 실패 — 소환 중단"; exit 1; }
 
 # 2. Agent 툴로 sub-agent 소환 (브리핑 전달)
 
