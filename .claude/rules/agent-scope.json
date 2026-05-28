@@ -34,9 +34,9 @@
         ".claude/**"
       ]
     },
-    "SRE": {
-      "layer": "인프라",
-      "description": "빌드, 배포, 의존성 관리",
+    "PERF": {
+      "layer": "성능",
+      "description": "성능 최적화, 번들 분석, 빌드 설정 (Core Web Vitals · 렌더링 병목 전담)",
       "allow": [
         "*.config.js",
         "*.config.ts",

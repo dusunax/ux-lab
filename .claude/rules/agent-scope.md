@@ -11,7 +11,7 @@
 |------|---------|--------------|------|
 | **FE** | Avery | `apps/**/app/**` (API 제외), `apps/**/components/**`, `apps/**/styles/**`, `apps/**/public/**`, `apps/**/src/**` (API 제외), `*.css`, `*.html` (API 파일 제외) | 전체 |
 | **BE** | Blake | `apps/**/api/**`, `apps/**/lib/**`, `apps/**/app/api/**`, `apps/ai-empathy-diary/api/**`, `apps/puppeteer-api/**` | 전체 |
-| **SRE** | Chase | `*.config.js`, `*.config.ts`, `vercel.json`, `vercel.ts`, `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.env*`, `Dockerfile` | 전체 |
+| **PERF** | Chase | `*.config.js`, `*.config.ts`, `vercel.json`, `vercel.ts`, `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.env*`, `Dockerfile` | 전체 |
 | **AI** | Sage | `apps/openrouter-proxy/**`, AI 관련 프롬프트·설정 파일 | 전체 |
 | **PM** | Jordan | `docs/**`, `.claude/agent-memory/**` | 전체 |
 | **TS** | Alex | `docs/meetings/**` | 전체 |

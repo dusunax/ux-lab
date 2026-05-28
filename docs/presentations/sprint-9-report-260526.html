@@ -220,7 +220,7 @@
     .op--fe  { background:#dcfce7; color:#166534; }
     .op--be  { background:#dbeafe; color:#1e40af; }
     .op--ai  { background:#f3e8ff; color:#6b21a8; }
-    .op--sre { background:#ffedd5; color:#9a3412; }
+    .op--perf { background:#ffedd5; color:#9a3412; }
     .op--pm  { background:#fef9c3; color:#854d0e; }
     .op--ts  { background:#fef9c3; color:#a16207; border:1px solid #fde68a; }
     .op--oc  { background:#f1f5f9; color:#475569; }
@@ -253,6 +253,99 @@
     .hb-dot--yellow { background:#fbbf24; }
     .hb-row { display:flex; align-items:center; gap:8px; padding:1px 0; }
     .hb-row code { font-size:10px; color:#94a3b8; }
+
+    /* ── Sequence Diagram (Slide 7 OQ-1) ────────────────────────────── */
+    .seq-diag { font-size: 11px; margin-top: 8px; }
+    .seq-head {
+      display: grid;
+      grid-template-columns: 1fr 2.2fr 1.3fr;
+      gap: 3px;
+      margin-bottom: 0;
+    }
+    .seq-h {
+      padding: 4px 6px;
+      text-align: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .seq-h--a { background:#f1f5f9; color:#374151; border-color:#e2e8f0; }
+    .seq-h--k { background:#0f172a; color:#7dd3fc; border-color:#1e293b; font-family:monospace; font-size:9px; }
+    .seq-h--r { background:#f1f5f9; color:#374151; border-color:#e2e8f0; }
+    .seq-b {
+      display: grid;
+      grid-template-columns: 1fr 2.2fr 1.3fr;
+      margin-top: 2px;
+    }
+    .seq-b > div { min-height: 22px; }
+    .seq-la { border-right: 1px dashed #d1d5db; }
+    .seq-lk { border-left: 1px dashed #d1d5db; border-right: 1px dashed #d1d5db; }
+    .seq-lr { border-left: 1px dashed #d1d5db; }
+    .seq-c-a { padding: 3px 0; }
+    .seq-dec-a, .seq-dec-r { padding: 4px 0; }
+    .seq-dec-k { padding: 4px 8px; }
+    .seq-dec-inner {
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 9.5px;
+      font-family: monospace;
+      padding: 4px 8px;
+      border-radius: 3px;
+      text-align: center;
+    }
+    .seq-c-k {
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .seq-cond {
+      font-size: 9px;
+      color: #64748b;
+      font-style: italic;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .seq-c-arr {
+      flex: 1;
+      height: 1px;
+      position: relative;
+    }
+    .seq-c-arr::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 5px solid;
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+    }
+    .seq-c-arr--pass  { background: #217346; }
+    .seq-c-arr--pass::after  { border-left-color: #217346; }
+    .seq-c-arr--block { background: #ef4444; }
+    .seq-c-arr--block::after { border-left-color: #ef4444; }
+    .seq-c-arr--warn  { background: #f59e0b; }
+    .seq-c-arr--warn::after  { border-left-color: #f59e0b; }
+    .seq-c-r {
+      padding: 3px 5px;
+      display: flex;
+      align-items: center;
+    }
+    .seq-out {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .seq-out--pass  { background:#dcfce7; color:#166534; }
+    .seq-out--block { background:#fee2e2; color:#991b1b; }
+    .seq-out--warn  { background:#fef9c3; color:#854d0e; }
   </style>
 </head>
 <body>
@@ -458,11 +551,11 @@
             <div class="lb lb--infra">
               <span class="lb-num">4</span>
               <div class="lb-layer">
-                <div class="lb-name">인프라</div>
-                <div class="lb-sublabel">빌드 · 배포</div>
+                <div class="lb-name">성능</div>
+                <div class="lb-sublabel">최적화 계층</div>
               </div>
               <div>
-                <div class="lb-desc">빌드 · 배포 · 의존성 관리</div>
+                <div class="lb-desc">성능 최적화 · 번들 분석 · 빌드 설정</div>
                 <div class="lb-chips">
                   <span class="chip">*.config.*</span>
                   <span class="chip">vercel.json</span>
@@ -470,7 +563,7 @@
                   <span class="chip">.env*</span>
                 </div>
               </div>
-              <span class="op op--sre">SRE</span>
+              <span class="op op--perf">PERF</span>
             </div>
 
           </div>
@@ -600,44 +693,62 @@
           </table>
         </div>
 
-        <!-- 우: 위반 감지 처리 흐름 -->
+        <!-- 우: 위반 감지 처리 흐름 (시퀀스 다이어그램) -->
         <div>
-          <p class="scope-col-title">위반 감지 시 처리 흐름 (OQ-1)</p>
-          <div class="conflict-flow">
-            <div class="conflict-step conflict-step--detect">
-              <span class="step-badge step-badge--warn">!</span>
-              <div>
-                <strong>감지</strong><br>
-                <span style="font-size:12px; color:#666;">레이어 범위 외 파일 수정 시도 탐지</span>
-              </div>
+          <p class="scope-col-title">위반 감지 처리 흐름 (OQ-1)</p>
+          <div class="seq-diag">
+            <!-- Actor headers -->
+            <div class="seq-head">
+              <div class="seq-h seq-h--a">Agent</div>
+              <div class="seq-h seq-h--k">🔒 scope-enforcer.py</div>
+              <div class="seq-h seq-h--r">결과</div>
             </div>
-            <div class="conflict-step conflict-step--warn">
-              <span class="step-badge step-badge--warn">⚠</span>
-              <div>
-                <strong>경고 출력</strong><br>
-                <code style="font-size:11px;">⚠️ [파일명]은 [레이어]의 소유권 범위입니다.<br>필요하다면 [담당 에이전트]와 협의 후 수정하세요.</code>
+            <!-- Lifeline body: 3-col grid, every 3 children = 1 row -->
+            <div class="seq-b">
+              <!-- Trigger row: agent → hook -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk" style="padding:8px 8px 4px; display:flex; align-items:center;">
+                <div style="width:100%; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:3px; padding:3px 8px; font-size:9.5px; font-weight:600; font-family:monospace; color:#374151; text-align:center;">← Edit / Write 시도</div>
               </div>
-            </div>
-            <div class="conflict-step conflict-step--proceed">
-              <span class="step-badge step-badge--proceed">→</span>
-              <div>
-                <strong>계속 진행</strong> — 작업 거부 없음<br>
-                <span style="font-size:12px; color:#666;">사용자에게 판단 위임, 중단 없이 진행</span>
+              <div class="seq-lr seq-c-a"></div>
+              <!-- Decision block -->
+              <div class="seq-la seq-dec-a"></div>
+              <div class="seq-lk seq-dec-k"><div class="seq-dec-inner">.active-role 읽기</div></div>
+              <div class="seq-lr seq-dec-r"></div>
+              <!-- Case 1: no role → pass -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[없음] 메인 세션</span>
+                <span class="seq-c-arr seq-c-arr--pass"></span>
               </div>
-            </div>
-            <div class="conflict-step conflict-step--fallback">
-              <span class="step-badge step-badge--fallback">↩</span>
-              <div>
-                <strong>Fallback</strong> — 위반 지속 시<br>
-                <span style="font-size:12px; color:#666;">OC가 올바른 레이어 담당으로 재라우팅</span>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--pass">✅ 통과</span></div>
+              <!-- Case 2: deny pattern → hard block -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[deny 패턴]</span>
+                <span class="seq-c-arr seq-c-arr--block"></span>
               </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--block">⛔ exit 2</span></div>
+              <!-- Case 3: readonly role → hard block -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[R/O 역할]</span>
+                <span class="seq-c-arr seq-c-arr--block"></span>
+              </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--block">⛔ exit 2</span></div>
+              <!-- Case 4: outside allow → soft warn -->
+              <div class="seq-la seq-c-a"></div>
+              <div class="seq-lk seq-c-k">
+                <span class="seq-cond">[allow 범위 외]</span>
+                <span class="seq-c-arr seq-c-arr--warn"></span>
+              </div>
+              <div class="seq-lr seq-c-r"><span class="seq-out seq-out--warn">⚠️ 경고</span></div>
             </div>
           </div>
-          <div class="risk-note" style="margin-top:14px;">
+          <div class="risk-note" style="margin-top:12px;">
             <span>⚠️</span>
-            <span><strong>기술적 강제 수단 없음</strong><br>
-            프롬프트 레벨 제약 — 에이전트 준수에 의존.<br>
-            준수율은 스모크 테스트로 주기적 검증 필요.</span>
+            <span><strong>프롬프트 레벨 제약</strong><br>
+            에이전트 준수에 의존 — 스모크 테스트로 주기적 검증.</span>
           </div>
         </div>
 

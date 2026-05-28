@@ -139,8 +139,15 @@ def main():
             sys.exit(2)
 
     # ── ALLOW 패턴 외 파일 → 소프트 경고 ────────────────────────────
+    # boundary 테이블에서 현재 역할이 소유자면 allow로 간주 (경고 없이 통과)
+    boundary_owner = scope.get("boundary", {})
+    is_boundary_match = any(
+        fnmatch.fnmatch(rel, pat) and owner.upper() == role
+        for pat, owner in boundary_owner.items()
+    )
+
     allow_patterns = rules.get("allow", [])
-    if allow_patterns and not match_any(rel, allow_patterns):
+    if allow_patterns and not match_any(rel, allow_patterns) and not is_boundary_match:
         layer = rules.get("layer", role)
         print(
             f"⚠️  파일 범위 주의 [{role}]\n"
