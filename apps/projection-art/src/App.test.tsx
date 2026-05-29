@@ -36,6 +36,11 @@ describe('App', () => {
     expect(screen.getByTestId('fullscreen-btn')).toBeInTheDocument()
   })
 
+  it('FPS 토글 버튼이 존재한다', () => {
+    render(<App />)
+    expect(screen.getByTestId('fps-toggle-btn')).toBeInTheDocument()
+  })
+
   it('데모 버튼 클릭 시 에러가 발생하지 않는다', () => {
     render(<App />)
     expect(() => fireEvent.click(screen.getByTestId('demo-btn-neon-tunnel'))).not.toThrow()
@@ -54,5 +59,22 @@ describe('App', () => {
   it('전체화면 버튼 클릭 시 에러가 발생하지 않는다', () => {
     render(<App />)
     expect(() => fireEvent.click(screen.getByTestId('fullscreen-btn'))).not.toThrow()
+  })
+
+  it('FPS 토글 버튼 클릭 시 에러가 발생하지 않는다', () => {
+    render(<App />)
+    expect(() => fireEvent.click(screen.getByTestId('fps-toggle-btn'))).not.toThrow()
+  })
+
+  it('FPS 오버레이는 초기에 숨겨져 있다', () => {
+    render(<App />)
+    // visible=false이면 FpsOverlay가 null 반환
+    expect(screen.queryByTestId('fps-overlay')).not.toBeInTheDocument()
+  })
+
+  it('FPS 버튼 클릭 시 FPS 오버레이가 표시된다', () => {
+    render(<App />)
+    fireEvent.click(screen.getByTestId('fps-toggle-btn'))
+    expect(screen.getByTestId('fps-overlay')).toBeInTheDocument()
   })
 })

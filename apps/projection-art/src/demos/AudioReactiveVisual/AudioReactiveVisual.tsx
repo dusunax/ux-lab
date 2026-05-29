@@ -1,93 +1,248 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useMemo } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useAudioAnalyzer } from '../../hooks/useAudioAnalyzer'
 import type { MousePosition } from '../../types'
 
-const BAR_COUNT = 64
-const BAR_WIDTH = 0.08
-const BAR_GAP = 0.05
+// ─── 상수 ────────────────────────────────────────────────────────────────────
 
-interface FrequencyBarProps {
-  index: number
-  total: number
-  amplitude: number
-  hue: number
+const BAR_COUNT = 64
+const BAR_WIDTH = 0.07
+const BAR_GAP = 0.04
+const TOTAL_WIDTH = BAR_COUNT * (BAR_WIDTH + BAR_GAP)
+
+// ─── 파형 라인 ───────────────────────────────────────────────────────────────
+
+interface WaveformLineProps {
+  frequencyData: Uint8Array
+  bassAmplitude: number
 }
 
-function FrequencyBar({ index, total, amplitude, hue }: FrequencyBarProps) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const height = Math.max(0.05, amplitude * 8)
-  const x = (index - total / 2) * (BAR_WIDTH + BAR_GAP)
+function WaveformLine({ frequencyData, bassAmplitude }: WaveformLineProps) {
+  const lineRef = useRef<THREE.Line>(null!)
+  const geometryRef = useRef<THREE.BufferGeometry>(null!)
+
+  const pointCount = 128
+  const positions = useMemo(
+    () => new Float32Array(pointCount * 3),
+    []
+  )
 
   useFrame(() => {
-    if (!meshRef.current) return
-    const target = new THREE.Vector3(x, height / 2 - 2, 0)
-    meshRef.current.position.lerp(target, 0.15)
-    const targetScale = new THREE.Vector3(BAR_WIDTH, height, 0.1)
-    meshRef.current.scale.lerp(targetScale, 0.15)
+    if (!geometryRef.current) return
+
+    const step = Math.floor(frequencyData.length / pointCount)
+    for (let i = 0; i < pointCount; i++) {
+      const v = (frequencyData[i * step] ?? 0) / 255
+      const x = (i / (pointCount - 1) - 0.5) * TOTAL_WIDTH * 1.2
+      const y = -3.5 + v * 3.0 + bassAmplitude * 0.5
+      positions[i * 3] = x
+      positions[i * 3 + 1] = y
+      positions[i * 3 + 2] = 0
+    }
+    geometryRef.current.attributes.position.needsUpdate = true
   })
 
   return (
-    <mesh ref={meshRef} position={[x, 0, 0]}>
-      <boxGeometry args={[BAR_WIDTH, 1, 0.1]} />
-      <meshBasicMaterial
-        color={new THREE.Color().setHSL(hue / 360, 1, 0.5 + amplitude * 0.3)}
+    <line ref={lineRef}>
+      <bufferGeometry ref={geometryRef}>
+        <bufferAttribute
+          attach="attributes-position"
+          array={positions}
+          count={pointCount}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <lineBasicMaterial
+        color={new THREE.Color().setHSL(0.5 + bassAmplitude * 0.3, 1, 0.7)}
         toneMapped={false}
       />
-    </mesh>
+    </line>
   )
 }
 
-interface AudioSceneProps {
+// ─── 주파수 바 ───────────────────────────────────────────────────────────────
+
+interface FrequencyBarsProps {
   frequencyData: Uint8Array
   mousePos?: MousePosition
-  isActive: boolean
 }
 
-function AudioScene({ frequencyData, mousePos, isActive }: AudioSceneProps) {
+function FrequencyBars({ frequencyData, mousePos }: FrequencyBarsProps) {
   const groupRef = useRef<THREE.Group>(null)
+  const meshesRef = useRef<THREE.Mesh[]>([])
+  const geometryRef = useRef<THREE.BoxGeometry>(new THREE.BoxGeometry(BAR_WIDTH, 1, 0.08))
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current) return
+
     const nx = mousePos?.nx ?? 0.5
     const ny = mousePos?.ny ?? 0.5
     groupRef.current.rotation.x = THREE.MathUtils.lerp(
       groupRef.current.rotation.x,
-      (ny - 0.5) * 0.5,
-      0.08
+      (ny - 0.5) * 0.4,
+      0.07
     )
     groupRef.current.rotation.y = THREE.MathUtils.lerp(
       groupRef.current.rotation.y,
-      (nx - 0.5) * 1.0,
-      0.08
+      (nx - 0.5) * 0.8,
+      0.07
     )
-    if (!isActive) {
-      groupRef.current.rotation.y += state.clock.getDelta() * 0.3
-    }
-  })
 
-  // Downsample frequencyData to BAR_COUNT
-  const step = Math.floor(frequencyData.length / BAR_COUNT)
-  const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
-    const value = frequencyData[i * step] ?? 0
-    return value / 255
+    const step = Math.floor(frequencyData.length / BAR_COUNT)
+    meshesRef.current.forEach((mesh, i) => {
+      if (!mesh) return
+      const v = (frequencyData[i * step] ?? 0) / 255
+      const targetH = Math.max(0.05, v * 7)
+      mesh.scale.y = THREE.MathUtils.lerp(mesh.scale.y, targetH, 0.2)
+      mesh.position.y = mesh.scale.y * 0.5 - 2
+      const mat = mesh.material as THREE.MeshBasicMaterial
+      mat.color.setHSL((i / BAR_COUNT) * 0.7 + 0.45, 1, 0.4 + v * 0.3)
+    })
   })
 
   return (
     <group ref={groupRef}>
-      {bars.map((amp, i) => (
-        <FrequencyBar
-          key={i}
-          index={i}
-          total={BAR_COUNT}
-          amplitude={amp}
-          hue={(i / BAR_COUNT) * 300 + 180}
-        />
-      ))}
+      {Array.from({ length: BAR_COUNT }).map((_, i) => {
+        const x = (i - BAR_COUNT / 2) * (BAR_WIDTH + BAR_GAP)
+        return (
+          <mesh
+            key={i}
+            ref={(el) => { if (el) meshesRef.current[i] = el }}
+            geometry={geometryRef.current}
+            position={[x, 0, 0]}
+          >
+            <meshBasicMaterial
+              color={new THREE.Color().setHSL((i / BAR_COUNT) * 0.7 + 0.45, 1, 0.5)}
+              toneMapped={false}
+            />
+          </mesh>
+        )
+      })}
     </group>
   )
 }
+
+// ─── 오디오 파티클 시스템 ─────────────────────────────────────────────────────
+
+const AUDIO_PARTICLE_COUNT = 200
+
+interface AudioParticlesProps {
+  bassAmplitude: number
+  averageAmplitude: number
+}
+
+function AudioParticles({ bassAmplitude, averageAmplitude }: AudioParticlesProps) {
+  const particlesRef = useRef<THREE.Points>(null)
+  const posRef = useRef<Float32Array>(new Float32Array(AUDIO_PARTICLE_COUNT * 3))
+  const velRef = useRef<Float32Array>(new Float32Array(AUDIO_PARTICLE_COUNT * 3))
+  const lifetimeRef = useRef<Float32Array>(new Float32Array(AUDIO_PARTICLE_COUNT).fill(-1))
+
+  useFrame((state) => {
+    if (!particlesRef.current) return
+    const t = state.clock.elapsedTime
+
+    // 베이스 비트에 반응해 파티클 발사
+    if (bassAmplitude > 0.45) {
+      const count = Math.floor(bassAmplitude * 8)
+      for (let k = 0; k < count; k++) {
+        // 빈 슬롯 탐색
+        const slot = lifetimeRef.current.findIndex(l => l < 0)
+        if (slot < 0) break
+        const angle = Math.random() * Math.PI * 2
+        const speed = 0.04 + bassAmplitude * 0.08
+        posRef.current[slot * 3] = 0
+        posRef.current[slot * 3 + 1] = 0
+        posRef.current[slot * 3 + 2] = 0
+        velRef.current[slot * 3] = Math.cos(angle) * speed
+        velRef.current[slot * 3 + 1] = Math.sin(angle) * speed + 0.02
+        velRef.current[slot * 3 + 2] = (Math.random() - 0.5) * 0.03
+        lifetimeRef.current[slot] = 1.0
+      }
+    }
+
+    // 파티클 업데이트
+    for (let i = 0; i < AUDIO_PARTICLE_COUNT; i++) {
+      if (lifetimeRef.current[i] < 0) continue
+      posRef.current[i * 3] += velRef.current[i * 3]
+      posRef.current[i * 3 + 1] += velRef.current[i * 3 + 1]
+      posRef.current[i * 3 + 2] += velRef.current[i * 3 + 2]
+      velRef.current[i * 3 + 1] -= 0.001  // 중력
+      lifetimeRef.current[i] -= 0.015
+      if (lifetimeRef.current[i] < 0) {
+        posRef.current[i * 3] = 9999  // 화면 밖으로
+      }
+    }
+
+    if (particlesRef.current.geometry.attributes.position) {
+      particlesRef.current.geometry.attributes.position.needsUpdate = true
+    }
+
+    // 맥동하는 크기
+    const mat = particlesRef.current.material as THREE.PointsMaterial
+    mat.size = 0.06 + averageAmplitude * 0.12 + Math.sin(t * 4) * 0.01
+  })
+
+  return (
+    <points ref={particlesRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          array={posRef.current}
+          count={AUDIO_PARTICLE_COUNT}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.08}
+        color={new THREE.Color(0xff88ff)}
+        transparent
+        opacity={0.9}
+        toneMapped={false}
+        sizeAttenuation
+      />
+    </points>
+  )
+}
+
+// ─── 씬 루트 ──────────────────────────────────────────────────────────────────
+
+interface AudioSceneProps {
+  frequencyData: Uint8Array
+  bassAmplitude: number
+  averageAmplitude: number
+  mousePos?: MousePosition
+  isActive: boolean
+}
+
+function AudioScene({
+  frequencyData,
+  bassAmplitude,
+  averageAmplitude,
+  mousePos,
+  isActive,
+}: AudioSceneProps) {
+  const groupRef = useRef<THREE.Group>(null)
+
+  useFrame((state) => {
+    if (!groupRef.current) return
+    if (!isActive) {
+      groupRef.current.rotation.y += state.clock.getDelta() * 0.2
+    }
+  })
+
+  return (
+    <group ref={groupRef}>
+      <FrequencyBars frequencyData={frequencyData} mousePos={mousePos} />
+      <WaveformLine frequencyData={frequencyData} bassAmplitude={bassAmplitude} />
+      {isActive && (
+        <AudioParticles bassAmplitude={bassAmplitude} averageAmplitude={averageAmplitude} />
+      )}
+    </group>
+  )
+}
+
+// ─── 컴포넌트 ─────────────────────────────────────────────────────────────────
 
 interface AudioReactiveVisualProps {
   mousePos?: MousePosition
@@ -122,7 +277,6 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
       data-testid="audio-reactive-visual"
       style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}
     >
-      {/* hidden audio element for bundled file */}
       <audio
         ref={audioRef}
         src="/audio/demo.mp3"
@@ -133,19 +287,22 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
       />
 
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 60 }}
+        camera={{ position: [0, 2, 10], fov: 60 }}
         gl={{ antialias: true }}
         style={{ background: '#000' }}
         dpr={[1, 2]}
       >
+        <fog attach="fog" args={['#000', 15, 40]} />
         <AudioScene
           frequencyData={state.frequencyData}
+          bassAmplitude={state.bassAmplitude}
+          averageAmplitude={state.averageAmplitude}
           mousePos={mousePos}
           isActive={state.isActive}
         />
       </Canvas>
 
-      {/* UI overlay */}
+      {/* UI 오버레이 */}
       <div
         style={{
           position: 'absolute',
@@ -207,6 +364,24 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
           </button>
         )}
       </div>
+
+      {/* FPS 인디케이터 (활성화 중에만) */}
+      {state.isActive && (
+        <div
+          data-testid="active-indicator"
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1.5rem',
+            color: '#0f0',
+            fontSize: '0.8rem',
+            fontFamily: 'monospace',
+            opacity: 0.7,
+          }}
+        >
+          ● LIVE {Math.round(state.averageAmplitude * 100)}%
+        </div>
+      )}
     </div>
   )
 }
