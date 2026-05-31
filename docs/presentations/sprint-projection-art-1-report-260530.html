@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint projection-art/1 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* projection-art 전용 추가 스타일 */
+    .demo-card {
+      background: #f8fffe;
+      border: 1px solid #d1fae5;
+      border-left: 4px solid #217346;
+      border-radius: 6px;
+      padding: 14px 18px;
+    }
+    .demo-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #217346;
+      margin: 0 0 8px;
+      letter-spacing: .02em;
+    }
+    .demo-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.8;
+    }
+    .tech-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin: 1px 2px;
+    }
+    .test-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 18px 12px;
+      text-align: center;
+    }
+    .test-stat .num {
+      font-size: 32px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1;
+    }
+    .test-stat .label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+    .rollover-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+    .rollover-item .reason {
+      font-size: 12px;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+    .done { color: #217346; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · projection-art</div>
+        <h1 class="cover-title">Sprint projection-art/1</h1>
+        <p class="cover-sub">WebGL 기반 인터랙티브 프로젝션 아트 PoC</p>
+        <p class="cover-meta">2026-05-29 킥오프 · 2026-05-30 완료</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 목표 + OQ 결정 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 목표 &amp; Open Questions</h2>
+      <blockquote class="goal-quote">
+        마우스 입력에 반응하는 <strong>실시간 비주얼 데모 3종</strong>을<br>
+        Chrome + 프로젝터 환경에서 안정적으로 동작시킨다.
+      </blockquote>
+      <table class="data-table" style="margin-top:24px;">
+        <thead><tr><th>#</th><th>Open Question</th><th>결정</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td>라이브러리 전략 — p5.js vs Three.js 단일/분리</td>
+            <td><span class="badge badge-green">Demo A → p5.js / Demo B·C → Three.js</span></td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td>Demo C 오디오 소스 방식</td>
+            <td><span class="badge badge-green">번들 mp3 (기본) + 마이크 입력 (선택) 병행</span></td>
+          </tr>
+          <tr>
+            <td>OQ-3</td>
+            <td>프레임률 목표 수치</td>
+            <td><span class="badge badge-green">60fps 고정 — requestAnimationFrame 기본값</span></td>
+          </tr>
+          <tr>
+            <td>OQ-4</td>
+            <td>앱 디렉토리 신설 기술 스택</td>
+            <td><span class="badge badge-green">Vite + React 18 + TypeScript (CDN 불채택)</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>결정 내용</th><th>담당</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              <strong>Vite + React 18 + TypeScript</strong> 기반 앱 구성<br>
+              <span style="font-size:13px;color:#888;">운용·확장성 고려, CDN 방식(타입 없음·번들 최적화 불가) 불채택</span>
+            </td>
+            <td>PM</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              <strong>Three.js 통합: <code>@react-three/fiber</code> + <code>@react-three/drei</code></strong><br>
+              <span style="font-size:13px;color:#888;">Demo B (NeonTunnel), Demo C (AudioReactiveVisual)</span>
+            </td>
+            <td>FE</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>
+              <strong>p5.js instance mode로 React useEffect 내 마운트</strong><br>
+              <span style="font-size:13px;color:#888;">Demo A (ParticleFlow) — 글로벌 네임스페이스 오염 방지</span>
+            </td>
+            <td>FE</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>
+              <strong>테스트 코드 작성 필수</strong> — Vitest + @testing-library/react<br>
+              <span style="font-size:13px;color:#888;"><code>vitest run</code> 0 failures 통과를 수용 기준에 포함</span>
+            </td>
+            <td>FE + QA</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>
+              <strong>React.lazy로 데모별 번들 분리</strong><br>
+              <span style="font-size:13px;color:#888;">p5.js + Three.js 동시 의존 번들 크기 리스크 완화</span>
+            </td>
+            <td>FE</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 데모 구현 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현</div>
+      <h2 class="slide-title">데모 구현 현황</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:12px;">
+        <div class="demo-card">
+          <h3>Demo A — Particle Flow</h3>
+          <ul>
+            <li>p5.js instance mode + <code>pixelDensity(1)</code></li>
+            <li>sin/cos 플로우 필드 (경량화)</li>
+            <li><code>blendMode(ADD)</code> 글로우</li>
+            <li>파티클 80–400개 적응형 조절</li>
+            <li>FPS &lt;28 시 자동 감소 / &gt;52 시 증가</li>
+          </ul>
+        </div>
+        <div class="demo-card">
+          <h3>Demo B — Neon Tunnel</h3>
+          <ul>
+            <li><code>@react-three/fiber</code> + <code>@react-three/drei</code></li>
+            <li>16개 링 (6·8·10각형 교차)</li>
+            <li>10초 주기 팔레트 자동 전환</li>
+            <li>이코사헤드론 + 옥타헤드론 중심</li>
+            <li>마우스 기반 카메라 lerp</li>
+          </ul>
+        </div>
+        <div class="demo-card">
+          <h3>Demo C — Audio Reactive</h3>
+          <ul>
+            <li><code>useAudioAnalyzer</code> — 음악/탭/음성 3모드</li>
+            <li>음악: 파일 피커 → 주파수 바 비주얼</li>
+            <li>탭: <code>getDisplayMedia</code> 시스템 오디오</li>
+            <li>음성: 마이크 + 노이즈 게이트 (RMS &gt;0.015)</li>
+            <li>음성 모드: 오실로스코프 + 에너지 링</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:13px;color:#6b7280;font-weight:600;">공통 기능:</span>
+        <span class="tech-badge">전체화면 API</span>
+        <span class="tech-badge">마우스 이벤트 50ms 반응</span>
+        <span class="tech-badge">useFrameRate FPS 모니터링</span>
+        <span class="tech-badge">FpsOverlay 색상 코딩</span>
+        <span class="tech-badge">1/2/3 단축키 전환</span>
+        <span class="tech-badge">React.lazy 코드 스플리팅</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 데모 스크린샷 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">실행 화면</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;">Demo A — Particle Flow</div>
+          <img src="./sprint-projection-art-1/shot-demo-a.png" alt="Demo A — Particle Flow" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:4px;">p5.js · 적응형 파티클 · blendMode ADD</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;">Demo B — Neon Tunnel</div>
+          <img src="./sprint-projection-art-1/shot-demo-b.png" alt="Demo B — Neon Tunnel" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:4px;">Three.js · 16링 · 마우스 시점 lerp</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;">Demo C — 탭 오디오 모드</div>
+          <img src="./sprint-projection-art-1/shot-demo-c-tab.png" alt="Demo C — 탭 오디오 모드" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:4px;">Web Audio API · getDisplayMedia · 주파수 바 + 파형</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;">Demo C — 음성 모드</div>
+          <img src="./sprint-projection-art-1/shot-demo-c-voice.png" alt="Demo C — 음성 모드" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:4px;">마이크 입력 · 노이즈 게이트 · 오실로스코프 + 에너지 링</p>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 실기기 프로젝터 시연 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">실기기</div>
+      <h2 class="slide-title">프로젝터 시연 현장</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:14px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Demo A — Particle Flow</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-1/proj-demo-a.png" alt="Demo A — 프로젝터 시연" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">0s</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">파티클 플로우 · HDMI 출력</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Demo B — Neon Tunnel</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-1/proj-demo-b.png" alt="Demo B — 프로젝터 시연" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">15s</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">네온 터널 · 기하학 · 녹색 발광</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">Demo C — Audio Reactive</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-1/proj-demo-c.png" alt="Demo C — 프로젝터 시연" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">45s</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">오디오 반응형 · 주파수 바 풀 반응</p>
+        </div>
+      </div>
+      <div style="margin-top:14px;text-align:center;font-size:11.5px;color:#6b7280;">
+        실내 암실 환경 · HDMI 직결 · 60fps 연속 측정 통과
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 기술 스택 & 아키텍처 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">아키텍처</div>
+      <h2 class="slide-title">기술 스택 &amp; 앱 구조</h2>
+      <div class="two-col" style="align-items:start; gap:32px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">기술 스택</p>
+          <table class="data-table">
+            <thead><tr><th>영역</th><th>선택</th></tr></thead>
+            <tbody>
+              <tr><td>번들러</td><td><code>Vite 6</code></td></tr>
+              <tr><td>UI</td><td><code>React 18 + TypeScript</code></td></tr>
+              <tr><td>2D 그래픽</td><td><code>p5.js</code> (instance mode)</td></tr>
+              <tr><td>3D 그래픽</td><td><code>@react-three/fiber</code> + <code>drei</code></td></tr>
+              <tr><td>오디오</td><td>Web Audio API (브라우저 내장)</td></tr>
+              <tr><td>테스트</td><td><code>Vitest</code> + <code>@testing-library/react</code></td></tr>
+              <tr><td>테스트 환경</td><td><code>jsdom</code> + Canvas/WebGL/AudioContext mock</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">디렉토리 구조</p>
+          <div class="callout" style="font-family:monospace;font-size:12px;line-height:2;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div><code>apps/projection-art/</code></div>
+            <div style="color:#217346;">├── <code>src/demos/</code> — ParticleFlow / NeonTunnel / AudioReactive</div>
+            <div style="color:#217346;">├── <code>src/hooks/</code> — useAudioAnalyzer / useFrameRate / useFullscreen</div>
+            <div style="color:#217346;">├── <code>src/utils/</code> — colorUtils (hslToRgb, lerpColor, mapRange)</div>
+            <div style="color:#217346;">├── <code>src/components/</code> — FpsOverlay</div>
+            <div style="color:#217346;">├── <code>src/types/</code> — DemoType / MousePosition / AudioAnalyzerState</div>
+            <div style="color:#0369a1;">└── <code>src/test/setup.ts</code> — Canvas / WebGL / AudioContext mock</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 테스트 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">테스트</div>
+      <h2 class="slide-title">테스트 현황 — <code>pnpm test</code> 결과</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px;">
+        <div class="test-stat">
+          <div class="num">79</div>
+          <div class="label">총 테스트 수</div>
+        </div>
+        <div class="test-stat">
+          <div class="num">8</div>
+          <div class="label">테스트 파일</div>
+        </div>
+        <div class="test-stat">
+          <div class="num" style="color:#217346;">0</div>
+          <div class="label">Failures</div>
+        </div>
+        <div class="test-stat">
+          <div class="num" style="color:#217346;">0</div>
+          <div class="label">Errors</div>
+        </div>
+      </div>
+      <table class="data-table" style="margin-top:20px;">
+        <thead><tr><th>파일</th><th>테스트 수</th><th>커버 범위</th></tr></thead>
+        <tbody>
+          <tr><td><code>colorUtils.test.ts</code></td><td>21</td><td>hslToRgb, amplitudeToColor, lerpColor, randomVelocity, mapRange</td></tr>
+          <tr><td><code>useAudioAnalyzer.test.ts</code></td><td>9</td><td>AudioContext mock, activate/deactivate, 주파수 범위, 마이크 입력</td></tr>
+          <tr><td><code>useFrameRate.test.ts</code></td><td>6</td><td>FPS 집계, enabled 토글, reset, 초기 상태</td></tr>
+          <tr><td><code>ParticleFlow.test.tsx</code></td><td>5</td><td>마운트/언마운트, p5 동적 import mock, mousePos props</td></tr>
+          <tr><td><code>NeonTunnel.test.tsx</code></td><td>5</td><td>R3F Canvas mock, R3F drei mock, 마우스 props</td></tr>
+          <tr><td><code>AudioReactiveVisual.test.tsx</code></td><td>15</td><td>모드 선택(음악/탭/음성), 파일 피커, activate/deactivate, active 상태</td></tr>
+          <tr><td><code>FpsOverlay.test.tsx</code></td><td>7</td><td>visible 토글, FPS 색상 코딩, minFps Infinity 처리</td></tr>
+          <tr><td><code>App.test.tsx</code></td><td>11</td><td>데모 전환, FPS 토글, 전체화면, 마우스 이벤트</td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 완료율 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료율</div>
+      <h2 class="slide-title">Sprint 완료율 — 28 / 28</h2>
+      <div class="two-col" style="align-items:start; gap:32px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">완료 현황</p>
+          <table class="data-table">
+            <thead><tr><th>역할</th><th>완료</th><th>전체</th><th>비율</th></tr></thead>
+            <tbody>
+              <tr><td>수용 기준</td><td>10</td><td>10</td><td><span class="badge badge-green">100%</span></td></tr>
+              <tr><td>FE</td><td>11</td><td>11</td><td><span class="badge badge-green">100%</span></td></tr>
+              <tr><td>PERF</td><td>2</td><td>2</td><td><span class="badge badge-green">100%</span></td></tr>
+              <tr><td>QA</td><td>5</td><td>5</td><td><span class="badge badge-green">100%</span></td></tr>
+              <tr style="font-weight:700;"><td>합계</td><td>28</td><td>28</td><td><span class="badge badge-green">100%</span></td></tr>
+            </tbody>
+          </table>
+          <div class="callout" style="margin-top:14px;font-size:13px;">
+            HDMI 프로젝터 연결 실기기 검증 완료.<br>
+            60fps 연속 10분 + 마우스 50ms 응답 모두 통과. ✅
+          </div>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">이월 항목</p>
+          <div class="callout" style="font-size:14px;color:#217346;font-weight:600;">
+            🎉 이월 항목 없음<br>
+            <span style="font-weight:400;color:#374151;font-size:13px;">
+              모든 수용 기준 항목이 실기기 검증까지 완료되었습니다.
+            </span>
+          </div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin:20px 0 8px;text-transform:uppercase;">다음 스프린트 확장 후보</p>
+          <ul class="bullet-list" style="font-size:13px;">
+            <li>웹캠 기반 모션 인터랙션</li>
+            <li>데모 D — 프로젝션 매핑 기초 레이어</li>
+            <li>성능 프로파일링 (<code>vite build --analyze</code>)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 다음 방향 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Next</div>
+      <h2 class="slide-title">다음 스프린트 방향</h2>
+      <div class="two-col" style="align-items:start; gap:32px; margin-top:8px;">
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:12px;text-transform:uppercase;">Sprint projection-art/2 우선 후보</p>
+          <ul class="bullet-list">
+            <li><strong>실기기 검증</strong> — HDMI 프로젝터 출력, 60fps 연속 측정</li>
+            <li><strong>웹캠 기반 모션 인터랙션</strong> — 카메라 입력 × 파티클 반응</li>
+            <li><strong>데모 D</strong> — 프로젝션 매핑 기초 레이어 (캔버스 영역 마스킹)</li>
+            <li><strong>생성형 AI 비주얼 연동</strong> — 텍스트 프롬프트 → 파라미터 변환</li>
+            <li><strong>성능 프로파일링</strong> — Chrome DevTools GPU 타임라인 측정</li>
+          </ul>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:12px;text-transform:uppercase;">알려진 리스크 &amp; 기술 부채</p>
+          <ul class="bullet-list">
+            <li><code>@react-three/fiber 8.x</code> 고정 — React 18 호환 (v9는 React 19 내부 API 의존으로 불채택)</li>
+            <li>번들 크기 미측정 — <code>vite build --analyze</code> 실행 권장</li>
+            <li>Demo C 음악 모드 — 로컬 파일 피커로 mp3/wav 직접 선택 (번들 포함 불필요)</li>
+            <li>프로젝터 색재현율 차이 — 개발 화면과 상이 가능</li>
+          </ul>
+          <p style="font-weight:600;font-size:13px;color:#555;margin:16px 0 8px;text-transform:uppercase;">장기 확장 방향</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span class="tech-badge" style="background:#f3e8ff;color:#7e22ce;">TouchDesigner 연동</span>
+            <span class="tech-badge" style="background:#f3e8ff;color:#7e22ce;">다중 프로젝터</span>
+            <span class="tech-badge" style="background:#f3e8ff;color:#7e22ce;">Kinect / LiDAR</span>
+            <span class="tech-badge" style="background:#f3e8ff;color:#7e22ce;">프로젝션 매핑</span>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>projection-art · Sprint projection-art/1</span>
+        <span>2026-05-30</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
