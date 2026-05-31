@@ -103,6 +103,13 @@ class MockAudioContext {
   createAnalyser = vi.fn(() => new MockAnalyserNode())
   createMediaElementSource = vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn() }))
   createMediaStreamSource = vi.fn(() => ({ connect: vi.fn(), disconnect: vi.fn() }))
+  createBiquadFilter = vi.fn(() => ({
+    type: 'lowpass' as BiquadFilterType,
+    frequency: { value: 1000 },
+    Q: { value: 1 },
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  }))
   resume = vi.fn(() => {
     this.state = 'running'
     return Promise.resolve()
@@ -163,6 +170,34 @@ Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
 })
 
 Object.defineProperty(HTMLMediaElement.prototype, 'load', {
+  writable: true,
+  value: vi.fn(),
+})
+
+// ─── mediaDevices Mock ──────────────────────────────────────────────────────
+
+const mockStream = {
+  getTracks: vi.fn(() => [{ stop: vi.fn() }]),
+  getVideoTracks: vi.fn(() => [{ stop: vi.fn() }]),
+  getAudioTracks: vi.fn(() => []),
+}
+
+Object.defineProperty(navigator, 'mediaDevices', {
+  writable: true,
+  value: {
+    getUserMedia: vi.fn().mockResolvedValue(mockStream),
+    getDisplayMedia: vi.fn().mockResolvedValue(mockStream),
+  },
+})
+
+// ─── URL Mock ───────────────────────────────────────────────────────────────
+
+Object.defineProperty(globalThis.URL, 'createObjectURL', {
+  writable: true,
+  value: vi.fn(() => 'blob:mock-url'),
+})
+
+Object.defineProperty(globalThis.URL, 'revokeObjectURL', {
   writable: true,
   value: vi.fn(),
 })

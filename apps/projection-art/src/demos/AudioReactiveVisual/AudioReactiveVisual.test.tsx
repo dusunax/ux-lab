@@ -9,29 +9,61 @@ vi.mock('@react-three/fiber', () => ({
   useFrame: vi.fn(),
 }))
 
+const mockActivate = vi.fn().mockResolvedValue(undefined)
+const mockDeactivate = vi.fn()
+
+const baseState = {
+  isActive: false,
+  frequencyData: new Uint8Array(1024),
+  timeDomainData: new Uint8Array(2048),
+  averageAmplitude: 0,
+  bassAmplitude: 0,
+  midAmplitude: 0,
+  trebleAmplitude: 0,
+  isVoiceActive: false,
+}
+
+const mockUseAudioAnalyzer = vi.fn(() => ({
+  state: baseState,
+  activate: mockActivate,
+  deactivate: mockDeactivate,
+}))
+
 vi.mock('../../hooks/useAudioAnalyzer', () => ({
-  useAudioAnalyzer: vi.fn(() => ({
-    state: {
-      isActive: false,
-      frequencyData: new Uint8Array(1024),
-      averageAmplitude: 0,
-      bassAmplitude: 0,
-      midAmplitude: 0,
-      trebleAmplitude: 0,
-    },
-    activate: vi.fn().mockResolvedValue(undefined),
-    deactivate: vi.fn(),
-  })),
+  useAudioAnalyzer: () => mockUseAudioAnalyzer(),
 }))
 
 describe('AudioReactiveVisual', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockUseAudioAnalyzer.mockReturnValue({
+      state: baseState,
+      activate: mockActivate,
+      deactivate: mockDeactivate,
+    })
   })
 
-  it('마운트 시 컨테이너를 렌더링한다', () => {
+  it('컨테이너를 렌더링한다', () => {
     render(<AudioReactiveVisual />)
     expect(screen.getByTestId('audio-reactive-visual')).toBeInTheDocument()
+  })
+
+  it('R3F Canvas가 렌더링된다', () => {
+    render(<AudioReactiveVisual />)
+    expect(screen.getByTestId('r3f-canvas')).toBeInTheDocument()
+  })
+
+  it('비활성 상태에서 모드 선택 UI가 표시된다', () => {
+    render(<AudioReactiveVisual />)
+    expect(screen.getByTestId('mode-selector')).toBeInTheDocument()
+    expect(screen.getByTestId('mode-btn-music')).toBeInTheDocument()
+    expect(screen.getByTestId('mode-btn-tab')).toBeInTheDocument()
+    expect(screen.getByTestId('mode-btn-voice')).toBeInTheDocument()
+  })
+
+  it('기본 모드는 음악이다', () => {
+    render(<AudioReactiveVisual />)
+    expect(screen.getByTestId('mode-btn-music')).toHaveStyle({ color: '#0ff' })
   })
 
   it('비활성 상태에서 시작 버튼이 표시된다', () => {
@@ -39,23 +71,70 @@ describe('AudioReactiveVisual', () => {
     expect(screen.getByTestId('start-button')).toBeInTheDocument()
   })
 
-  it('오디오 소스 선택 드롭다운이 표시된다', () => {
+  it('음악 모드에서 파일 선택 전 시작 버튼이 비활성화된다', () => {
     render(<AudioReactiveVisual />)
-    expect(screen.getByTestId('source-select')).toBeInTheDocument()
+    expect(screen.getByTestId('start-button')).toBeDisabled()
   })
 
-  it('소스 선택이 file과 microphone 옵션을 가진다', () => {
+  it('음악 모드에서 파일 선택 후 시작하면 activate("file")을 호출한다', () => {
     render(<AudioReactiveVisual />)
-    const select = screen.getByTestId('source-select') as HTMLSelectElement
-    const options = Array.from(select.options).map(o => o.value)
-    expect(options).toContain('file')
-    expect(options).toContain('microphone')
+    const file = new File(['audio'], 'test.mp3', { type: 'audio/mpeg' })
+    const fileInput = screen.getByTestId('file-input')
+    fireEvent.change(fileInput, { target: { files: [file] } })
+    fireEvent.click(screen.getByTestId('start-button'))
+    expect(mockActivate).toHaveBeenCalledWith('file')
   })
 
-  it('시작 버튼 클릭 시 에러 없이 동작한다', async () => {
+  it('음성 모드 선택 후 시작하면 activate("microphone")을 호출한다', () => {
     render(<AudioReactiveVisual />)
-    const startBtn = screen.getByTestId('start-button')
-    expect(() => fireEvent.click(startBtn)).not.toThrow()
+    fireEvent.click(screen.getByTestId('mode-btn-voice'))
+    fireEvent.click(screen.getByTestId('start-button'))
+    expect(mockActivate).toHaveBeenCalledWith('microphone')
+  })
+
+  it('탭 모드 선택 후 시작하면 activate("tab")을 호출한다', () => {
+    render(<AudioReactiveVisual />)
+    fireEvent.click(screen.getByTestId('mode-btn-tab'))
+    fireEvent.click(screen.getByTestId('start-button'))
+    expect(mockActivate).toHaveBeenCalledWith('tab')
+  })
+
+  it('탭 모드에서 파일 피커가 없다', () => {
+    render(<AudioReactiveVisual />)
+    fireEvent.click(screen.getByTestId('mode-btn-tab'))
+    expect(screen.queryByTestId('file-select-btn')).not.toBeInTheDocument()
+  })
+
+  it('활성 상태에서 정지 버튼이 표시된다', () => {
+    mockUseAudioAnalyzer.mockReturnValue({
+      state: { ...baseState, isActive: true },
+      activate: mockActivate,
+      deactivate: mockDeactivate,
+    })
+    render(<AudioReactiveVisual />)
+    expect(screen.getByTestId('stop-button')).toBeInTheDocument()
+    expect(screen.queryByTestId('mode-selector')).not.toBeInTheDocument()
+  })
+
+  it('정지 버튼 클릭 시 deactivate를 호출한다', () => {
+    mockUseAudioAnalyzer.mockReturnValue({
+      state: { ...baseState, isActive: true },
+      activate: mockActivate,
+      deactivate: mockDeactivate,
+    })
+    render(<AudioReactiveVisual />)
+    fireEvent.click(screen.getByTestId('stop-button'))
+    expect(mockDeactivate).toHaveBeenCalled()
+  })
+
+  it('활성 상태에서 active-indicator가 표시된다', () => {
+    mockUseAudioAnalyzer.mockReturnValue({
+      state: { ...baseState, isActive: true },
+      activate: mockActivate,
+      deactivate: mockDeactivate,
+    })
+    render(<AudioReactiveVisual />)
+    expect(screen.getByTestId('active-indicator')).toBeInTheDocument()
   })
 
   it('mousePos props를 받아 에러 없이 렌더링한다', () => {
@@ -66,17 +145,5 @@ describe('AudioReactiveVisual', () => {
   it('언마운트 시 에러가 발생하지 않는다', () => {
     const { unmount } = render(<AudioReactiveVisual />)
     expect(() => unmount()).not.toThrow()
-  })
-
-  it('R3F Canvas가 렌더링된다', () => {
-    render(<AudioReactiveVisual />)
-    expect(screen.getByTestId('r3f-canvas')).toBeInTheDocument()
-  })
-
-  it('소스를 microphone으로 변경할 수 있다', () => {
-    render(<AudioReactiveVisual />)
-    const select = screen.getByTestId('source-select') as HTMLSelectElement
-    fireEvent.change(select, { target: { value: 'microphone' } })
-    expect(select.value).toBe('microphone')
   })
 })
