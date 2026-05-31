@@ -20,28 +20,28 @@
 
 | 구분 | 패턴 | 예시 |
 |------|------|------|
-| 스프린트 작업 브랜치 | `sprint/N` | `sprint/7` |
+| 스프린트 작업 브랜치 | `sprint/프로젝트명/N` | `sprint/ai-empathy-diary/7` |
 | 기본 브랜치 | `main` | — |
 
 ### 생명주기
 
 ```
 main
-  └─ sprint/N  ← /sprint:start 실행 시 자동 생성
+  └─ sprint/프로젝트명/N  ← /sprint:start 실행 시 자동 생성
        │
        │  (스프린트 기간 동안 커밋 누적)
        │
-       └─ PR (sprint/N → main)  ← /sprint:review 실행 시 자동 생성
+       └─ PR (sprint/프로젝트명/N → main)  ← /sprint:review 실행 시 자동 생성
             │
-            └─ 병합 완료 후 sprint/N 브랜치 삭제 (수동)
+            └─ 병합 완료 후 sprint/프로젝트명/N 브랜치 삭제 (수동)
 ```
 
 ### 규칙
 
-1. 스프린트 작업 커밋은 **전량 `sprint/N` 브랜치에서 진행**한다.
+1. 스프린트 작업 커밋은 **전량 `sprint/프로젝트명/N` 브랜치에서 진행**한다.
 2. `main`에 직접 커밋하지 않는다.
 3. 브랜치는 `/sprint:start` 가 자동 생성한다 — 수동 생성 불필요.
-4. PR 병합 후 `sprint/N` 브랜치는 수동으로 삭제한다.
+4. PR 병합 후 `sprint/프로젝트명/N` 브랜치는 수동으로 삭제한다.
 
 ---
 
@@ -51,13 +51,13 @@ main
 
 > 상세 사양: `.claude/commands/sprint/start.md`
 
-- 이전 스프린트 완료 게이트(90% 룰) 통과 후 **자동으로 `sprint/N` 브랜치를 생성**하고 체크아웃한다.
+- 이전 스프린트 완료 게이트(90% 룰) 통과 후 **자동으로 `sprint/프로젝트명/N` 브랜치를 생성**하고 체크아웃한다.
 - Jordan(PM)의 스프린트 플랜 작성, Alex(TS)의 킥오프 MD 생성까지 일괄 처리한다.
 
 ```
 실행 흐름:
   게이트 통과
-    → git checkout -b sprint/N
+    → git checkout -b sprint/프로젝트명/N
     → Jordan: 스프린트 플랜 작성
     → Alex: kickoff MD 생성 + README 업데이트
 ```
@@ -67,7 +67,7 @@ main
 > 상세 사양: `.claude/commands/sprint/review.md`
 
 - 스프린트 완료(90% 룰) 후 PM이 실행한다.
-- `sprint/N → main` PR을 생성하고 본문에 스프린트 결과를 자동 요약한다.
+- `sprint/프로젝트명/N → main` PR을 생성하고 본문에 스프린트 결과를 자동 요약한다.
 
 **인수:**
 
@@ -91,7 +91,7 @@ main
 ```
 
 **오류 처리:**
-- `sprint/N`이 원격에 없으면: push 안내 메시지 출력 후 중단
+- `sprint/프로젝트명/N`이 원격에 없으면: push 안내 메시지 출력 후 중단
 - GitHub MCP 미연결: PR 본문을 터미널에 출력하고 수동 생성 안내
 
 ### `/sprint:eval` (Sprint 7+ 예정)
@@ -108,11 +108,11 @@ main
 ```
 /sprint:start
   ├─ 게이트: 이전 스프린트 90% 완료 확인
-  ├─ git checkout -b sprint/N
+  ├─ git checkout -b sprint/프로젝트명/N
   ├─ Jordan: 스프린트 플랜 작성
   └─ Alex: kickoff MD 생성
 
-  [스프린트 진행 — 커밋은 sprint/N 브랜치에]
+  [스프린트 진행 — 커밋은 sprint/프로젝트명/N 브랜치에]
 
 /sprint:report        ← PM이 실행, 보고서 HTML 생성
 /sprint:review        ← PM이 실행, PR 생성 및 스프린트 결과 요약
@@ -132,8 +132,8 @@ main
 | 구분 | 경로 |
 |------|------|
 | 스프린트 커맨드 | `.claude/commands/sprint/` |
-| 킥오프 회의록 | `docs/meetings/YYYY-MM-DD-sprint-N-kickoff.md` |
-| 보고서 HTML | `docs/presentations/sprint-N-report-YYMMDD.html` |
+| 킥오프 회의록 | `docs/meetings/프로젝트명/YYYY-MM-DD-sprint-N-kickoff.md` |
+| 보고서 HTML | `docs/presentations/sprint-프로젝트명-N-report-YYMMDD.html` |
 | 운영 규칙 원문 | `docs/workflow/sprint-workflow.md` |
 | Git 워크플로우 (이 문서) | `docs/workflow/sprint-git-workflow.md` |
 
