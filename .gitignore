@@ -107,3 +107,7 @@ xcuserdata/
 
 # Ruby / CocoaPods
 /vendor/bundle/
+
+# Claude Code — 런타임 상태 파일 (에이전트 소유권 훅)
+.claude/.active-role
+.claude/.sessions/

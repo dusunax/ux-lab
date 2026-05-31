@@ -145,46 +145,72 @@ ls -t docs/presentations/sprint-*.html | head -1
 
 ---
 
-## Step 4 — HTML 프레젠테이션 생성
+## Step 4 — HTML 프레젠테이션 생성 (worktree 격리)
 
-다음 기준으로 단독 실행 가능한 HTML 파일을 생성한다.
+> HTML 파일을 직접 Write하지 않는다. **`product/PM/prd-product-manager` 에이전트를 `isolation: "worktree"` 옵션으로 소환**해 아래 데이터를 전달하고 파일 생성을 위임한다.
 
-### 디자인 기준
-
-- **원칙**: 절제된 디자인. 화려한 효과보다 가독성과 정보 전달 우선.
-- **테마**: 흰 배경, 다크 텍스트. 강조색 1개만 사용 (`#217346` — 팀 Excel 테마 녹색).
-- **타이포그래피**: `Noto Sans KR` (Google Fonts, 한글 지원). 제목 24px, 본문 16px, 캡션 13px.
-- **레이아웃**: 전체 화면 슬라이드 (100vw × 100vh), 키보드(← →) 또는 클릭으로 전환.
-- **전환 효과**: fade-in만 사용. 슬라이드별 별도 애니메이션 없음.
-- **슬라이드 수**: 최대 10장. 내용이 적으면 장표를 합친다.
-- **슬라이드 번호**: `<div class="slide-counter">` 사용, JS가 자동으로 `N / 전체` 형식으로 채운다.
-
-### 슬라이드 타입별 레이아웃
-
-- **표지**: `slide--cover` 클래스. `cover-inner` → `slide-label` + `cover-title` + `cover-sub` + `cover-meta` 순서.
-- **목록형**: `slide-label` + `slide-title` + `ul.items` 또는 `ul.check-list` / `ul.bullet-list`
-- **테이블형**: `slide-label` + `slide-title` + `table.data-table`
-- **2컬럼**: `slide-label` + `slide-title` + `div.two-col`
-- **Q&A**: `slide--qa-light` 클래스. `qa-icon` + `qa-title` + `qa-links` 순서.
-
-> **⚠️ 클래스 발명 금지**: Step 2에서 확인한 레퍼런스에 없는 클래스가 필요하면 `<style>` 블록에 추가 정의한다. `ppt-theme.css`를 덮어쓰지 않는다.
-
-### 파일 저장
+Step 1–3에서 수집한 내용을 Jordan에게 전달할 프롬프트로 구성한다:
 
 ```
-docs/presentations/
-├── ppt-theme.css                      ← 공유 테마 (없으면 생성, 있으면 재사용)
-├── sprint-{N}-report-{yymmdd}.html   ← HTML 본체
-└── sprint-{N}/                        ← 스크린샷 폴더
-    ├── shot-{desc}.png
-    └── ...
-```
+다음 정보를 바탕으로 Sprint {N} HTML 프레젠테이션을 생성해줘.
 
-- HTML은 Step 2의 필수 헤드 태그를 그대로 사용한다 (Google Fonts + ppt-theme.css).
-- `ppt-theme.css`에 없는 스타일만 `<style>` 블록에 추가 정의한다.
-- `ppt-theme.css`가 이미 존재하면 덮어쓰지 않는다.
-- HTML은 스크린샷을 `./sprint-{N}/shot-{desc}.png` 상대경로로 참조한다 (base64 임베드 금지).
+[회의록 내용: 스프린트 목표 / 완료 항목 / 결정 사항 / Open Questions / 비고]
+[슬라이드 구조 설계: Step 3에서 결정한 슬라이드 매핑]
+[클래스 레퍼런스: Step 2에서 파악한 기존 HTML 구조]
+
+--- 디자인 기준 ---
+- 원칙: 절제된 디자인. 화려한 효과보다 가독성과 정보 전달 우선.
+- 테마: 흰 배경, 다크 텍스트. 강조색 1개만 사용 (#217346 — 팀 Excel 테마 녹색).
+- 타이포그래피: Noto Sans KR (Google Fonts). 제목 24px, 본문 16px, 캡션 13px.
+- 레이아웃: 전체 화면 슬라이드 (100vw × 100vh), 키보드(← →) 또는 클릭으로 전환.
+- 전환 효과: fade-in만 사용.
+- 슬라이드 수: 최대 10장.
+- 슬라이드 번호: <div class="slide-counter"> 사용, JS가 자동으로 채운다.
+
+--- 슬라이드 타입별 레이아웃 ---
+- 표지: slide--cover. cover-inner → slide-label + cover-title + cover-sub + cover-meta.
+- 목록형: slide-label + slide-title + ul.items / ul.check-list / ul.bullet-list
+- 테이블형: slide-label + slide-title + table.data-table
+- 2컬럼: slide-label + slide-title + div.two-col
+- Q&A: slide--qa-light. qa-icon + qa-title + qa-links.
+
+⚠️ 클래스 발명 금지: 레퍼런스에 없는 클래스는 <style> 블록에 추가 정의할 것. ppt-theme.css 수정 금지.
+
+--- 파일 저장 경로 ---
+docs/presentations/sprint-{N}-report-{yymmdd}.html
+
+규칙:
+- HTML은 필수 헤드 태그 사용 (Google Fonts + ppt-theme.css).
+- ppt-theme.css가 이미 존재하면 덮어쓰지 않는다.
+- 스크린샷은 ./sprint-{N}/shot-{desc}.png 상대경로 참조 (base64 임베드 금지).
 - 디렉터리가 없으면 생성한다.
+```
+
+---
+
+## Step 4.5 — worktree 병합 및 정리
+
+Jordan의 worktree 작업이 완료되면 변경사항을 현재 브랜치로 병합한다.
+
+```bash
+# 1. worktree 목록 확인
+git worktree list
+
+# 2. Jordan worktree 브랜치의 커밋 확인
+git log --oneline <jordan-worktree-branch> ^HEAD
+
+# 3. 현재 브랜치로 병합
+git merge <jordan-worktree-branch> --no-ff -m "docs(sprint-{N}): Jordan worktree 병합 — 보고서 HTML 생성"
+
+# 4. worktree 정리 (자동 정리되지 않은 경우)
+git worktree remove <jordan-worktree-path> --force
+git branch -d <jordan-worktree-branch>
+```
+
+생성 확인:
+```bash
+ls docs/presentations/sprint-{N}-report-*.html
+```
 
 ---
 
