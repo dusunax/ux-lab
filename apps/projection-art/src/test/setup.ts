@@ -214,3 +214,21 @@ Object.defineProperty(window, 'ResizeObserver', {
   writable: true,
   value: MockResizeObserver,
 })
+
+// ─── R3F 경고 필터 ──────────────────────────────────────────────────────────
+// jsdom 환경에서 R3F Three.js 원소(<mesh>, <bufferGeometry> 등)가
+// React DOM 경고를 유발함. 테스트는 통과하지만 노이즈가 실제 오류 탐지를 방해함.
+// R3F Three.js 원소들이 jsdom 환경에서 React DOM 경고를 유발하는 패턴을 선택적으로 억제
+// React는 일부 경고를 format string(%s)으로 분리해 전달하므로 args를 병합해 검사
+const _stdError = console.error.bind(console)
+console.error = (...args: unknown[]) => {
+  const msg = args.map(a => String(a ?? '')).join(' ')
+  if (
+    /is not recognized as a known DOM element/i.test(msg) ||
+    /is using incorrect casing\. Use PascalCase/i.test(msg) ||
+    /React does not recognize the .+ prop on a DOM element/i.test(msg) ||
+    /non-boolean attribute/i.test(msg) ||
+    (/The tag/i.test(msg) && /is unrecognized in this browser/i.test(msg))
+  ) return
+  _stdError(...args)
+}

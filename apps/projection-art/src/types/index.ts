@@ -32,13 +32,3 @@ export interface MousePosition {
   ny: number
 }
 
-export interface AudioAnalyzerState {
-  isActive: boolean
-  frequencyData: Uint8Array
-  timeDomainData: Uint8Array
-  averageAmplitude: number
-  bassAmplitude: number
-  midAmplitude: number
-  trebleAmplitude: number
-  isVoiceActive: boolean
-}
