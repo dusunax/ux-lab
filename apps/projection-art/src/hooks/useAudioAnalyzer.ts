@@ -1,10 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import type { AudioAnalyzerState } from '../types'
+import type React from 'react'
 
 const FFT_SIZE = 2048
 const BASS_END = 10
 const MID_END = 100
-// 노이즈 게이트: RMS가 이 값 아래이면 "침묵"으로 판정
 const NOISE_GATE_THRESHOLD = 0.015
 
 function computeBandAmplitude(data: Uint8Array, start: number, end: number): number {
@@ -25,23 +24,25 @@ function computeRMS(timeDomain: Uint8Array): number {
 
 export type AudioSource = 'file' | 'microphone' | 'tab'
 
+export interface AudioData {
+  frequencyData: Uint8Array
+  timeDomainData: Uint8Array
+  averageAmplitude: number
+  bassAmplitude: number
+  midAmplitude: number
+  trebleAmplitude: number
+  isVoiceActive: boolean
+}
+
 interface UseAudioAnalyzerOptions {
-  audioElement?: HTMLAudioElement | null
+  audioElementRef?: React.RefObject<HTMLAudioElement> | null
 }
 
 export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
-  const { audioElement } = options
+  const audioElementRef = options.audioElementRef
 
-  const [state, setState] = useState<AudioAnalyzerState>({
-    isActive: false,
-    frequencyData: new Uint8Array(FFT_SIZE / 2),
-    timeDomainData: new Uint8Array(FFT_SIZE),
-    averageAmplitude: 0,
-    bassAmplitude: 0,
-    midAmplitude: 0,
-    trebleAmplitude: 0,
-    isVoiceActive: false,
-  })
+  const [isActive, setIsActive] = useState(false)
+  const [isVoiceActive, setIsVoiceActive] = useState(false)
 
   const ctxRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
@@ -50,6 +51,18 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
   const rafRef = useRef<number>(0)
   const freqDataRef = useRef<Uint8Array>(new Uint8Array(FFT_SIZE / 2))
   const timeDataRef = useRef<Uint8Array>(new Uint8Array(FFT_SIZE))
+  const prevVoiceActiveRef = useRef(false)
+
+  // 매 RAF마다 직접 업데이트 — setState 대신 ref로 R3F 리렌더 제거
+  const audioDataRef = useRef<AudioData>({
+    frequencyData: freqDataRef.current,
+    timeDomainData: timeDataRef.current,
+    averageAmplitude: 0,
+    bassAmplitude: 0,
+    midAmplitude: 0,
+    trebleAmplitude: 0,
+    isVoiceActive: false,
+  })
 
   const tick = useCallback(() => {
     if (!analyserRef.current) return
@@ -57,22 +70,21 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
     analyserRef.current.getByteFrequencyData(freqDataRef.current)
     analyserRef.current.getByteTimeDomainData(timeDataRef.current)
 
+    const d = audioDataRef.current
+    d.frequencyData = freqDataRef.current
+    d.timeDomainData = timeDataRef.current
+    d.averageAmplitude = computeBandAmplitude(freqDataRef.current, 0, freqDataRef.current.length)
+    d.bassAmplitude = computeBandAmplitude(freqDataRef.current, 0, BASS_END)
+    d.midAmplitude = computeBandAmplitude(freqDataRef.current, BASS_END, MID_END)
+    d.trebleAmplitude = computeBandAmplitude(freqDataRef.current, MID_END, freqDataRef.current.length)
     const rms = computeRMS(timeDataRef.current)
-    const avg = computeBandAmplitude(freqDataRef.current, 0, freqDataRef.current.length)
-    const bass = computeBandAmplitude(freqDataRef.current, 0, BASS_END)
-    const mid = computeBandAmplitude(freqDataRef.current, BASS_END, MID_END)
-    const treble = computeBandAmplitude(freqDataRef.current, MID_END, freqDataRef.current.length)
+    d.isVoiceActive = rms > NOISE_GATE_THRESHOLD
 
-    setState(prev => ({
-      ...prev,
-      frequencyData: new Uint8Array(freqDataRef.current),
-      timeDomainData: new Uint8Array(timeDataRef.current),
-      averageAmplitude: avg,
-      bassAmplitude: bass,
-      midAmplitude: mid,
-      trebleAmplitude: treble,
-      isVoiceActive: rms > NOISE_GATE_THRESHOLD,
-    }))
+    // isVoiceActive가 변할 때만 setState (UI 표시 전용)
+    if (d.isVoiceActive !== prevVoiceActiveRef.current) {
+      prevVoiceActiveRef.current = d.isVoiceActive
+      setIsVoiceActive(d.isVoiceActive)
+    }
 
     rafRef.current = requestAnimationFrame(tick)
   }, [])
@@ -85,6 +97,7 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
   }, [])
 
   const activate = useCallback(async (source: AudioSource = 'microphone') => {
+    stopLoop() // 기존 루프 먼저 정리 — 중복 호출 시 고아 RAF 방지
     try {
       if (!ctxRef.current) {
         ctxRef.current = new AudioContext()
@@ -122,10 +135,8 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
         // 탭/시스템 오디오 캡처 — Chrome: 화면 공유 팝업에서 "탭 오디오 포함" 체크
         let stream: MediaStream
         try {
-          // audio-only 우선 시도 (Chrome 74+)
           stream = await navigator.mediaDevices.getDisplayMedia({ audio: true, video: false })
         } catch {
-          // 일부 브라우저는 video 없이 거부 — 최소 video로 재시도
           stream = await navigator.mediaDevices.getDisplayMedia({
             audio: true,
             video: { width: 1, height: 1, frameRate: 1 },
@@ -136,20 +147,22 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
         const tabSource = ctx.createMediaStreamSource(stream)
         tabSource.connect(analyser)
         sourceRef.current = tabSource
-      } else if (audioElement) {
-        const elSource = ctx.createMediaElementSource(audioElement)
+      } else {
+        const el = audioElementRef?.current
+        if (!el) throw new Error('file 모드에는 audioElement가 필요합니다.')
+        const elSource = ctx.createMediaElementSource(el)
         elSource.connect(analyser)
         analyser.connect(ctx.destination)
         sourceRef.current = elSource
       }
 
-      setState(prev => ({ ...prev, isActive: true }))
+      setIsActive(true)
       rafRef.current = requestAnimationFrame(tick)
     } catch (err) {
       console.error('AudioAnalyzer activation error:', err)
       throw new Error('오디오 분석기를 시작할 수 없습니다.')
     }
-  }, [audioElement, tick])
+  }, [audioElementRef, stopLoop, tick])
 
   const deactivate = useCallback(() => {
     stopLoop()
@@ -159,7 +172,9 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
       streamRef.current.getTracks().forEach(t => t.stop())
       streamRef.current = null
     }
-    setState(prev => ({ ...prev, isActive: false, isVoiceActive: false }))
+    setIsActive(false)
+    setIsVoiceActive(false)
+    prevVoiceActiveRef.current = false
   }, [stopLoop])
 
   useEffect(() => {
@@ -168,8 +183,11 @@ export function useAudioAnalyzer(options: UseAudioAnalyzerOptions = {}) {
       sourceRef.current?.disconnect()
       streamRef.current?.getTracks().forEach(t => t.stop())
       ctxRef.current?.close()
+      ctxRef.current = null
+      analyserRef.current = null
+      sourceRef.current = null
     }
   }, [stopLoop])
 
-  return { state, activate, deactivate }
+  return { isActive, isVoiceActive, audioDataRef, activate, deactivate }
 }

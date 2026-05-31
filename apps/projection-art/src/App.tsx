@@ -184,23 +184,22 @@ function App() {
       </nav>
 
       {/* 단축키 힌트 */}
-      {showMenu && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '1.5rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            color: 'rgba(255,255,255,0.3)',
-            fontSize: '0.72rem',
-            fontFamily: 'monospace',
-            letterSpacing: '0.08em',
-            pointerEvents: 'none',
-          }}
-        >
-          1 / 2 / 3 — 데모 전환 &nbsp;·&nbsp; F — FPS &nbsp;·&nbsp; 마우스 이동으로 메뉴 표시
-        </div>
-      )}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '1.5rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          color: `rgba(255,255,255,${showMenu ? 0.3 : 0.08})`,
+          fontSize: '0.72rem',
+          fontFamily: 'monospace',
+          letterSpacing: '0.08em',
+          pointerEvents: 'none',
+          transition: 'color 0.5s',
+        }}
+      >
+        1 / 2 / 3 — 데모 전환 &nbsp;·&nbsp; F — FPS &nbsp;·&nbsp; 마우스 이동으로 메뉴 표시
+      </div>
 
       {/* FPS 오버레이 */}
       <FpsOverlay state={fpsState} visible={showFps} />

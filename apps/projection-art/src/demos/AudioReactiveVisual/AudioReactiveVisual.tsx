@@ -1,7 +1,9 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import type { MutableRefObject } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useAudioAnalyzer } from '../../hooks/useAudioAnalyzer'
+import type { AudioData } from '../../hooks/useAudioAnalyzer'
 import type { MousePosition } from '../../types'
 
 // ─── 타입 ────────────────────────────────────────────────────────────────────
@@ -17,13 +19,7 @@ const TOTAL_WIDTH = BAR_COUNT * (BAR_WIDTH + BAR_GAP)
 
 // ─── 음악 모드 씬 ─────────────────────────────────────────────────────────────
 
-function WaveformLine({
-  frequencyData,
-  bassAmplitude,
-}: {
-  frequencyData: Uint8Array
-  bassAmplitude: number
-}) {
+function WaveformLine({ audioDataRef }: { audioDataRef: MutableRefObject<AudioData> }) {
   const lineRef = useRef<THREE.Line>(null!)
   const geometryRef = useRef<THREE.BufferGeometry>(null!)
   const pointCount = 128
@@ -31,6 +27,7 @@ function WaveformLine({
 
   useFrame(() => {
     if (!geometryRef.current) return
+    const { frequencyData, bassAmplitude } = audioDataRef.current
     const step = Math.floor(frequencyData.length / pointCount)
     for (let i = 0; i < pointCount; i++) {
       const v = (frequencyData[i * step] ?? 0) / 255
@@ -39,6 +36,8 @@ function WaveformLine({
       positions[i * 3 + 2] = 0
     }
     geometryRef.current.attributes.position.needsUpdate = true
+    const mat = lineRef.current?.material as THREE.LineBasicMaterial
+    if (mat) mat.color.setHSL(0.5 + bassAmplitude * 0.3, 1, 0.7)
   })
 
   return (
@@ -51,24 +50,23 @@ function WaveformLine({
           itemSize={3}
         />
       </bufferGeometry>
-      <lineBasicMaterial
-        color={new THREE.Color().setHSL(0.5 + bassAmplitude * 0.3, 1, 0.7)}
-        toneMapped={false}
-      />
+      <lineBasicMaterial color={0x00ffff} toneMapped={false} />
     </line>
   )
 }
 
 function FrequencyBars({
-  frequencyData,
+  audioDataRef,
   mousePos,
 }: {
-  frequencyData: Uint8Array
+  audioDataRef: MutableRefObject<AudioData>
   mousePos?: MousePosition
 }) {
   const groupRef = useRef<THREE.Group>(null)
   const meshesRef = useRef<THREE.Mesh[]>([])
   const geometryRef = useRef(new THREE.BoxGeometry(BAR_WIDTH, 1, 0.08))
+
+  useEffect(() => () => { geometryRef.current.dispose() }, [])
 
   useFrame(() => {
     if (!groupRef.current) return
@@ -81,6 +79,7 @@ function FrequencyBars({
       groupRef.current.rotation.y, (nx - 0.5) * 0.8, 0.07
     )
 
+    const { frequencyData } = audioDataRef.current
     const step = Math.floor(frequencyData.length / BAR_COUNT)
     meshesRef.current.forEach((mesh, i) => {
       if (!mesh) return
@@ -113,13 +112,7 @@ function FrequencyBars({
 
 const AUDIO_PARTICLE_COUNT = 200
 
-function AudioParticles({
-  bassAmplitude,
-  averageAmplitude,
-}: {
-  bassAmplitude: number
-  averageAmplitude: number
-}) {
+function AudioParticles({ audioDataRef }: { audioDataRef: MutableRefObject<AudioData> }) {
   const particlesRef = useRef<THREE.Points>(null)
   const posRef = useRef(new Float32Array(AUDIO_PARTICLE_COUNT * 3))
   const velRef = useRef(new Float32Array(AUDIO_PARTICLE_COUNT * 3))
@@ -128,6 +121,7 @@ function AudioParticles({
   useFrame((state) => {
     if (!particlesRef.current) return
     const t = state.clock.elapsedTime
+    const { bassAmplitude, averageAmplitude } = audioDataRef.current
 
     if (bassAmplitude > 0.45) {
       const count = Math.floor(bassAmplitude * 8)
@@ -179,28 +173,24 @@ function AudioParticles({
 }
 
 function MusicScene({
-  frequencyData,
-  bassAmplitude,
-  averageAmplitude,
+  audioDataRef,
   mousePos,
   isActive,
 }: {
-  frequencyData: Uint8Array
-  bassAmplitude: number
-  averageAmplitude: number
+  audioDataRef: MutableRefObject<AudioData>
   mousePos?: MousePosition
   isActive: boolean
 }) {
   const groupRef = useRef<THREE.Group>(null)
-  useFrame((state) => {
+  useFrame((_, delta) => {
     if (!groupRef.current || isActive) return
-    groupRef.current.rotation.y += state.clock.getDelta() * 0.2
+    groupRef.current.rotation.y += delta * 0.2
   })
   return (
     <group ref={groupRef}>
-      <FrequencyBars frequencyData={frequencyData} mousePos={mousePos} />
-      <WaveformLine frequencyData={frequencyData} bassAmplitude={bassAmplitude} />
-      {isActive && <AudioParticles bassAmplitude={bassAmplitude} averageAmplitude={averageAmplitude} />}
+      <FrequencyBars audioDataRef={audioDataRef} mousePos={mousePos} />
+      <WaveformLine audioDataRef={audioDataRef} />
+      {isActive && <AudioParticles audioDataRef={audioDataRef} />}
     </group>
   )
 }
@@ -211,10 +201,10 @@ const WAVE_POINTS = 512
 const WAVE_WIDTH = 16
 
 function VoiceWave({
-  timeDomainData,
+  audioDataRef,
   isVoiceActive,
 }: {
-  timeDomainData: Uint8Array
+  audioDataRef: MutableRefObject<AudioData>
   isVoiceActive: boolean
 }) {
   const lineRef = useRef<THREE.Line>(null!)
@@ -223,6 +213,7 @@ function VoiceWave({
   const targetColor = useRef(new THREE.Color())
 
   useFrame(() => {
+    const { timeDomainData } = audioDataRef.current
     const step = Math.max(1, Math.floor(timeDomainData.length / WAVE_POINTS))
     for (let i = 0; i < WAVE_POINTS; i++) {
       const v = ((timeDomainData[i * step] ?? 128) - 128) / 128
@@ -255,11 +246,11 @@ function VoiceWave({
 }
 
 function EnergyRing({
-  averageAmplitude,
+  audioDataRef,
   isVoiceActive,
   mousePos,
 }: {
-  averageAmplitude: number
+  audioDataRef: MutableRefObject<AudioData>
   isVoiceActive: boolean
   mousePos?: MousePosition
 }) {
@@ -268,6 +259,7 @@ function EnergyRing({
 
   useFrame(() => {
     if (!meshRef.current) return
+    const { averageAmplitude } = audioDataRef.current
     const nx = mousePos?.nx ?? 0.5
     const ny = mousePos?.ny ?? 0.5
     meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, (ny - 0.5) * 0.6, 0.05)
@@ -293,20 +285,18 @@ function EnergyRing({
 }
 
 function VoiceScene({
-  timeDomainData,
-  averageAmplitude,
+  audioDataRef,
   isVoiceActive,
   mousePos,
 }: {
-  timeDomainData: Uint8Array
-  averageAmplitude: number
+  audioDataRef: MutableRefObject<AudioData>
   isVoiceActive: boolean
   mousePos?: MousePosition
 }) {
   return (
     <group>
-      <VoiceWave timeDomainData={timeDomainData} isVoiceActive={isVoiceActive} />
-      <EnergyRing averageAmplitude={averageAmplitude} isVoiceActive={isVoiceActive} mousePos={mousePos} />
+      <VoiceWave audioDataRef={audioDataRef} isVoiceActive={isVoiceActive} />
+      <EnergyRing audioDataRef={audioDataRef} isVoiceActive={isVoiceActive} mousePos={mousePos} />
     </group>
   )
 }
@@ -324,12 +314,26 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
   const [audioFileName, setAudioFileName] = useState<string | null>(null)
   const [audioFileUrl, setAudioFileUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const { state, activate, deactivate } = useAudioAnalyzer({ audioElement: audioRef.current })
+  const [rmsPercent, setRmsPercent] = useState(0)
+  const { isActive, isVoiceActive, audioDataRef, activate, deactivate } = useAudioAnalyzer({
+    audioElementRef: audioRef,
+  })
 
-  // object URL 정리
   useEffect(() => {
     return () => { if (audioFileUrl) URL.revokeObjectURL(audioFileUrl) }
   }, [audioFileUrl])
+
+  // rmsPercent 100ms 주기 업데이트 — per-frame setState 제거
+  useEffect(() => {
+    if (!isActive) {
+      setRmsPercent(0)
+      return
+    }
+    const id = setInterval(() => {
+      setRmsPercent(Math.round(audioDataRef.current.averageAmplitude * 100))
+    }, 100)
+    return () => clearInterval(id)
+  }, [isActive, audioDataRef])
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -385,8 +389,6 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
 
   const canStart = mode !== 'music' || audioFileUrl !== null
 
-  const rmsPercent = Math.round(state.averageAmplitude * 100)
-
   return (
     <div
       data-testid="audio-reactive-visual"
@@ -406,29 +408,26 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
         camera={{ position: [0, 2, 10], fov: 60 }}
         gl={{ antialias: true }}
         style={{ background: '#000' }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
       >
         <fog attach="fog" args={['#000', 15, 40]} />
         {mode !== 'voice' ? (
           <MusicScene
-            frequencyData={state.frequencyData}
-            bassAmplitude={state.bassAmplitude}
-            averageAmplitude={state.averageAmplitude}
+            audioDataRef={audioDataRef}
             mousePos={mousePos}
-            isActive={state.isActive}
+            isActive={isActive}
           />
         ) : (
           <VoiceScene
-            timeDomainData={state.timeDomainData}
-            averageAmplitude={state.averageAmplitude}
-            isVoiceActive={state.isVoiceActive}
+            audioDataRef={audioDataRef}
+            isVoiceActive={isVoiceActive}
             mousePos={mousePos}
           />
         )}
       </Canvas>
 
       {/* 활성 표시 */}
-      {state.isActive && (
+      {isActive && (
         <div
           data-testid="active-indicator"
           style={{
@@ -438,34 +437,35 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
             fontFamily: 'monospace',
             fontSize: '0.8rem',
             color: mode === 'voice'
-              ? (state.isVoiceActive ? '#00ff88' : '#224433')
+              ? (isVoiceActive ? '#00ff88' : '#224433')
               : '#0ff',
             opacity: 0.8,
           }}
         >
           {mode === 'voice'
-            ? (state.isVoiceActive ? '● SPEAKING' : '· LISTENING')
+            ? (isVoiceActive ? '● SPEAKING' : '· LISTENING')
             : `● LIVE ${rmsPercent}%`}
         </div>
       )}
 
-      {/* 에러 */}
+      {/* 에러 — 컨트롤 바로 위 */}
       {error && (
         <div
           data-testid="error-message"
           style={{
             position: 'absolute',
-            top: '50%',
+            bottom: '7rem',
             left: '50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translateX(-50%)',
             color: '#f66',
             fontFamily: 'monospace',
             fontSize: '0.9rem',
             textAlign: 'center',
             background: 'rgba(0,0,0,0.85)',
-            padding: '1rem 2rem',
+            padding: '0.6rem 1.5rem',
             borderRadius: '4px',
             border: '1px solid #f66',
+            whiteSpace: 'nowrap',
           }}
         >
           {error}
@@ -484,7 +484,7 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
           alignItems: 'center',
         }}
       >
-        {!state.isActive ? (
+        {!isActive ? (
           <>
             {/* 모드 선택 */}
             <div
@@ -548,7 +548,22 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
                   lineHeight: 1.4,
                 }}
               >
-                Chrome 공유 팝업에서<br />탭 선택 + 오디오 체크
+                Chrome 공유 팝업에서<br />탭 선택 + 탭 오디오 공유 체크
+              </span>
+            )}
+
+            {/* 음성 모드: 노이즈 게이트 안내 */}
+            {mode === 'voice' && (
+              <span
+                style={{
+                  color: '#444',
+                  fontSize: '0.75rem',
+                  fontFamily: 'monospace',
+                  maxWidth: '180px',
+                  lineHeight: 1.4,
+                }}
+              >
+                조용한 환경에서<br />목소리로 반응합니다
               </span>
             )}
 
@@ -556,6 +571,7 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
               data-testid="start-button"
               onClick={handleStart}
               disabled={!canStart}
+              title={!canStart ? '파일을 먼저 선택해주세요' : undefined}
               style={{
                 background: canStart ? 'rgba(0,255,255,0.15)' : 'rgba(255,255,255,0.03)',
                 color: canStart ? '#0ff' : '#444',
@@ -587,7 +603,7 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
                   cursor: 'pointer',
                 }}
               >
-                🔄 탭 변경
+                🔄 탭 다시 선택
               </button>
             )}
             <button

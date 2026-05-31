@@ -76,6 +76,7 @@ export function ParticleFlow({ mousePos }: ParticleFlowProps) {
       // ── 적응형 파티클 한도 — 주기적으로 FPS 체크 후 조정 ──
       if (p.frameCount % ADAPT_INTERVAL === 0) {
         const fps = p.frameRate()
+        if (fps <= 0) return
         if (fps < FPS_LOW && particleLimit > MIN_PARTICLES) {
           particleLimit = Math.max(MIN_PARTICLES, particleLimit - 60)
         } else if (fps > FPS_HIGH && particleLimit < MAX_PARTICLES) {
@@ -151,7 +152,6 @@ export function ParticleFlow({ mousePos }: ParticleFlowProps) {
         p5Ref.current.remove()
         p5Ref.current = null
       }
-      p5Instance?.remove()
     }
   }, [sketch])
 

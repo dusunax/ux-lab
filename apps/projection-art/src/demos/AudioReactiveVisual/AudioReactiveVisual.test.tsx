@@ -12,8 +12,7 @@ vi.mock('@react-three/fiber', () => ({
 const mockActivate = vi.fn().mockResolvedValue(undefined)
 const mockDeactivate = vi.fn()
 
-const baseState = {
-  isActive: false,
+const baseAudioData = {
   frequencyData: new Uint8Array(1024),
   timeDomainData: new Uint8Array(2048),
   averageAmplitude: 0,
@@ -24,7 +23,9 @@ const baseState = {
 }
 
 const mockUseAudioAnalyzer = vi.fn(() => ({
-  state: baseState,
+  isActive: false,
+  isVoiceActive: false,
+  audioDataRef: { current: baseAudioData },
   activate: mockActivate,
   deactivate: mockDeactivate,
 }))
@@ -37,7 +38,9 @@ describe('AudioReactiveVisual', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseAudioAnalyzer.mockReturnValue({
-      state: baseState,
+      isActive: false,
+      isVoiceActive: false,
+      audioDataRef: { current: baseAudioData },
       activate: mockActivate,
       deactivate: mockDeactivate,
     })
@@ -107,7 +110,9 @@ describe('AudioReactiveVisual', () => {
 
   it('활성 상태에서 정지 버튼이 표시된다', () => {
     mockUseAudioAnalyzer.mockReturnValue({
-      state: { ...baseState, isActive: true },
+      isActive: true,
+      isVoiceActive: false,
+      audioDataRef: { current: baseAudioData },
       activate: mockActivate,
       deactivate: mockDeactivate,
     })
@@ -118,7 +123,9 @@ describe('AudioReactiveVisual', () => {
 
   it('정지 버튼 클릭 시 deactivate를 호출한다', () => {
     mockUseAudioAnalyzer.mockReturnValue({
-      state: { ...baseState, isActive: true },
+      isActive: true,
+      isVoiceActive: false,
+      audioDataRef: { current: baseAudioData },
       activate: mockActivate,
       deactivate: mockDeactivate,
     })
@@ -129,7 +136,9 @@ describe('AudioReactiveVisual', () => {
 
   it('활성 상태에서 active-indicator가 표시된다', () => {
     mockUseAudioAnalyzer.mockReturnValue({
-      state: { ...baseState, isActive: true },
+      isActive: true,
+      isVoiceActive: false,
+      audioDataRef: { current: baseAudioData },
       activate: mockActivate,
       deactivate: mockDeactivate,
     })
