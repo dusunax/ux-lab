@@ -312,20 +312,12 @@
       <div class="two-col" style="align-items:start; gap:36px; margin-top:12px;">
         <!-- 왼쪽: 이월 항목 -->
         <div>
-          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">이월 항목 (3개) <span class="badge badge-yellow">실기기 확인 필요</span></p>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">이월 항목 (1개) <span class="badge badge-yellow">Sprint/3+ 검토</span></p>
           <table class="rollover-table">
             <tbody>
               <tr>
-                <td>MediaPipe 추론 레이턴시 측정 — Web Worker 오프로딩 설계 검토</td>
+                <td>MediaPipe 추론 레이턴시 측정 — 메인 스레드 영향 평가 및 Web Worker 오프로딩 설계 검토</td>
                 <td><span class="role-label">PERF</span></td>
-              </tr>
-              <tr>
-                <td>수용 기준 전체 항목 검증 (Demo D 동작, 어댑터 적용)</td>
-                <td><span class="role-label">QA</span></td>
-              </tr>
-              <tr>
-                <td>모션 입력 지연 검증</td>
-                <td><span class="role-label">QA</span></td>
               </tr>
             </tbody>
           </table>
@@ -368,11 +360,16 @@
     <div class="slide-inner">
       <div class="slide-label">데모</div>
       <h2 class="slide-title">Demo D — Hand Reactive 실행 화면</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:12px;align-items:start;">
         <div style="text-align:center;">
           <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">1손 모드 — 브라우저</div>
           <img src="./sprint-projection-art-2/shot-demo-d-hand.png" alt="Demo D 1손 모드" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;background:#000;" />
           <p style="font-size:11px;color:#9ca3af;margin-top:5px;">MediaPipe Hands · 21 관절 · 골격선 + 파티클 트레일</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">FPS 통계 — 실기기</div>
+          <img src="./sprint-projection-art-2/shot-fps-stats.png" alt="FPS 100 avg 95 min 50" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;background:#000;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">avg 95 · min 50 · inference ~10ms</p>
         </div>
         <div style="text-align:center;">
           <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">양손 모드 — 프로젝터 시연</div>
