@@ -111,7 +111,7 @@ function App() {
         {activeDemo === 'particle-flow' && <ParticleFlow mousePos={mousePos} />}
         {activeDemo === 'neon-tunnel' && <NeonTunnel mousePos={mousePos} />}
         {activeDemo === 'audio-reactive' && <AudioReactiveVisual mousePos={mousePos} />}
-        {activeDemo === 'hand-reactive' && <HandReactive mousePos={mousePos} />}
+        {activeDemo === 'hand-reactive' && <HandReactive />}
       </Suspense>
       </KeystoneOverlay>
 

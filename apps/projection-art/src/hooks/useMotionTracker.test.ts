@@ -19,7 +19,6 @@ const mockGetUserMedia = vi.fn()
 
 beforeEach(() => {
   vi.clearAllMocks()
-  // vi.stubGlobal patches navigator safely across test environments
   vi.stubGlobal('navigator', {
     ...globalThis.navigator,
     mediaDevices: { getUserMedia: mockGetUserMedia },
@@ -38,20 +37,13 @@ describe('useMotionTracker', () => {
   it('starts in idle state', () => {
     const { result } = renderHook(() => useMotionTracker())
     expect(result.current.state.status).toBe('idle')
-    expect(result.current.state.points).toHaveLength(0)
+    expect(result.current.state.hands).toHaveLength(0)
   })
 
   it('transitions to requesting when requestCamera is called', () => {
     const { result } = renderHook(() => useMotionTracker())
     act(() => { result.current.requestCamera() })
     expect(result.current.state.status).toBe('requesting')
-  })
-
-  it('transitions to fallback when useFallback is called', () => {
-    const { result } = renderHook(() => useMotionTracker())
-    act(() => { result.current.useFallback() })
-    expect(result.current.state.status).toBe('fallback')
-    expect(result.current.state.points).toHaveLength(0)
   })
 
   it('transitions to error when getUserMedia throws', async () => {
@@ -68,11 +60,10 @@ describe('useMotionTracker', () => {
     expect(result.current.state.status).toBe('active')
   })
 
-  it('updates points when landmarks detected', async () => {
+  it('updates hands when landmarks detected', async () => {
     const fakeLandmarks = Array.from({ length: 21 }, (_, i) => ({ x: i * 0.05, y: 0.5 }))
     mockDetectForVideo.mockReturnValue({ landmarks: [fakeLandmarks] })
 
-    // rAF doesn't auto-fire in jsdom — run the callback synchronously once
     vi.spyOn(global, 'requestAnimationFrame').mockImplementationOnce(cb => {
       cb(performance.now())
       return 1
@@ -80,7 +71,7 @@ describe('useMotionTracker', () => {
 
     const { result } = renderHook(() => useMotionTracker())
     await act(async () => { await result.current.requestCamera() })
-    expect(result.current.state.points).toHaveLength(21)
-    expect(result.current.state.points[0].id).toBe('WRIST')
+    expect(result.current.state.hands[0]).toHaveLength(21)
+    expect(result.current.state.hands[0][0].id).toBe('WRIST')
   })
 })

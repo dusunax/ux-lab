@@ -4,34 +4,35 @@ import { WebcamPermission } from './WebcamPermission'
 
 describe('WebcamPermission', () => {
   it('renders permission overlay in idle state', () => {
-    render(<WebcamPermission status="idle" onAllow={vi.fn()} onSkip={vi.fn()} />)
+    render(<WebcamPermission status="idle" onAllow={vi.fn()} />)
     expect(screen.getByTestId('webcam-permission')).toBeInTheDocument()
     expect(screen.getByTestId('webcam-allow-btn')).toBeInTheDocument()
-    expect(screen.getByTestId('webcam-skip-btn')).toBeInTheDocument()
+    expect(screen.queryByTestId('webcam-skip-btn')).not.toBeInTheDocument()
   })
 
   it('calls onAllow when camera button clicked', () => {
     const onAllow = vi.fn()
-    render(<WebcamPermission status="idle" onAllow={onAllow} onSkip={vi.fn()} />)
+    render(<WebcamPermission status="idle" onAllow={onAllow} />)
     fireEvent.click(screen.getByTestId('webcam-allow-btn'))
     expect(onAllow).toHaveBeenCalledOnce()
   })
 
-  it('calls onSkip when skip button clicked', () => {
-    const onSkip = vi.fn()
-    render(<WebcamPermission status="idle" onAllow={vi.fn()} onSkip={onSkip} />)
-    fireEvent.click(screen.getByTestId('webcam-skip-btn'))
-    expect(onSkip).toHaveBeenCalledOnce()
-  })
-
   it('shows loading spinner in requesting state (no action buttons)', () => {
-    render(<WebcamPermission status="requesting" onAllow={vi.fn()} onSkip={vi.fn()} />)
+    render(<WebcamPermission status="requesting" onAllow={vi.fn()} />)
     expect(screen.queryByTestId('webcam-allow-btn')).not.toBeInTheDocument()
   })
 
-  it('shows skip button only in error state', () => {
-    render(<WebcamPermission status="error" onAllow={vi.fn()} onSkip={vi.fn()} />)
-    expect(screen.queryByTestId('webcam-allow-btn')).not.toBeInTheDocument()
-    expect(screen.getByTestId('webcam-skip-btn')).toBeInTheDocument()
+  it('shows retry button in error state with no skip option', () => {
+    render(<WebcamPermission status="error" onAllow={vi.fn()} />)
+    expect(screen.getByTestId('webcam-allow-btn')).toBeInTheDocument()
+    expect(screen.getByTestId('webcam-allow-btn')).toHaveTextContent('다시 시도')
+    expect(screen.queryByTestId('webcam-skip-btn')).not.toBeInTheDocument()
+  })
+
+  it('calls onAllow when retry button clicked in error state', () => {
+    const onAllow = vi.fn()
+    render(<WebcamPermission status="error" onAllow={onAllow} />)
+    fireEvent.click(screen.getByTestId('webcam-allow-btn'))
+    expect(onAllow).toHaveBeenCalledOnce()
   })
 })

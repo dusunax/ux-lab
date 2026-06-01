@@ -1,31 +1,28 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useMotionTracker } from '../../hooks/useMotionTracker'
 import { WebcamPermission } from '../../components/WebcamPermission'
-import { mouseToPoints } from '../../adapters/interactionAdapters'
-import type { MousePosition } from '../../types'
 
 const HandScene = lazy(() =>
   import('./HandScene').then(m => ({ default: m.HandScene }))
 )
 
-interface HandReactiveProps {
-  mousePos: MousePosition
-}
+export function HandReactive() {
+  const [numHands, setNumHands] = useState<1 | 2>(1)
+  const { state, requestCamera } = useMotionTracker({ numHands })
 
-export function HandReactive({ mousePos }: HandReactiveProps) {
-  const { state, requestCamera, useFallback } = useMotionTracker()
+  const cameraActiveRef = useRef(false)
+  useEffect(() => {
+    cameraActiveRef.current = state.status === 'active'
+  }, [state.status])
 
-  const points =
-    state.status === 'active' && state.points.length > 0
-      ? state.points
-      : mouseToPoints(mousePos)
+  // Restart detection with new numHands when user toggles while active
+  useEffect(() => {
+    if (cameraActiveRef.current) requestCamera()
+  }, [numHands, requestCamera])
 
-  const showPermissionOverlay =
-    state.status === 'idle' ||
-    state.status === 'requesting' ||
-    state.status === 'loading' ||
-    state.status === 'error'
+  const hands = state.status === 'active' ? state.hands : []
+  const showOverlay = state.status !== 'active'
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -35,34 +32,54 @@ export function HandReactive({ mousePos }: HandReactiveProps) {
         dpr={[1, 2]}
       >
         <Suspense fallback={null}>
-          <HandScene points={points} />
+          <HandScene hands={hands} />
         </Suspense>
       </Canvas>
 
-      {showPermissionOverlay && (
+      {showOverlay && (
         <WebcamPermission
           status={state.status}
           onAllow={requestCamera}
-          onSkip={useFallback}
         />
       )}
 
-      {/* 상태 표시 */}
-      {(state.status === 'active' || state.status === 'fallback') && (
+      {state.status === 'active' && (
         <div
           data-testid="tracker-status"
           style={{
             position: 'absolute',
             bottom: '1rem',
             right: '1rem',
-            fontSize: '0.72rem',
-            color: state.status === 'active' ? 'rgba(0,255,100,0.7)' : 'rgba(255,255,255,0.3)',
-            fontFamily: 'monospace',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '0.5rem',
           }}
         >
-          {state.status === 'active'
-            ? `✋ Hand tracking · ${state.points.length} landmarks`
-            : '🖱 Mouse fallback'}
+          <div style={{ fontSize: '0.72rem', color: 'rgba(0,255,100,0.7)', fontFamily: 'monospace' }}>
+            {`✋ Hand tracking · ${state.hands.length}/${numHands}손 감지`}
+          </div>
+          <div style={{ display: 'flex', gap: '0.4rem' }}>
+            {([1, 2] as const).map(n => (
+              <button
+                key={n}
+                data-testid={`hand-mode-${n}`}
+                onClick={() => setNumHands(n)}
+                style={{
+                  background: numHands === n ? 'rgba(0,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                  color: numHands === n ? '#0ff' : '#555',
+                  border: `1px solid ${numHands === n ? 'rgba(0,255,255,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '3px',
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                  fontFamily: 'monospace',
+                }}
+              >
+                {n}손
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
