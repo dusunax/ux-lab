@@ -142,72 +142,7 @@
     </div>
   </div>
 
-  <!-- Slide 3: 완료 항목 — FE 구현 -->
-  <div class="slide">
-    <div class="slide-inner">
-      <div class="slide-label">COMPLETED</div>
-      <h2 class="slide-title">
-        완료 항목 (1/2) — FE 구현
-        <span class="badge badge-yellow" style="margin-left:12px;font-size:13px;">66% (8/12)</span>
-      </h2>
-      <ul class="check-list" style="margin-top:16px;">
-        <li>
-          <span class="done">Demo D: MediaPipe Hands + Three.js 기반 신체 반응형 비주얼</span>
-          <br><span style="font-size:12px;color:#6b7280;margin-left:24px;"><code>HandReactive</code>, <code>HandScene</code> 컴포넌트</span>
-        </li>
-        <li>
-          <span class="done"><code>useMotionTracker</code> 커스텀 훅</span>
-          <br><span style="font-size:12px;color:#6b7280;margin-left:24px;">idle → requesting → loading → active 상태 기계</span>
-        </li>
-        <li>
-          <span class="done">웹캠 권한 요청 UI</span>
-          <br><span style="font-size:12px;color:#6b7280;margin-left:24px;">카메라 불가 시 기능 동작 안됨 표시</span>
-        </li>
-        <li>
-          <span class="done">인터랙션 어댑터 추상화</span>
-          <br><span style="font-size:12px;color:#6b7280;margin-left:24px;"><code>InteractionPoint[]</code> 통일 인터페이스, <code>mouseToPoints</code> / <code>landmarksToPoints</code></span>
-        </li>
-        <li>
-          <span class="done">프로젝션 키스톤 보정 UI</span>
-          <br><span style="font-size:12px;color:#6b7280;margin-left:24px;">CSS <code>matrix3d</code> 4코너 드래그, localStorage 저장</span>
-        </li>
-        <li>
-          <span class="done">한손/양손 모드</span>
-          <br><span style="font-size:12px;color:#6b7280;margin-left:24px;"><code>MotionTrackerOptions({ numHands: 1|2 })</code>, <code>state.hands: InteractionPoint[][]</code>, 손별 색상 분리 렌더링</span>
-        </li>
-      </ul>
-      <div class="slide-counter"></div>
-    </div>
-  </div>
-
-  <!-- Slide 4: 완료 항목 — 테스트 & 추가 구현 -->
-  <div class="slide">
-    <div class="slide-inner">
-      <div class="slide-label">COMPLETED</div>
-      <h2 class="slide-title">완료 항목 (2/2) — 테스트 &amp; 추가 구현</h2>
-      <ul class="check-list" style="margin-top:16px;">
-        <li>
-          <span class="done"><code>useMotionTracker</code> 훅 단위 테스트 (웹캠 mock)</span>
-          <span class="badge badge-green" style="margin-left:8px;font-size:12px;">5 tests</span>
-        </li>
-        <li>
-          <span class="done">어댑터 인터페이스 단위 테스트</span>
-          <span class="badge badge-green" style="margin-left:8px;font-size:12px;">6 tests</span>
-        </li>
-        <li>
-          <span class="done"><code>pnpm test</code> 전체 0 failures</span>
-          <span class="badge badge-green" style="margin-left:8px;font-size:12px;">103 tests / 13 files</span>
-        </li>
-      </ul>
-      <div class="callout" style="margin-top:24px;">
-        <strong style="font-size:13px;color:#217346;">이번 세션 추가 구현</strong><br>
-        <span style="font-size:13.5px;">한손/양손 모드 (<code>numHands: 1|2</code>) — 활성 중 numHands 변경 시 카메라 자동 재시작, 손별 색상 분리 렌더링</span>
-      </div>
-      <div class="slide-counter"></div>
-    </div>
-  </div>
-
-  <!-- Slide 5: 주요 결정 사항 -->
+  <!-- Slide 3: 주요 결정 사항 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">DECISIONS</div>
@@ -251,7 +186,7 @@
     </div>
   </div>
 
-  <!-- Slide 6: 기술 현황 -->
+  <!-- Slide 4: 기술 현황 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">TECH STACK</div>
@@ -299,6 +234,36 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">COMPLETED</div>
+      <h2 class="slide-title">
+        완료 항목
+        <span class="badge badge-green" style="margin-left:12px;font-size:13px;">18/18 · 100%</span>
+      </h2>
+      <div class="two-col" style="margin-top:12px;gap:32px;align-items:start;">
+        <ul class="check-list">
+          <li><span class="done">Demo D: MediaPipe Hands + Three.js 신체 반응형 비주얼</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;"><code>HandReactive</code>, <code>HandScene</code></span></li>
+          <li><span class="done"><code>useMotionTracker</code> 커스텀 훅</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">idle → requesting → loading → active 상태 기계</span></li>
+          <li><span class="done">웹캠 권한 요청 UI</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">카메라 불가 시 기능 동작 안됨 표시</span></li>
+          <li><span class="done">인터랙션 어댑터 추상화</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;"><code>InteractionPoint[][]</code> 통일 인터페이스</span></li>
+          <li><span class="done">프로젝션 키스톤 보정 UI</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">CSS <code>matrix3d</code> 4코너 드래그 · localStorage</span></li>
+          <li><span class="done">한손/양손 모드</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;"><code>numHands: 1|2</code> · 손별 색상 분리 렌더링</span></li>
+        </ul>
+        <ul class="check-list">
+          <li><span class="done"><code>useMotionTracker</code> 훅 단위 테스트</span> <span class="badge badge-green" style="font-size:11px;">5 tests</span></li>
+          <li><span class="done">어댑터 인터페이스 단위 테스트</span> <span class="badge badge-green" style="font-size:11px;">6 tests</span></li>
+          <li><span class="done"><code>pnpm test</code> 전체 0 failures</span> <span class="badge badge-green" style="font-size:11px;">103 tests</span></li>
+          <li><span class="done">60fps 유지 재검증 (연속 5분+)</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">실기기 프로젝터 시연 확인 완료</span></li>
+          <li><span class="done">MediaPipe 추론 레이턴시 측정</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">avg 7~9ms · Web Worker 불필요 확인</span></li>
+          <li><span class="done">수용 기준 전체 + 모션 지연 검증</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">실기기 시연 양호 확인 완료</span></li>
+        </ul>
       </div>
       <div class="slide-counter"></div>
     </div>
@@ -353,22 +318,23 @@
     <div class="slide-inner">
       <div class="slide-label">데모</div>
       <h2 class="slide-title">Demo D — Hand Reactive 실행 화면</h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:12px;align-items:start;">
+      <!-- 상단: 1손 / 양손 50:50 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
         <div style="text-align:center;">
           <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">1손 모드 — 브라우저</div>
           <img src="./sprint-projection-art-2/shot-demo-d-hand.png" alt="Demo D 1손 모드" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;background:#000;" />
           <p style="font-size:11px;color:#9ca3af;margin-top:5px;">MediaPipe Hands · 21 관절 · 골격선 + 파티클 트레일</p>
         </div>
         <div style="text-align:center;">
-          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">FPS 통계 — 실기기</div>
-          <img src="./sprint-projection-art-2/shot-fps-stats.png" alt="FPS 100 avg 95 min 50" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;background:#000;" />
-          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">avg 95 · min 50 · inference ~10ms</p>
-        </div>
-        <div style="text-align:center;">
           <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">양손 모드 — 프로젝터 시연</div>
           <img src="./sprint-projection-art-2/shot-demo-d-video-3s.png" alt="Demo D 양손 모드 프로젝터" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
           <p style="font-size:11px;color:#9ca3af;margin-top:5px;">양손 독립 추적 · 손별 색상 분리 (cyan / warm) · 실기기 확인</p>
         </div>
+      </div>
+      <!-- 하단: FPS 통계 작게 -->
+      <div style="margin-top:10px;display:flex;align-items:center;gap:12px;">
+        <img src="./sprint-projection-art-2/shot-fps-stats.png" alt="FPS 100 avg 95 min 50" style="height:52px;border-radius:5px;border:1px solid #e5e7eb;background:#000;" />
+        <p style="font-size:11px;color:#9ca3af;margin:0;">FPS 통계 · avg 95 · min 50 · inference ~8ms</p>
       </div>
       <div class="slide-counter"></div>
     </div>
