@@ -22,6 +22,7 @@
 | 파일 | 스프린트 | 날짜 | 주요 결정 |
 |------|----------|------|-----------|
 | [projection-art/2026-05-29-sprint-1-kickoff.md](./projection-art/2026-05-29-sprint-1-kickoff.md) | Sprint projection-art/1 킥오프 | 2026-05-29 | React + TypeScript 기반 인터랙티브 프로젝션 아트 PoC 구현 |
+| [projection-art/2026-06-01-sprint-2-kickoff.md](./projection-art/2026-06-01-sprint-2-kickoff.md) | Sprint projection-art/2 킥오프 | 2026-06-01 | MediaPipe 웹캠 모션 인터랙션 도입 + Demo D 구현 |
 
 ---
 
