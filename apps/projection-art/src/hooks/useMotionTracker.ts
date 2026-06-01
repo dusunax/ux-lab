@@ -85,7 +85,6 @@ export function useMotionTracker(options?: MotionTrackerOptions) {
         if (!mountedRef.current || !videoRef.current || !landmarkerRef.current) return
         const t0 = performance.now()
         const result = landmarkerRef.current.detectForVideo(videoRef.current, t0)
-        console.debug('[MediaPipe] inference', (performance.now() - t0).toFixed(1), 'ms')
         const hands = result.landmarks
           .map(lm => lm.length > 0 ? landmarksToPoints(lm) : [])
           .filter(h => h.length === 21)
