@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint projection-art/2 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* projection-art/2 전용 추가 스타일 */
+    .done { color: #217346; font-weight: 600; }
+
+    .role-label {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .risk-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fffbeb;
+      border-left: 3px solid #f0b429;
+      padding: 10px 14px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .risk-note .risk-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .risk-note strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 2px;
+    }
+
+    .arch-flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-top: 4px;
+    }
+    .arch-flow .arch-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .arch-flow .arch-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #215c3c;
+      min-width: 150px;
+      text-align: center;
+    }
+    .arch-flow .arch-arrow {
+      font-size: 18px;
+      color: #217346;
+      font-weight: 700;
+      text-align: center;
+      padding: 2px 0;
+    }
+    .arch-flow .arch-note {
+      font-size: 11.5px;
+      color: #6b7280;
+    }
+
+    .rollover-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .rollover-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: top;
+    }
+    .rollover-table td:first-child {
+      font-weight: 600;
+      color: #374151;
+      width: 60%;
+    }
+    .rollover-table td:last-child {
+      color: #6b7280;
+      font-size: 12px;
+    }
+
+    .check-list li.done-item::before {
+      content: "✓";
+      color: #217346;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">SPRINT REPORT</div>
+        <h1 class="cover-title">Sprint projection-art/2</h1>
+        <p class="cover-sub">웹캠 기반 모션 인터랙션 도입</p>
+        <p class="cover-meta">2026-06-01 | projection-art | 수산시장</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Sprint 목표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">OBJECTIVE</div>
+      <h2 class="slide-title">Sprint 목표</h2>
+      <blockquote class="goal-quote">
+        웹캠 기반 모션 인터랙션 도입 — <strong>MediaPipe</strong>로 신체 움직임을 감지하여
+        <strong>Demo D</strong>를 구현하고, 기존 3종 데모의 인터랙션 레이어를
+        <strong>어댑터 패턴</strong>으로 추상화한다.
+      </blockquote>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">DECISIONS</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr>
+            <th style="width:5%;">#</th>
+            <th style="width:35%;">결정 내용</th>
+            <th>상세</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>MediaPipe Hands 모델 채택</strong></td>
+            <td style="font-size:13px;color:#374151;">
+              손 관절 21개, 낮은 레이턴시로 60fps 유지에 유리.<br>
+              Pose 전신 모델(33관절)은 Sprint/3+ 이연.
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>인터랙션 어댑터: 멀티포인트 배열</strong></td>
+            <td style="font-size:13px;color:#374151;">
+              <code>InteractionPoint[]</code> 통일 인터페이스.<br>
+              기존 데모는 <code>points[0]</code> 최소 수정으로 호환.
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>키스톤 보정: CSS perspective + <code>matrix3d</code></strong></td>
+            <td style="font-size:13px;color:#374151;">
+              4코너 드래그 방식, localStorage 영속 저장.<br>
+              Canvas 호모그래피는 Sprint/3+ 이연.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 기술 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">TECH STACK</div>
+      <h2 class="slide-title">기술 현황</h2>
+      <div class="two-col" style="align-items:start; gap:36px; margin-top:12px;">
+        <!-- 왼쪽: 스택 목록 -->
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">스택</p>
+          <ul class="bullet-list" style="font-size:13.5px;">
+            <li>Vite + React 18 + TypeScript</li>
+            <li><code>@react-three/fiber</code> (Three.js R3F)</li>
+            <li><code>@mediapipe/tasks-vision</code> — HandLandmarker, CDN WASM</li>
+            <li>Vitest — 103 tests, 13 test files</li>
+            <li>CSS <code>matrix3d</code> 키스톤 보정 (localStorage 저장)</li>
+            <li>한손/양손 모드 전환 UI</li>
+          </ul>
+        </div>
+        <!-- 오른쪽: 아키텍처 흐름 -->
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">아키텍처 흐름</p>
+          <div class="arch-flow">
+            <div class="arch-step">
+              <div class="arch-box">웹캠 (getUserMedia)</div>
+              <span class="arch-note">카메라 권한 → 스트림 취득</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">MediaPipe Hands</div>
+              <span class="arch-note">HandLandmarker · CDN WASM</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">어댑터 레이어</div>
+              <span class="arch-note"><code>landmarksToPoints()</code> → <code>InteractionPoint[]</code></span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">Three.js R3F</div>
+              <span class="arch-note">Demo D — HandReactive / HandScene</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">CSS matrix3d</div>
+              <span class="arch-note">키스톤 보정 · localStorage 영속</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">COMPLETED</div>
+      <h2 class="slide-title">
+        완료 항목
+        <span class="badge badge-green" style="margin-left:12px;font-size:13px;">18/18 · 100%</span>
+      </h2>
+      <div class="two-col" style="margin-top:12px;gap:32px;align-items:start;">
+        <ul class="check-list">
+          <li><span class="done">Demo D: MediaPipe Hands + Three.js 신체 반응형 비주얼</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;"><code>HandReactive</code>, <code>HandScene</code></span></li>
+          <li><span class="done"><code>useMotionTracker</code> 커스텀 훅</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">idle → requesting → loading → active 상태 기계</span></li>
+          <li><span class="done">웹캠 권한 요청 UI</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">카메라 불가 시 기능 동작 안됨 표시</span></li>
+          <li><span class="done">인터랙션 어댑터 추상화</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;"><code>InteractionPoint[][]</code> 통일 인터페이스</span></li>
+          <li><span class="done">프로젝션 키스톤 보정 UI</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">CSS <code>matrix3d</code> 4코너 드래그 · localStorage</span></li>
+          <li><span class="done">한손/양손 모드</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;"><code>numHands: 1|2</code> · 손별 색상 분리 렌더링</span></li>
+        </ul>
+        <ul class="check-list">
+          <li><span class="done"><code>useMotionTracker</code> 훅 단위 테스트</span> <span class="badge badge-green" style="font-size:11px;">5 tests</span></li>
+          <li><span class="done">어댑터 인터페이스 단위 테스트</span> <span class="badge badge-green" style="font-size:11px;">6 tests</span></li>
+          <li><span class="done"><code>pnpm test</code> 전체 0 failures</span> <span class="badge badge-green" style="font-size:11px;">103 tests</span></li>
+          <li><span class="done">60fps 유지 재검증 (연속 5분+)</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">실기기 프로젝터 시연 확인 완료</span></li>
+          <li><span class="done">MediaPipe 추론 레이턴시 측정</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">avg 7~9ms · Web Worker 불필요 확인</span></li>
+          <li><span class="done">수용 기준 전체 + 모션 지연 검증</span><br><span style="font-size:11.5px;color:#6b7280;margin-left:24px;">실기기 시연 양호 확인 완료</span></li>
+        </ul>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 이월 항목 + 리스크 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">ROLLOVER</div>
+      <h2 class="slide-title">이월 항목 &amp; 리스크</h2>
+      <div class="two-col" style="align-items:start; gap:36px; margin-top:12px;">
+        <!-- 왼쪽: 이월 항목 -->
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#217346;margin-bottom:10px;text-transform:uppercase;">이월 항목 없음 🎉</p>
+          <p style="font-size:13px;color:#6b7280;">MediaPipe 추론 레이턴시 avg 7~9ms — 프레임 예산 내 허용 범위 확인. Web Worker 오프로딩 불필요.</p>
+        </div>
+        <!-- 오른쪽: 리스크 -->
+        <div>
+          <p style="font-weight:600;font-size:13px;color:#555;margin-bottom:10px;text-transform:uppercase;">리스크</p>
+          <div class="risk-note">
+            <span class="risk-icon">&#9888;</span>
+            <div>
+              <strong>MediaPipe 추론 레이턴시</strong>
+              모델 추론이 메인 스레드에서 실행될 경우 60fps 목표와 충돌 가능.<br>
+              Web Worker 오프로딩 검토 필요.
+            </div>
+          </div>
+          <div class="risk-note">
+            <span class="risk-icon">&#9888;</span>
+            <div>
+              <strong>웹캠 + WebGL 동시 부하</strong>
+              두 GPU 집약 작업 동시 실행 시 프레임 드랍 가능성.<br>
+              <span class="done">✓ 실기기 프로젝터 시연으로 5분 이상 연속 동작 확인 완료.</span>
+            </div>
+          </div>
+          <div class="risk-note">
+            <span class="risk-icon">&#9888;</span>
+            <div>
+              <strong>HTTPS 환경 필요</strong>
+              카메라 접근에 HTTPS 필수 — 개발 서버 localhost만 예외 허용.<br>
+              배포 환경에서 반드시 확인.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Demo D 실행 화면 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">Demo D — Hand Reactive 실행 화면</h2>
+      <!-- 상단: 1손 / 양손 50:50 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">1손 모드 — 브라우저</div>
+          <img src="./sprint-projection-art-2/shot-demo-d-hand.png" alt="Demo D 1손 모드" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;background:#000;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">MediaPipe Hands · 21 관절 · 골격선 + 파티클 트레일</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">양손 모드 — 프로젝터 시연</div>
+          <img src="./sprint-projection-art-2/shot-demo-d-video-3s.png" alt="Demo D 양손 모드 프로젝터" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">양손 독립 추적 · 손별 색상 분리 (cyan / warm) · 실기기 확인</p>
+        </div>
+      </div>
+      <!-- 하단: FPS 통계 작게 -->
+      <div style="margin-top:10px;display:flex;align-items:center;gap:12px;justify-content:flex-start;">
+        <p style="font-size:11px;color:#9ca3af;margin:0 0 0 20px;">FPS 통계 · avg 95 · min 50 · inference ~8ms</p>
+        <img src="./sprint-projection-art-2/shot-fps-stats.png" alt="FPS 100 avg 95 min 50" style="width:200px;border-radius:5px;border:1px solid #e5e7eb;background:#000;display:block;margin-top:-20px;" />
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: 프로젝터 시연 현장 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">실기기</div>
+      <h2 class="slide-title">프로젝터 시연 현장</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">양손 인식 시작</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-2/shot-demo-d-video-3s.png" alt="양손 인식 시작" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">3s</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">양손 관절 감지 · 골격선 활성화</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">파티클 트레일 풀 동작</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-2/shot-demo-d-video-10s.png" alt="파티클 트레일 풀 동작" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">10s</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">5 핑거팁 × 2손 = 10 트레일 · TRAIL_LENGTH 24</p>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">손 이동 궤적</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-2/shot-demo-d-video-18s.png" alt="손 이동 궤적" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">18s</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">이동 중 잔상 · warm 색상 오른손 궤적</p>
+        </div>
+      </div>
+      <div style="margin-top:12px;text-align:center;font-size:11.5px;color:#6b7280;">
+        실내 암실 환경 · 프로젝터 직결 · 양손 모드 5분 이상 연속 동작 확인
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>projection-art · Sprint projection-art/2</span>
+        <span>2026-06-01</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

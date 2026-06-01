@@ -1,9 +1,15 @@
-export type DemoType = 'particle-flow' | 'neon-tunnel' | 'audio-reactive'
+export type DemoType = 'particle-flow' | 'neon-tunnel' | 'audio-reactive' | 'hand-reactive'
 
 export interface DemoInfo {
   id: DemoType
   label: string
   description: string
+}
+
+export interface InteractionPoint {
+  x: number // 0–1 normalized screen coordinate
+  y: number
+  id?: string
 }
 
 export const DEMOS: DemoInfo[] = [
@@ -21,6 +27,11 @@ export const DEMOS: DemoInfo[] = [
     id: 'audio-reactive',
     label: 'Demo C — Audio Reactive',
     description: '음악과 마우스 입력이 결합된 오디오 반응형 비주얼',
+  },
+  {
+    id: 'hand-reactive',
+    label: 'Demo D — Hand Reactive',
+    description: '웹캠 손 추적(MediaPipe Hands)으로 Three.js 파티클 비주얼 제어',
   },
 ]
 
