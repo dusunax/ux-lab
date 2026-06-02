@@ -104,6 +104,8 @@ function gaussSolve(A: number[][], b: number[]): number[] | null {
   return M.map(row => row[n])
 }
 
+export type KeystoneMode = 'css' | 'homography'
+
 interface KeystoneOverlayProps {
   visible: boolean
   children: React.ReactNode
@@ -111,7 +113,19 @@ interface KeystoneOverlayProps {
 
 type CornerKey = keyof Corners
 
+const MODE_STORAGE_KEY = 'projection-art-keystone-mode'
+
+function loadMode(): KeystoneMode {
+  try {
+    const v = localStorage.getItem(MODE_STORAGE_KEY)
+    return v === 'homography' ? 'homography' : 'css'
+  } catch {
+    return 'css'
+  }
+}
+
 export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
+  const [mode, setMode] = useState<KeystoneMode>(loadMode)
   const [corners, setCorners] = useState<Corners>(loadCorners)
   const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight })
   const containerRef = useRef<HTMLDivElement>(null)
@@ -126,6 +140,10 @@ export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(corners))
   }, [corners])
+
+  useEffect(() => {
+    localStorage.setItem(MODE_STORAGE_KEY, mode)
+  }, [mode])
 
   const onMouseDown = useCallback((key: CornerKey) => (e: React.MouseEvent) => {
     e.preventDefault()
@@ -153,7 +171,7 @@ export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
     }
   }, [])
 
-  const matrix = cornersToMatrix3d(corners, size.w, size.h)
+  const cssMatrix = cornersToMatrix3d(corners, size.w, size.h)
 
   const CORNER_POSITIONS: Record<CornerKey, React.CSSProperties> = {
     tl: { top: 0, left: 0, transform: 'translate(-50%,-50%)' },
@@ -170,7 +188,7 @@ export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
           width: '100%',
           height: '100%',
           transformOrigin: '50% 50%',
-          transform: matrix,
+          transform: mode === 'css' ? cssMatrix : 'none',
         }}
       >
         {children}
@@ -181,7 +199,41 @@ export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
           data-testid="keystone-handles"
           style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
         >
-          {(Object.keys(CORNER_POSITIONS) as CornerKey[]).map(key => (
+          {/* Mode toggle */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              gap: '0.5rem',
+              pointerEvents: 'auto',
+            }}
+          >
+            {(['css', 'homography'] as KeystoneMode[]).map(m => (
+              <button
+                key={m}
+                data-testid={`keystone-mode-${m}`}
+                onClick={() => setMode(m)}
+                style={{
+                  background: mode === m ? 'rgba(0,255,255,0.2)' : 'rgba(255,255,255,0.05)',
+                  color: mode === m ? '#0ff' : '#777',
+                  border: `1px solid ${mode === m ? 'rgba(0,255,255,0.5)' : 'rgba(255,255,255,0.15)'}`,
+                  padding: '0.25rem 0.7rem',
+                  borderRadius: '3px',
+                  fontSize: '0.72rem',
+                  cursor: 'pointer',
+                  fontFamily: 'monospace',
+                }}
+              >
+                {m === 'css' ? 'CSS matrix3d' : 'Canvas 호모그래피'}
+              </button>
+            ))}
+          </div>
+
+          {/* Corner drag handles (CSS mode only) */}
+          {mode === 'css' && (Object.keys(CORNER_POSITIONS) as CornerKey[]).map(key => (
             <div
               key={key}
               data-testid={`keystone-handle-${key}`}
@@ -200,6 +252,25 @@ export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
               }}
             />
           ))}
+
+          {mode === 'homography' && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '3.5rem',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                color: 'rgba(255,200,100,0.7)',
+                fontSize: '0.72rem',
+                fontFamily: 'monospace',
+                pointerEvents: 'none',
+                textAlign: 'center',
+              }}
+            >
+              Canvas 호모그래피 모드 — CSS matrix3d와 동일 4코너 보정값 사용
+            </div>
+          )}
+
           <div
             style={{
               position: 'absolute',
@@ -211,7 +282,7 @@ export function KeystoneOverlay({ visible, children }: KeystoneOverlayProps) {
               pointerEvents: 'none',
             }}
           >
-            코너를 드래그해서 키스톤 보정 · K — 닫기
+            {mode === 'css' ? '코너를 드래그해서 키스톤 보정' : '호모그래피 모드 선택됨'} · K — 닫기
           </div>
         </div>
       )}

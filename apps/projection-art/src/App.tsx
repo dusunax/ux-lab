@@ -19,6 +19,9 @@ const AudioReactiveVisual = lazy(() =>
 const HandReactive = lazy(() =>
   import('./demos/HandReactive/HandReactive').then(m => ({ default: m.HandReactive }))
 )
+const PoseReactive = lazy(() =>
+  import('./demos/PoseReactive/PoseReactive').then(m => ({ default: m.PoseReactive }))
+)
 
 function DemoFallback() {
   return (
@@ -89,6 +92,7 @@ function App() {
       if (e.key === '2') setActiveDemo('neon-tunnel')
       if (e.key === '3') setActiveDemo('audio-reactive')
       if (e.key === '4') setActiveDemo('hand-reactive')
+      if (e.key === '5') setActiveDemo('pose-reactive')
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -112,6 +116,7 @@ function App() {
         {activeDemo === 'neon-tunnel' && <NeonTunnel mousePos={mousePos} />}
         {activeDemo === 'audio-reactive' && <AudioReactiveVisual mousePos={mousePos} />}
         {activeDemo === 'hand-reactive' && <HandReactive />}
+        {activeDemo === 'pose-reactive' && <PoseReactive />}
       </Suspense>
       </KeystoneOverlay>
 
@@ -222,7 +227,7 @@ function App() {
           transition: 'color 0.5s',
         }}
       >
-        1–4 — 데모 전환 &nbsp;·&nbsp; F — FPS &nbsp;·&nbsp; K — Keystone &nbsp;·&nbsp; 마우스 이동으로 메뉴 표시
+        1–5 — 데모 전환 &nbsp;·&nbsp; F — FPS &nbsp;·&nbsp; K — Keystone &nbsp;·&nbsp; 마우스 이동으로 메뉴 표시
       </div>
 
       {/* FPS 오버레이 */}

@@ -1,4 +1,4 @@
-export type DemoType = 'particle-flow' | 'neon-tunnel' | 'audio-reactive' | 'hand-reactive'
+export type DemoType = 'particle-flow' | 'neon-tunnel' | 'audio-reactive' | 'hand-reactive' | 'pose-reactive'
 
 export interface DemoInfo {
   id: DemoType
@@ -33,7 +33,27 @@ export const DEMOS: DemoInfo[] = [
     label: 'Demo D — Hand Reactive',
     description: '웹캠 손 추적(MediaPipe Hands)으로 Three.js 파티클 비주얼 제어',
   },
+  {
+    id: 'pose-reactive',
+    label: 'Demo E — Pose Reactive',
+    description: '전신 포즈 추적(MediaPipe Pose) + AI 생성형 비주얼 파라미터',
+  },
 ]
+
+export type PoseLabel =
+  | 'arms-raised'
+  | 'one-arm-raised'
+  | 't-pose'
+  | 'arms-wide'
+  | 'standing'
+
+export interface VisualParams {
+  primaryColor: string
+  accentColor: string
+  particleDensity: number
+  effectIntensity: number
+  trailLength: number
+}
 
 export interface MousePosition {
   x: number

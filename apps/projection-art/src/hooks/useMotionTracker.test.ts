@@ -9,6 +9,7 @@ const mockForVisionTasks = vi.fn().mockResolvedValue({})
 
 vi.mock('@mediapipe/tasks-vision', () => ({
   HandLandmarker: { createFromOptions: mockCreateFromOptions },
+  PoseLandmarker: { createFromOptions: mockCreateFromOptions },
   FilesetResolver: { forVisionTasks: mockForVisionTasks },
 }))
 
