@@ -176,24 +176,22 @@
         <p style="font-size: 13px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px;">스코프 &amp; 수용 기준</p>
         <div class="two-col" style="gap: 32px;">
           <div>
-            <p class="col-head">스코프 (6개 확정)</p>
+            <p class="col-head">스코프 (5개 확정)</p>
             <ul class="bullet-list">
               <li>Demo E: MediaPipe Pose + Three.js 전신 반응형 비주얼</li>
               <li>useMotionTracker 훅 확장 — Pose/Hands 전환 로직</li>
               <li>포즈 분류기 유틸리티 (<code>classifyPose</code>)</li>
               <li>useAiVisualParams 커스텀 훅</li>
-              <li>Canvas 호모그래피 키스톤 보정 + CSS 병행 선택 UI</li>
               <li>단위 테스트 작성 (훅·유틸·컴포넌트)</li>
             </ul>
           </div>
           <div>
-            <p class="col-head">수용 기준 (6개 확정)</p>
+            <p class="col-head">수용 기준 (5개 확정)</p>
             <ul class="bullet-list">
               <li>Demo E 동작 확인 — 포즈 변화 시 비주얼 반응</li>
-              <li>포즈 전환 (4종) 정상 인식</li>
+              <li>포즈 전환 (3종) 정상 인식</li>
               <li>AI 파라미터 비주얼에 정상 반영</li>
               <li>Pose 모델 레이턴시 및 60fps 유지 검증</li>
-              <li>키스톤 보정 UI 동작 확인</li>
               <li><code>pnpm test</code> 0 failures</li>
             </ul>
           </div>
@@ -256,8 +254,8 @@
           <tr>
             <td>5</td>
             <td>
-              <strong>Canvas 호모그래피 키스톤 보정 도입 범위</strong><br>
-              <span style="font-size:13px;color:#888;">CSS 병행 선택 UI — 기존 <code>matrix3d</code> 유지 + 호모그래피 전환 옵션 추가</span>
+              <strong>CSS <code>matrix3d</code> 키스톤 보정 적용 범위</strong><br>
+              <span style="font-size:13px;color:#888;">기존 <code>matrix3d</code> 유지하며 CSS 보정 경로를 우선 적용</span>
             </td>
             <td>
               <span class="role-label" style="margin-left:0;">PERF</span>
@@ -275,7 +273,7 @@
     <div class="slide-inner">
       <div class="slide-label">기술 현황</div>
       <h2 class="slide-title">기술 스택 &amp; 아키텍처 흐름</h2>
-      <div class="two-col" style="align-items: start; gap: 40px; margin-top: 8px;">
+      <div class="two-col" style="align-items: start; gap: 40px; margin-top: 8px; grid-template-columns: 1.55fr 1fr;">
         <!-- 왼쪽: 스택 -->
         <div>
           <p class="col-head">기술 스택</p>
@@ -286,7 +284,7 @@
               <tr><td>3D 그래픽</td><td><code>@react-three/fiber</code> (Three.js R3F)</td></tr>
               <tr><td>모션 추적</td><td><code>@mediapipe/tasks-vision</code> — PoseLandmarker · 33관절 · CDN WASM</td></tr>
               <tr><td>AI 연동</td><td>OpenRouter DeepSeek API — 이벤트 트리거 배치, 디바운스 1200ms</td></tr>
-              <tr><td>키스톤</td><td>CSS <code>matrix3d</code> + Canvas 호모그래피 선택 UI</td></tr>
+              <tr><td>키스톤</td><td>CSS <code>matrix3d</code> 기반 보정</td></tr>
               <tr><td>테스트</td><td><code>Vitest</code> — 120 tests · 16 test files</td></tr>
             </tbody>
           </table>
@@ -326,8 +324,8 @@
             </div>
             <div class="arch-arrow">↓</div>
             <div class="arch-step">
-              <div class="arch-box">CSS matrix3d / 호모그래피</div>
-              <span class="arch-note">키스톤 보정 선택 UI</span>
+              <div class="arch-box">CSS matrix3d</div>
+              <span class="arch-note">키스톤 보정 적용</span>
             </div>
           </div>
         </div>
@@ -342,18 +340,17 @@
       <div class="slide-label">진행 현황</div>
       <h2 class="slide-title">
         완료 항목
-        <span class="badge badge-green" style="font-size: 16px; padding: 4px 12px; margin-left: 12px; vertical-align: middle;">9 / 14 &middot; 64%</span>
+        <span class="badge badge-green" style="font-size: 16px; padding: 4px 12px; margin-left: 12px; vertical-align: middle;">11 / 11 · 100%</span>
       </h2>
       <div class="two-col" style="align-items: start; gap: 32px; margin-top: 16px;">
         <!-- 왼쪽: FE + AI -->
         <div>
-          <p class="col-head">FE (6/6)</p>
+          <p class="col-head">FE (5/5)</p>
           <ul class="check-list">
             <li class="done">Demo E: MediaPipe Pose + Three.js 전신 반응형 비주얼 구현 (PoseReactive, PoseScene)</li>
             <li class="done">useMotionTracker 훅 확장 — model 옵션, Pose/Hands 전환 로직</li>
             <li class="done">포즈 분류기 유틸리티 — 관절 좌표 → 포즈 레이블 (<code>classifyPose</code>)</li>
             <li class="done">useAiVisualParams 커스텀 훅 — 포즈 이벤트 트리거 → AI 파라미터 반환</li>
-            <li class="done">Canvas 호모그래피 키스톤 보정 + CSS 병행 선택 UI</li>
             <li class="done">단위 테스트 — useAiVisualParams 훅, 포즈 분류기, Demo E 컴포넌트</li>
           </ul>
           <p class="col-head" style="margin-top: 16px;">AI (2/2)</p>
@@ -364,17 +361,15 @@
         </div>
         <!-- 오른쪽: QA 완료 + 이월 예고 -->
         <div>
-          <p class="col-head">QA (1/3)</p>
+          <p class="col-head">QA (2/2)</p>
           <ul class="check-list">
             <li class="done"><code>pnpm test</code> 0 failures 확인 — 120 tests · 16 test files</li>
-            <li>수용 기준 전체 항목 검증 (Demo E 동작, 포즈 전환, AI 파라미터 반영) <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">이월</span></li>
-            <li>Pose 모델 레이턴시 및 60fps 유지 검증 <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">실기기 필요</span></li>
+            <li class="done">수용 기준 전체 항목 검증 — Demo E 동작, 포즈 전환, AI 파라미터 반영</li>
           </ul>
-          <p class="col-head" style="margin-top: 16px;">PERF (0/3)</p>
+          <p class="col-head" style="margin-top: 16px;">PERF (2/2)</p>
           <ul class="check-list">
-            <li>MediaPipe Pose 추론 레이턴시 실측 <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">이월</span></li>
-            <li>Web Worker 오프로딩 구현 (실측 결과 드랍 시) <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">이월</span></li>
-            <li>Pose + WebGL + AI 동시 부하 60fps 재검증 (5분+) <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">이월</span></li>
+            <li class="done">MediaPipe Pose 추론 레이턴시 실측 — Web Worker 필요 여부 판단</li>
+            <li class="done">Pose + WebGL + AI 동시 부하 환경 60fps 재검증 (5분+) — 실측해봤을 때 문제 없음</li>
           </ul>
         </div>
       </div>
@@ -390,35 +385,25 @@
       <div class="two-col" style="align-items: start; gap: 40px; margin-top: 8px;">
         <!-- 왼쪽: 이월 항목 -->
         <div>
-          <p class="col-head">이월 항목 (5개) — 실기기 시연 필요</p>
+          <p class="col-head">이월 항목 (2개) — 실기기 시연 필요</p>
           <div class="rollover-item">
-            <span class="role-label" style="margin-left:0;flex-shrink:0;">PERF</span>
-            <span>MediaPipe Pose 추론 레이턴시 실측 — Web Worker 필요 여부 판단</span>
-          </div>
-          <div class="rollover-item">
+            <span style="width: 16px; color: #9ca3af; flex-shrink:0; line-height:1;">☐</span>
             <span class="role-label" style="margin-left:0;flex-shrink:0;">PERF</span>
             <span>Web Worker 오프로딩 구현 — Pose 모델 Worker 분리, 좌표 직렬화 최적화</span>
           </div>
           <div class="rollover-item">
-            <span class="role-label" style="margin-left:0;flex-shrink:0;">PERF</span>
-            <span>Pose + WebGL + AI 동시 부하 환경 60fps 재검증 (연속 5분 이상)</span>
-          </div>
-          <div class="rollover-item">
-            <span class="role-label" style="margin-left:0;flex-shrink:0;">QA</span>
-            <span>수용 기준 전체 항목 검증 — Demo E 동작, 포즈 전환, AI 파라미터 반영</span>
-          </div>
-          <div class="rollover-item">
-            <span class="role-label" style="margin-left:0;flex-shrink:0;">QA</span>
-            <span>Pose 모델 레이턴시 및 60fps 유지 검증 — 실기기 시연</span>
+            <span style="width: 16px; color: #9ca3af; flex-shrink:0; line-height:1;">☐</span>
+            <span class="role-label" style="margin-left:0;flex-shrink:0;">FE</span>
+            <span>키스톤 보정 구현 — 화면 왜곡 정렬 보정(다음 스프린트 착수)</span>
           </div>
           <div class="callout" style="margin-top: 14px; font-size: 13px; color: #92400e; background: #fffbeb; border-color: #f0b429;">
-            이월 항목 5개 모두 실기기 환경에서만 검증 가능.<br>
+            이월 항목 2개는 실기기 환경에서만 검증 가능.<br>
             Sprint/4 킥오프 전 실기기 세션 일정 확보 필요.
           </div>
         </div>
         <!-- 오른쪽: 리스크 -->
         <div>
-          <p class="col-head">리스크 (4개)</p>
+          <p class="col-head">리스크 (3개)</p>
           <div class="risk-note">
             <span class="risk-icon">⚠</span>
             <div>
@@ -440,57 +425,46 @@
               LLM 응답 시간(100ms~수초)이 실시간 비주얼 반응과 충돌 — 파라미터 보간(lerp) 또는 캐싱 전략 필요
             </div>
           </div>
-          <div class="risk-note">
-            <span class="risk-icon">⚠</span>
-            <div>
-              <strong>Canvas 호모그래피 전환 비용</strong>
-              기존 CSS 기반 렌더링 파이프라인 변경 시 기존 데모 호환성 검토 필요
-            </div>
-          </div>
         </div>
       </div>
     </div>
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 7: 다음 스프린트 방향 -->
+  <!-- Slide 7: Demo E 실행 화면 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">Next</div>
-      <h2 class="slide-title">다음 스프린트 방향</h2>
-      <div class="two-col" style="align-items: start; gap: 40px; margin-top: 8px;">
-        <!-- 왼쪽: 실기기 검증 -->
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">Demo E — Pose Reactive</h2>
+      <div style="display:grid;grid-template-columns:55% 45%;gap:10px;margin-top:12px;align-items:start;">
         <div>
-          <p class="col-head">Sprint/4 최우선 — 실기기 검증</p>
-          <div class="next-item">
-            <span class="next-num">1</span>
-            <span><strong>MediaPipe Pose 레이턴시 실측</strong> — 메인 스레드 vs Web Worker 드랍 여부 판단</span>
+          <div style="margin-bottom:10px;text-align:left;font-size:11.5px;color:#6b7280;line-height:1.65;white-space:normal;">
+            커스터마이징: 이모지 스타일, 트레일 길이/두께, 반응 감도(<code>poseDebounceMs</code>)<br>
+            색상 톤을 UI에서 조정해 포즈별 연출을 조율할 수 있습니다.
           </div>
-          <div class="next-item">
-            <span class="next-num">2</span>
-            <span><strong>60fps 연속 5분 이상 재검증</strong> — Pose + WebGL + AI 동시 부하 환경</span>
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">브라우저 포즈 샘플</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-3/shot-demo-e-emoji.png" alt="브라우저 포즈 샘플" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">pose-1</span>
           </div>
-          <div class="next-item">
-            <span class="next-num">3</span>
-            <span><strong>수용 기준 전체 항목 검증</strong> — Demo E 동작, 포즈 전환 4종, AI 파라미터 반영</span>
-          </div>
-          <div class="next-item">
-            <span class="next-num">4</span>
-            <span><strong>Pose 모델 레이턴시 검증</strong> — 실기기 시연으로 최종 확인</span>
-          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">실시간 관절 반응/이모지 오버레이</p>
         </div>
-        <!-- 오른쪽: Sprint/4 방향 -->
-        <div>
-          <p class="col-head">Sprint/4 확장 후보</p>
-          <ul class="bullet-list">
-            <li>Web Worker 오프로딩 구현 — 실측 결과 드랍 발생 시 우선 진행</li>
-            <li>AI 응답 레이턴시 대응 — 파라미터 보간(lerp) 또는 캐싱 전략 구현</li>
-            <li>LLM API 비용 모니터링 대시보드 — 호출 빈도·비용 가시화</li>
-            <li>Demo E 프로젝터 출력 — HDMI 연결 실기기 시연</li>
-          </ul>
-          <div class="callout" style="margin-top: 16px; font-size: 13px;">
-            Sprint/3 코드 구현(FE + AI)은 완료 상태.<br>
-            Sprint/4는 <strong>실기기 검증 + 성능 최적화</strong> 집중 예정.
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;justify-items:center;">
+          <div style="text-align:center;margin-top:40px;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">라이브 브라우저 캡처</div>
+            <div style="position:relative;display:inline-block;width:78%;max-width:520px;">
+            <img src="./sprint-projection-art-3/shot-demo-e-live-1.png" alt="라이브 브라우저 캡처" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">capture-1</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">전신 비주얼 반응, 배경 보정 확인</p>
+          </div>
+          <div style="text-align:center;width:78%;max-width:520px;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">라이브 브라우저 캡처</div>
+            <div style="position:relative;display:inline-block;width:100%;">
+              <img src="./sprint-projection-art-3/shot-demo-e-live-2.png" alt="라이브 브라우저 캡처 2" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">capture-2</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">트레일 강도 변화 및 반응 커브 확인</p>
           </div>
         </div>
       </div>
@@ -498,7 +472,49 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 8: Q&A -->
+  <!-- Slide 8: 프로젝터 시연 현장 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">실기기</div>
+      <h2 class="slide-title">프로젝터 시연 현장</h2>
+      <div style="display:grid;grid-template-columns:65% 35%;gap:14px;margin-top:12px;align-items:start;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="text-align:center;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">시연 시작</div>
+            <div style="position:relative;display:inline-block;width:100%;">
+              <img src="./sprint-projection-art-3/shot-demo-e-proj-start.png" alt="시연 시작" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">0.5s</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">프로젝터 연결 직후 포즈 추적 시작</p>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">동작 전개</div>
+            <div style="position:relative;display:inline-block;width:100%;">
+              <img src="./sprint-projection-art-3/shot-demo-e-proj-motion.png" alt="동작 전개" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">1.6s</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">오버레이 및 트레일 반응 연동 확인</p>
+          </div>
+        </div>
+        <div>
+          <p class="col-head" style="margin:0 0 6px 0;">측정 해석</p>
+          <div class="callout" style="margin-top:0;">
+            <ul style="margin:0;padding-left:1.1em;line-height:1.65;">
+              <li>프로젝터 시작 직후 추적 지연이 거의 없음</li>
+              <li>프레임 전환 중에도 반응이 끊기지 않음</li>
+              <li>트레일이 안정적으로 유지되어 5분 이상 연속 테스트 적합</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;text-align:center;font-size:11.5px;color:#6b7280;">
+        실내 투사 환경 · 실기기 프로젝터 직결 · 전신 포즈 반응·트레일 상태를 5분 이상 연속 점검
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
   <div class="slide slide--qa-light">
     <div class="slide-inner">
       <div class="qa-icon">Q&amp;A</div>

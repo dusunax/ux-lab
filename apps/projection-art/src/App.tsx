@@ -3,7 +3,6 @@ import { DEMOS, type DemoType, type MousePosition } from './types'
 import { useFullscreen } from './hooks/useFullscreen'
 import { useFrameRate } from './hooks/useFrameRate'
 import { FpsOverlay } from './components/FpsOverlay'
-import { KeystoneOverlay } from './components/KeystoneOverlay'
 
 const ParticleFlow = lazy(() =>
   import('./demos/ParticleFlow/ParticleFlow').then(m => ({ default: m.ParticleFlow }))
@@ -47,7 +46,6 @@ function App() {
   const [mousePos, setMousePos] = useState<MousePosition>({ x: 0, y: 0, nx: 0.5, ny: 0.5 })
   const [showMenu, setShowMenu] = useState(true)
   const [showFps, setShowFps] = useState(false)
-  const [showKeystone, setShowKeystone] = useState(false)
   const menuTimeoutRef = useRef<ReturnType<typeof setTimeout>>()
   const rafLoopRef = useRef<number>(0)
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
@@ -87,7 +85,6 @@ function App() {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'f' || e.key === 'F') setShowFps(v => !v)
-      if (e.key === 'k' || e.key === 'K') setShowKeystone(v => !v)
       if (e.key === '1') setActiveDemo('particle-flow')
       if (e.key === '2') setActiveDemo('neon-tunnel')
       if (e.key === '3') setActiveDemo('audio-reactive')
@@ -109,7 +106,6 @@ function App() {
       style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}
       onMouseMove={handleMouseMove}
     >
-      <KeystoneOverlay visible={showKeystone}>
       {/* 데모 캔버스 레이어 */}
       <Suspense fallback={<DemoFallback />}>
         {activeDemo === 'particle-flow' && <ParticleFlow mousePos={mousePos} />}
@@ -118,7 +114,6 @@ function App() {
         {activeDemo === 'hand-reactive' && <HandReactive />}
         {activeDemo === 'pose-reactive' && <PoseReactive />}
       </Suspense>
-      </KeystoneOverlay>
 
       {/* 네비게이션 오버레이 */}
       <nav
@@ -182,20 +177,6 @@ function App() {
             FPS
           </button>
           <button
-            data-testid="keystone-btn"
-            onClick={() => setShowKeystone(v => !v)}
-            style={{
-              background: showKeystone ? 'rgba(255,200,0,0.1)' : 'rgba(255,255,255,0.05)',
-              color: showKeystone ? '#fc0' : '#777',
-              border: `1px solid ${showKeystone ? 'rgba(255,200,0,0.4)' : 'rgba(255,255,255,0.15)'}`,
-              padding: '0.45rem 0.9rem',
-              borderRadius: '4px',
-              fontSize: '0.82rem',
-            }}
-          >
-            Keystone
-          </button>
-          <button
             data-testid="fullscreen-btn"
             onClick={toggleFullscreen}
             style={{
@@ -227,7 +208,7 @@ function App() {
           transition: 'color 0.5s',
         }}
       >
-        1–5 — 데모 전환 &nbsp;·&nbsp; F — FPS &nbsp;·&nbsp; K — Keystone &nbsp;·&nbsp; 마우스 이동으로 메뉴 표시
+        1–5 — 데모 전환 &nbsp;·&nbsp; F — FPS &nbsp;·&nbsp; 마우스 이동으로 메뉴 표시
       </div>
 
       {/* FPS 오버레이 */}

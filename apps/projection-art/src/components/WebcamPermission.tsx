@@ -3,6 +3,9 @@ import type { TrackerStatus } from '../hooks/useMotionTracker'
 interface WebcamPermissionProps {
   status: TrackerStatus
   onAllow: () => void
+  title?: string
+  description?: string
+  icon?: string
 }
 
 const STATUS_LABELS: Partial<Record<TrackerStatus, string>> = {
@@ -10,7 +13,13 @@ const STATUS_LABELS: Partial<Record<TrackerStatus, string>> = {
   loading: 'MediaPipe 모델 로딩 중...',
 }
 
-export function WebcamPermission({ status, onAllow }: WebcamPermissionProps) {
+export function WebcamPermission({
+  status,
+  onAllow,
+  title = 'Demo D — Hand Reactive',
+  description = '웹캠으로 손 움직임을 감지하여 Three.js 비주얼을 제어합니다.',
+  icon,
+}: WebcamPermissionProps) {
   const isLoading = status === 'requesting' || status === 'loading'
 
   return (
@@ -29,15 +38,13 @@ export function WebcamPermission({ status, onAllow }: WebcamPermissionProps) {
         zIndex: 10,
       }}
     >
-      <div style={{ fontSize: '2.5rem' }}>{status === 'error' ? '🚫' : '✋'}</div>
+      <div style={{ fontSize: '2.5rem' }}>{status === 'error' ? '🚫' : (icon ?? '✋')}</div>
 
       <div style={{ textAlign: 'center', color: '#fff' }}>
-        <p style={{ fontSize: '1.1rem', marginBottom: '0.4rem' }}>
-          Demo D — Hand Reactive
-        </p>
+        <p style={{ fontSize: '1.1rem', marginBottom: '0.4rem' }}>{title}</p>
         <p style={{ fontSize: '0.85rem', color: status === 'error' ? '#f66' : '#999', maxWidth: '320px' }}>
           {status === 'idle'
-            ? '웹캠으로 손 움직임을 감지하여 Three.js 비주얼을 제어합니다.'
+            ? description
             : status === 'error'
               ? '카메라 접근이 차단됐습니다. 기능을 사용할 수 없습니다.'
               : STATUS_LABELS[status]}
