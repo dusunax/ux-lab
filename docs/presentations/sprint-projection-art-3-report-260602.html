@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint projection-art/3 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* projection-art/3 전용 추가 스타일 */
+    .done { color: #217346; font-weight: 600; }
+
+    .role-label {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .risk-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #fffbeb;
+      border-left: 3px solid #f0b429;
+      padding: 10px 14px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .risk-note .risk-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .risk-note strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 2px;
+    }
+
+    .arch-flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-top: 4px;
+    }
+    .arch-flow .arch-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .arch-flow .arch-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #215c3c;
+      min-width: 150px;
+      text-align: center;
+    }
+    .arch-flow .arch-arrow {
+      font-size: 18px;
+      color: #217346;
+      font-weight: 700;
+      text-align: center;
+      padding: 2px 0;
+    }
+    .arch-flow .arch-note {
+      font-size: 11.5px;
+      color: #6b7280;
+    }
+
+    /* Demo E placeholder */
+    .demo-placeholder {
+      background: #f0fdf4;
+      border: 1.5px dashed #bbf7d0;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 120px;
+      color: #6b7280;
+      font-size: 12px;
+      text-align: center;
+      padding: 16px;
+      gap: 6px;
+    }
+    .demo-placeholder .placeholder-icon {
+      font-size: 28px;
+      color: #bbf7d0;
+    }
+    .demo-placeholder .placeholder-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    /* Rollover item */
+    .rollover-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+    .rollover-item:last-child { border-bottom: none; }
+    .rollover-item .reason {
+      font-size: 12px;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+
+    /* Next slide direction items */
+    .next-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .next-item:last-child { border-bottom: none; }
+    .next-item .next-num {
+      font-size: 13px;
+      font-weight: 700;
+      color: #217346;
+      flex-shrink: 0;
+      min-width: 18px;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · projection-art</div>
+        <h1 class="cover-title">Sprint projection-art/3</h1>
+        <p class="cover-sub">전신 모션 + 생성형 AI 비주얼 연동</p>
+        <p class="cover-meta">2026-06-02</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: Sprint 목표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 목표</h2>
+      <blockquote class="goal-quote">
+        <strong>MediaPipe Pose</strong>로 전신 관절 33개를 추적하여 <strong>Demo E</strong>를 구현하고,<br>
+        <strong>LLM 기반 비주얼 파라미터 생성</strong>으로 AI 반응형 연출을 도입한다.
+      </blockquote>
+      <div style="margin-top: 28px; width: 100%;">
+        <p style="font-size: 13px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px;">스코프 &amp; 수용 기준</p>
+        <div class="two-col" style="gap: 32px;">
+          <div>
+            <p class="col-head">스코프 (5개 확정)</p>
+            <ul class="bullet-list">
+              <li>Demo E: MediaPipe Pose + Three.js 전신 반응형 비주얼</li>
+              <li>useMotionTracker 훅 확장 — Pose/Hands 전환 로직</li>
+              <li>포즈 분류기 유틸리티 (<code>classifyPose</code>)</li>
+              <li>useAiVisualParams 커스텀 훅</li>
+              <li>단위 테스트 작성 (훅·유틸·컴포넌트)</li>
+            </ul>
+          </div>
+          <div>
+            <p class="col-head">수용 기준 (5개 확정)</p>
+            <ul class="bullet-list">
+              <li>Demo E 동작 확인 — 포즈 변화 시 비주얼 반응</li>
+              <li>포즈 전환 (3종) 정상 인식</li>
+              <li>AI 파라미터 비주얼에 정상 반영</li>
+              <li>Pose 모델 레이턴시 및 60fps 유지 검증</li>
+              <li><code>pnpm test</code> 0 failures</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 28px;">#</th>
+            <th>결정 내용</th>
+            <th style="width: 80px;">담당</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              <strong>Sprint projection-art/3 스코프 6개 항목 확정</strong>
+            </td>
+            <td>전원</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>
+              <strong>수용 기준 6개 항목 확정</strong>
+            </td>
+            <td>전원</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>
+              <strong>MediaPipe Pose Web Worker 오프로딩 여부</strong><br>
+              <span style="font-size:13px;color:#888;">메인 스레드 우선 시도 → 실측 후 드랍 발생 시 Worker 전환</span>
+            </td>
+            <td>
+              <span class="role-label" style="margin-left:0;">PERF</span>
+              <span class="role-label">FE</span>
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>
+              <strong>생성형 AI 비주얼 파라미터 생성 방식</strong><br>
+              <span style="font-size:13px;color:#888;">이벤트 트리거 배치 — 포즈 변화 임계값 초과 시만 호출, 디바운스 1200ms 적용</span>
+            </td>
+            <td>
+              <span class="role-label" style="margin-left:0;">AI</span>
+              <span class="role-label">PM</span>
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>
+              <strong>CSS <code>matrix3d</code> 키스톤 보정 적용 범위</strong><br>
+              <span style="font-size:13px;color:#888;">기존 <code>matrix3d</code> 유지하며 CSS 보정 경로를 우선 적용</span>
+            </td>
+            <td>
+              <span class="role-label" style="margin-left:0;">PERF</span>
+              <span class="role-label">FE</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: 기술 현황 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">기술 현황</div>
+      <h2 class="slide-title">기술 스택 &amp; 아키텍처 흐름</h2>
+      <div class="two-col" style="align-items: start; gap: 40px; margin-top: 8px; grid-template-columns: 1.55fr 1fr;">
+        <!-- 왼쪽: 스택 -->
+        <div>
+          <p class="col-head">기술 스택</p>
+          <table class="data-table">
+            <thead><tr><th>영역</th><th>선택</th></tr></thead>
+            <tbody>
+              <tr><td>빌드</td><td><code>Vite</code> + <code>React 18</code> + <code>TypeScript</code></td></tr>
+              <tr><td>3D 그래픽</td><td><code>@react-three/fiber</code> (Three.js R3F)</td></tr>
+              <tr><td>모션 추적</td><td><code>@mediapipe/tasks-vision</code> — PoseLandmarker · 33관절 · CDN WASM</td></tr>
+              <tr><td>AI 연동</td><td>OpenRouter DeepSeek API — 이벤트 트리거 배치, 디바운스 1200ms</td></tr>
+              <tr><td>키스톤</td><td>CSS <code>matrix3d</code> 기반 보정</td></tr>
+              <tr><td>테스트</td><td><code>Vitest</code> — 120 tests · 16 test files</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 오른쪽: 아키텍처 흐름 -->
+        <div>
+          <p class="col-head">아키텍처 흐름</p>
+          <div class="arch-flow">
+            <div class="arch-step">
+              <div class="arch-box">웹캠 (getUserMedia)</div>
+              <span class="arch-note">카메라 권한 → 스트림 취득</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">MediaPipe Pose</div>
+              <span class="arch-note">PoseLandmarker · 33관절 · CDN WASM</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">poseLandmarksToPoints()</div>
+              <span class="arch-note">InteractionPoint[33]</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">classifyPose()</div>
+              <span class="arch-note">arms-raised / t-pose / arms-wide / standing</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">useAiVisualParams</div>
+              <span class="arch-note">포즈 변화 → LLM 호출 → VisualParams (debounce)</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">PoseScene (R3F)</div>
+              <span class="arch-note">스켈레톤 + 파티클 트레일</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-step">
+              <div class="arch-box">CSS matrix3d</div>
+              <span class="arch-note">키스톤 보정 적용</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">진행 현황</div>
+      <h2 class="slide-title">
+        완료 항목
+        <span class="badge badge-green" style="font-size: 16px; padding: 4px 12px; margin-left: 12px; vertical-align: middle;">11 / 11 · 100%</span>
+      </h2>
+      <div class="two-col" style="align-items: start; gap: 32px; margin-top: 16px;">
+        <!-- 왼쪽: FE + AI -->
+        <div>
+          <p class="col-head">FE (5/5)</p>
+          <ul class="check-list">
+            <li class="done">Demo E: MediaPipe Pose + Three.js 전신 반응형 비주얼 구현 (PoseReactive, PoseScene)</li>
+            <li class="done">useMotionTracker 훅 확장 — model 옵션, Pose/Hands 전환 로직</li>
+            <li class="done">포즈 분류기 유틸리티 — 관절 좌표 → 포즈 레이블 (<code>classifyPose</code>)</li>
+            <li class="done">useAiVisualParams 커스텀 훅 — 포즈 이벤트 트리거 → AI 파라미터 반환</li>
+            <li class="done">단위 테스트 — useAiVisualParams 훅, 포즈 분류기, Demo E 컴포넌트</li>
+          </ul>
+          <p class="col-head" style="margin-top: 16px;">AI (2/2)</p>
+          <ul class="check-list">
+            <li class="done">LLM 비주얼 파라미터 생성 프롬프트 설계 — 포즈 입력 → VisualParams JSON 스펙 정의</li>
+            <li class="done">useAiVisualParams API 호출 방식 설계 — 이벤트 트리거 배치, 비용·레이턴시 모니터링</li>
+          </ul>
+        </div>
+        <!-- 오른쪽: QA 완료 + 이월 예고 -->
+        <div>
+          <p class="col-head">QA (2/2)</p>
+          <ul class="check-list">
+            <li class="done"><code>pnpm test</code> 0 failures 확인 — 120 tests · 16 test files</li>
+            <li class="done">수용 기준 전체 항목 검증 — Demo E 동작, 포즈 전환, AI 파라미터 반영</li>
+          </ul>
+          <p class="col-head" style="margin-top: 16px;">PERF (2/2)</p>
+          <ul class="check-list">
+            <li class="done">MediaPipe Pose 추론 레이턴시 실측 — Web Worker 필요 여부 판단</li>
+            <li class="done">Pose + WebGL + AI 동시 부하 환경 60fps 재검증 (5분+) — 실측해봤을 때 문제 없음</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: 이월 항목 & 리스크 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">이월 &amp; 리스크</div>
+      <h2 class="slide-title">이월 항목 &amp; 리스크</h2>
+      <div class="two-col" style="align-items: start; gap: 40px; margin-top: 8px;">
+        <!-- 왼쪽: 이월 항목 -->
+        <div>
+          <p class="col-head">이월 항목 (2개) — 실기기 시연 필요</p>
+          <div class="rollover-item">
+            <span style="width: 16px; color: #9ca3af; flex-shrink:0; line-height:1;">☐</span>
+            <span class="role-label" style="margin-left:0;flex-shrink:0;">PERF</span>
+            <span>Web Worker 오프로딩 구현 — Pose 모델 Worker 분리, 좌표 직렬화 최적화</span>
+          </div>
+          <div class="rollover-item">
+            <span style="width: 16px; color: #9ca3af; flex-shrink:0; line-height:1;">☐</span>
+            <span class="role-label" style="margin-left:0;flex-shrink:0;">FE</span>
+            <span>키스톤 보정 구현 — 화면 왜곡 정렬 보정(다음 스프린트 착수)</span>
+          </div>
+          <div class="callout" style="margin-top: 14px; font-size: 13px; color: #92400e; background: #fffbeb; border-color: #f0b429;">
+            이월 항목 2개는 실기기 환경에서만 검증 가능.<br>
+            Sprint/4 킥오프 전 실기기 세션 일정 확보 필요.
+          </div>
+        </div>
+        <!-- 오른쪽: 리스크 -->
+        <div>
+          <p class="col-head">리스크 (3개)</p>
+          <div class="risk-note">
+            <span class="risk-icon">⚠</span>
+            <div>
+              <strong>Pose 모델 레이턴시</strong>
+              전신 33관절 추론이 메인 스레드에서 60fps 목표와 충돌 가능
+            </div>
+          </div>
+          <div class="risk-note">
+            <span class="risk-icon">⚠</span>
+            <div>
+              <strong>LLM API 비용</strong>
+              포즈 변화 이벤트 빈도에 따라 API 호출 급증 가능 — 디바운스·쓰로틀 전략 필수
+            </div>
+          </div>
+          <div class="risk-note">
+            <span class="risk-icon">⚠</span>
+            <div>
+              <strong>AI 응답 레이턴시</strong>
+              LLM 응답 시간(100ms~수초)이 실시간 비주얼 반응과 충돌 — 파라미터 보간(lerp) 또는 캐싱 전략 필요
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: Demo E 실행 화면 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">Demo E — Pose Reactive</h2>
+      <div style="display:grid;grid-template-columns:55% 45%;gap:10px;margin-top:12px;align-items:start;">
+        <div>
+          <div style="margin-bottom:10px;text-align:left;font-size:11.5px;color:#6b7280;line-height:1.65;white-space:normal;">
+            커스터마이징: 이모지 스타일, 트레일 길이/두께, 반응 감도(<code>poseDebounceMs</code>)<br>
+            색상 톤을 UI에서 조정해 포즈별 연출을 조율할 수 있습니다.
+          </div>
+          <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">브라우저 포즈 샘플</div>
+          <div style="position:relative;display:inline-block;width:100%;">
+            <img src="./sprint-projection-art-3/shot-demo-e-emoji.png" alt="브라우저 포즈 샘플" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+            <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">pose-1</span>
+          </div>
+          <p style="font-size:11px;color:#9ca3af;margin-top:5px;">실시간 관절 반응/이모지 오버레이</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr;gap:10px;justify-items:center;">
+          <div style="text-align:center;margin-top:40px;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">라이브 브라우저 캡처</div>
+            <div style="position:relative;display:inline-block;width:78%;max-width:520px;">
+            <img src="./sprint-projection-art-3/shot-demo-e-live-1.png" alt="라이브 브라우저 캡처" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">capture-1</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">전신 비주얼 반응, 배경 보정 확인</p>
+          </div>
+          <div style="text-align:center;width:78%;max-width:520px;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">라이브 브라우저 캡처</div>
+            <div style="position:relative;display:inline-block;width:100%;">
+              <img src="./sprint-projection-art-3/shot-demo-e-live-2.png" alt="라이브 브라우저 캡처 2" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">capture-2</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">트레일 강도 변화 및 반응 커브 확인</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: 프로젝터 시연 현장 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">실기기</div>
+      <h2 class="slide-title">프로젝터 시연 현장</h2>
+      <div style="display:grid;grid-template-columns:65% 35%;gap:14px;margin-top:12px;align-items:start;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="text-align:center;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">시연 시작</div>
+            <div style="position:relative;display:inline-block;width:100%;">
+              <img src="./sprint-projection-art-3/shot-demo-e-proj-start.png" alt="시연 시작" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">0.5s</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">프로젝터 연결 직후 포즈 추적 시작</p>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:11px;font-weight:700;color:#217346;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">동작 전개</div>
+            <div style="position:relative;display:inline-block;width:100%;">
+              <img src="./sprint-projection-art-3/shot-demo-e-proj-motion.png" alt="동작 전개" style="width:100%;border-radius:6px;border:1px solid #e5e7eb;display:block;" />
+              <span style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.65);color:#fff;font-family:monospace;font-size:11px;padding:2px 7px;border-radius:3px;">1.6s</span>
+            </div>
+            <p style="font-size:11px;color:#9ca3af;margin-top:5px;">오버레이 및 트레일 반응 연동 확인</p>
+          </div>
+        </div>
+        <div>
+          <p class="col-head" style="margin:0 0 6px 0;">측정 해석</p>
+          <div class="callout" style="margin-top:0;">
+            <ul style="margin:0;padding-left:1.1em;line-height:1.65;">
+              <li>프로젝터 시작 직후 추적 지연이 거의 없음</li>
+              <li>프레임 전환 중에도 반응이 끊기지 않음</li>
+              <li>트레일이 안정적으로 유지되어 5분 이상 연속 테스트 적합</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;text-align:center;font-size:11.5px;color:#6b7280;">
+        실내 투사 환경 · 실기기 프로젝터 직결 · 전신 포즈 반응·트레일 상태를 5분 이상 연속 점검
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>projection-art · Sprint projection-art/3</span>
+        <span>2026-06-02</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div><!-- .deck -->
+
+<div class="nav-hint">← → 키 또는 클릭으로 이동</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

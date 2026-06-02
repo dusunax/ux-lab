@@ -1,2 +1,2 @@
 - [ai-empathy-diary 프로젝트 현황](project_ai_empathy_diary.md) — 스프린트 진행 현황, 확정 기술 결정(x-request-id body 포함, GA4 2개월, rate limit 30/min), 미결 질문(동의 배너, 빌드 환경)
-- [projection-art 신규 프로젝트](project_projection_art.md) — Sprint 10 시작, WebGL/p5.js/Three.js 인터랙티브 프로젝션 PoC, 데모 3종(Particle/Tunnel/Audio)
+- [projection-art 프로젝트](project_projection_art.md) — Sprint/2 완료(Demo D + MediaPipe Hands + KeystoneOverlay, 103 tests), Sprint/3 생성형 AI + Demo E + Pose PoC 예정
