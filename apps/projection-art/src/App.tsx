@@ -60,7 +60,7 @@ function App() {
   const rafLoopRef = useRef<number>(0)
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
   const { state: fpsState, tick: fpsTick, reset: fpsReset } = useFrameRate(showFps)
-  const { preset, saveSnapshot, restore, clear: clearPreset } = usePreset()
+  const { preset, save: savePreset, restore, clear: clearPreset } = usePreset()
   const presetDemoLabel = preset ? DEMOS.find(demo => demo.id === preset.demo)?.label ?? preset.demo : null
   const canSavePreset = !preset
     || preset.demo !== activeDemo
@@ -214,7 +214,7 @@ function App() {
                 </span>
                 <button
                   data-testid="preset-save-btn"
-                  onClick={() => saveSnapshot(activeDemo, transform, showFps)}
+                  onClick={() => savePreset(activeDemo, transform, showFps)}
                   disabled={!canSavePreset}
                   style={{ ...BTN(canSavePreset, '180,180,255'), opacity: canSavePreset ? 1 : 0.38, cursor: canSavePreset ? 'pointer' : 'not-allowed' }}
                   title={canSavePreset ? '현재 데모, 키스톤 위치, FPS 표시 상태를 시연 프리셋으로 저장' : '현재 설정이 이미 저장되어 있습니다'}

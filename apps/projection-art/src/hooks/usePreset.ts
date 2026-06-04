@@ -35,9 +35,5 @@ export function usePreset() {
     setPreset(null)
   }, [])
 
-  const saveSnapshot = useCallback((demo: DemoType, transform: ProjectionTransform, showFps: boolean) => {
-    save(demo, transform, showFps)
-  }, [save])
-
-  return { preset, save, saveSnapshot, restore, clear }
+  return { preset, save, restore, clear }
 }

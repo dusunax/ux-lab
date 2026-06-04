@@ -119,10 +119,39 @@ export function useMotionTracker(options?: MotionTrackerOptions) {
           }
         }
 
+        const runPoseMainThread = () => {
+          if (!mountedRef.current || !videoRef.current) return
+          ;(async () => {
+            try {
+              const { PoseLandmarker, FilesetResolver } = await import('@mediapipe/tasks-vision')
+              const resolver = await FilesetResolver.forVisionTasks(WASM_CDN)
+              const poseLandmarker = await PoseLandmarker.createFromOptions(resolver, {
+                baseOptions: { modelAssetPath: POSE_MODEL_URL, delegate: 'GPU' },
+                runningMode: 'VIDEO',
+                numPoses: 1,
+              })
+              if (!mountedRef.current) return
+              landmarkerRef.current = poseLandmarker as typeof landmarkerRef.current
+              setState(s => ({ ...s, status: 'active' }))
+              const detect = () => {
+                if (!mountedRef.current || !videoRef.current || !landmarkerRef.current) return
+                const result = landmarkerRef.current.detectForVideo(videoRef.current, performance.now())
+                const hands = result.landmarks
+                  .map(lm => lm.length > 0 ? poseLandmarksToPoints(lm) : [])
+                  .filter(pts => pts.length === 33)
+                setState(s => ({ ...s, hands }))
+                rafRef.current = requestAnimationFrame(detect)
+              }
+              rafRef.current = requestAnimationFrame(detect)
+            } catch (err) {
+              setState({ status: 'error', hands: [], error: String(err) })
+            }
+          })()
+        }
+
         worker.onerror = () => {
-          // Worker failed — fall back to main-thread inference
           workerReadyRef.current = false
-          startPoseMainThread()
+          runPoseMainThread()
         }
 
         // Capture and transfer frames to worker
@@ -171,39 +200,7 @@ export function useMotionTracker(options?: MotionTrackerOptions) {
       if (!mountedRef.current) return
       setState({ status: 'error', hands: [], error: String(err) })
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Fallback: run Pose on main thread if Worker fails
-  function startPoseMainThread() {
-    if (!mountedRef.current || !videoRef.current) return
-    ;(async () => {
-      try {
-        const { PoseLandmarker, FilesetResolver } = await import('@mediapipe/tasks-vision')
-        const resolver = await FilesetResolver.forVisionTasks(WASM_CDN)
-        const poseLandmarker = await PoseLandmarker.createFromOptions(resolver, {
-          baseOptions: { modelAssetPath: POSE_MODEL_URL, delegate: 'GPU' },
-          runningMode: 'VIDEO',
-          numPoses: 1,
-        })
-        if (!mountedRef.current) return
-        landmarkerRef.current = poseLandmarker as typeof landmarkerRef.current
-        setState(s => ({ ...s, status: 'active' }))
-
-        const detect = () => {
-          if (!mountedRef.current || !videoRef.current || !landmarkerRef.current) return
-          const result = landmarkerRef.current.detectForVideo(videoRef.current, performance.now())
-          const hands = result.landmarks
-            .map(lm => lm.length > 0 ? poseLandmarksToPoints(lm) : [])
-            .filter(pts => pts.length === 33)
-          setState(s => ({ ...s, hands }))
-          rafRef.current = requestAnimationFrame(detect)
-        }
-        rafRef.current = requestAnimationFrame(detect)
-      } catch (err) {
-        setState({ status: 'error', hands: [], error: String(err) })
-      }
-    })()
-  }
+  }, [])
 
   return { state, requestCamera }
 }
