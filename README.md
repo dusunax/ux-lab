@@ -4,6 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
+| **projection-art** | WebGL 기반 인터랙티브 프로젝션 아트 PoC ([앱](./apps/projection-art)) | 2026-05-29 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![MediaPipe](https://img.shields.io/badge/MediaPipe-0097A7?logo=google&logoColor=white) |
 | **ai-empathy-diary** | Excel 위장 AI 감정 일기 앱 ([배포](https://ai-empathy-diary.vercel.app/)) | 2026-05-11 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **@ux-lab/stellas-archive** | 게임 ([개발 일지](https://github.com/dusunax/ux-lab/wiki/Development-Log#stellas-archive-game), [배포](https://ux-lab-stellas-archive.vercel.app/)) | 2026-03-14 | dusunax | |
 | **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | 2026-02-23 | dusunax | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
@@ -14,6 +15,12 @@
 | **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - | dusunax | - |
 
 ## 📸 스크린샷
+
+### 📍 projection-art
+
+- WebGL/Three.js 기반 인터랙티브 프로젝션 아트 PoC
+- 마우스, 손 추적, 전신 포즈 기반 반응형 비주얼 데모
+- 프로젝터 실기기 시연을 기준으로 60fps 동작 검증
 
 ### 📍 ai-empathy-diary
 
