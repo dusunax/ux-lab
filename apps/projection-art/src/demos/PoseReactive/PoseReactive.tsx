@@ -56,7 +56,8 @@ export function PoseReactive() {
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 60 }}
-        gl={{ antialias: true }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: 'transparent' }}
         dpr={[1, 2]}
       >
         <Suspense fallback={null}>

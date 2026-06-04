@@ -190,8 +190,8 @@ export function NeonTunnel({ mousePos }: NeonTunnelProps) {
     >
       <Canvas
         camera={{ position: [0, 0, 5], fov: 80, near: 0.1, far: 100 }}
-        gl={{ antialias: true }}
-        style={{ background: '#000' }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: 'transparent' }}
         frameloop="always"
         dpr={[1, 2]}
       >

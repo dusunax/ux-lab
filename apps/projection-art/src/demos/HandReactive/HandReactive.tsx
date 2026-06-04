@@ -1,4 +1,5 @@
 import { Suspense, lazy, useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { Canvas } from '@react-three/fiber'
 import { useMotionTracker } from '../../hooks/useMotionTracker'
 import { WebcamPermission } from '../../components/WebcamPermission'
@@ -8,7 +9,7 @@ const HandScene = lazy(() =>
 )
 
 export function HandReactive() {
-  const [numHands, setNumHands] = useState<1 | 2>(1)
+  const [numHands, setNumHands] = useState<1 | 2>(2)
   const { state, requestCamera } = useMotionTracker({ numHands })
 
   const cameraActiveRef = useRef(false)
@@ -28,7 +29,8 @@ export function HandReactive() {
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 60 }}
-        gl={{ antialias: true }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: 'transparent' }}
         dpr={[1, 2]}
       >
         <Suspense fallback={null}>
@@ -36,20 +38,37 @@ export function HandReactive() {
         </Suspense>
       </Canvas>
 
-      {showOverlay && (
-        <WebcamPermission
-          status={state.status}
-          onAllow={requestCamera}
-        />
+      {showOverlay && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '360px',
+            height: '260px',
+            borderRadius: '12px',
+            overflow: 'hidden',
+            zIndex: 200,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
+          }}
+        >
+          <WebcamPermission
+            status={state.status}
+            onAllow={requestCamera}
+          />
+        </div>,
+        document.body
       )}
 
-      {state.status === 'active' && (
+      {state.status === 'active' && createPortal(
         <div
           data-testid="tracker-status"
           style={{
-            position: 'absolute',
+            position: 'fixed',
             bottom: '1rem',
             right: '1rem',
+            zIndex: 200,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
@@ -60,7 +79,7 @@ export function HandReactive() {
             {`✋ Hand tracking · ${state.hands.length}/${numHands}손 감지`}
           </div>
           <div style={{ display: 'flex', gap: '0.4rem' }}>
-            {([1, 2] as const).map(n => (
+            {([2, 1] as const).map(n => (
               <button
                 key={n}
                 data-testid={`hand-mode-${n}`}
@@ -69,11 +88,12 @@ export function HandReactive() {
                   background: numHands === n ? 'rgba(0,255,255,0.2)' : 'rgba(255,255,255,0.05)',
                   color: numHands === n ? '#0ff' : '#555',
                   border: `1px solid ${numHands === n ? 'rgba(0,255,255,0.5)' : 'rgba(255,255,255,0.1)'}`,
-                  padding: '0.2rem 0.6rem',
+                  padding: '0.42rem 0.95rem',
                   borderRadius: '3px',
-                  fontSize: '0.72rem',
+                  fontSize: '0.86rem',
                   cursor: 'pointer',
                   fontFamily: 'monospace',
+                  minWidth: '58px',
                 }}
               >
                 {n}손
@@ -81,6 +101,8 @@ export function HandReactive() {
             ))}
           </div>
         </div>
+        ,
+        document.body
       )}
     </div>
   )
