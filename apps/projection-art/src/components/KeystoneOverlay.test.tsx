@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { KeystoneOverlay, DEFAULT_CORNERS } from './KeystoneOverlay'
+import { KeystoneOverlay, defaultTransform, DEFAULT_CORNERS } from './KeystoneOverlay'
+import type { ProjectionTransform } from './KeystoneOverlay'
 
 const mockLocalStorage = (() => {
   let store: Record<string, string> = {}
@@ -13,12 +14,14 @@ const mockLocalStorage = (() => {
 })()
 Object.defineProperty(window, 'localStorage', { value: mockLocalStorage })
 
+const DEFAULT_TRANSFORM: ProjectionTransform = defaultTransform(1024, 768)
+
 beforeEach(() => mockLocalStorage.clear())
 
 describe('KeystoneOverlay', () => {
   it('renders children', () => {
     render(
-      <KeystoneOverlay visible={false} corners={DEFAULT_CORNERS} onCornersChange={vi.fn()}>
+      <KeystoneOverlay visible={false} transform={DEFAULT_TRANSFORM} onTransformChange={vi.fn()}>
         <div data-testid="child">hello</div>
       </KeystoneOverlay>
     )
@@ -27,7 +30,7 @@ describe('KeystoneOverlay', () => {
 
   it('applies matrix3d transform to canvas wrapper', () => {
     render(
-      <KeystoneOverlay visible={false} corners={DEFAULT_CORNERS} onCornersChange={vi.fn()}>
+      <KeystoneOverlay visible={false} transform={DEFAULT_TRANSFORM} onTransformChange={vi.fn()}>
         <div />
       </KeystoneOverlay>
     )
@@ -37,7 +40,7 @@ describe('KeystoneOverlay', () => {
 
   it('shows 4 corner handles and reset button when visible=true', () => {
     render(
-      <KeystoneOverlay visible={true} corners={DEFAULT_CORNERS} onCornersChange={vi.fn()}>
+      <KeystoneOverlay visible={true} transform={DEFAULT_TRANSFORM} onTransformChange={vi.fn()}>
         <div />
       </KeystoneOverlay>
     )
@@ -50,7 +53,7 @@ describe('KeystoneOverlay', () => {
 
   it('hides handles when visible=false', () => {
     render(
-      <KeystoneOverlay visible={false} corners={DEFAULT_CORNERS} onCornersChange={vi.fn()}>
+      <KeystoneOverlay visible={false} transform={DEFAULT_TRANSFORM} onTransformChange={vi.fn()}>
         <div />
       </KeystoneOverlay>
     )
@@ -58,15 +61,19 @@ describe('KeystoneOverlay', () => {
     expect(screen.queryByTestId('keystone-reset')).not.toBeInTheDocument()
   })
 
-  it('calls onCornersChange with DEFAULT_CORNERS on reset', () => {
+  it('calls onTransformChange with defaultTransform on reset', () => {
     const onChange = vi.fn()
-    const modifiedCorners = { tl: { dx: 10, dy: 5 }, tr: { dx: 0, dy: 0 }, bl: { dx: 0, dy: 0 }, br: { dx: 0, dy: 0 } }
     render(
-      <KeystoneOverlay visible={true} corners={modifiedCorners} onCornersChange={onChange}>
+      <KeystoneOverlay visible={true} transform={DEFAULT_TRANSFORM} onTransformChange={onChange}>
         <div />
       </KeystoneOverlay>
     )
     fireEvent.click(screen.getByTestId('keystone-reset'))
-    expect(onChange).toHaveBeenCalledWith(DEFAULT_CORNERS)
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rect: expect.any(Object),
+        warp: expect.objectContaining({ tl: DEFAULT_CORNERS.tl }),
+      })
+    )
   })
 })

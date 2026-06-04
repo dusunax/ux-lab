@@ -114,8 +114,8 @@ export function AudioReactiveVisual({ mousePos }: AudioReactiveVisualProps) {
 
       <Canvas
         camera={{ position: [0, 2, 10], fov: 60 }}
-        gl={{ antialias: true }}
-        style={{ background: '#000' }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ background: 'transparent' }}
         dpr={[1, 1.5]}
       >
         <fog attach="fog" args={['#000', 15, 40]} />

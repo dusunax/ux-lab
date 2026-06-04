@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 import type { DemoType } from '../types'
-import type { Corners } from '../components/KeystoneOverlay'
-import { loadCorners } from '../components/KeystoneOverlay'
+import type { ProjectionTransform } from '../components/KeystoneOverlay'
 
 export interface Preset {
   demo: DemoType
-  corners: Corners
+  transform: ProjectionTransform
+  showFps?: boolean
 }
 
 const PRESET_KEY = 'projection-art-preset'
@@ -22,24 +22,21 @@ function loadPreset(): Preset | null {
 export function usePreset() {
   const [preset, setPreset] = useState<Preset | null>(loadPreset)
 
-  const save = useCallback((demo: DemoType, corners: Corners) => {
-    const p: Preset = { demo, corners }
+  const save = useCallback((demo: DemoType, transform: ProjectionTransform, showFps: boolean) => {
+    const p: Preset = { demo, transform, showFps }
     localStorage.setItem(PRESET_KEY, JSON.stringify(p))
     setPreset(p)
   }, [])
 
-  const restore = useCallback((): Preset | null => {
-    return loadPreset()
-  }, [])
+  const restore = useCallback((): Preset | null => loadPreset(), [])
 
   const clear = useCallback(() => {
     localStorage.removeItem(PRESET_KEY)
     setPreset(null)
   }, [])
 
-  // Snapshot current state (active demo + current keystone corners)
-  const saveSnapshot = useCallback((demo: DemoType) => {
-    save(demo, loadCorners())
+  const saveSnapshot = useCallback((demo: DemoType, transform: ProjectionTransform, showFps: boolean) => {
+    save(demo, transform, showFps)
   }, [save])
 
   return { preset, save, saveSnapshot, restore, clear }

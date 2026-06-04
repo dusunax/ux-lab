@@ -24,11 +24,9 @@ describe('App', () => {
     expect(screen.getByTestId('demo-nav')).toBeInTheDocument()
   })
 
-  it('3개의 데모 버튼이 표시된다', () => {
+  it('데모 드롭다운이 표시된다', () => {
     render(<App />)
-    expect(screen.getByTestId('demo-btn-particle-flow')).toBeInTheDocument()
-    expect(screen.getByTestId('demo-btn-neon-tunnel')).toBeInTheDocument()
-    expect(screen.getByTestId('demo-btn-audio-reactive')).toBeInTheDocument()
+    expect(screen.getByTestId('demo-select')).toBeInTheDocument()
   })
 
   it('전체화면 버튼이 존재한다', () => {
@@ -41,11 +39,12 @@ describe('App', () => {
     expect(screen.getByTestId('fps-toggle-btn')).toBeInTheDocument()
   })
 
-  it('데모 버튼 클릭 시 에러가 발생하지 않는다', () => {
+  it('데모 드롭다운 변경 시 에러가 발생하지 않는다', () => {
     render(<App />)
-    expect(() => fireEvent.click(screen.getByTestId('demo-btn-neon-tunnel'))).not.toThrow()
-    expect(() => fireEvent.click(screen.getByTestId('demo-btn-audio-reactive'))).not.toThrow()
-    expect(() => fireEvent.click(screen.getByTestId('demo-btn-particle-flow'))).not.toThrow()
+    const select = screen.getByTestId('demo-select')
+    expect(() => fireEvent.change(select, { target: { value: 'neon-tunnel' } })).not.toThrow()
+    expect(() => fireEvent.change(select, { target: { value: 'audio-reactive' } })).not.toThrow()
+    expect(() => fireEvent.change(select, { target: { value: 'particle-flow' } })).not.toThrow()
   })
 
   it('마우스 이동 이벤트를 처리한다', () => {

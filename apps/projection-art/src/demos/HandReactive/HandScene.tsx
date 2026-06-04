@@ -127,7 +127,6 @@ export function HandScene({ hands }: HandSceneProps) {
 
   return (
     <>
-      <color attach="background" args={['#000005']} />
       <ambientLight intensity={0.3} />
       <pointLight position={[0, 0, 3]} intensity={2} color="#0af" />
 

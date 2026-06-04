@@ -30,9 +30,10 @@ function flowAngle(x: number, y: number, t: number): number {
 function createParticle(x: number, y: number, p: p5Type): Particle {
   const angle = p.random(p.TWO_PI)
   const speed = p.random(1, 3)
+  const margin = 8
   return {
-    x: x + p.random(-10, 10),
-    y: y + p.random(-10, 10),
+    x: p.constrain(x + p.random(-10, 10), margin, p.width - margin),
+    y: p.constrain(y + p.random(-10, 10), margin, p.height - margin),
     vx: Math.cos(angle) * speed,
     vy: Math.sin(angle) * speed,
     life: 0,
@@ -60,17 +61,27 @@ export function ParticleFlow({ mousePos }: ParticleFlowProps) {
     let t = 0
     let particleLimit = MAX_PARTICLES  // 런타임 적응형 한도
 
+    const getSize = () => {
+      const el = containerRef.current
+      return {
+        width: Math.max(1, el?.clientWidth ?? window.innerWidth),
+        height: Math.max(1, el?.clientHeight ?? window.innerHeight),
+      }
+    }
+
     p.setup = () => {
-      const canvas = p.createCanvas(p.windowWidth, p.windowHeight)
+      const { width, height } = getSize()
+      const canvas = p.createCanvas(width, height)
       canvas.parent(containerRef.current!)
+      canvas.style('background', 'transparent')
       p.pixelDensity(1)  // 고DPI 스케일링 끔 — 렌더 비용 절반
       p.colorMode(p.HSB, 360, 100, 100, 100)
-      p.background(0)
+      p.clear()
     }
 
     p.draw = () => {
       p.blendMode(p.BLEND)
-      p.background(0, 0, 0, 10)
+      p.clear()
       t += 0.004
 
       // ── 적응형 파티클 한도 — 주기적으로 FPS 체크 후 조정 ──
@@ -107,6 +118,8 @@ export function ParticleFlow({ mousePos }: ParticleFlowProps) {
 
         pt.x += pt.vx
         pt.y += pt.vy
+        pt.x = p.constrain(pt.x, 0, p.width)
+        pt.y = p.constrain(pt.y, 0, p.height)
         pt.life++
 
         const progress = pt.life / pt.maxLife
@@ -132,8 +145,9 @@ export function ParticleFlow({ mousePos }: ParticleFlowProps) {
     }
 
     p.windowResized = () => {
-      p.resizeCanvas(p.windowWidth, p.windowHeight)
-      p.background(0)
+      const { width, height } = getSize()
+      p.resizeCanvas(width, height)
+      p.clear()
     }
   }, [])
 

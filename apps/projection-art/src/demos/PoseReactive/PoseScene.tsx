@@ -135,7 +135,6 @@ export function PoseScene({ pose, visualParams }: PoseSceneProps) {
 
   return (
     <>
-      <color attach="background" args={['#000008']} />
       <ambientLight intensity={0.2} />
       <pointLight position={[0, 0, 4]} intensity={2} color={visualParams.primaryColor} />
       <pointLight position={[0, 2, 3]} intensity={1} color={visualParams.accentColor} />
