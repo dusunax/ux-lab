@@ -225,7 +225,7 @@
           <tbody>
             <tr>
               <td><strong>키스톤 보정</strong></td>
-              <td>4코너 핸들 드래그 · 절대 픽셀 · 감도 0.02 · 10×10 그리드 오버레이 · localStorage 영속</td>
+              <td>이동/코너 warp/엣지 scale · 상하 100px/좌우 16px 기본 여백 · 캔버스/아웃라인 동일 좌표계 · localStorage 영속</td>
             </tr>
             <tr>
               <td><strong>Web Worker</strong></td>
@@ -233,7 +233,7 @@
             </tr>
             <tr>
               <td><strong>시연 프리셋</strong></td>
-              <td>Demo + 키스톤 값 localStorage 저장·복원 (<code>usePreset</code> 훅)</td>
+              <td>Demo + 키스톤 값 + FPS on/off localStorage 저장·복원 (<code>usePreset</code> 훅)</td>
             </tr>
           </tbody>
         </table>
@@ -332,7 +332,7 @@
             <tbody>
               <tr>
                 <td><code>KeystoneOverlay</code></td>
-                <td>CSS matrix3d · 4코너 핸들 (캔버스 내부) · 10×10 그리드 · localStorage</td>
+                <td>CSS matrix3d · 이동/코너 warp/엣지 scale 핸들 · 10×10 그리드 · localStorage</td>
               </tr>
               <tr>
                 <td><code>workers/poseWorker.ts</code></td>
@@ -366,13 +366,16 @@
       <div class="two-col" style="align-items: start; gap: 32px; margin-top: 16px;">
         <!-- 왼쪽: 수용 기준 -->
         <div>
-          <p class="col-head">수용 기준 (6/6)</p>
+          <p class="col-head">수용 기준 (9/9)</p>
           <ul class="check-list">
-            <li class="done">키스톤 보정 — 4코너 핸들 드래그, localStorage 영속</li>
-            <li class="done">키스톤 보정 — 절대 픽셀 · 감도 0.02 · 캔버스 내부 위치 · 10×10 그리드 오버레이</li>
+            <li class="done">키스톤 보정 — 이동/코너 warp/엣지 scale 핸들, localStorage 영속</li>
+            <li class="done">키스톤 보정 — 상하 100px·좌우 16px 기본 여백, 캔버스/아웃라인 동일 좌표계</li>
             <li class="done">Web Worker — Pose 추론 Worker 분리, Float32Array transferable 전송, 실패 시 메인스레드 폴백</li>
             <li class="done">Web Worker — Float32Array transferable 33×2 floats, zero-copy</li>
-            <li class="done">시연 프리셋 — Demo + 키스톤 값 localStorage 저장·복원 (usePreset 훅)</li>
+            <li class="done">시연 프리셋 — Demo + 키스톤 값 + FPS on/off localStorage 저장·복원 (usePreset 훅)</li>
+            <li class="done">시연 UI — Demo 드롭다운, 프리셋 설정 토글, 키스톤 활성 시 비조작 버튼 흐림</li>
+            <li class="done">Demo D — 2손 기본값, 2손/1손 순서, 권한 모달·컨트롤 캔버스 외부 분리</li>
+            <li class="done">Demo A — projection rect 기준 마우스 좌표 보정, 파티클 bounds clamp, transparent canvas</li>
             <li class="done">기존 116 tests 회귀 없음 ← 126 tests · 17 test files</li>
           </ul>
         </div>
@@ -407,7 +410,60 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 6: 이월 완성 & 리스크 해소 -->
+  <!-- Slide 6: 키스톤 UI 실행 화면 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">키스톤 보정 UI — Photoshop Transform 스타일</h2>
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:20px;margin-top:12px;align-items:start;">
+        <div>
+          <img src="./sprint-projection-art-4/shot-keystone-ui.png" alt="키스톤 보정 UI" style="width:100%;border-radius:8px;border:1px solid rgba(255,255,255,0.12);display:block;background:#000;" />
+          <p style="font-size:11px;color:#9ca3af;margin-top:6px;">Demo A + 키스톤 활성화 · 드롭다운 데모 선택 · 좌측 하단 조작 설명 박스</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">
+            <div>
+              <img src="./sprint-projection-art-4/shot-demo-b-dropdown.png" alt="Demo B 드롭다운" style="width:100%;border-radius:5px;border:1px solid rgba(255,255,255,0.12);display:block;background:#000;" />
+              <p style="font-size:10px;color:#9ca3af;margin-top:4px;">드롭다운 데모 전환 · Demo B 선택</p>
+            </div>
+            <div>
+              <img src="./sprint-projection-art-4/shot-demo-b-keystone.png" alt="Demo B 키스톤" style="width:100%;border-radius:5px;border:1px solid rgba(255,255,255,0.12);display:block;background:#000;" />
+              <p style="font-size:10px;color:#9ca3af;margin-top:4px;">Demo B + 키스톤 · FPS 100 avg 91 min</p>
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <img src="./sprint-projection-art-4/shot-demo-e-keystone.png" alt="Demo E 키스톤 warp" style="width:100%;border-radius:5px;border:1px solid rgba(255,255,255,0.12);display:block;background:#000;" />
+            <p style="font-size:10px;color:#9ca3af;margin-top:4px;">Demo E + 키스톤 warp 적용 — 코너 변형 / 그리드 시각화</p>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:4px;">
+          <div style="background:rgba(0,255,200,0.07);border:1px solid rgba(0,255,200,0.2);border-radius:6px;padding:10px 14px;">
+            <div style="font-size:10px;font-weight:700;color:#0fc;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">핸들 구성</div>
+            <ul style="margin:0;padding-left:14px;font-size:11px;color:#d1d5db;line-height:1.8;">
+              <li>◎ 코너 4개 — warp 미세 조정</li>
+              <li>□ 엣지 4개 — 스케일</li>
+              <li>✛ 중앙 — 이동</li>
+            </ul>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:10px 14px;">
+            <div style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">UI 개선</div>
+            <ul style="margin:0;padding-left:14px;font-size:11px;color:#d1d5db;line-height:1.8;">
+              <li>데모 드롭다운 전환</li>
+              <li>프리셋 설정 토글 패널</li>
+              <li>Demo + 키스톤 + FPS 저장/불러오기</li>
+              <li>저장값 삭제 버튼 활성 상태 시 연한 빨강</li>
+              <li>캔버스 배경 투명</li>
+            </ul>
+          </div>
+          <div style="margin-top:8px;">
+            <img src="./sprint-projection-art-4/shot-preset-panel.png" alt="프리셋 설정 패널" style="width:100%;border-radius:6px;border:1px solid rgba(255,255,255,0.12);display:block;background:#000;" />
+            <p style="font-size:10px;color:#9ca3af;margin-top:4px;">프리셋 패널 · 현재 설정 저장/저장값 불러오기/저장값 삭제</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: 이월 완성 & 리스크 해소 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">이월 &amp; 리스크 해소</div>
@@ -459,7 +515,7 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 7: 다음 방향 -->
+  <!-- Slide 8: 다음 방향 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">다음 방향</div>
@@ -537,7 +593,7 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 8: Q&A -->
+  <!-- Slide 9: Q&A -->
   <div class="slide slide--qa-light">
     <div class="slide-inner">
       <div class="qa-icon">Q&amp;A</div>
