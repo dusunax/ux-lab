@@ -67,9 +67,10 @@ function App() {
     || preset.showFps !== showFps
     || JSON.stringify(preset.transform) !== JSON.stringify(transform)
 
-  useEffect(() => {
-    localStorage.setItem(KEYSTONE_STORAGE_KEY, JSON.stringify(transform))
-  }, [transform])
+  const handleTransformChange = useCallback((t: ProjectionTransform) => {
+    setTransform(t)
+    localStorage.setItem(KEYSTONE_STORAGE_KEY, JSON.stringify(t))
+  }, [])
 
   useEffect(() => {
     if (!showFps) { cancelAnimationFrame(rafLoopRef.current); fpsReset(); return }
@@ -121,7 +122,7 @@ function App() {
       style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}
       onMouseMove={handleMouseMove}
     >
-      <KeystoneOverlay visible={showKeystone} transform={transform} onTransformChange={setTransform} onClose={() => setShowKeystone(false)}>
+      <KeystoneOverlay visible={showKeystone} transform={transform} onTransformChange={handleTransformChange} onClose={() => setShowKeystone(false)}>
         <Suspense fallback={<DemoFallback />}>
           {activeDemo === 'particle-flow' && <ParticleFlow mousePos={mousePos} />}
           {activeDemo === 'neon-tunnel' && <NeonTunnel mousePos={mousePos} />}
