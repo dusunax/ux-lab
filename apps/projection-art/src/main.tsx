@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App'
 import { CombinedDemo } from './pages/CombinedDemo'
+import { UnderwaterPoseReactive } from './demos/PoseReactive/underwater/UnderwaterPoseReactive'
 
 function Router() {
   const [hash, setHash] = useState(window.location.hash)
@@ -14,6 +15,7 @@ function Router() {
   }, [])
 
   if (hash === '#combined') return <CombinedDemo />
+  if (hash === '#pose/underwater') return <UnderwaterPoseReactive />
   return <App />
 }
 
