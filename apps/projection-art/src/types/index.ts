@@ -3,6 +3,7 @@ export type DemoType = 'particle-flow' | 'neon-tunnel' | 'audio-reactive' | 'han
 export interface DemoInfo {
   id: DemoType
   label: string
+  naturalLabel: string
   description: string
 }
 
@@ -15,28 +16,33 @@ export interface InteractionPoint {
 export const DEMOS: DemoInfo[] = [
   {
     id: 'particle-flow',
-    label: 'Demo A — Particle Flow',
-    description: '마우스 움직임을 따라 파티클이 생성·확산되는 인터랙티브 비주얼',
+    label: '입자 흐름',
+    naturalLabel: '빛나는 입자들',
+    description: '손을 움직이면 빛나는 입자들이 흘러요',
   },
   {
     id: 'neon-tunnel',
-    label: 'Demo B — Neon Tunnel',
-    description: '마우스 입력으로 시점·왜곡이 변화하는 3D 네온 터널',
+    label: '빛의 통로',
+    naturalLabel: '빛의 통로',
+    description: '움직임에 따라 빛의 터널이 변해요',
   },
   {
     id: 'audio-reactive',
-    label: 'Demo C — Audio Reactive',
-    description: '음악과 마우스 입력이 결합된 오디오 반응형 비주얼',
+    label: '소리 그림',
+    naturalLabel: '소리로 그리기',
+    description: '음악에 맞춰 색과 형태가 춤춰요',
   },
   {
     id: 'hand-reactive',
-    label: 'Demo D — Hand Reactive',
-    description: '웹캠 손 추적(MediaPipe Hands)으로 Three.js 파티클 비주얼 제어',
+    label: '손 그림자',
+    naturalLabel: '손으로 그리기',
+    description: '손을 들어 빛 입자를 조종해요',
   },
   {
     id: 'pose-reactive',
-    label: 'Demo E — Pose Reactive',
-    description: '전신 포즈 추적(MediaPipe Pose) + AI 생성형 비주얼 파라미터',
+    label: '몸으로 그리기',
+    naturalLabel: '온몸으로 그리기',
+    description: 'AI가 자세를 보고 색감을 바꿔줘요',
   },
 ]
 
