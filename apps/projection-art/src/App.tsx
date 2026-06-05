@@ -1,5 +1,5 @@
 import { useState, useCallback, lazy, Suspense, useEffect, useRef } from 'react'
-import { DEMOS, type DemoType, type MousePosition } from './types'
+import { DEMOS, DEMO_NATURAL_LABELS, type DemoType, type MousePosition } from './types'
 import { useFullscreen } from './hooks/useFullscreen'
 import { useFrameRate } from './hooks/useFrameRate'
 import { usePreset } from './hooks/usePreset'
@@ -329,7 +329,7 @@ function App() {
                   }}
                 >
                   <span style={{ color: activeDemo === demo.id ? `rgb(${themeRgb})` : '#ddd', fontSize: '0.88rem', fontWeight: 500 }}>
-                    {demo.naturalLabel}
+                    {DEMO_NATURAL_LABELS[demo.id]}
                   </span>
                   <small style={{ color: 'rgba(255,255,255,0.48)', fontSize: '0.72rem', lineHeight: 1.4 }}>
                     {demo.description}
@@ -507,6 +507,29 @@ function App() {
       </div>
 
       <FpsOverlay state={fpsState} visible={showFps} />
+
+      {/* 조합 데모 진입 링크 */}
+      <button
+        data-testid="go-combined-btn"
+        onClick={() => { window.location.hash = 'combined' }}
+        style={{
+          position: 'absolute',
+          bottom: '1.5rem',
+          right: '1.5rem',
+          background: `rgba(${themeRgb},0.12)`,
+          color: `rgb(${themeRgb})`,
+          border: `1px solid rgba(${themeRgb},0.35)`,
+          borderRadius: '4px',
+          padding: '0.45rem 0.9rem',
+          fontSize: '0.78rem',
+          cursor: 'pointer',
+          opacity: showMenu ? 0.85 : 0,
+          transition: 'opacity 0.5s',
+          pointerEvents: showMenu ? 'auto' : 'none',
+        }}
+      >
+        ✦ 전체 조합 보기
+      </button>
     </div>
   )
 }

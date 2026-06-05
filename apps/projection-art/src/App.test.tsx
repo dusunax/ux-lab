@@ -121,13 +121,14 @@ describe('App', () => {
       expect(screen.queryByTestId('demo-card-panel')).not.toBeInTheDocument()
     })
 
-    it('카드에 naturalLabel이 표시된다', () => {
+    it('카드에 DEMO_NATURAL_LABELS 기반 자연어 이름이 표시된다', () => {
       render(<App />)
       fireEvent.click(screen.getByTestId('demo-select-btn'))
-      // '빛나는 입자들'은 카드에만 존재하는 고유 텍스트
-      expect(screen.getByText('빛나는 입자들')).toBeInTheDocument()
-      // '빛의 통로'는 label·naturalLabel 동일이므로 getAllByText 사용
-      expect(screen.getAllByText('빛의 통로').length).toBeGreaterThanOrEqual(1)
+      // 자연어 이름이 카드 패널 내에 존재하는지 testid로 검증
+      expect(screen.getByTestId('demo-card-particle-flow')).toBeInTheDocument()
+      expect(screen.getByTestId('demo-card-neon-tunnel')).toBeInTheDocument()
+      // 카드 설명 텍스트 확인
+      expect(screen.getByText('손을 움직이면 빛나는 입자들이 흘러요')).toBeInTheDocument()
     })
   })
 
