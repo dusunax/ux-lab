@@ -114,3 +114,7 @@ xcuserdata/
 
 # Dev-team
 .last-report
+
+# 디자인 참조 이미지 (로컬 전용, 커밋 제외)
+ref/
+**/ref/
