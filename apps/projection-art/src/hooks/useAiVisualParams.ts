@@ -39,9 +39,17 @@ const FALLBACK_PARAMS: Record<PoseLabel, VisualParams> = {
   },
 }
 
+export const KEYWORD_SETS: Record<string, string> = {
+  ocean:   '바다, 파도, 해양생물, 깊은 물속, 파란 빛',
+  forest:  '숲, 나뭇잎, 이슬, 초록 빛, 자연',
+  pastel:  '꽃밭, 봄바람, 달빛, 부드러운 색깔',
+  default: '동화, 빛, 색깔, 움직임',
+}
+
 interface AiVisualParamsOptions {
   debounceMs?: number
   apiEndpoint?: string
+  themeKeywords?: string
 }
 
 function lerp(a: number, b: number, t: number): number {
@@ -61,9 +69,12 @@ function lerpParams(from: VisualParams, to: VisualParams, t: number): VisualPara
 async function fetchAiParams(
   poseLabel: PoseLabel,
   energy: number,
-  endpoint: string
+  endpoint: string,
+  themeKeywords?: string
 ): Promise<VisualParams> {
-  const prompt = `You are a visual art parameter generator.
+  const keywords = themeKeywords ?? KEYWORD_SETS.default
+  const prompt = `You are a visual art parameter generator for a children's storybook illustration.
+Theme keywords: "${keywords}"
 Given pose: "${poseLabel}", motion energy: ${energy.toFixed(2)} (0=still, 1=high)
 Respond with ONLY a JSON object (no explanation):
 {"primaryColor":"#hex","accentColor":"#hex","particleDensity":0-1,"effectIntensity":0-1,"trailLength":10-100}`
@@ -98,6 +109,7 @@ export function useAiVisualParams(
   options?: AiVisualParamsOptions
 ) {
   const debounceMs = options?.debounceMs ?? 1200
+  const themeKeywords = options?.themeKeywords
   const apiEndpoint = options?.apiEndpoint ?? (
     typeof import.meta !== 'undefined'
       ? (import.meta as { env?: Record<string, string> }).env?.VITE_AI_ENDPOINT ?? 'http://localhost:3001/chat'
@@ -117,7 +129,7 @@ export function useAiVisualParams(
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
       debounceTimerRef.current = setTimeout(() => {
         setIsLoading(true)
-        fetchAiParams(label, e, apiEndpoint)
+        fetchAiParams(label, e, apiEndpoint, themeKeywords)
           .then(result => {
             targetRef.current = result
             fromRef.current = params

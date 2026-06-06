@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useAiVisualParams } from './useAiVisualParams'
+import { useAiVisualParams, KEYWORD_SETS } from './useAiVisualParams'
 
 const mockFetch = vi.fn()
 
@@ -99,5 +99,44 @@ describe('useAiVisualParams', () => {
     await act(async () => { vi.advanceTimersByTime(200) })
 
     expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('KEYWORD_SETS에 ocean/forest/pastel/default 키가 있다', () => {
+    expect(KEYWORD_SETS.ocean).toContain('바다')
+    expect(KEYWORD_SETS.forest).toContain('숲')
+    expect(KEYWORD_SETS.pastel).toContain('꽃밭')
+    expect(KEYWORD_SETS.default).toContain('동화')
+  })
+
+  it('themeKeywords가 prompt에 포함된다', async () => {
+    const aiParams = {
+      primaryColor: '#0097e6',
+      accentColor: '#12CBC4',
+      particleDensity: 0.6,
+      effectIntensity: 0.5,
+      trailLength: 50,
+    }
+    mockFetch.mockReturnValue(Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ choices: [{ message: { content: JSON.stringify(aiParams) } }] }),
+    }))
+
+    const { rerender } = renderHook(
+      ({ label }: { label: Parameters<typeof useAiVisualParams>[0] }) =>
+        useAiVisualParams(label, 0.5, {
+          debounceMs: 100,
+          apiEndpoint: 'http://test/chat',
+          themeKeywords: KEYWORD_SETS.ocean,
+        }),
+      { initialProps: { label: 'standing' as const } }
+    )
+
+    rerender({ label: 'arms-raised' })
+    await act(async () => { vi.advanceTimersByTime(200) })
+
+    expect(mockFetch).toHaveBeenCalledOnce()
+    const [, init] = mockFetch.mock.calls[0]
+    const body = JSON.parse((init as RequestInit).body as string)
+    expect(body.messages[0].content).toContain('바다')
   })
 })

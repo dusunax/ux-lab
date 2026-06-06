@@ -3,9 +3,12 @@ import type { TrackerStatus } from '../hooks/useMotionTracker'
 interface WebcamPermissionProps {
   status: TrackerStatus
   onAllow: () => void
+  onDenied?: (canFallback: boolean) => void
   title?: string
   description?: string
   icon?: string
+  /** 카메라 거부 시 마우스 폴백 가능 여부 (Demo D: true, Demo E: false) */
+  canFallback?: boolean
 }
 
 const STATUS_LABELS: Partial<Record<TrackerStatus, string>> = {
@@ -16,9 +19,11 @@ const STATUS_LABELS: Partial<Record<TrackerStatus, string>> = {
 export function WebcamPermission({
   status,
   onAllow,
-  title = 'Demo D — Hand Reactive',
-  description = '웹캠으로 손 움직임을 감지하여 Three.js 비주얼을 제어합니다.',
+  onDenied,
+  title = '손으로 그리기',
+  description = '웹캠으로 손 움직임을 감지하여 빛 입자를 조종해요.',
   icon,
+  canFallback = false,
 }: WebcamPermissionProps) {
   const isLoading = status === 'requesting' || status === 'loading'
 
@@ -70,21 +75,40 @@ export function WebcamPermission({
       )}
 
       {status === 'error' && (
-        <button
-          data-testid="webcam-allow-btn"
-          onClick={onAllow}
-          style={{
-            background: 'rgba(255,100,100,0.1)',
-            color: '#f99',
-            border: '1px solid rgba(255,100,100,0.4)',
-            padding: '0.6rem 1.4rem',
-            borderRadius: '4px',
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-          }}
-        >
-          다시 시도
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem' }}>
+          <button
+            data-testid="webcam-allow-btn"
+            onClick={onAllow}
+            style={{
+              background: 'rgba(255,100,100,0.1)',
+              color: '#f99',
+              border: '1px solid rgba(255,100,100,0.4)',
+              padding: '0.6rem 1.4rem',
+              borderRadius: '4px',
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+            }}
+          >
+            다시 시도
+          </button>
+          {canFallback && onDenied && (
+            <button
+              data-testid="webcam-skip-btn"
+              onClick={() => onDenied(true)}
+              style={{
+                background: 'transparent',
+                color: '#aaa',
+                border: '1px solid rgba(255,255,255,0.2)',
+                padding: '0.5rem 1.2rem',
+                borderRadius: '4px',
+                fontSize: '0.82rem',
+                cursor: 'pointer',
+              }}
+            >
+              마우스로 계속하기
+            </button>
+          )}
+        </div>
       )}
 
       {isLoading && (

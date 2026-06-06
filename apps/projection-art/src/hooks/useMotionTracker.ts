@@ -102,23 +102,6 @@ export function useMotionTracker(options?: MotionTrackerOptions) {
         )
         workerRef.current = worker
 
-        worker.onmessage = (e: MessageEvent) => {
-          const { type, coords } = e.data as { type: string; coords: Float32Array | null }
-
-          if (type === 'ready') {
-            workerReadyRef.current = true
-            if (mountedRef.current) setState(s => ({ ...s, status: 'active' }))
-            return
-          }
-
-          if (type === 'result') {
-            pendingFrameRef.current = false
-            if (!mountedRef.current) return
-            const pts = coords ? [coordsToPoints(coords)] : []
-            setState(s => ({ ...s, hands: pts }))
-          }
-        }
-
         const runPoseMainThread = () => {
           if (!mountedRef.current || !videoRef.current) return
           ;(async () => {
@@ -147,6 +130,30 @@ export function useMotionTracker(options?: MotionTrackerOptions) {
               setState({ status: 'error', hands: [], error: String(err) })
             }
           })()
+        }
+
+        worker.onmessage = (e: MessageEvent) => {
+          const { type, coords } = e.data as { type: string; coords: Float32Array | null }
+
+          if (type === 'ready') {
+            workerReadyRef.current = true
+            if (mountedRef.current) setState(s => ({ ...s, status: 'active' }))
+            return
+          }
+
+          if (type === 'result') {
+            pendingFrameRef.current = false
+            if (!mountedRef.current) return
+            const pts = coords ? [coordsToPoints(coords)] : []
+            setState(s => ({ ...s, hands: pts }))
+            return
+          }
+
+          // Worker failed to load model — fall back to main thread
+          if (type === 'error') {
+            workerReadyRef.current = false
+            runPoseMainThread()
+          }
         }
 
         worker.onerror = () => {
