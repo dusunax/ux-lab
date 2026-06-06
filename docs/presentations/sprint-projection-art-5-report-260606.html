@@ -326,38 +326,36 @@
         "이번엔 제 몸이 붓이 되는 거네요."
         <cite>— 이하나 (클라이언트, 2026-06-06 회의) · 색상 팔레트 직접 제공 · OQ 3개 자체 결정 · <code>#pose/underwater</code></cite>
       </blockquote>
-      <div class="two-col" style="gap: 28px; align-items: start;">
-        <!-- 왼쪽: 스크린샷 2장 -->
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <p class="col-head" style="margin-bottom: 4px;">권한 허용 플로우</p>
-          <div style="display: flex; gap: 10px;">
-            <figure style="margin: 0; flex: 1;">
-              <img
-                src="./sprint-projection-art-5/shot-underwater-permission.png"
-                alt="Underwater 카메라 권한 요청 화면"
-                style="width:100%; max-height: min(32vh,230px); object-fit:contain; border-radius:8px; border:1px solid rgba(0,0,0,0.10);"
-              />
-              <figcaption style="font-size:11px; color:#6b7280; margin-top:4px; text-align:center;">idle — 카메라 허용하기</figcaption>
-            </figure>
-            <figure style="margin: 0; flex: 1;">
-              <img
-                src="./sprint-projection-art-5/shot-underwater-loading.png"
-                alt="Underwater MediaPipe 로딩 상태"
-                style="width:100%; max-height: min(32vh,230px); object-fit:contain; border-radius:8px; border:1px solid rgba(0,0,0,0.10);"
-              />
-              <figcaption style="font-size:11px; color:#6b7280; margin-top:4px; text-align:center;">loading — MediaPipe 모델</figcaption>
-            </figure>
-          </div>
+      <div class="two-col" style="gap: 24px; align-items: start; grid-template-columns: 34% 1fr;">
+        <!-- 왼쪽: 스크린샷 상하 배치 -->
+        <div style="display: flex; flex-direction: column; gap: 8px; flex: 0 0 34%;">
+          <p class="col-head" style="margin-bottom: 2px;">권한 허용 플로우</p>
+          <figure style="margin: 0;">
+            <img
+              src="./sprint-projection-art-5/shot-underwater-permission.png"
+              alt="Underwater 카메라 권한 요청 화면"
+              style="width:100%; object-fit:contain; border-radius:8px; border:1px solid rgba(0,0,0,0.12);"
+            />
+            <figcaption style="font-size:11px; color:#6b7280; margin-top:3px; text-align:center;">idle — 카메라 허용하기</figcaption>
+          </figure>
+          <figure style="margin: 0;">
+            <img
+              src="./sprint-projection-art-5/shot-underwater-loading.png"
+              alt="Underwater MediaPipe 로딩 상태"
+              style="width:100%; object-fit:contain; border-radius:8px; border:1px solid rgba(0,0,0,0.12);"
+            />
+            <figcaption style="font-size:11px; color:#6b7280; margin-top:3px; text-align:center;">loading — MediaPipe 모델</figcaption>
+          </figure>
         </div>
-        <!-- 오른쪽: 시연 영상 -->
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <p class="col-head" style="margin-bottom: 4px;">시연 녹화</p>
+        <!-- 오른쪽: 시연 영상 (크게) -->
+        <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+          <p class="col-head" style="margin-bottom: 2px;">시연 녹화</p>
           <video
             src="./sprint-projection-art-5/underwater-demo.mp4"
             controls
             muted
             loop
-            style="width:100%; max-height: min(36vh,260px); object-fit:contain; border-radius:8px; border:1px solid rgba(0,0,0,0.10); background:#000;"
+            style="width:100%; max-height: min(50vh,370px); object-fit:contain; border-radius:10px; border:1px solid rgba(0,0,0,0.12); background:#000;"
           ></video>
           <p style="font-size:11px; color:#6b7280; text-align:center; margin:0;">chrome-capture-2026-06-06 · #pose/underwater</p>
         </div>
