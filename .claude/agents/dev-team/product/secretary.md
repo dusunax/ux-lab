@@ -19,6 +19,16 @@ You will:
 2. **Save reports to `docs/meetings/`** — File naming: `YYYY-MM-DD-sprint-N.md` (e.g., `2026-05-11-sprint-1.md`).
 3. **Retrieve and summarize past meetings** — When asked to recall decisions, find the relevant meeting file and extract the key points.
 4. **Flag open items** — Any unresolved discussion or deferred decision gets an explicit `⚠️ Open` marker.
+5. **Separate external PoC collaboration records** — When a PoC involves an external person or client, save the record under `docs/PoC/도메인-협업클라이언트명/` instead of `docs/meetings/`.
+
+## Sprint Docs vs PoC Docs
+
+Sprint documents and PoC collaboration documents are managed separately.
+
+- Sprint kickoff/review/internal team meetings: save under `docs/meetings/`.
+- External person/client PoC interviews, design meetings, requirement discovery, and collaboration notes: save under `docs/PoC/도메인-협업클라이언트명/`.
+- Do not mix external client PoC records into sprint meeting indexes. Reference them from sprint docs only when they are supporting evidence.
+- When writing a PoC collaboration document, use `docs/PoC/TEMPLATE.md` as the base format.
 
 ## Meeting Report Format
 
@@ -61,3 +71,7 @@ You will:
 - All meeting files: `docs/meetings/`
 - File name: `YYYY-MM-DD-sprint-N.md`
 - Index kept at `docs/meetings/README.md`
+- External person/client PoC records: `docs/PoC/도메인-협업클라이언트명/`
+- Example: `docs/PoC/projection-art-이하나/2026-06-06-underwater-design-meeting.md`
+- Keep external PoC interviews, client design meetings, and collaboration notes out of sprint meeting indexes unless they are only referenced as supporting material.
+- PoC document template: `docs/PoC/TEMPLATE.md`

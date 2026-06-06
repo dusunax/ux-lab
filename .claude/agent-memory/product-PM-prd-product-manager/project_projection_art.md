@@ -5,11 +5,18 @@ metadata:
   type: project
 ---
 
-Vite + React 18 + TypeScript 기반 인터랙티브 프로젝션 아트 PoC 프로젝트. PoC 문서: `docs/PoC/projection-Interaction-PoC_260529.md`
+Vite + React 18 + TypeScript 기반 인터랙티브 프로젝션 아트 PoC 프로젝트.
+
+**PoC 문서:**
+- 기본 PoC 개요: `docs/PoC/projection-Interaction-PoC_260529.md`
+- 외부 협업/클라이언트 PoC 인덱스: `docs/PoC/README.md`
+- 이하나 클라이언트 Underwater 디자인 회의: `docs/PoC/projection-art-이하나/2026-06-06-underwater-design-meeting.md`
 
 **Why:** 수산시장 팀의 인터랙티브 미디어아트 기술 가능성 검증. "공간 자체가 반응하는 경험" 구현이 목표.
 
 **How to apply:** Vite + React 18 + TS 구조로 확정. ai-empathy-diary와 달리 빌드 도구 있음. 파일 크기 규칙 정상 적용.
+
+**문서 관리:** 외부 인사 또는 협업 클라이언트와 진행한 PoC 인터뷰/디자인 회의/협업 기록은 `docs/meetings/`가 아니라 `docs/PoC/도메인-협업클라이언트명/`에 보관한다.
 
 ---
 
