@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint projection-art/5 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* projection-art/5 전용 추가 스타일 */
+
+    /* 클라이언트 인용구 */
+    .client-quote {
+      font-size: 20px;
+      font-style: italic;
+      font-weight: 500;
+      color: #1a4d2e;
+      line-height: 1.65;
+      border-left: 4px solid #217346;
+      padding: 16px 24px;
+      background: #f0fdf4;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    .client-quote cite {
+      display: block;
+      font-size: 13px;
+      font-style: normal;
+      color: #4b5563;
+      margin-top: 8px;
+      font-weight: 400;
+    }
+
+    /* 카피라이팅 비교 테이블 강조 */
+    .copy-before {
+      color: #9ca3af;
+      text-decoration: line-through;
+      font-size: 13px;
+    }
+    .copy-after {
+      color: #217346;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    /* 라우트 흐름 */
+    .route-item {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .route-item:last-child { border-bottom: none; }
+    .route-hash {
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 3px;
+      color: #374151;
+      flex-shrink: 0;
+      min-width: 160px;
+    }
+    .route-hash-new {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    /* 신규 파일 목록 */
+    .file-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 13.5px;
+    }
+    .file-item:last-child { border-bottom: none; }
+    .file-path {
+      font-family: 'Consolas', monospace;
+      font-size: 12px;
+      color: #217346;
+      font-weight: 600;
+    }
+    .file-desc {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    /* 이연 항목 */
+    .oos-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .oos-item:last-child { border-bottom: none; }
+    .oos-dash {
+      font-size: 13px;
+      font-weight: 700;
+      color: #9ca3af;
+      flex-shrink: 0;
+      min-width: 16px;
+    }
+
+    /* 다음 스프린트 후보 */
+    .next-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .next-item:last-child { border-bottom: none; }
+    .next-icon {
+      font-size: 14px;
+      color: #217346;
+      flex-shrink: 0;
+      min-width: 18px;
+    }
+
+    /* OQ 해소 배지 */
+    .oq-resolved {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #217346;
+      background: #dcfce7;
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+
+    /* 테스트 카운트 */
+    .test-count-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 12px 18px;
+      margin-top: 12px;
+    }
+    .test-count-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: #217346;
+    }
+    .test-count-label {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.5;
+    }
+    .test-count-label span {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    /* Slide overflow guard */
+    .slide img, .slide video {
+      max-width: 100%;
+      max-height: min(52vh, 390px);
+      object-fit: contain;
+    }
+    .slide .two-col {
+      min-height: 0;
+      align-items: start;
+    }
+
+    /* col-head 간격 */
+    .col-head { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · projection-art</div>
+        <h1 class="cover-title">Sprint projection-art / 5</h1>
+        <p class="cover-sub">동화 작가 페르소나 기반 UX 고도화 + Underwater Demo</p>
+        <p class="cover-meta">2026-06-06 · projection-art · 수산시장</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: 목표 & 페르소나 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SPRINT GOAL</div>
+      <h2 class="slide-title">"그냥 켜면 작동하는" 창작자 경험</h2>
+      <blockquote class="goal-quote">
+        5년차 동화 작가 페르소나 시나리오 기반으로 PoC를 고도화한다 — "그냥 켜면 작동하는" 온보딩 UX와 창작자 친화 비주얼 커스터마이징을 구현해 비기술 사용자가 <strong>3클릭 이하로 인터랙션을 시작</strong>할 수 있음을 검증한다.
+      </blockquote>
+      <div style="margin-top: 20px; width: 100%;">
+        <p class="col-head">클라이언트 페르소나</p>
+        <table class="data-table">
+          <thead>
+            <tr><th style="width: 130px;">항목</th><th>내용</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>클라이언트</strong></td><td>이하나 (동화 작가, 35세)</td></tr>
+            <tr><td><strong>거주</strong></td><td>제주도</td></tr>
+            <tr><td><strong>전문 분야</strong></td><td>바다 그림 — 해양 색감</td></tr>
+            <tr><td><strong>기술 수준</strong></td><td>비숙련자 (코드 불가)</td></tr>
+            <tr><td><strong>UX 기대</strong></td><td>"그냥 켜면 작동하는" 직관적 경험</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: 수용 기준 8/8 완료 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">ACCEPTANCE CRITERIA</div>
+      <h2 class="slide-title">
+        수용 기준 전원 달성
+        <span class="badge badge-green" style="font-size: 15px; padding: 3px 12px; margin-left: 12px; vertical-align: middle;">8 / 8 · 100%</span>
+      </h2>
+      <ul class="check-list" style="margin-top: 8px;">
+        <li class="done">기술 비숙련자가 3클릭 이하로 인터랙션 시작</li>
+        <li class="done">Demo 선택 화면에 기술 코드명 없음 — 자연어 대체</li>
+        <li class="done">"화면에 맞추기" 버튼으로 키스톤 원클릭 초기화</li>
+        <li class="done">테마 프리셋 3종 선택 → Demo 색감 즉시 반영</li>
+        <li class="done">Demo E 동화 키워드 기반 AI 프롬프트 → 비주얼 변경</li>
+        <li class="done">웹캠 거부 시 마우스 인터랙션으로 Demo 동작</li>
+        <li class="done">FPS · Keystone · Worker 등 기술 용어 UI에서 제거</li>
+        <li class="done">테스트 161개 · 18 파일 전원 통과 <span style="font-size:12px;color:#9ca3af;">(Sprint 4: 126개 → 161개)</span></li>
+      </ul>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: 주요 구현 (1) — 온보딩 · 카드 · 테마 · 키스톤 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">IMPLEMENTATION</div>
+      <h2 class="slide-title">온보딩 UX · 카드 · 테마 · 키스톤</h2>
+      <div class="two-col" style="gap: 36px; margin-top: 8px;">
+        <!-- 왼쪽 -->
+        <div>
+          <p class="col-head">신규 UX 컴포넌트</p>
+          <div class="file-item">
+            <span style="font-size: 14px; font-weight: 600; color: #1a1a1a;">온보딩 오버레이</span>
+            <span class="file-desc">최초 로드 시 "데모를 선택하고, 움직여 보세요!" 전문 안내</span>
+          </div>
+          <div class="file-item">
+            <span style="font-size: 14px; font-weight: 600; color: #1a1a1a;">Demo 선택 카드</span>
+            <span class="file-desc">select 드롭다운 → 카드 패널, <code>naturalLabel</code> + 한 줄 설명, role=listbox</span>
+          </div>
+          <div class="file-item">
+            <span style="font-size: 14px; font-weight: 600; color: #1a1a1a;">테마 프리셋 3종</span>
+            <span class="file-desc">파스텔 / 바다(기본) / 숲 · <code>useTheme</code> 훅 · localStorage 영속</span>
+          </div>
+        </div>
+        <!-- 오른쪽 -->
+        <div>
+          <p class="col-head">UI 카피라이팅 전면 교체</p>
+          <table class="data-table" style="font-size: 13px; margin-bottom: 14px;">
+            <thead>
+              <tr><th>기존</th><th>변경</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="copy-before">FPS</span></td>
+                <td><span class="copy-after">성능 표시</span></td>
+              </tr>
+              <tr>
+                <td><span class="copy-before">Keystone</span></td>
+                <td><span class="copy-after">화면 맞추기</span></td>
+              </tr>
+              <tr>
+                <td><span class="copy-before">Demo A~E</span></td>
+                <td><span class="copy-after">빛나는 입자들 등 자연어</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="file-item">
+            <span style="font-size: 14px; font-weight: 600; color: #1a1a1a;">키스톤 리셋</span>
+            <span class="file-desc">"화면에 맞추기" 버튼 — 보정값만 초기화</span>
+          </div>
+          <div class="file-item">
+            <span style="font-size: 14px; font-weight: 600; color: #1a1a1a;">웹캠 폴백</span>
+            <span class="file-desc"><code>canFallback</code> 분기 · Demo D 마우스 대체 경로</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: Underwater Demo 클라이언트 협업 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">HIGHLIGHT — CLIENT COLLABORATION</div>
+      <h2 class="slide-title">Underwater Demo — 이하나 작가 협업</h2>
+      <blockquote class="client-quote">
+        "이번엔 제 몸이 붓이 되는 거네요."
+        <cite>— 이하나 (클라이언트, 2026-06-06 회의)</cite>
+      </blockquote>
+      <div class="two-col" style="gap: 36px;">
+        <!-- 왼쪽 -->
+        <div>
+          <p class="col-head">클라이언트 인터뷰 기반 설계</p>
+          <ul class="bullet-list">
+            <li>클라이언트 디자인 회의 (2026-06-06, 1시간)</li>
+            <li>OQ 3개 자체 결정 (수온약층 shader / 야광충 트리거 / 파티클 밀도)</li>
+            <li>색상 팔레트: 클라이언트 직접 제공 (#03045e → #caf0f8)</li>
+          </ul>
+        </div>
+        <!-- 오른쪽 -->
+        <div>
+          <p class="col-head">기술 구현</p>
+          <ul class="bullet-list">
+            <li>라우트: <code>#pose/underwater</code></li>
+            <li>배경: 오가닉 블롭 5개 GLSL shader</li>
+            <li>손 추적: MediaPipe Hands 양손, 21 landmark</li>
+            <li>파티클: 원형 텍스처 + sin drift 수중 유영</li>
+            <li>야광충: energy &gt; 0.6 → <code>#80ffdb</code> 전환</li>
+            <li>파도: ambient 항상 구동, energy 연동 진폭</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: 기술 현황 — 라우트 & 테스트 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">TECH STATUS</div>
+      <h2 class="slide-title">라우트 구조 &amp; 테스트</h2>
+      <div class="two-col" style="gap: 40px; margin-top: 8px;">
+        <!-- 왼쪽 -->
+        <div>
+          <p class="col-head">라우트 구조</p>
+          <div class="route-item">
+            <code class="route-hash">(없음)</code>
+            <span>App — 기존 Demo 스위처</span>
+          </div>
+          <div class="route-item">
+            <code class="route-hash route-hash-new">#combined</code>
+            <span>CombinedDemo — A~E 레이어 합성</span>
+          </div>
+          <div class="route-item">
+            <code class="route-hash route-hash-new">#pose/underwater</code>
+            <span>UnderwaterPoseReactive <span class="badge badge-green" style="font-size:11px;padding:1px 6px;">신규</span></span>
+          </div>
+          <div style="margin-top: 16px;">
+            <table class="data-table" style="font-size: 13px;">
+              <thead>
+                <tr><th>구분</th><th style="text-align:right;">Sprint 4</th><th style="text-align:right;">Sprint 5</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tests</td>
+                  <td style="text-align:right;color:#888;">126</td>
+                  <td style="text-align:right;font-weight:700;color:#217346;">161</td>
+                </tr>
+                <tr>
+                  <td>Test Files</td>
+                  <td style="text-align:right;color:#888;">17</td>
+                  <td style="text-align:right;font-weight:700;color:#217346;">18</td>
+                </tr>
+                <tr>
+                  <td>Routes</td>
+                  <td style="text-align:right;color:#888;">1</td>
+                  <td style="text-align:right;font-weight:700;color:#217346;">3</td>
+                </tr>
+                <tr>
+                  <td>Demos</td>
+                  <td style="text-align:right;color:#888;">A~E</td>
+                  <td style="text-align:right;font-weight:700;color:#217346;">A~E + Underwater</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- 오른쪽 -->
+        <div>
+          <p class="col-head">신규 파일</p>
+          <div class="file-item">
+            <span class="file-path">src/hooks/useTheme.ts</span>
+            <span class="file-desc">테마 3종 훅</span>
+          </div>
+          <div class="file-item">
+            <span class="file-path">src/types/index.ts</span>
+            <span class="file-desc">DEMO_NATURAL_LABELS Record 분리</span>
+          </div>
+          <div class="file-item">
+            <span class="file-path">src/pages/CombinedDemo.tsx</span>
+            <span class="file-desc">A~E 합성 페이지</span>
+          </div>
+          <div class="file-item">
+            <span class="file-path">src/demos/PoseReactive/underwater/</span>
+            <span class="file-desc">Underwater 신규 디렉토리</span>
+          </div>
+          <div class="file-item">
+            <span class="file-path">src/main.tsx</span>
+            <span class="file-desc">hash 라우터 (Router 컴포넌트)</span>
+          </div>
+          <div class="test-count-row">
+            <div class="test-count-num">161</div>
+            <div class="test-count-label">
+              전체 테스트 통과<br>
+              <span>18 test files · 0 failures</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: 결정 사항 & OQ -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">DECISIONS &amp; OQ</div>
+      <h2 class="slide-title">OQ 전원 해소</h2>
+      <div class="two-col" style="gap: 40px; margin-top: 8px;">
+        <!-- 왼쪽 -->
+        <div>
+          <p class="col-head">Sprint 5 OQ 결정</p>
+          <table class="data-table" style="font-size: 13px;">
+            <thead>
+              <tr><th style="width: 54px;">상태</th><th>결정</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>팔레트 색상값 정의 주체</strong><br><span style="font-size:12px;color:#6b7280;">UX 초안 → FE 구현</span></td>
+              </tr>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>웹캠 폴백 Demo 범위</strong><br><span style="font-size:12px;color:#6b7280;">마우스 대응 Demo만 (Pose 제외)</span></td>
+              </tr>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>Demo E 키워드 형식</strong><br><span style="font-size:12px;color:#6b7280;">사전 정의 세트 선택</span></td>
+              </tr>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>키스톤 리셋 범위</strong><br><span style="font-size:12px;color:#6b7280;">보정값만 (나머지 설정 유지)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 오른쪽 -->
+        <div>
+          <p class="col-head">Underwater OQ 결정</p>
+          <table class="data-table" style="font-size: 13px;">
+            <thead>
+              <tr><th style="width: 54px;">상태</th><th>결정</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>수온약층 경계</strong><br><span style="font-size:12px;color:#6b7280;">GLSL smoothstep + sin 노이즈</span></td>
+              </tr>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>야광충 트리거</strong><br><span style="font-size:12px;color:#6b7280;">energy &gt; 0.6 임계치</span></td>
+              </tr>
+              <tr>
+                <td><span class="oq-resolved">확정</span></td>
+                <td><strong>플랑크톤 밀도</strong><br><span style="font-size:12px;color:#6b7280;">400개 시작, 시안 후 조정</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: 이연 항목 & 다음 방향 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">OUT OF SCOPE &amp; NEXT</div>
+      <h2 class="slide-title">이연 항목 &amp; Sprint 6 방향</h2>
+      <div class="two-col" style="gap: 40px; margin-top: 8px;">
+        <!-- 왼쪽 -->
+        <div>
+          <p class="col-head">이연 항목</p>
+          <div class="oos-item">
+            <span class="oos-dash">—</span>
+            <div>
+              <strong>실사용자 인터뷰/설문</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">인프라 · 리크루팅 비용</span>
+            </div>
+          </div>
+          <div class="oos-item">
+            <span class="oos-dash">—</span>
+            <div>
+              <strong>다중 프로젝터 연동</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">하드웨어 미확정</span>
+            </div>
+          </div>
+          <div class="oos-item">
+            <span class="oos-dash">—</span>
+            <div>
+              <strong>모바일 환경</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">데스크톱 전용</span>
+            </div>
+          </div>
+          <div class="oos-item">
+            <span class="oos-dash">—</span>
+            <div>
+              <strong>테마 4종 이상</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">3종 검증 후 판단</span>
+            </div>
+          </div>
+          <div class="oos-item">
+            <span class="oos-dash">—</span>
+            <div>
+              <strong>신규 Demo 추가</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">기존 고도화 우선</span>
+            </div>
+          </div>
+        </div>
+        <!-- 오른쪽 -->
+        <div>
+          <p class="col-head">다음 스프린트 후보</p>
+          <div class="next-item">
+            <span class="next-icon">→</span>
+            <div>
+              <strong>이하나 클라이언트 시안 피드백 세션</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">Underwater 플랑크톤 밀도 조정</span>
+            </div>
+          </div>
+          <div class="next-item">
+            <span class="next-icon">→</span>
+            <div>
+              <strong>실사용자 시나리오 워크스루 1회</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">3클릭 온보딩 시나리오 검증</span>
+            </div>
+          </div>
+          <div class="next-item">
+            <span class="next-icon">→</span>
+            <div>
+              <strong>Underwater 2차 디자인 개선</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">시안 반영</span>
+            </div>
+          </div>
+          <div class="next-item">
+            <span class="next-icon">→</span>
+            <div>
+              <strong>성능 최적화</strong><br>
+              <span style="font-size:12px;color:#9ca3af;">3개 Three.js 인스턴스 동시 구동</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">Sprint projection-art / 5</p>
+      <div class="qa-links">
+        <span>branch: sprint/projection-art/5</span>
+        <span>tests: 161 passed</span>
+        <span>routes: 3</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div><!-- .deck -->
+
+<div class="nav-hint">← → 키 또는 클릭으로 이동</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
