@@ -18,3 +18,10 @@ export function generateTags(persona: Persona): string[] {
     ...persona.signatureSound.split(",").map((s) => s.trim().toLowerCase()),
   ].filter(Boolean);
 }
+
+// Suno용 스타일 태그 — genre + signatureSound를 콤마로 합침
+export function generateSunoTags(persona: Persona): string {
+  return [persona.genre, persona.signatureSound, persona.worldview ? "atmospheric" : ""]
+    .filter(Boolean)
+    .join(", ");
+}

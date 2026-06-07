@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Copy, Check, Loader2, Music2 } from "lucide-react";
 import { Persona } from "@/lib/types";
-import { generatePrompt, generateTags } from "./generatePrompt";
+import { generatePrompt, generateTags, generateSunoTags } from "./generatePrompt";
 
 interface Props {
   persona: Persona;
@@ -36,7 +36,7 @@ export function PromptPreview({ persona, onAddTrack }: Props) {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, duration: 15 }),
+        body: JSON.stringify({ tags: generateSunoTags(persona), title: title.trim() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "생성 실패");
