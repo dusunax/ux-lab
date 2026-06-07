@@ -11,6 +11,7 @@ const EMPTY: FormData = {
   worldview: "",
   signatureSound: "",
   albumConcept: "",
+  sunoPrompt: "",
   coverImageUrl: "",
 };
 
@@ -66,6 +67,14 @@ export function PersonaForm({ initial = EMPTY, onSubmit, onCancel }: Props) {
           className={inputCls}
         />
       </Field>
+      <Field label="Suno 프롬프트" hint="Suno Advanced > Lyrics/Prompt 필드에 그대로 사용">
+        <textarea
+          {...field("sunoPrompt")}
+          rows={4}
+          placeholder={"이 뮤지션의 음악이 어떤 분위기인지 서술하세요.\ne.g. A cold, cinematic darkwave track. Pulsing analog synth basslines under distant, reverb-soaked atmosphere. Melancholy but forward-moving."}
+          className={inputCls}
+        />
+      </Field>
       <Field label="커버 이미지 URL">
         <input {...field("coverImageUrl")} placeholder="https://..." className={inputCls} />
       </Field>
@@ -82,12 +91,15 @@ export function PersonaForm({ initial = EMPTY, onSubmit, onCancel }: Props) {
   );
 }
 
-function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+function Field({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div className="space-y-1">
-      <label className="text-xs text-muted font-medium uppercase tracking-wide">
-        {label}{required && <span className="text-accent ml-1">*</span>}
-      </label>
+      <div className="flex items-baseline gap-2">
+        <label className="text-xs text-muted font-medium uppercase tracking-wide">
+          {label}{required && <span className="text-accent ml-1">*</span>}
+        </label>
+        {hint && <span className="text-xs text-border">{hint}</span>}
+      </div>
       {children}
     </div>
   );

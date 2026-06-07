@@ -5,6 +5,7 @@ export interface Persona {
   worldview: string;
   signatureSound: string;
   albumConcept: string;
+  sunoPrompt: string;   // Suno Advanced > Lyrics/Prompt 필드에 그대로 붙여넣는 텍스트
   coverImageUrl: string;
   createdAt: string;
 }
