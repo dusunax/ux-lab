@@ -13,3 +13,9 @@
 | 파일 | 구분 | 날짜 | 내용 |
 |------|------|------|------|
 | [projection-art-이하나/2026-06-06-underwater-design-meeting.md](projection-art-이하나/2026-06-06-underwater-design-meeting.md) | Demo E "Underwater" 클라이언트 디자인 회의 | 2026-06-06 | 동화 작가 이하나(외부 클라이언트) 인터뷰 — Underwater 테마 색상 팔레트·파도 레이어·파티클·스켈레톤 스타일 확정 |
+
+## ai-musician
+
+| 파일 | 구분 | 날짜 | 내용 |
+|------|------|------|------|
+| [AI-Musician-PoC_260607.md](AI-Musician-PoC_260607.md) | AI 뮤지션 앱 PoC 기획서 | 2026-06-07 | 작가관 기반 AI 뮤지션 페르소나 시스템 — 페르소나 정의·음원 생성 파이프라인·앨범 메타데이터 구조·데모 3종 기획 |
