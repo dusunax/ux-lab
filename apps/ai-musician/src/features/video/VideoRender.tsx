@@ -5,6 +5,15 @@ import { Film, Upload, Loader2, Image as ImageIcon, Music } from "lucide-react";
 import { Persona } from "@/lib/types";
 import { renderVideoFromFiles } from "@/lib/renderVideo";
 
+const BG_PRESETS = [
+  { label: "Deep black", value: "#0a0a0f" },
+  { label: "Dark navy",  value: "#0d1b2a" },
+  { label: "Midnight",   value: "#1a1a2e" },
+  { label: "Charcoal",   value: "#1c1c1e" },
+  { label: "Dark coffee",value: "#1a0e00" },
+  { label: "Forest",     value: "#0a1a10" },
+];
+
 interface Props {
   persona: Persona | null;
 }
@@ -16,6 +25,9 @@ export function VideoRender({ persona }: Props) {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
+  const [bgColor, setBgColor] = useState(BG_PRESETS[0].value);
+  const [artist, setArtist] = useState(persona?.name ?? "");
+  const [composer, setComposer] = useState(persona?.name ?? "");
   const [rendering, setRendering] = useState(false);
 
   const imageUrl = persona?.coverImageUrl ?? "";
@@ -31,6 +43,9 @@ export function VideoRender({ persona }: Props) {
         imageFile,
         imageUrl,
         title: title.trim(),
+        bgColor,
+        artist: artist.trim(),
+        composer: composer.trim(),
       });
     } catch (err) {
       alert(err instanceof Error ? err.message : "영상 생성 실패");
@@ -49,6 +64,68 @@ export function VideoRender({ persona }: Props) {
           placeholder="트랙 제목을 입력하세요"
           className={inputCls}
         />
+      </Field>
+
+      {/* 가수 / 작가 */}
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="가수">
+          <input
+            value={artist}
+            onChange={(e) => setArtist(e.target.value)}
+            placeholder={persona?.name ?? "가수명"}
+            className={inputCls}
+          />
+        </Field>
+        <Field label="작가">
+          <input
+            value={composer}
+            onChange={(e) => setComposer(e.target.value)}
+            placeholder={persona?.name ?? "작가명"}
+            className={inputCls}
+          />
+        </Field>
+      </div>
+
+      {/* 배경색 */}
+      <Field label="배경색">
+        <div className="flex items-center gap-2 flex-wrap">
+          {BG_PRESETS.map((p) => (
+            <button
+              key={p.value}
+              title={p.label}
+              onClick={() => setBgColor(p.value)}
+              className="w-8 h-8 rounded-full border-2 transition-all shrink-0"
+              style={{
+                backgroundColor: p.value,
+                borderColor: bgColor === p.value ? "#22d3ee" : "transparent",
+                outline: bgColor === p.value ? "2px solid #22d3ee33" : "none",
+              }}
+            />
+          ))}
+          <label className="flex items-center gap-1.5 cursor-pointer ml-1">
+            <span className="text-xs text-muted">직접 입력</span>
+            <input
+              type="color"
+              value={bgColor}
+              onChange={(e) => setBgColor(e.target.value)}
+              className="w-8 h-8 rounded cursor-pointer border border-border bg-transparent p-0.5"
+            />
+          </label>
+          <span className="text-xs text-border font-mono ml-auto">{bgColor}</span>
+        </div>
+        {/* 미리보기 */}
+        <div
+          className="mt-2 rounded-md overflow-hidden"
+          style={{ backgroundColor: bgColor, aspectRatio: "16/9", maxHeight: 80 }}
+        >
+          <div className="w-full h-full flex items-center justify-center gap-3">
+            <div className="w-10 h-10 rounded bg-white/10" />
+            <div className="space-y-1">
+              <div className="h-2 w-20 rounded bg-white/70" />
+              <div className="h-1.5 w-14 rounded bg-white/40" />
+            </div>
+          </div>
+        </div>
       </Field>
 
       {/* 오디오 파일 */}
@@ -115,7 +192,11 @@ export function VideoRender({ persona }: Props) {
 
       {!canRender && !rendering && (
         <p className="text-xs text-border text-center">
-          {!audioFile ? "오디오 파일을 선택해주세요" : !hasImage ? "이미지를 선택해주세요" : "제목을 입력해주세요"}
+          {!audioFile
+            ? "오디오 파일을 선택해주세요"
+            : !hasImage
+            ? "이미지를 선택해주세요"
+            : "제목을 입력해주세요"}
         </p>
       )}
     </div>
@@ -155,7 +236,11 @@ function FileDrop({
             <p className="text-xs text-muted">{(file.size / 1024 / 1024).toFixed(1)} MB</p>
           </div>
           <button
-            onClick={(e) => { e.stopPropagation(); inputRef.current!.value = ""; onChange(null as unknown as File); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              inputRef.current!.value = "";
+              onChange(null as unknown as File);
+            }}
             className="text-xs text-muted hover:text-red-400 ml-auto shrink-0"
           >
             제거
@@ -163,7 +248,9 @@ function FileDrop({
         </>
       ) : (
         <>
-          <div className="w-9 h-9 rounded bg-elevated flex items-center justify-center shrink-0">{icon}</div>
+          <div className="w-9 h-9 rounded bg-elevated flex items-center justify-center shrink-0">
+            {icon}
+          </div>
           <div>
             <p className="text-sm text-muted">클릭 또는 드래그하여 파일 선택</p>
             <p className="text-xs text-border">{hint}</p>
@@ -184,7 +271,9 @@ function FileDrop({
   );
 }
 
-function Field({ label, hint, required, children }: {
+function Field({
+  label, hint, required, children,
+}: {
   label: string; hint?: string; required?: boolean; children: React.ReactNode;
 }) {
   return (

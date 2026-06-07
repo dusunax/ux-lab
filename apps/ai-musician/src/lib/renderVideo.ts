@@ -36,11 +36,17 @@ export async function renderVideoFromFiles({
   imageFile,
   imageUrl,
   title,
+  bgColor = "#0a0a0f",
+  artist = "",
+  composer = "",
 }: {
   audioFile: File;
   imageFile: File | null;
   imageUrl: string;
   title: string;
+  bgColor?: string;
+  artist?: string;
+  composer?: string;
 }): Promise<void> {
   const fd = new FormData();
   fd.append("audio", audioFile);
@@ -50,6 +56,9 @@ export async function renderVideoFromFiles({
     fd.append("imageUrl", imageUrl);
   }
   fd.append("title", title);
+  fd.append("bgColor", bgColor);
+  fd.append("artist", artist);
+  fd.append("composer", composer);
 
   const res = await fetch("/api/render-video", { method: "POST", body: fd });
   await downloadBlob(res, title || "track");
