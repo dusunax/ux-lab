@@ -17,6 +17,12 @@
 | [ai-empathy-diary/2026-05-24-sprint-8-kickoff.md](./ai-empathy-diary/2026-05-24-sprint-8-kickoff.md) | Sprint ai-empathy-diary/8 킥오프 | 2026-05-24 | Firebase Auth 서버사이드 검증 + model_labels 컬렉션 분리 |
 | [ai-empathy-diary/2026-05-26-sprint-9-kickoff.md](./ai-empathy-diary/2026-05-26-sprint-9-kickoff.md) | Sprint ai-empathy-diary/9 킥오프 | 2026-05-26 | 오케스트레이터 파일 영역 분리 제약 도입 + 에이전트 간 충돌 제거 |
 
+### ai-musician
+
+| 파일 | 스프린트 | 날짜 | 주요 결정 |
+|------|----------|------|-----------|
+| [ai-musician/2026-06-07-sprint-1-kickoff.md](./ai-musician/2026-06-07-sprint-1-kickoff.md) | Sprint ai-musician/1 킥오프 | 2026-06-07 | AI 뮤지션 페르소나 정의 + 프롬프트 기반 음원 생성 PoC — localStorage, JSON 다운로드, 단일 트랙 검증 |
+
 ### projection-art
 
 | 파일 | 스프린트 | 날짜 | 주요 결정 |
