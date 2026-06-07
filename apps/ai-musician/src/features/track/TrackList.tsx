@@ -1,16 +1,33 @@
 "use client";
 
-import { Play, Trash2, Music } from "lucide-react";
+import { useState } from "react";
+import { Play, Trash2, Music, Video, Loader2, Pencil } from "lucide-react";
 import { Track } from "@/lib/types";
+import { renderVideo } from "@/lib/renderVideo";
 
 interface Props {
   tracks: Track[];
   activeTrackId: string | null;
   onSelect: (id: string) => void;
+  onEdit: (track: Track) => void;
   onRemove: (id: string) => void;
 }
 
-export function TrackList({ tracks, activeTrackId, onSelect, onRemove }: Props) {
+export function TrackList({ tracks, activeTrackId, onSelect, onEdit, onRemove }: Props) {
+  const [renderingId, setRenderingId] = useState<string | null>(null);
+
+  const handleRenderVideo = async (e: React.MouseEvent, track: Track) => {
+    e.stopPropagation();
+    if (!track.audioUrl || !track.coverImageUrl) return;
+    setRenderingId(track.id);
+    try {
+      await renderVideo(track);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "영상 생성 실패");
+    } finally {
+      setRenderingId(null);
+    }
+  };
   if (tracks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
@@ -57,12 +74,34 @@ export function TrackList({ tracks, activeTrackId, onSelect, onRemove }: Props) 
             </div>
           </div>
 
-          <button
-            onClick={(e) => { e.stopPropagation(); onRemove(track.id); }}
-            className="opacity-0 group-hover:opacity-100 p-1 text-muted hover:text-red-400 transition-all"
-          >
-            <Trash2 size={14} />
-          </button>
+          <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 transition-all">
+            {track.audioUrl && track.coverImageUrl && (
+              <button
+                onClick={(e) => handleRenderVideo(e, track)}
+                disabled={renderingId === track.id}
+                title="영상 다운로드"
+                className="p-1 text-muted hover:text-accent transition-colors disabled:opacity-50"
+              >
+                {renderingId === track.id
+                  ? <Loader2 size={14} className="animate-spin" />
+                  : <Video size={14} />}
+              </button>
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onEdit(track); }}
+              title="트랙 수정"
+              className="p-1 text-muted hover:text-text transition-colors"
+            >
+              <Pencil size={14} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onRemove(track.id); }}
+              title="트랙 삭제"
+              className="p-1 text-muted hover:text-red-400 transition-colors"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
         </div>
       ))}
     </div>

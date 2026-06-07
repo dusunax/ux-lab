@@ -10,23 +10,28 @@ import { PlayerBar } from "@/components/PlayerBar";
 import { usePersona } from "@/features/persona/usePersona";
 import { useTrack } from "@/features/track/useTrack";
 import { exportAlbum } from "@/lib/exportAlbum";
+import { VideoRender } from "@/features/video/VideoRender";
+import { TrackEditForm } from "@/features/track/TrackEditForm";
+import { Track } from "@/lib/types";
 
-type Panel = "tracks" | "prompt" | "edit";
+type Panel = "tracks" | "prompt" | "edit" | "video";
 
 export default function Home() {
   const { personas, activePersona, activeId, setActiveId, addPersona, updatePersona } = usePersona();
-  const { tracks, activeTrack, activeTrackId, setActiveTrackId, addTrack, removeTrack, tracksByPersona } = useTrack();
+  const { tracks, activeTrack, activeTrackId, setActiveTrackId, addTrack, updateTrack, removeTrack, tracksByPersona } = useTrack();
   const [panel, setPanel] = useState<Panel>("tracks");
   const [showNewForm, setShowNewForm] = useState(false);
+  const [editingTrack, setEditingTrack] = useState<Track | null>(null);
 
   const currentTracks = activePersona ? tracksByPersona(activePersona.id) : [];
 
-  const handleAddTrack = (title: string, prompt: string, tags: string[], audioUrl: string) => {
+  const handleAddTrack = (title: string, prompt: string, lyrics: string, tags: string[], audioUrl: string) => {
     if (!activePersona) return;
     addTrack({
       personaId: activePersona.id,
       title,
       prompt,
+      lyrics,
       tags,
       audioUrl,
       coverImageUrl: activePersona.coverImageUrl,
@@ -76,7 +81,7 @@ export default function Home() {
 
               {/* Tab bar */}
               <div className="flex items-center gap-1 px-8 border-b border-border">
-                {(["tracks", "prompt", "edit"] as Panel[]).map((p) => (
+                {(["tracks", "prompt", "edit", "video"] as Panel[]).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPanel(p)}
@@ -86,7 +91,7 @@ export default function Home() {
                         : "border-transparent text-muted hover:text-text"
                     }`}
                   >
-                    {{ tracks: "트랙", prompt: "프롬프트 생성", edit: "뮤지션 편집" }[p]}
+                    {{ tracks: "트랙", prompt: "프롬프트 생성", edit: "뮤지션 편집", video: "영상 제작" }[p]}
                   </button>
                 ))}
                 <div className="flex-1" />
@@ -111,13 +116,24 @@ export default function Home() {
 
               {/* Panel content */}
               <div className="flex-1 overflow-y-auto p-8">
-                {panel === "tracks" && (
+                {panel === "tracks" && !editingTrack && (
                   <TrackList
                     tracks={currentTracks}
                     activeTrackId={activeTrackId}
                     onSelect={setActiveTrackId}
+                    onEdit={setEditingTrack}
                     onRemove={removeTrack}
                   />
+                )}
+                {panel === "tracks" && editingTrack && (
+                  <div className="max-w-lg">
+                    <h2 className="text-sm font-semibold text-muted uppercase tracking-widest mb-5">트랙 수정</h2>
+                    <TrackEditForm
+                      track={editingTrack}
+                      onSubmit={(patch) => { updateTrack(editingTrack.id, patch); setEditingTrack(null); }}
+                      onCancel={() => setEditingTrack(null)}
+                    />
+                  </div>
                 )}
                 {panel === "prompt" && (
                   <div className="max-w-lg">
@@ -131,6 +147,11 @@ export default function Home() {
                       onSubmit={(data) => { updatePersona(activePersona.id, data); setPanel("tracks"); }}
                       onCancel={() => setPanel("tracks")}
                     />
+                  </div>
+                )}
+                {panel === "video" && (
+                  <div className="max-w-lg">
+                    <VideoRender persona={activePersona} />
                   </div>
                 )}
               </div>
