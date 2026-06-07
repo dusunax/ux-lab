@@ -7,7 +7,7 @@ import { generatePrompt, generateTags, generateSunoStyle, buildSunoLyrics } from
 
 interface Props {
   persona: Persona;
-  onAddTrack: (title: string, prompt: string, tags: string[], audioUrl: string) => void;
+  onAddTrack: (title: string, prompt: string, lyrics: string, tags: string[], audioUrl: string) => void;
 }
 
 type Step = "input" | "suno";
@@ -15,12 +15,13 @@ type Step = "input" | "suno";
 export function PromptPreview({ persona, onAddTrack }: Props) {
   const [title, setTitle] = useState("");
   const [trackStory, setTrackStory] = useState("");
+  const [lyrics, setLyrics] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [step, setStep] = useState<Step>("input");
   const [copied, setCopied] = useState<"style" | "lyrics" | "title" | null>(null);
 
   const sunoStyle = generateSunoStyle(persona);
-  const sunoLyrics = buildSunoLyrics(persona, title || "Untitled", trackStory);
+  const sunoLyrics = buildSunoLyrics(persona, title || "Untitled", trackStory, lyrics);
   const tags = generateTags(persona);
   const prompt = generatePrompt(persona, title || "Untitled");
 
@@ -37,9 +38,10 @@ export function PromptPreview({ persona, onAddTrack }: Props) {
 
   const handleAddTrack = (withAudio: boolean) => {
     if (!title.trim()) return;
-    onAddTrack(title.trim(), prompt, tags, withAudio ? audioUrl.trim() : "");
+    onAddTrack(title.trim(), prompt, lyrics.trim(), tags, withAudio ? audioUrl.trim() : "");
     setTitle("");
     setTrackStory("");
+    setLyrics("");
     setAudioUrl("");
     setStep("input");
   };
@@ -56,16 +58,27 @@ export function PromptPreview({ persona, onAddTrack }: Props) {
         />
       </Field>
 
-      {/* 트랙 스토리 */}
-      <Field label="트랙 스토리" hint="Lyrics/Prompt에 합산됩니다">
-        <textarea
-          value={trackStory}
-          onChange={(e) => setTrackStory(e.target.value)}
-          rows={3}
-          placeholder={`이 트랙에서 어떤 동물/동화/상황이 등장하나요?\ne.g. 좋아하는 아이의 창문 밖에 앉고 싶은 새 한 마리. 쉬지 않고 노래하다 들킬까봐 두근거린다.`}
-          className={inputCls}
-        />
-      </Field>
+      {/* 트랙 스토리 + 가사 — 나란히 */}
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="트랙 스토리" hint="프롬프트에 반영">
+          <textarea
+            value={trackStory}
+            onChange={(e) => setTrackStory(e.target.value)}
+            rows={3}
+            placeholder={`이 트랙에서 어떤 동물/동화/상황이 등장하나요?\ne.g. 좋아하는 아이의 창문 밖에 앉고 싶은 새 한 마리.`}
+            className={inputCls}
+          />
+        </Field>
+        <Field label="가사 (Lyrics)" hint="가사에 반영">
+          <textarea
+            value={lyrics}
+            onChange={(e) => setLyrics(e.target.value)}
+            rows={3}
+            placeholder={`[Verse]\n그 창문 너머로\n네가 보여\n\n[Chorus]\n나는 새가 되고 싶어`}
+            className={inputCls}
+          />
+        </Field>
+      </div>
 
       <div className="border border-border rounded-lg overflow-hidden">
         {/* 헤더 */}
@@ -88,9 +101,9 @@ export function PromptPreview({ persona, onAddTrack }: Props) {
           {/* Lyrics / Prompt */}
           <SunoField
             label="Lyrics / Prompt"
-            hint="페르소나 + 트랙 스토리"
+            hint="프롬프트 + 가사 합산"
             value={sunoLyrics}
-            empty={!persona.sunoPrompt && !trackStory}
+            empty={!persona.sunoPrompt && !trackStory && !lyrics}
             onCopy={() => sunoLyrics && copy(sunoLyrics, "lyrics")}
             copied={copied === "lyrics"}
             multiline
