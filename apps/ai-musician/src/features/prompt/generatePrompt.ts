@@ -5,11 +5,12 @@ export function generateSunoStyle(persona: Persona): string {
   return [persona.genre, persona.signatureSound].filter(Boolean).join(", ");
 }
 
-// Suno Advanced > Lyrics/Prompt — 페르소나 + 트랙 스토리 합성
+// Suno Advanced > Lyrics/Prompt — 프롬프트(페르소나+스토리) + 가사 합성
 export function buildSunoLyrics(
   persona: Persona,
   trackTitle: string,
-  trackStory: string
+  trackStory: string,
+  lyrics: string
 ): string {
   const parts: string[] = [];
 
@@ -17,12 +18,14 @@ export function buildSunoLyrics(
     parts.push(persona.sunoPrompt.trim());
   }
 
-  const trackLines = [
+  const storyLines = [
     trackTitle && `[Track] ${trackTitle}`,
     trackStory && `[Story] ${trackStory}`,
   ].filter(Boolean).join("\n");
 
-  if (trackLines) parts.push(trackLines);
+  if (storyLines) parts.push(storyLines);
+
+  if (lyrics.trim()) parts.push(lyrics.trim());
 
   return parts.join("\n\n");
 }

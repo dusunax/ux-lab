@@ -6,6 +6,8 @@ export interface Persona {
   signatureSound: string;
   albumConcept: string;
   sunoPrompt: string;   // Suno Advanced > Lyrics/Prompt 필드에 그대로 붙여넣는 텍스트
+  youtubeChannelName: string;
+  youtubeHandle: string;
   coverImageUrl: string;
   createdAt: string;
 }
@@ -15,6 +17,7 @@ export interface Track {
   personaId: string;
   title: string;
   prompt: string;
+  lyrics: string;
   tags: string[];
   audioUrl: string;
   coverImageUrl: string;

@@ -12,6 +12,8 @@ const EMPTY: FormData = {
   signatureSound: "",
   albumConcept: "",
   sunoPrompt: "",
+  youtubeChannelName: "",
+  youtubeHandle: "",
   coverImageUrl: "",
 };
 
@@ -22,7 +24,7 @@ interface Props {
 }
 
 export function PersonaForm({ initial = EMPTY, onSubmit, onCancel }: Props) {
-  const [form, setForm] = useState<FormData>(initial);
+  const [form, setForm] = useState<FormData>({ ...EMPTY, ...initial });
 
   const field = (key: keyof FormData) => ({
     value: form[key],
@@ -74,6 +76,12 @@ export function PersonaForm({ initial = EMPTY, onSubmit, onCancel }: Props) {
           placeholder={"이 뮤지션의 음악이 어떤 분위기인지 서술하세요.\ne.g. A cold, cinematic darkwave track. Pulsing analog synth basslines under distant, reverb-soaked atmosphere. Melancholy but forward-moving."}
           className={inputCls}
         />
+      </Field>
+      <Field label="유튜브 채널명">
+        <input {...field("youtubeChannelName")} placeholder="e.g. petit oiseau" className={inputCls} />
+      </Field>
+      <Field label="유튜브 핸들" hint="@ 포함">
+        <input {...field("youtubeHandle")} placeholder="e.g. @petitoiseau_ru" className={inputCls} />
       </Field>
       <Field label="커버 이미지 URL">
         <input {...field("coverImageUrl")} placeholder="https://..." className={inputCls} />
