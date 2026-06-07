@@ -21,14 +21,14 @@ export default function Home() {
 
   const currentTracks = activePersona ? tracksByPersona(activePersona.id) : [];
 
-  const handleAddTrack = (title: string, prompt: string, tags: string[]) => {
+  const handleAddTrack = (title: string, prompt: string, tags: string[], audioUrl: string) => {
     if (!activePersona) return;
     addTrack({
       personaId: activePersona.id,
       title,
       prompt,
       tags,
-      audioUrl: "",
+      audioUrl,
       coverImageUrl: activePersona.coverImageUrl,
     });
     setPanel("tracks");
