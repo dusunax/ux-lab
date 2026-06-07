@@ -37,10 +37,18 @@ export function useTrack() {
     setActiveTrackId((prev) => (prev === id ? null : prev));
   }, []);
 
+  const updateTrack = useCallback((id: string, patch: Partial<Omit<Track, "id" | "personaId" | "createdAt">>) => {
+    setTracks((prev) => {
+      const updated = prev.map((t) => (t.id === id ? { ...t, ...patch } : t));
+      saveTracks(updated);
+      return updated;
+    });
+  }, []);
+
   const tracksByPersona = useCallback(
     (personaId: string) => tracks.filter((t) => t.personaId === personaId),
     [tracks]
   );
 
-  return { tracks, activeTrack, activeTrackId, setActiveTrackId, addTrack, removeTrack, tracksByPersona };
+  return { tracks, activeTrack, activeTrackId, setActiveTrackId, addTrack, updateTrack, removeTrack, tracksByPersona };
 }
