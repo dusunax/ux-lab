@@ -1,8 +1,9 @@
 "use client";
 
-import { Play, Pause, Music2 } from "lucide-react";
+import { Play, Pause, Music2, Video, Loader2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { Track } from "@/lib/types";
+import { renderVideo } from "@/lib/renderVideo";
 
 interface Props {
   track: Track | null;
@@ -12,6 +13,7 @@ export function PlayerBar({ track }: Props) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [rendering, setRendering] = useState(false);
 
   useEffect(() => {
     setPlaying(false);
@@ -71,7 +73,29 @@ export function PlayerBar({ track }: Props) {
         </div>
       </div>
 
-      <div className="w-56 shrink-0" />
+      <div className="w-56 shrink-0 flex items-center justify-end">
+        {track?.audioUrl && track?.coverImageUrl && (
+          <button
+            onClick={async () => {
+              setRendering(true);
+              try {
+                await renderVideo(track);
+              } catch (err) {
+                alert(err instanceof Error ? err.message : "영상 생성 실패");
+              } finally {
+                setRendering(false);
+              }
+            }}
+            disabled={rendering}
+            title="영상 다운로드"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted hover:text-text border border-border rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {rendering
+              ? <><Loader2 size={12} className="animate-spin" /> 생성 중...</>
+              : <><Video size={12} /> 영상</>}
+          </button>
+        )}
+      </div>
 
       {track?.audioUrl && (
         <audio
