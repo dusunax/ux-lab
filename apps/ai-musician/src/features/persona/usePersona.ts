@@ -10,8 +10,21 @@ export function usePersona() {
 
   useEffect(() => {
     const stored = loadPersonas();
-    setPersonas(stored);
-    if (stored.length > 0) setActiveId(stored[0].id);
+    if (stored.length > 0) {
+      setPersonas(stored);
+      setActiveId(stored[0].id);
+      return;
+    }
+    fetch("/api/seed")
+      .then((r) => r.json())
+      .then(({ personas }) => {
+        if (personas?.length > 0) {
+          savePersonas(personas);
+          setPersonas(personas);
+          setActiveId(personas[0].id);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const activePersona = personas.find((p) => p.id === activeId) ?? null;
