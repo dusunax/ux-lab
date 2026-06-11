@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Track } from "@/lib/types";
 
-type EditableFields = Pick<Track, "title" | "lyrics" | "audioUrl" | "coverImageUrl">;
+type EditableFields = Pick<Track, "title" | "titleEn" | "lyrics" | "audioUrl" | "coverImageUrl">;
 
 interface Props {
   track: Track;
@@ -14,6 +14,7 @@ interface Props {
 export function TrackEditForm({ track, onSubmit, onCancel }: Props) {
   const [form, setForm] = useState<EditableFields>({
     title: track.title,
+    titleEn: track.titleEn ?? "",
     lyrics: track.lyrics,
     audioUrl: track.audioUrl,
     coverImageUrl: track.coverImageUrl,
@@ -33,6 +34,9 @@ export function TrackEditForm({ track, onSubmit, onCancel }: Props) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field label="트랙 제목" required>
         <input value={form.title} onChange={set("title")} className={inputCls} />
+      </Field>
+      <Field label="영어 제목 (English Title)">
+        <input value={form.titleEn} onChange={set("titleEn")} placeholder="e.g. Little Bird" className={inputCls} />
       </Field>
       <Field label="가사 (Lyrics)">
         <textarea

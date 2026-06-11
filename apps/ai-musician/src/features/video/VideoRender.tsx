@@ -1,17 +1,24 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Film, Upload, Loader2, Image as ImageIcon, Music } from "lucide-react";
-import { Persona } from "@/lib/types";
-import { renderVideoFromFiles } from "@/lib/renderVideo";
+import type { Persona } from "@/lib/types";
+import { isAbortError, renderVideoFromFiles } from "@/lib/renderVideo";
 
 const BG_PRESETS = [
-  { label: "Deep black", value: "#0a0a0f" },
-  { label: "Dark navy",  value: "#0d1b2a" },
-  { label: "Midnight",   value: "#1a1a2e" },
-  { label: "Charcoal",   value: "#1c1c1e" },
-  { label: "Dark coffee",value: "#1a0e00" },
-  { label: "Forest",     value: "#0a1a10" },
+  { label: "Lavender",  value: "#e8e0f5" },
+  { label: "Blush",     value: "#fde8e8" },
+  { label: "Mint",      value: "#e0f5ec" },
+  { label: "Sky",       value: "#dceef8" },
+  { label: "Peach",     value: "#fdf0e0" },
+  { label: "Lemon",     value: "#f5f5dc" },
+];
+
+const TEXT_PRESETS = [
+  { label: "Black",      value: "#1a1a1a" },
+  { label: "Charcoal",   value: "#3d3d3d" },
+  { label: "White",      value: "#ffffff" },
+  { label: "Ivory",      value: "#f5f0e8" },
 ];
 
 interface Props {
@@ -21,109 +28,145 @@ interface Props {
 export function VideoRender({ persona }: Props) {
   const audioRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
+  const renderAbortRef = useRef<AbortController | null>(null);
 
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [title, setTitle] = useState("");
-  const [bgColor, setBgColor] = useState(BG_PRESETS[0].value);
-  const [artist, setArtist] = useState(persona?.name ?? "");
-  const [composer, setComposer] = useState(persona?.name ?? "");
-  const [rendering, setRendering] = useState(false);
+  const [audioFile, setAudioFile]   = useState<File | null>(null);
+  const [imageFile, setImageFile]   = useState<File | null>(null);
+  const [title, setTitle]           = useState("");
+  const [titleEn, setTitleEn]       = useState("");
+  const [bgColor, setBgColor]       = useState(BG_PRESETS[0].value);
+  const [textColor, setTextColor]   = useState(TEXT_PRESETS[0].value);
+  const [artist, setArtist]         = useState(persona?.name ?? "");
+  const [rendering, setRendering]   = useState(false);
 
-  const imageUrl = persona?.coverImageUrl ?? "";
-  const hasImage = !!imageFile || !!imageUrl;
+  const coverUrl = persona?.coverImageUrl ?? "";
+  const [previewUrl, setPreviewUrl] = useState(coverUrl);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setPreviewUrl(coverUrl);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile, coverUrl]);
+
+  useEffect(() => {
+    return () => {
+      renderAbortRef.current?.abort();
+    };
+  }, []);
+
+  const displayTitle = title && titleEn ? `${title} (${titleEn})` : title || titleEn;
+  const hasImage  = !!imageFile || !!coverUrl;
   const canRender = !!audioFile && hasImage && !!title.trim();
 
   const handleRender = async () => {
     if (!audioFile) return;
+    renderAbortRef.current?.abort();
+    const controller = new AbortController();
+    renderAbortRef.current = controller;
     setRendering(true);
     try {
       await renderVideoFromFiles({
         audioFile,
         imageFile,
-        imageUrl,
-        title: title.trim(),
+        imageUrl: coverUrl,
+        title: displayTitle,
         bgColor,
+        textColor,
         artist: artist.trim(),
-        composer: composer.trim(),
+        signal: controller.signal,
       });
     } catch (err) {
+      if (isAbortError(err)) return;
       alert(err instanceof Error ? err.message : "영상 생성 실패");
     } finally {
-      setRendering(false);
+      if (renderAbortRef.current === controller) {
+        renderAbortRef.current = null;
+        setRendering(false);
+      }
     }
   };
 
   return (
     <div className="space-y-5 max-w-lg">
       {/* 제목 */}
-      <Field label="영상 제목">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="트랙 제목을 입력하세요"
-          className={inputCls}
-        />
-      </Field>
-
-      {/* 가수 / 작가 */}
       <div className="grid grid-cols-2 gap-3">
-        <Field label="가수">
+        <Field label="트랙 제목">
           <input
-            value={artist}
-            onChange={(e) => setArtist(e.target.value)}
-            placeholder={persona?.name ?? "가수명"}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="트랙 제목 (한글)"
             className={inputCls}
           />
         </Field>
-        <Field label="작가">
+        <Field label="영어 제목">
           <input
-            value={composer}
-            onChange={(e) => setComposer(e.target.value)}
-            placeholder={persona?.name ?? "작가명"}
+            value={titleEn}
+            onChange={(e) => setTitleEn(e.target.value)}
+            placeholder="English Title"
             className={inputCls}
           />
         </Field>
       </div>
 
+      {/* 가수 */}
+      <Field label="가수">
+        <input
+          value={artist}
+          onChange={(e) => setArtist(e.target.value)}
+          placeholder={persona?.name ?? "가수명"}
+          className={inputCls}
+        />
+      </Field>
+
       {/* 배경색 */}
       <Field label="배경색">
-        <div className="flex items-center gap-2 flex-wrap">
-          {BG_PRESETS.map((p) => (
-            <button
-              key={p.value}
-              title={p.label}
-              onClick={() => setBgColor(p.value)}
-              className="w-8 h-8 rounded-full border-2 transition-all shrink-0"
-              style={{
-                backgroundColor: p.value,
-                borderColor: bgColor === p.value ? "#22d3ee" : "transparent",
-                outline: bgColor === p.value ? "2px solid #22d3ee33" : "none",
-              }}
-            />
-          ))}
-          <label className="flex items-center gap-1.5 cursor-pointer ml-1">
-            <span className="text-xs text-muted">직접 입력</span>
-            <input
-              type="color"
-              value={bgColor}
-              onChange={(e) => setBgColor(e.target.value)}
-              className="w-8 h-8 rounded cursor-pointer border border-border bg-transparent p-0.5"
-            />
-          </label>
-          <span className="text-xs text-border font-mono ml-auto">{bgColor}</span>
-        </div>
-        {/* 미리보기 */}
+        <ColorPicker
+          presets={BG_PRESETS}
+          value={bgColor}
+          onChange={setBgColor}
+        />
+      </Field>
+
+      {/* 폰트색 */}
+      <Field label="폰트색">
+        <ColorPicker
+          presets={TEXT_PRESETS}
+          value={textColor}
+          onChange={setTextColor}
+        />
+      </Field>
+
+      {/* 썸네일 미리보기 */}
+      <Field label="미리보기">
         <div
-          className="mt-2 rounded-md overflow-hidden"
-          style={{ backgroundColor: bgColor, aspectRatio: "16/9", maxHeight: 80 }}
+          className="w-full rounded-lg overflow-hidden flex flex-col items-center justify-center gap-2"
+          style={{ backgroundColor: bgColor, aspectRatio: "16 / 9" }}
         >
-          <div className="w-full h-full flex items-center justify-center gap-3">
-            <div className="w-10 h-10 rounded bg-white/10" />
-            <div className="space-y-1">
-              <div className="h-2 w-20 rounded bg-white/70" />
-              <div className="h-1.5 w-14 rounded bg-white/40" />
-            </div>
+          {/* 앨범아트 — 너비 25%, 정사각형 */}
+          <div
+            style={{ width: "34%", aspectRatio: "1 / 1", backgroundColor: bgColor, flexShrink: 0 }}
+          >
+            {previewUrl ? (
+              <img src={previewUrl} alt="thumbnail" className="w-full h-full object-contain" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center border border-black/10 rounded">
+                <ImageIcon size={16} className="text-black/20" />
+              </div>
+            )}
+          </div>
+
+          {/* 제목·가수명 */}
+          <div className="text-center w-full px-6 space-y-0.5 leading-tight">
+            <p className="text-[10px] font-semibold break-words" style={{ color: textColor }}>
+              {displayTitle || <span className="opacity-20">제목 (English Title)</span>}
+            </p>
+            <p className="text-[7px] break-words" style={{ color: textColor, opacity: 0.7 }}>
+              {artist || <span className="opacity-30">가수명</span>}
+            </p>
           </div>
         </div>
       </Field>
@@ -143,11 +186,11 @@ export function VideoRender({ persona }: Props) {
       {/* 이미지 파일 */}
       <Field
         label="썸네일 이미지"
-        hint={!imageFile && imageUrl ? "뮤지션 커버 이미지 사용 중" : undefined}
+        hint={!imageFile && coverUrl ? "뮤지션 커버 이미지 사용 중" : undefined}
       >
-        {!imageFile && imageUrl ? (
+        {!imageFile && coverUrl ? (
           <div className="flex items-center gap-3 p-3 border border-border rounded-md bg-elevated">
-            <img src={imageUrl} alt="cover" className="w-12 h-12 rounded object-cover" />
+            <img src={coverUrl} alt="cover" className="w-12 h-12 rounded object-cover" />
             <div className="flex-1 min-w-0">
               <p className="text-sm text-text truncate">{persona?.name} 커버</p>
               <button
@@ -199,6 +242,43 @@ export function VideoRender({ persona }: Props) {
             : "제목을 입력해주세요"}
         </p>
       )}
+    </div>
+  );
+}
+
+function ColorPicker({
+  presets, value, onChange,
+}: {
+  presets: { label: string; value: string }[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      {presets.map((p) => (
+        <button
+          key={p.value}
+          title={p.label}
+          onClick={() => onChange(p.value)}
+          className="w-5 h-5 rounded-full border-2 transition-all shrink-0"
+          style={{
+            backgroundColor: p.value,
+            borderColor: value === p.value ? "#22d3ee" : "transparent",
+            outline: value === p.value ? "2px solid #22d3ee44" : "none",
+            boxShadow: p.value === "#ffffff" || p.value === "#f5f0e8" ? "inset 0 0 0 1px rgba(0,0,0,0.15)" : "none",
+          }}
+        />
+      ))}
+      <label className="flex items-center gap-1 cursor-pointer ml-1">
+        <span className="text-xs text-muted">직접</span>
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-5 h-5 rounded cursor-pointer border border-border bg-transparent p-0"
+        />
+      </label>
+      <span className="text-xs text-border font-mono ml-auto">{value}</span>
     </div>
   );
 }

@@ -7,13 +7,14 @@ import { generatePrompt, generateTags, generateSunoStyle, buildSunoLyrics } from
 
 interface Props {
   persona: Persona;
-  onAddTrack: (title: string, prompt: string, lyrics: string, tags: string[], audioUrl: string) => void;
+  onAddTrack: (title: string, titleEn: string, prompt: string, lyrics: string, tags: string[], audioUrl: string) => void;
 }
 
 type Step = "input" | "suno";
 
 export function PromptPreview({ persona, onAddTrack }: Props) {
   const [title, setTitle] = useState("");
+  const [titleEn, setTitleEn] = useState("");
   const [trackStory, setTrackStory] = useState("");
   const [lyrics, setLyrics] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
@@ -38,8 +39,9 @@ export function PromptPreview({ persona, onAddTrack }: Props) {
 
   const handleAddTrack = (withAudio: boolean) => {
     if (!title.trim()) return;
-    onAddTrack(title.trim(), prompt, lyrics.trim(), tags, withAudio ? audioUrl.trim() : "");
+    onAddTrack(title.trim(), titleEn.trim(), prompt, lyrics.trim(), tags, withAudio ? audioUrl.trim() : "");
     setTitle("");
+    setTitleEn("");
     setTrackStory("");
     setLyrics("");
     setAudioUrl("");
@@ -49,14 +51,24 @@ export function PromptPreview({ persona, onAddTrack }: Props) {
   return (
     <div className="space-y-5 max-w-lg">
       {/* 트랙 제목 */}
-      <Field label="트랙 제목">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="트랙 제목을 입력하세요"
-          className={inputCls}
-        />
-      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="트랙 제목">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="트랙 제목 (한글)"
+            className={inputCls}
+          />
+        </Field>
+        <Field label="영어 제목">
+          <input
+            value={titleEn}
+            onChange={(e) => setTitleEn(e.target.value)}
+            placeholder="English Title"
+            className={inputCls}
+          />
+        </Field>
+      </div>
 
       {/* 트랙 스토리 + 가사 — 나란히 */}
       <div className="grid grid-cols-2 gap-3">

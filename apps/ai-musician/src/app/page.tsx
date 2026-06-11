@@ -12,7 +12,7 @@ import { useTrack } from "@/features/track/useTrack";
 import { exportAlbum } from "@/lib/exportAlbum";
 import { VideoRender } from "@/features/video/VideoRender";
 import { TrackEditForm } from "@/features/track/TrackEditForm";
-import { Track } from "@/lib/types";
+import type { Track } from "@/lib/types";
 
 type Panel = "tracks" | "prompt" | "edit" | "video";
 
@@ -25,11 +25,12 @@ export default function Home() {
 
   const currentTracks = activePersona ? tracksByPersona(activePersona.id) : [];
 
-  const handleAddTrack = (title: string, prompt: string, lyrics: string, tags: string[], audioUrl: string) => {
+  const handleAddTrack = (title: string, titleEn: string, prompt: string, lyrics: string, tags: string[], audioUrl: string) => {
     if (!activePersona) return;
     addTrack({
       personaId: activePersona.id,
       title,
+      titleEn,
       prompt,
       lyrics,
       tags,

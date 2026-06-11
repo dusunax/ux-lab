@@ -18,6 +18,9 @@ importers:
 
   apps/ai-musician:
     dependencies:
+      '@napi-rs/canvas':
+        specifier: 0.1.85
+        version: 0.1.85
       lucide-react:
         specifier: ^0.400.0
         version: 0.400.0(react@19.1.0)
@@ -3944,7 +3947,6 @@ packages:
       '@napi-rs/canvas-win32-arm64-msvc': 0.1.85
       '@napi-rs/canvas-win32-x64-msvc': 0.1.85
     dev: false
-    optional: true
 
   /@nestjs/cli@10.4.9:
     resolution: {integrity: sha512-s8qYd97bggqeK7Op3iD49X2MpFtW4LVNLAwXFkfbRxKME6IYT7X0muNTJ2+QfI8hpbNx9isWkrLWIp+g5FOhiA==}

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play, Trash2, Music, Video, Loader2, Pencil } from "lucide-react";
-import { Track } from "@/lib/types";
-import { renderVideo } from "@/lib/renderVideo";
+import type { Track } from "@/lib/types";
+import { isAbortError, renderVideo } from "@/lib/renderVideo";
 
 interface Props {
   tracks: Track[];
@@ -15,17 +15,31 @@ interface Props {
 
 export function TrackList({ tracks, activeTrackId, onSelect, onEdit, onRemove }: Props) {
   const [renderingId, setRenderingId] = useState<string | null>(null);
+  const renderAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      renderAbortRef.current?.abort();
+    };
+  }, []);
 
   const handleRenderVideo = async (e: React.MouseEvent, track: Track) => {
     e.stopPropagation();
     if (!track.audioUrl || !track.coverImageUrl) return;
+    renderAbortRef.current?.abort();
+    const controller = new AbortController();
+    renderAbortRef.current = controller;
     setRenderingId(track.id);
     try {
-      await renderVideo(track);
+      await renderVideo(track, controller.signal);
     } catch (err) {
+      if (isAbortError(err)) return;
       alert(err instanceof Error ? err.message : "영상 생성 실패");
     } finally {
-      setRenderingId(null);
+      if (renderAbortRef.current === controller) {
+        renderAbortRef.current = null;
+        setRenderingId(null);
+      }
     }
   };
   if (tracks.length === 0) {

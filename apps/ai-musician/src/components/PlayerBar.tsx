@@ -2,8 +2,8 @@
 
 import { Play, Pause, Music2, Video, Loader2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { Track } from "@/lib/types";
-import { renderVideo } from "@/lib/renderVideo";
+import type { Track } from "@/lib/types";
+import { isAbortError, renderVideo } from "@/lib/renderVideo";
 
 interface Props {
   track: Track | null;
@@ -11,6 +11,7 @@ interface Props {
 
 export function PlayerBar({ track }: Props) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const renderAbortRef = useRef<AbortController | null>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [rendering, setRendering] = useState(false);
@@ -19,6 +20,12 @@ export function PlayerBar({ track }: Props) {
     setPlaying(false);
     setProgress(0);
   }, [track?.id]);
+
+  useEffect(() => {
+    return () => {
+      renderAbortRef.current?.abort();
+    };
+  }, []);
 
   const toggle = () => {
     if (!audioRef.current) return;
@@ -77,13 +84,20 @@ export function PlayerBar({ track }: Props) {
         {track?.audioUrl && track?.coverImageUrl && (
           <button
             onClick={async () => {
+              renderAbortRef.current?.abort();
+              const controller = new AbortController();
+              renderAbortRef.current = controller;
               setRendering(true);
               try {
-                await renderVideo(track);
+                await renderVideo(track, controller.signal);
               } catch (err) {
+                if (isAbortError(err)) return;
                 alert(err instanceof Error ? err.message : "영상 생성 실패");
               } finally {
-                setRendering(false);
+                if (renderAbortRef.current === controller) {
+                  renderAbortRef.current = null;
+                  setRendering(false);
+                }
               }
             }}
             disabled={rendering}

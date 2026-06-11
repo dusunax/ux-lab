@@ -16,6 +16,7 @@ export interface Track {
   id: string;
   personaId: string;
   title: string;
+  titleEn: string;
   prompt: string;
   lyrics: string;
   tags: string[];
