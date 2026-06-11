@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint ai-musician/1 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f8faf9;
+      border: 1px solid #e5eee8;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+    .mini-note {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.55;
+    }
+    .scope-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e6f2eb;
+      color: #217346;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+    .scope-tag--blue { background: #eff6ff; color: #1d4ed8; }
+    .scope-tag--amber { background: #fff8e1; color: #b07c00; }
+    .flow-card {
+      border-left: 4px solid #217346;
+      background: #f8faf9;
+      border-radius: 0 6px 6px 0;
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .flow-card strong { color: #1a1a1a; }
+    .small-table { font-size: 13px; }
+    .small-table td, .small-table th { padding: 8px 10px; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · ai-musician</div>
+        <h1 class="cover-title">Sprint ai-musician / 1</h1>
+        <p class="cover-sub">AI 뮤지션 페르소나 기반 음원 생성 PoC</p>
+        <p class="cover-meta">2026-06-07 킥오프 · 2026-06-11 보고 · PM Jordan</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: Goal -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SPRINT GOAL</div>
+      <h2 class="slide-title">한 명의 뮤지션이 한 곡을 만드는 최소 경로 검증</h2>
+      <blockquote class="goal-quote">
+        AI 뮤지션 페르소나를 정의하고, 페르소나 기반 프롬프트·트랙·출력물을 연결해
+        <strong>수동 생성 PoC의 끝까지 가는 흐름</strong>을 만든다.
+      </blockquote>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-value">16</div>
+          <div class="metric-label">브랜치 커밋<br>main 이후</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">8 / 8</div>
+          <div class="metric-label">킥오프 확정 스코프<br>구현 완료</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">+1</div>
+          <div class="metric-label">영상 생성 확장<br>Sprint 1 범위 초과</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">0</div>
+          <div class="metric-label">현재 미커밋 변경<br>보고서 작성 전 기준</div>
+        </div>
+      </div>
+      <p class="mini-note" style="margin-top:18px;">
+        기준: docs/meetings/ai-musician/2026-06-07-sprint-1-kickoff.md 및 sprint/ai-musician/1 브랜치 히스토리.
+      </p>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: Decisions -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">DECISIONS</div>
+      <h2 class="slide-title">킥오프 OQ 결정은 PoC 속도 중심으로 정리</h2>
+      <table class="data-table">
+        <thead><tr><th style="width:90px;">#</th><th>결정</th><th style="width:150px;">결과</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td><strong>Suno 공개 API 미연동</strong><br><span class="mini-note">프롬프트 생성 + 수동 복사 방식으로 Sprint 1 진행</span></td>
+            <td><span class="badge badge-green">결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td><strong>페르소나 저장은 localStorage</strong><br><span class="mini-note">개인 PoC 우선, 멀티유저·공유는 후속 스프린트로 이연</span></td>
+            <td><span class="badge badge-green">결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>OQ-3</td>
+            <td><strong>커버아트는 외부 URL 입력</strong><br><span class="mini-note">AI 이미지 생성 API 연동은 음원 흐름 검증 이후 분리</span></td>
+            <td><span class="badge badge-green">결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>OQ-4</td>
+            <td><strong>최소 출력은 앨범 메타데이터 JSON</strong><br><span class="mini-note">유튜브 업로드 자동화는 OAuth 비용으로 제외</span></td>
+            <td><span class="badge badge-green">결정 완료</span></td>
+          </tr>
+          <tr>
+            <td>Next</td>
+            <td><strong>Sprint 2에서 Suno vs Udio 비교</strong><br><span class="mini-note">동일 페르소나 기준 작가관 표현 적합도 판단</span></td>
+            <td><span class="badge badge-yellow">이월</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: Implemented scope -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">IMPLEMENTED SCOPE</div>
+      <h2 class="slide-title">Sprint 1 필수 경로는 제품 안에서 닫힘</h2>
+      <div class="two-col" style="gap:34px;">
+        <div>
+          <p class="col-head">핵심 사용자 흐름</p>
+          <ul class="check-list">
+            <li class="done"><span class="scope-tag">INIT</span>Next.js 앱 초기화 및 독립 실행</li>
+            <li class="done"><span class="scope-tag">PERSONA</span>페르소나 모델·생성·편집·전환</li>
+            <li class="done"><span class="scope-tag">STORAGE</span>localStorage 유지 및 seed 분리</li>
+            <li class="done"><span class="scope-tag">PROMPT</span>페르소나 + 트랙 스토리 기반 가사/프롬프트 생성</li>
+          </ul>
+        </div>
+        <div>
+          <p class="col-head">출력 및 운영 흐름</p>
+          <ul class="check-list">
+            <li class="done"><span class="scope-tag scope-tag--blue">TRACK</span>트랙 메타데이터·가사·수정 폼</li>
+            <li class="done"><span class="scope-tag scope-tag--blue">PLAYER</span>오디오 URL/파일 기반 재생 경험</li>
+            <li class="done"><span class="scope-tag scope-tag--blue">EXPORT</span>앨범 메타데이터 JSON 다운로드</li>
+            <li class="done"><span class="scope-tag scope-tag--blue">UI</span>Spotify 모티프의 다크 작업 화면</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:20px;">
+        PM 판단: 원래 목표였던 "한 곡 생성 최소 경로"는 달성. 이후 커밋은 영상 생성·편집·안정화로 확장되며 Sprint 1의 데모 가치가 올라갔다.
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: Video generation expansion -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">EXPANSION</div>
+      <h2 class="slide-title">영상 생성은 Sprint 1 추가 확장으로 흡수</h2>
+      <div class="two-col" style="gap:34px;">
+        <div>
+          <p class="col-head">추가된 가치</p>
+          <div class="flow-card"><strong>영상 제작 탭</strong><br>트랙 선택 후 커버 이미지, 배경색, 텍스트 색상을 지정해 MP4 생성.</div>
+          <div class="flow-card"><strong>URL + 로컬 파일 입력</strong><br>오디오와 이미지 모두 URL·파일 업로드 경로를 지원.</div>
+          <div class="flow-card"><strong>텍스트 오버레이</strong><br>한글 제목·아티스트를 캔버스 PNG로 만든 뒤 ffmpeg overlay로 합성.</div>
+        </div>
+        <div>
+          <p class="col-head">안정화 포인트</p>
+          <table class="data-table small-table">
+            <thead><tr><th>이슈</th><th>조치</th></tr></thead>
+            <tbody>
+              <tr><td>drawtext 미지원 ffmpeg</td><td>canvas 텍스트 레이어 + overlay 전환</td></tr>
+              <tr><td>긴 제목 처리</td><td>truncate 제거, 줄바꿈으로 전체 표시</td></tr>
+              <tr><td>1분 이상 무응답</td><td>서버 단계별 진행 로그와 heartbeat 추가</td></tr>
+              <tr><td>페이지 이탈</td><td>클라이언트 abort + 서버 ffmpeg 종료 연결</td></tr>
+              <tr><td>Next dev 500</td><td>.next 캐시 정리 및 type import 정리</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: Architecture -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">ARCHITECTURE</div>
+      <h2 class="slide-title">페르소나에서 MP4까지 단일 앱 흐름으로 연결</h2>
+      <div class="two-col" style="gap:34px;">
+        <div>
+          <p class="col-head">Product Flow</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">1</span><span class="log-event">PersonaForm에서 뮤지션 정체성·장르·작가관 입력</span></div>
+            <div class="log-row"><span class="log-status ok">2</span><span class="log-event">PromptPreview에서 트랙 스토리 기반 가사/프롬프트 생성</span></div>
+            <div class="log-row"><span class="log-status ok">3</span><span class="log-event">TrackList와 PlayerBar에서 결과 트랙 관리·재생</span></div>
+            <div class="log-row"><span class="log-status ok">4</span><span class="log-event">exportAlbum으로 JSON 다운로드</span></div>
+            <div class="log-row"><span class="log-status ok">5</span><span class="log-event">VideoRender에서 공유용 MP4 생성</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="col-head">Render Flow</p>
+          <div class="log-block">
+            <div class="log-row"><span class="log-status ok">API</span><span class="log-event">/api/render-video multipart 입력 파싱</span></div>
+            <div class="log-row"><span class="log-status ok">I/O</span><span class="log-event">오디오·이미지 URL 또는 파일을 temp로 저장</span></div>
+            <div class="log-row"><span class="log-status ok">TXT</span><span class="log-event">@napi-rs/canvas로 한글 텍스트 레이어 생성</span></div>
+            <div class="log-row"><span class="log-status ok">MP4</span><span class="log-event">ffmpeg scale/pad/overlay/libx264로 합성</span></div>
+            <div class="log-row"><span class="log-status ok">OBS</span><span class="log-event">request id 기반 단계 로그와 abort 처리</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: QA -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">QA / VERIFICATION</div>
+      <h2 class="slide-title">빌드와 핵심 시나리오 기준으로 검증</h2>
+      <table class="data-table">
+        <thead><tr><th style="width:70px;">#</th><th>검증 항목</th><th style="width:150px;">결과</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>TypeScript 정적 검증: <code>tsc -p apps/ai-musician/tsconfig.json --noEmit</code></td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>2</td><td>프로덕션 빌드: <code>npm run build</code></td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>3</td><td>dev server 루트 요청: <code>GET / 200 text/html</code></td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>4</td><td>영상 생성 API 샘플 요청: <code>POST /api/render-video</code> → <code>200 video/mp4</code></td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>5</td><td>긴 한글 제목 영상: truncate 없이 줄바꿈 표시</td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>6</td><td>페이지 이탈 시 생성 요청 취소 및 ffmpeg 종료</td><td><span class="badge badge-green">통과</span></td></tr>
+        </tbody>
+      </table>
+      <div class="callout" style="margin-top:20px;">
+        QA 관점 잔여 리스크: 외부 음원 생성 서비스 연동은 공식 API 부재로 운영 안정성 검증 범위 밖이다.
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: Risks and next sprint -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">RISKS &amp; NEXT</div>
+      <h2 class="slide-title">Sprint 2는 제공자 비교와 저장 모델 정리가 핵심</h2>
+      <div class="two-col" style="gap:34px;">
+        <div>
+          <p class="col-head">잔여 리스크</p>
+          <table class="data-table small-table">
+            <thead><tr><th>리스크</th><th>PM 판단</th></tr></thead>
+            <tbody>
+              <tr><td>Suno/Udio 공식 API 부재</td><td>수동 복사 UX와 브라우저 자동화의 경계 재정의 필요</td></tr>
+              <tr><td>localStorage 한계</td><td>트랙·페르소나 공유/백업 요구가 생기면 DB 전환 필요</td></tr>
+              <tr><td>ffmpeg 환경 편차</td><td>배포 타깃별 바이너리·폰트 검증 필요</td></tr>
+              <tr><td>영상 생성 대기 시간</td><td>긴 음원에서 진행률 UI와 타임아웃 정책 필요</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <p class="col-head">다음 스프린트 후보</p>
+          <ul class="check-list">
+            <li><span class="scope-tag scope-tag--amber">S2</span>Suno vs Udio 동일 페르소나 비교 리포트</li>
+            <li><span class="scope-tag scope-tag--amber">S2</span>작가관 표현 품질 평가 기준 정의</li>
+            <li><span class="scope-tag scope-tag--amber">S2</span>트랙/앨범 단위 저장 모델 재검토</li>
+            <li><span class="scope-tag scope-tag--amber">S2</span>영상 생성 진행률 UI와 실패 복구 UX</li>
+            <li><span class="scope-tag scope-tag--amber">S2</span>샘플 페르소나 기반 데모 시나리오 고정</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">Sprint ai-musician / 1</p>
+      <div class="qa-links">
+        <span>branch: sprint/ai-musician/1</span>
+        <span>scope: persona → prompt → track → export → video</span>
+        <span>report: 2026-06-11</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div>
+
+<div class="nav-hint">← → 키 또는 클릭으로 이동</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
