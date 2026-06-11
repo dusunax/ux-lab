@@ -16,6 +16,46 @@ importers:
         specifier: ^8.0.0
         version: 8.2.2
 
+  apps/ai-musician:
+    dependencies:
+      '@napi-rs/canvas':
+        specifier: 0.1.85
+        version: 0.1.85
+      lucide-react:
+        specifier: ^0.400.0
+        version: 0.400.0(react@19.1.0)
+      next:
+        specifier: 15.5.9
+        version: 15.5.9(react-dom@19.1.0)(react@19.1.0)
+      react:
+        specifier: 19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: 19.1.0
+        version: 19.1.0(react@19.1.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.27
+      '@types/react':
+        specifier: ^19
+        version: 19.2.8
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.8)
+      autoprefixer:
+        specifier: ^10
+        version: 10.4.14(postcss@8.4.24)
+      postcss:
+        specifier: ^8
+        version: 8.4.24
+      tailwindcss:
+        specifier: ^3
+        version: 3.4.8
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   apps/applications:
     dependencies:
       '@ux-lab/ui':
@@ -3907,7 +3947,6 @@ packages:
       '@napi-rs/canvas-win32-arm64-msvc': 0.1.85
       '@napi-rs/canvas-win32-x64-msvc': 0.1.85
     dev: false
-    optional: true
 
   /@nestjs/cli@10.4.9:
     resolution: {integrity: sha512-s8qYd97bggqeK7Op3iD49X2MpFtW4LVNLAwXFkfbRxKME6IYT7X0muNTJ2+QfI8hpbNx9isWkrLWIp+g5FOhiA==}
