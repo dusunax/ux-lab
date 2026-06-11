@@ -14,8 +14,9 @@ const TITLE_FONT_SIZE = 34;
 const TITLE_LINE_HEIGHT = 42;
 const ARTIST_FONT_SIZE = 22;
 const ARTIST_LINE_HEIGHT = 30;
-const TEXT_FONT_FAMILY = "AiMusicianText";
-let registeredTextFont = false;
+const LATIN_FONT_FAMILY = "AiMusicianLatin";
+const KOREAN_FONT_FAMILY = "AiMusicianKorean";
+let registeredTextFonts = false;
 
 const AUDIO_EXT: Record<string, string> = {
   "audio/mpeg": ".mp3",
@@ -32,23 +33,24 @@ const IMAGE_EXT: Record<string, string> = {
 };
 
 const FONT_CANDIDATES = [
-  "/System/Library/Fonts/AppleSDGothicNeo.ttc",
-  "/System/Library/Fonts/Supplemental/AppleGothic.ttf",
-  // 감성적 / 트랜디 (macOS 번들)
-  "/System/Library/Fonts/Optima.ttc",          // 휴머니스트, 우아함
-  "/System/Library/Fonts/Palatino.ttc",         // 문학적 세리프
-  "/System/Library/Fonts/Avenir.ttc",           // 기하학적, 현대적
-  "/System/Library/Fonts/Supplemental/Futura.ttf", // 빈티지 지오메트릭
-  // 폴백
+  "/System/Library/Fonts/Avenir.ttc",
   "/System/Library/Fonts/Helvetica.ttc",
   "/Library/Fonts/Arial.ttf",
   "/System/Library/Fonts/Supplemental/Arial.ttf",
   "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
   "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
 ];
+const KOREAN_FONT_CANDIDATES = [
+  "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+  "/System/Library/Fonts/Supplemental/AppleGothic.ttf",
+  "/System/Library/Fonts/AppleGothic.ttf",
+  "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+  "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+  "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+];
 
-async function findFont(): Promise<string | null> {
-  for (const p of FONT_CANDIDATES) {
+async function findFont(candidates: string[]): Promise<string | null> {
+  for (const p of candidates) {
     try {
       await access(p);
       return p;
@@ -58,9 +60,21 @@ async function findFont(): Promise<string | null> {
 }
 
 async function registerTextFont(): Promise<void> {
-  if (registeredTextFont) return;
-  const fontPath = await findFont();
-  registeredTextFont = Boolean(fontPath && GlobalFonts.registerFromPath(fontPath, TEXT_FONT_FAMILY));
+  if (registeredTextFonts) return;
+
+  const [latinFontPath, koreanFontPath] = await Promise.all([
+    findFont(FONT_CANDIDATES),
+    findFont(KOREAN_FONT_CANDIDATES),
+  ]);
+
+  const latinRegistered = Boolean(
+    latinFontPath && GlobalFonts.registerFromPath(latinFontPath, LATIN_FONT_FAMILY)
+  );
+  const koreanRegistered = Boolean(
+    koreanFontPath && GlobalFonts.registerFromPath(koreanFontPath, KOREAN_FONT_FAMILY)
+  );
+
+  registeredTextFonts = latinRegistered || koreanRegistered;
 }
 
 function toFfmpegColor(hex: string): string {
@@ -143,7 +157,18 @@ async function parseSources(req: NextRequest) {
 }
 
 function normalizeOverlayText(text: string): string {
-  return text.replace(/\r?\n/g, " ").trim();
+  return text.normalize("NFC").replace(/\r?\n/g, " ").trim();
+}
+
+function sanitizeDownloadTitle(title: string): string {
+  const safeTitle = title
+    .normalize("NFC")
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^\.+$/, "");
+
+  return safeTitle || "track";
 }
 
 function wrapText(
@@ -216,7 +241,9 @@ async function createTextOverlay(path: string, textColor: string, artist: string
   ctx.textBaseline = "alphabetic";
   ctx.fillStyle = textColor;
 
-  const fontFamily = registeredTextFont ? TEXT_FONT_FAMILY : "sans-serif";
+  const fontFamily = registeredTextFonts
+    ? `${LATIN_FONT_FAMILY}, ${KOREAN_FONT_FAMILY}, sans-serif`
+    : "sans-serif";
   let cursorY = TEXT_TOP;
 
   if (normalizedTitle) {
@@ -433,7 +460,7 @@ export async function POST(req: NextRequest) {
       elapsedMs: Date.now() - startedAt,
     });
 
-    const safeTitle = title.replace(/[^\w가-힣 _-]/g, "").trim() || "track";
+    const safeTitle = sanitizeDownloadTitle(title);
 
     return new NextResponse(videoBuffer, {
       headers: {

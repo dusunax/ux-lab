@@ -4,6 +4,17 @@ export function isAbortError(error: unknown): boolean {
   return error instanceof Error && error.name === "AbortError";
 }
 
+function sanitizeDownloadTitle(title: string): string {
+  const safeTitle = title
+    .normalize("NFC")
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^\.+$/, "");
+
+  return safeTitle || "track";
+}
+
 async function downloadBlob(res: Response, title: string) {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -13,7 +24,7 @@ async function downloadBlob(res: Response, title: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${title}.mp4`;
+  a.download = `${sanitizeDownloadTitle(title)}.mp4`;
   a.click();
   URL.revokeObjectURL(url);
 }
