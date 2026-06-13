@@ -2,5 +2,6 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
+  "_installCommand_note": "pnpm v10+ 레지스트리 API 호환 이슈(ERR_PNPM_META_FETCH_FAIL)로 Vercel 환경에서 npm install 사용. 빌드 단계는 pnpm build 유지.",
   "framework": "vite"
 }

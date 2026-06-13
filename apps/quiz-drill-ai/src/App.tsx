@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import type { Quiz, SessionRecord } from './types/quiz'
+import type { Quiz, SessionRecord, SessionQuizResult } from './types/quiz'
 import { CsvInput } from './features/csv/CsvInput'
 import { QuizScreen } from './features/quiz/QuizScreen'
 import { SessionResult } from './features/quiz/SessionResult'
@@ -133,6 +133,14 @@ export default function App() {
       const result = session.results.get(quiz.id)
       return result?.status === 'wrong'
     })
+    const quizResults: SessionQuizResult[] = session.quizzes.map((quiz) => {
+      const result = session.results.get(quiz.id)
+      return {
+        quizId: quiz.id,
+        status: result?.status === 'correct' ? 'correct' : 'wrong',
+        selected: result?.selectedOption ?? 0,
+      }
+    })
     const record: SessionRecord = {
       id: String(Date.now()),
       date: new Date().toISOString(),
@@ -141,6 +149,7 @@ export default function App() {
       correct,
       durationMs,
       wrongQuizzes,
+      quizResults,
     }
     addSession(record)
     setSessionDurationMs(durationMs)

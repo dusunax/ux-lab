@@ -21,6 +21,12 @@ export interface SessionSummary {
   wrong: number
 }
 
+export interface SessionQuizResult {
+  quizId: string
+  status: 'correct' | 'wrong'
+  selected: number  // 1-based option index
+}
+
 export interface SessionRecord {
   id: string
   date: string        // ISO string
@@ -29,4 +35,5 @@ export interface SessionRecord {
   correct: number
   durationMs: number
   wrongQuizzes?: Quiz[]
+  quizResults?: SessionQuizResult[]  // 문제별 정답 여부·선택지
 }
