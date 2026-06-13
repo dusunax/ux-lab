@@ -11,12 +11,13 @@ export default function App() {
   const [view, setView] = useState<View>('setup')
 
   const session = useQuizSession()
+  const { loadQuizzes, restartSession, retryWrong } = session
 
   const handleLoad = useCallback(
     (quizzes: Quiz[]) => {
-      session.loadQuizzes(quizzes)
+      loadQuizzes(quizzes)
     },
-    [session]
+    [loadQuizzes]
   )
 
   const handleStart = useCallback(() => {
@@ -30,14 +31,14 @@ export default function App() {
   }, [])
 
   const handleRestart = useCallback(() => {
-    session.restartSession()
+    restartSession()
     setView('quiz')
-  }, [session])
+  }, [restartSession])
 
   const handleRetryWrong = useCallback(() => {
-    session.retryWrong()
+    retryWrong()
     setView('quiz')
-  }, [session])
+  }, [retryWrong])
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
