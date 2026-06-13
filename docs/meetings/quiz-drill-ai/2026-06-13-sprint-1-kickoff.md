@@ -123,6 +123,14 @@
 | AI 채팅 로그 저장 | Sprint 3 |
 | 모바일 반응형 최적화 | Sprint 2 이후 — 우선 데스크탑 기준 동작 확인 |
 
+### Sprint 2 후보 (Sprint 1 리뷰에서 추가)
+
+| 항목 | 내용 |
+|------|------|
+| 풀이 시간 표시 | 세션 총 소요 시간 또는 문제별 풀이 시간 표시 |
+| Enter 키 단축키 | 답 선택 후 Enter로 "다음 문제" / "결과 보기" 버튼 트리거 |
+| Vercel 배포 | `apps/quiz-drill-ai` Vercel 정적 배포 설정 |
+
 ---
 
 *회의록 작성: TS Alex | 다음 회의: Sprint quiz-drill-ai/1 리뷰*
