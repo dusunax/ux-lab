@@ -25,6 +25,17 @@
 
 ---
 
+## 결정 사항 요약
+
+| # | 결정 내용 | 담당 |
+|---|-----------|------|
+| 1 | 앱 위치: `apps/quiz-drill-ai` monorepo 신설 | Avery + Blake |
+| 2 | CSV 입력: 파일 업로드 + 텍스트 붙여넣기 둘 다 지원 | Avery |
+| 3 | 세션 완료 후: 결과 화면에 [다시 풀기] + [오답만 풀기] 버튼 즉시 표시 | Avery |
+| 4 | `answer` 필드: 1-based 인덱스 (answer=3 → option3) | Avery |
+
+---
+
 ## Sprint quiz-drill-ai/1 확정 스코프
 
 | # | ID | 항목 |
@@ -85,10 +96,10 @@
 
 | 질문 | 담당 | 기한 | 상태 |
 |------|------|------|------|
-| 앱 위치를 `apps/quiz-drill-ai`로 신설할지, 기존 앱 구조에 편입할지 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ⚠️ Open |
-| CSV 텍스트 붙여넣기와 파일 업로드 중 MVP에서 둘 다 지원할지, 하나만 지원할지 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ⚠️ Open |
-| 세션 완료 후 동작 — 재시작(리셔플) 즉시 제공 vs 별도 메뉴로 이동 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ⚠️ Open |
-| `answer` 필드 값이 `3`(인덱스)인지 `option3`(키)인지 예시 기준 확정 필요 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ⚠️ Open |
+| 앱 위치를 `apps/quiz-drill-ai`로 신설할지, 기존 앱 구조에 편입할지 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ✅ 결정: monorepo 패턴 — `apps/quiz-drill-ai` 신설 |
+| CSV 텍스트 붙여넣기와 파일 업로드 중 MVP에서 둘 다 지원할지, 하나만 지원할지 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ✅ 결정: 둘 다 지원 |
+| 세션 완료 후 동작 — 재시작(리셔플) 즉시 제공 vs 별도 메뉴로 이동 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ✅ 결정: 결과 화면에 [다시 풀기] + [오답만 풀기] 버튼 즉시 표시 |
+| `answer` 필드 값이 `3`(인덱스)인지 `option3`(키)인지 예시 기준 확정 필요 | Jordan / 사용자 확인 | Sprint quiz-drill-ai/1 킥오프 | ✅ 결정: 1-based 인덱스 (answer=3 → option3) |
 
 ---
 
