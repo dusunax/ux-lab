@@ -28,6 +28,7 @@
 | 파일 | 스프린트 | 날짜 | 주요 결정 |
 |------|----------|------|-----------|
 | [quiz-drill-ai/2026-06-13-sprint-1-kickoff.md](./quiz-drill-ai/2026-06-13-sprint-1-kickoff.md) | Sprint quiz-drill-ai/1 킥오프 | 2026-06-13 | CSV 파싱 + 랜덤 출제 + 정답/해설 표시 — 최소 퀴즈 학습 도구 PoC |
+| [quiz-drill-ai/2026-06-13-sprint-2-kickoff.md](./quiz-drill-ai/2026-06-13-sprint-2-kickoff.md) | Sprint quiz-drill-ai/2 킥오프 | 2026-06-13 | 학습 이력 저장·누적 통계·Enter 단축키·Vercel 배포로 실사용 도구 완성 |
 
 ### projection-art
 
