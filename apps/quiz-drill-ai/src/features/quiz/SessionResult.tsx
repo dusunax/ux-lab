@@ -3,13 +3,22 @@ import type { QuizResult } from '../../types/quiz'
 interface SessionResultProps {
   total: number
   results: Map<string, QuizResult>
+  durationMs: number
   onRestart: () => void
   onRetryWrong: () => void
+}
+
+function formatDuration(ms: number): string {
+  const totalSec = Math.floor(ms / 1000)
+  const m = Math.floor(totalSec / 60)
+  const s = totalSec % 60
+  return `${m}:${String(s).padStart(2, '0')}`
 }
 
 export function SessionResult({
   total,
   results,
+  durationMs,
   onRestart,
   onRetryWrong,
 }: SessionResultProps) {
@@ -47,7 +56,7 @@ export function SessionResult({
       </div>
 
       {/* 통계 카드 */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         <div className="bg-gray-900 rounded-xl p-4">
           <p className="text-2xl font-bold text-white tabular-nums">{total}</p>
           <p className="text-gray-500 text-xs mt-1">전체</p>
@@ -59,6 +68,10 @@ export function SessionResult({
         <div className="bg-gray-900 rounded-xl p-4">
           <p className="text-2xl font-bold text-red-400 tabular-nums">{wrongCount}</p>
           <p className="text-gray-500 text-xs mt-1">오답</p>
+        </div>
+        <div className="bg-gray-900 rounded-xl p-4">
+          <p className="text-2xl font-bold text-gray-300 tabular-nums">{formatDuration(durationMs)}</p>
+          <p className="text-gray-500 text-xs mt-1">소요 시간</p>
         </div>
       </div>
 

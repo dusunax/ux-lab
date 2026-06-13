@@ -20,3 +20,13 @@ export interface SessionSummary {
   correct: number
   wrong: number
 }
+
+export interface SessionRecord {
+  id: string
+  date: string        // ISO string
+  source: string      // 파일명 또는 '텍스트 입력'
+  total: number
+  correct: number
+  durationMs: number
+  wrongQuizzes?: Quiz[]
+}

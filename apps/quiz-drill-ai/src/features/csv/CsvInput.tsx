@@ -4,38 +4,60 @@ import { parseQuizCsv, type ParseError } from './parseQuizCsv'
 
 type Tab = 'file' | 'text'
 
+const SAMPLE_FILES = [
+  {
+    label: '모바일앱 프로그래밍 149문제',
+    path: '/samples/mobile-programming-149.csv',
+    source: '샘플: mobile-programming-149.csv',
+  },
+  {
+    label: '데이터 정보처리 100문제',
+    path: '/samples/data-processing-100.csv',
+    source: '샘플: data-processing-100.csv',
+  },
+]
+
 interface CsvInputProps {
-  onLoad: (quizzes: Quiz[]) => void
+  onLoad: (quizzes: Quiz[], source: string) => void
+  onInvalid: () => void
 }
 
-export function CsvInput({ onLoad }: CsvInputProps) {
+export function CsvInput({ onLoad, onInvalid }: CsvInputProps) {
   const [activeTab, setActiveTab] = useState<Tab>('file')
   const [isDragging, setIsDragging] = useState(false)
+  const [isSampleLoading, setIsSampleLoading] = useState(false)
+  const [selectedSamplePath, setSelectedSamplePath] = useState<string | null>(null)
   const [textContent, setTextContent] = useState('')
   const [errors, setErrors] = useState<ParseError[]>([])
   const [loadedCount, setLoadedCount] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleParse = useCallback(
-    (csv: string) => {
+    (csv: string, source: string, samplePath: string | null = null) => {
       const { quizzes, errors: parseErrors } = parseQuizCsv(csv)
       setErrors(parseErrors)
 
-      if (quizzes.length > 0) {
+      if (quizzes.length > 0 && parseErrors.length === 0) {
         setLoadedCount(quizzes.length)
-        onLoad(quizzes)
+        setSelectedSamplePath(samplePath)
+        onLoad(quizzes, source)
       } else {
         setLoadedCount(null)
+        setSelectedSamplePath(null)
+        onInvalid()
       }
     },
-    [onLoad]
+    [onInvalid, onLoad]
   )
 
   const readFile = useCallback(
     (file: File) => {
-      if (!file.name.endsWith('.csv')) {
-        setErrors([{ row: 0, field: 'file', message: '.csv 파일만 지원합니다' }])
+      const isValidExt = file.name.endsWith('.csv') || file.name.endsWith('.tsv')
+      if (!isValidExt) {
+        setErrors([{ row: 0, field: 'file', message: '.csv 또는 .tsv 파일만 지원합니다' }])
         setLoadedCount(null)
+        setSelectedSamplePath(null)
+        onInvalid()
         return
       }
 
@@ -43,7 +65,7 @@ export function CsvInput({ onLoad }: CsvInputProps) {
       reader.onload = (e) => {
         const content = e.target?.result
         if (typeof content === 'string') {
-          handleParse(content)
+          handleParse(content, file.name)
         }
       }
       reader.readAsText(file, 'utf-8')
@@ -80,9 +102,29 @@ export function CsvInput({ onLoad }: CsvInputProps) {
 
   const handleTextSubmit = useCallback(() => {
     if (textContent.trim()) {
-      handleParse(textContent)
+      handleParse(textContent, '텍스트 입력')
     }
   }, [textContent, handleParse])
+
+  const handleSampleLoad = useCallback(async (sample: (typeof SAMPLE_FILES)[number]) => {
+    setIsSampleLoading(true)
+    setErrors([])
+    setLoadedCount(null)
+
+    try {
+      const response = await fetch(sample.path)
+      if (!response.ok) {
+        throw new Error('sample not found')
+      }
+      handleParse(await response.text(), sample.source, sample.path)
+    } catch {
+      setErrors([{ row: 0, field: 'sample', message: '샘플 데이터를 불러오지 못했습니다' }])
+      setSelectedSamplePath(null)
+      onInvalid()
+    } finally {
+      setIsSampleLoading(false)
+    }
+  }, [handleParse, onInvalid])
 
   const handleTabChange = useCallback((tab: Tab) => {
     setActiveTab(tab)
@@ -138,18 +180,18 @@ export function CsvInput({ onLoad }: CsvInputProps) {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".csv"
+            accept=".csv,.tsv"
             onChange={handleFileChange}
             className="sr-only"
-            aria-label="CSV 파일 선택"
+            aria-label="CSV/TSV 파일 선택"
           />
           <div className="text-4xl mb-4" aria-hidden="true">
             {isDragging ? '📂' : '📄'}
           </div>
           <p className="text-gray-300 text-lg mb-2">
-            CSV 파일을 드래그하거나 클릭하여 선택
+            파일을 드래그하거나 클릭하여 선택
           </p>
-          <p className="text-gray-500 text-sm">.csv 파일만 지원합니다</p>
+          <p className="text-gray-500 text-sm">.csv / .tsv 지원 · 탭 구분자 자동 감지</p>
         </div>
       )}
 
@@ -176,44 +218,70 @@ export function CsvInput({ onLoad }: CsvInputProps) {
         </div>
       )}
 
-      {/* 성공 메시지 */}
-      {loadedCount !== null && errors.length === 0 && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="mt-6 flex items-center gap-3 bg-green-950 border border-green-700 rounded-lg p-4"
-        >
-          <span className="text-green-400 text-lg" aria-hidden="true">✓</span>
-          <p className="text-green-400 font-medium">{loadedCount}개 문제 로드됨</p>
-        </div>
-      )}
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        {SAMPLE_FILES.map((sample) => (
+          <button
+            key={sample.path}
+            type="button"
+            onClick={() => handleSampleLoad(sample)}
+            disabled={isSampleLoading}
+            aria-pressed={selectedSamplePath === sample.path}
+            className={`w-full py-3 font-medium rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:bg-gray-900 disabled:text-gray-600 ${
+              selectedSamplePath === sample.path
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-800 hover:bg-gray-700 text-white'
+            }`}
+          >
+            {isSampleLoading ? '...' : sample.label}
+          </button>
+        ))}
+      </div>
 
-      {/* 오류 목록 */}
-      {errors.length > 0 && (
-        <div
-          role="alert"
-          aria-label="파싱 오류 목록"
-          className="mt-6 bg-red-950 border border-red-700 rounded-lg p-4"
-        >
-          <p className="text-red-400 font-medium mb-3">{errors.length}개 오류 발생</p>
-          <ul className="space-y-2 max-h-48 overflow-y-auto">
-            {errors.map((err, i) => (
-              <li key={i} className="text-sm text-red-300">
-                {err.row > 0 ? (
-                  <span>
-                    <span className="text-red-400 font-mono">{err.row}행</span>
-                    {err.field !== 'row' && (
-                      <span className="text-red-500"> · {err.field}</span>
-                    )}
-                    <span className="text-gray-400"> — </span>
-                  </span>
-                ) : null}
-                {err.message}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="mt-6 min-h-[58px]">
+        {/* 성공 메시지 */}
+        {loadedCount !== null && errors.length === 0 && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center gap-3 bg-green-950 border border-green-700 rounded-lg p-4"
+          >
+            <span className="text-green-400 text-lg" aria-hidden="true">✓</span>
+            <p className="text-green-400 font-medium">{loadedCount}개 문제 로드됨</p>
+          </div>
+        )}
+
+        {/* 오류 목록 */}
+        {errors.length > 0 && (
+          <div
+            role="alert"
+            aria-label="파싱 오류 목록"
+            className="bg-red-950 border border-red-700 rounded-lg p-4"
+          >
+            <p className="text-red-400 font-medium mb-3">{errors.length}개 오류 발생</p>
+            <ul className="space-y-2 max-h-48 overflow-y-auto">
+              {errors.map((err, i) => (
+                <li key={i} className="text-sm text-red-300">
+                  {err.row > 0 ? (
+                    <span>
+                      <span className="text-red-400 font-mono">{err.row}행</span>
+                      {err.field !== 'row' && (
+                        <span className="text-red-500"> · {err.field}</span>
+                      )}
+                      <span className="text-gray-400"> — </span>
+                    </span>
+                  ) : null}
+                  {err.message}
+                  {err.value ? (
+                    <p className="mt-1 rounded bg-red-900/50 px-2 py-1 font-mono text-xs text-red-100 break-all">
+                      {err.value}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -5,6 +5,7 @@ export interface ParseError {
   row: number
   field: string
   message: string
+  value?: string
 }
 
 export interface ParseResult {
@@ -44,6 +45,15 @@ const rowSchema = z.object({
     ),
   explanation: z.string().min(1, 'explanation은 비어있을 수 없습니다'),
 })
+
+function detectDelimiter(headerLine: string): '\t' | ',' {
+  return headerLine.includes('\t') ? '\t' : ','
+}
+
+function parseLine(line: string, delimiter: '\t' | ','): string[] {
+  if (delimiter === '\t') return line.split('\t')
+  return parseCsvLine(line)
+}
 
 /**
  * 따옴표로 묶인 셀을 처리하는 간단한 CSV 행 파서.
@@ -90,7 +100,8 @@ export function parseQuizCsv(rawCsv: string): ParseResult {
 
   // 헤더 확인
   const headerLine = nonEmptyLines[0]
-  const headers = parseCsvLine(headerLine).map((h) => h.trim().toLowerCase())
+  const delimiter = detectDelimiter(headerLine)
+  const headers = parseLine(headerLine, delimiter).map((h) => h.trim().toLowerCase())
 
   const missingHeaders = EXPECTED_HEADERS.filter((h) => !headers.includes(h))
   if (missingHeaders.length > 0) {
@@ -98,6 +109,7 @@ export function parseQuizCsv(rawCsv: string): ParseResult {
       row: 1,
       field: 'header',
       message: `누락된 헤더: ${missingHeaders.join(', ')}`,
+      value: headerLine,
     })
     return { quizzes, errors }
   }
@@ -106,13 +118,14 @@ export function parseQuizCsv(rawCsv: string): ParseResult {
 
   dataLines.forEach((line, idx) => {
     const rowNumber = idx + 2 // 헤더가 1행이므로 데이터는 2행~
-    const cells = parseCsvLine(line)
+    const cells = parseLine(line, delimiter)
 
     if (cells.length !== headers.length) {
       errors.push({
         row: rowNumber,
         field: 'row',
         message: `컬럼 수 불일치: 예상 ${headers.length}개, 실제 ${cells.length}개`,
+        value: line,
       })
       return
     }
@@ -130,6 +143,7 @@ export function parseQuizCsv(rawCsv: string): ParseResult {
           row: rowNumber,
           field: err.path[0]?.toString() ?? 'unknown',
           message: err.message,
+          value: rawObj[err.path[0]?.toString() ?? ''] ?? line,
         })
       })
       return

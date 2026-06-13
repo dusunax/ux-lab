@@ -13,6 +13,26 @@ function shuffleArray<T>(arr: T[]): T[] {
   return result
 }
 
+function shuffleQuizOptions(quiz: Quiz): Quiz {
+  const shuffledOptions = shuffleArray(
+    quiz.options.map((option, index) => ({
+      option,
+      isAnswer: index + 1 === quiz.answer,
+    }))
+  )
+  const answerIndex = shuffledOptions.findIndex(({ isAnswer }) => isAnswer)
+
+  return {
+    ...quiz,
+    options: shuffledOptions.map(({ option }) => option) as Quiz['options'],
+    answer: answerIndex >= 0 ? answerIndex + 1 : quiz.answer,
+  }
+}
+
+function prepareSessionQuizzes(quizzes: Quiz[]): Quiz[] {
+  return shuffleArray(quizzes.map(shuffleQuizOptions))
+}
+
 interface QuizSessionState {
   quizzes: Quiz[]
   currentIndex: number
@@ -35,7 +55,7 @@ export function useQuizSession(): QuizSessionState & QuizSessionActions {
   const [isSessionComplete, setIsSessionComplete] = useState(false)
 
   const loadQuizzes = useCallback((incoming: Quiz[]) => {
-    setQuizzes(shuffleArray(incoming))
+    setQuizzes(prepareSessionQuizzes(incoming))
     setCurrentIndex(0)
     setResults(new Map())
     setIsSessionComplete(false)
@@ -73,7 +93,7 @@ export function useQuizSession(): QuizSessionState & QuizSessionActions {
   }, [currentIndex, quizzes.length])
 
   const restartSession = useCallback(() => {
-    setQuizzes((prev) => shuffleArray(prev))
+    setQuizzes((prev) => prepareSessionQuizzes(prev))
     setCurrentIndex(0)
     setResults(new Map())
     setIsSessionComplete(false)
@@ -87,7 +107,7 @@ export function useQuizSession(): QuizSessionState & QuizSessionActions {
 
     if (wrongQuizzes.length === 0) return
 
-    setQuizzes(shuffleArray(wrongQuizzes))
+    setQuizzes(prepareSessionQuizzes(wrongQuizzes))
     setCurrentIndex(0)
     setResults(new Map())
     setIsSessionComplete(false)

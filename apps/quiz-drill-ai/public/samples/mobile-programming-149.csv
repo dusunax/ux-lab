@@ -1,0 +1,150 @@
+id,category,question,option1,option2,option3,option4,answer,explanation
+q1,Android 기초,안드로이드 운영체제의 기반이 되는 커널은?,Unix,Linux,Windows,MacOS,2,Linux 커널을 기반으로 동작한다.
+q2,Android 기초,안드로이드 앱의 기본 실행 단위는?,Service,Fragment,Activity,Intent,3,사용자와 상호작용하는 화면 단위는 Activity이다.
+q3,Android 기초,앱 구성 정보와 권한을 정의하는 파일은?,build.gradle,AndroidManifest.xml,strings.xml,styles.xml,2,앱의 컴포넌트와 권한은 AndroidManifest.xml에 정의한다.
+q4,Android 기초,UI 레이아웃을 정의하는 파일 형식은?,JSON,YAML,XML,HTML,3,안드로이드 UI는 XML 레이아웃 파일로 정의한다.
+q5,Activity,Activity가 처음 생성될 때 호출되는 메서드는?,onStart(),onResume(),onCreate(),onDestroy(),3,Activity 최초 생성 시 onCreate()가 호출된다.
+q6,Activity,사용자가 앱을 떠날 때 가장 먼저 호출되는 메서드는?,onPause(),onStop(),onDestroy(),onCreate(),1,다른 화면으로 전환되기 직전에 onPause()가 호출된다.
+q7,Activity,Activity가 사용자와 상호작용 가능한 상태일 때 호출되는 메서드는?,onCreate(),onResume(),onStop(),onDestroy(),2,onResume 상태에서 사용자 입력을 받을 수 있다.
+q8,Activity,Activity 종료 직전에 호출되는 메서드는?,onPause(),onStop(),onDestroy(),onRestart(),3,Activity가 완전히 제거되기 전 onDestroy()가 호출된다.
+q9,Layout,자식 뷰를 수직 또는 수평으로 배치하는 레이아웃은?,FrameLayout,LinearLayout,GridLayout,RelativeLayout,2,LinearLayout은 방향을 지정하여 배치한다.
+q10,Layout,뷰를 겹쳐서 배치하는 데 적합한 레이아웃은?,FrameLayout,LinearLayout,ConstraintLayout,TableLayout,1,FrameLayout은 여러 뷰를 겹쳐 배치할 수 있다.
+q11,Layout,복잡한 UI를 효율적으로 구성하기 위해 주로 사용하는 레이아웃은?,AbsoluteLayout,ConstraintLayout,FrameLayout,TableLayout,2,ConstraintLayout은 다양한 제약조건으로 배치한다.
+q12,Layout,뷰 크기를 내용에 맞게 설정하는 속성은?,match_parent,fill_parent,wrap_content,fixed_size,3,wrap_content는 콘텐츠 크기에 맞춰진다.
+q13,Layout,부모 크기에 맞춰 확장하는 속성은?,match_parent,wrap_content,auto_size,fit_content,1,match_parent는 부모 영역을 채운다.
+q14,이벤트 처리,버튼 클릭 이벤트 처리를 위한 인터페이스는?,OnTouchListener,OnClickListener,OnKeyListener,OnMoveListener,2,버튼 클릭은 OnClickListener로 처리한다.
+q15,이벤트 처리,터치 이벤트를 처리하는 메서드는?,onMove(),onTouchEvent(),onClick(),onEvent(),2,터치 입력은 onTouchEvent()에서 처리한다.
+q16,이벤트 처리,길게 누르기 이벤트를 처리하는 인터페이스는?,OnLongClickListener,OnTouchListener,OnClickListener,OnPressListener,1,길게 누르기는 OnLongClickListener를 사용한다.
+q17,Intent,다른 Activity를 호출하기 위해 사용하는 객체는?,Fragment,Intent,Service,Provider,2,화면 전환 및 데이터 전달에 Intent를 사용한다.
+q18,Intent,호출할 클래스를 직접 지정하는 Intent는?,암시적 Intent,명시적 Intent,시스템 Intent,Broadcast Intent,2,명시적 Intent는 대상 Activity를 지정한다.
+q19,Intent,웹 브라우저 실행에 주로 사용되는 Intent는?,명시적 Intent,암시적 Intent,Service Intent,Fragment Intent,2,암시적 Intent는 수행할 작업을 지정한다.
+q20,Intent,Intent에 데이터를 추가하는 메서드는?,addData(),putExtra(),setValue(),append(),2,putExtra()를 사용해 값을 전달한다.
+q21,Fragment,Activity 내부에서 재사용 가능한 UI 구성 요소는?,Intent,Fragment,Service,Provider,2,Fragment는 화면 일부를 모듈화한다.
+q22,Fragment,Fragment 사용 목적이 아닌 것은?,재사용성,모듈화,화면 분할,APK 크기 증가,4,Fragment는 APK 크기 증가를 목적으로 하지 않는다.
+q23,RecyclerView,대량의 데이터를 효율적으로 표시하기 위한 컴포넌트는?,ListView,RecyclerView,GridView,ScrollView,2,RecyclerView는 View 재활용을 지원한다.
+q24,RecyclerView,RecyclerView에서 View 재활용을 담당하는 객체는?,Adapter,ViewHolder,LayoutManager,Fragment,2,ViewHolder 패턴으로 성능을 높인다.
+q25,RecyclerView,RecyclerView에 데이터를 연결하는 구성 요소는?,Service,Provider,Adapter,Intent,3,Adapter가 데이터와 View를 연결한다.
+q26,Service,백그라운드 작업을 수행하는 컴포넌트는?,Activity,Fragment,Service,Intent,3,Service는 UI 없이 백그라운드에서 동작한다.
+q27,Service,UI를 직접 표시할 수 없는 컴포넌트는?,Activity,Fragment,Service,View,3,Service는 화면을 직접 표시하지 않는다.
+q28,Broadcast Receiver,시스템 이벤트를 수신하는 컴포넌트는?,Activity,BroadcastReceiver,Service,Fragment,2,배터리 상태 변경 등의 이벤트를 수신한다.
+q29,저장소,간단한 설정값을 저장하는 방법은?,SQLite,SharedPreferences,Room,FileProvider,2,Key-Value 형태의 데이터를 저장한다.
+q30,저장소,관계형 데이터베이스를 제공하는 안드로이드 저장소는?,Room,Realm,SQLite,Firebase,3,SQLite는 내장 관계형 데이터베이스이다.
+q31,저장소,앱 전용 내부 저장소는 기본적으로 다른 앱이 접근 가능한가?,항상 가능,권한 필요,불가능,조건부 가능,3,내부 저장소는 앱 전용 공간이다.
+q32,권한,앱 권한을 선언하는 파일은?,build.gradle,AndroidManifest.xml,strings.xml,activity_main.xml,2,권한은 Manifest에 선언한다.
+q33,권한,Android 6.0 이후 도입된 권한 모델은?,Static Permission,Runtime Permission,System Permission,Root Permission,2,사용 중 권한 요청을 지원한다.
+q34,권한,카메라 권한은 일반적으로 어떤 권한에 해당하는가?,설치 시 권한,런타임 권한,시스템 권한,루트 권한,2,사용 시 사용자 동의를 받아야 한다.
+q35,Jetpack Compose,Jetpack Compose UI를 작성하는 언어는?,Java,C++,Kotlin,Python,3,Compose는 Kotlin 기반 선언형 UI 프레임워크이다.
+q36,Jetpack Compose,Jetpack Compose가 주로 대체하는 방식은?,XML 기반 UI,RecyclerView,SQLite,Intent,1,기존 XML 레이아웃을 대체한다.
+q37,Jetpack Compose,Compose 함수에 사용하는 어노테이션은?,@Component,@Composable,@Inject,@ViewModel,2,Compose UI 함수는 @Composable을 사용한다.
+q38,ViewBinding,findViewById 사용을 줄여주는 기능은?,DataStore,ViewBinding,Room,LiveData,2,타입 안정성을 제공한다.
+q39,ViewBinding,ViewBinding의 장점이 아닌 것은?,타입 안정성,Null 오류 감소,코드 감소,성능 저하,4,ViewBinding은 성능 저하를 목적으로 하지 않는다.
+q40,종합,앱 시작 시 가장 먼저 실행되는 Activity는?,Main Activity,Home Activity,Launcher Activity,Root Activity,3,Launcher Activity가 앱 진입점 역할을 한다.
+q41,종합,앱의 진입 Activity는 어디에서 지정하는가?,build.gradle,AndroidManifest.xml,strings.xml,settings.gradle,2,Intent Filter를 통해 지정한다.
+q42,종합,Activity 간 데이터를 전달하는 대표 객체는?,Service,Fragment,Intent,Provider,3,Intent는 데이터 전달 기능을 제공한다.
+q43,종합,RecyclerView 구성 요소가 아닌 것은?,Adapter,ViewHolder,LayoutManager,Intent,4,Intent는 RecyclerView 구성 요소가 아니다.
+q44,종합,백그라운드 작업 담당 컴포넌트는?,Activity,Service,Fragment,Layout,2,장시간 작업은 Service가 담당한다.
+q45,종합,안드로이드 공식 권장 개발 언어는?,Java,C++,Kotlin,Python,3,현재 구글은 Kotlin을 공식 권장한다.
+q46,레이아웃,LinearLayout의 orientation 속성값이 아닌 것은?,horizontal,vertical,diagonal,none,3,diagonal은 지원하지 않는다
+q47,레이아웃,LinearLayout에서 남은 공간을 분배하는 속성은?,layout_margin,layout_weight,layout_padding,layout_gravity,2,layout_weight가 공간 비율을 결정한다
+q48,레이아웃,뷰 바깥쪽 여백을 의미하는 속성은?,padding,margin,gravity,weight,2,margin은 외부 여백이다
+q49,레이아웃,뷰 내부 여백을 의미하는 속성은?,padding,margin,gravity,weight,1,padding은 내부 여백이다
+q50,레이아웃,자식 뷰의 정렬 위치를 지정하는 속성은?,layout_gravity,gravity,padding,margin,1,layout_gravity는 자식 뷰 위치를 지정한다
+q51,레이아웃,내용의 정렬 방향을 지정하는 속성은?,weight,gravity,padding,layout_width,2,gravity는 내용 정렬에 사용된다
+q52,레이아웃,화면 크기에 따라 자동으로 재배치하기 적합한 레이아웃은?,LinearLayout,RelativeLayout,ConstraintLayout,AbsoluteLayout,3,ConstraintLayout이 유연한 배치를 제공한다
+q53,레이아웃,RelativeLayout에서 다른 뷰 아래 배치 시 사용하는 속성은?,layout_below,layout_right,layout_top,layout_weight,1,layout_below로 아래 배치한다
+q54,레이아웃,RelativeLayout에서 부모 오른쪽 정렬 속성은?,alignParentRight,alignParentLeft,centerVertical,layout_weight,1,부모 우측 정렬을 지정한다
+q55,레이아웃,뷰를 부모 중앙에 배치하는 속성은?,centerInParent,alignParentTop,layout_below,layout_weight,1,중앙 정렬을 수행한다
+q56,도형,Canvas에 사각형을 그리는 메서드는?,drawBox,drawRect,drawSquare,makeRect,2,drawRect를 사용한다
+q57,도형,Canvas에 텍스트를 출력하는 메서드는?,drawText,printText,writeText,showText,1,drawText 메서드를 사용한다
+q58,도형,Paint 객체로 설정할 수 없는 것은?,색상,선두께,글꼴크기,Activity,4,Activity는 Paint 속성이 아니다
+q59,도형,색상을 표현하는 클래스는?,Paint,Canvas,Color,View,3,Color 클래스를 사용한다
+q60,도형,ARGB에서 A가 의미하는 것은?,Alpha,Area,Angle,Axis,1,Alpha는 투명도를 의미한다
+q61,소리,효과음 재생에 적합한 클래스는?,MediaPlayer,SoundPool,Canvas,AudioManager,2,짧은 효과음에 적합하다
+q62,소리,MediaPlayer의 주요 용도는?,텍스트 출력,긴 오디오 재생,이벤트 처리,데이터 저장,2,음악 파일 재생에 사용한다
+q63,소리,오디오 파일 재생 전 수행해야 하는 작업은?,prepare,setColor,startActivity,inflate,1,prepare 이후 재생 가능하다
+q64,소리,MediaPlayer 재생 시작 메서드는?,play,start,run,execute,2,start를 호출한다
+q65,소리,MediaPlayer 재생 중지 메서드는?,stop,finish,end,pauseAll,1,stop으로 재생 종료한다
+q66,이벤트,사용자 입력을 처리하는 구조는?,Event Listener,Adapter,Fragment,Manifest,1,리스너를 통해 이벤트를 처리한다
+q67,이벤트,클릭 이벤트 발생 시 호출되는 메서드는?,onTouch,onClick,onMove,onChange,2,onClick이 호출된다
+q68,이벤트,길게 누르기 이벤트 리스너는?,OnClickListener,OnTouchListener,OnLongClickListener,OnFocusListener,3,Long Click 전용 리스너이다
+q69,이벤트,터치 좌표를 얻는 객체는?,Intent,MotionEvent,Canvas,Paint,2,MotionEvent가 좌표 정보를 제공한다
+q70,이벤트,ACTION_MOVE는 어떤 상황인가?,터치 시작,손가락 이동,터치 종료,더블 클릭,2,이동 중 반복 발생한다
+q71,이벤트,키 입력 이벤트 처리에 사용하는 리스너는?,OnTouchListener,OnKeyListener,OnMoveListener,OnDragListener,2,키 입력 이벤트를 처리한다
+q72,이벤트,이벤트 기반 프로그래밍 특징은?,순차 실행만 가능,사용자 행동에 반응,컴파일 속도 향상,DB 저장 필수,2,사용자 입력에 따라 동작한다
+q73,Activity,새로운 Activity를 시작하는 메서드는?,runActivity,startActivity,openActivity,launchActivity,2,startActivity를 사용한다
+q74,Activity,현재 Activity를 종료하는 메서드는?,finish,start,destroy,close,1,finish로 종료한다
+q75,Activity,Activity 간 데이터 전달 객체는?,Canvas,Intent,Paint,BundleManager,2,Intent를 사용한다
+q76,Intent,실행할 컴포넌트를 명시하는 Intent는?,암시적 Intent,명시적 Intent,브로드캐스트 Intent,서비스 Intent,2,대상 클래스를 직접 지정한다
+q77,Intent,웹 브라우저 실행은 주로 어떤 Intent인가?,명시적 Intent,암시적 Intent,서비스 Intent,뷰 Intent,2,작업을 기준으로 실행한다
+q78,Intent,Intent 데이터 전달 메서드는?,putExtra,putValue,setData,appendData,1,putExtra를 사용한다
+q79,Intent,전달된 데이터를 얻는 객체는?,Bundle,Canvas,Paint,Adapter,1,Bundle을 통해 데이터를 읽는다
+q80,Intent,전화 걸기 화면을 실행할 때 사용하는 Action은?,ACTION_EDIT,ACTION_CALL,ACTION_MAIN,ACTION_GRID,2,전화 기능 실행에 사용한다
+q81,Fragment,Fragment는 무엇의 일부로 동작하는가?,Service,Activity,Intent,Adapter,2,Activity 내부에 포함된다
+q82,Fragment,Fragment의 장점이 아닌 것은?,재사용성,모듈화,화면 분할,독립 실행,4,Fragment는 단독 실행되지 않는다
+q83,Fragment,Fragment 추가 시 사용하는 객체는?,FragmentManager,IntentManager,CanvasManager,ViewManager,1,FragmentManager가 관리한다
+q84,Fragment,Fragment 교체 작업을 수행하는 객체는?,FragmentTransaction,IntentTransaction,AdapterTransaction,CanvasTransaction,1,화면 전환을 담당한다
+q85,Fragment,Fragment 제거 메서드는?,delete,remove,erase,finish,2,remove를 사용한다
+q86,AdapterView,데이터와 View를 연결하는 객체는?,Adapter,Canvas,Intent,Paint,1,Adapter가 연결 역할을 한다
+q87,AdapterView,ListView에 가장 많이 사용하는 Adapter는?,MediaAdapter,ArrayAdapter,CanvasAdapter,PaintAdapter,2,문자열 배열 연결에 적합하다
+q88,AdapterView,GridView는 어떤 형태의 데이터를 보여주는가?,목록형,격자형,트리형,그래프형,2,행과 열 구조를 사용한다
+q89,AdapterView,Spinner는 어떤 UI인가?,진행바,드롭다운 목록,이미지뷰,캔버스,2,선택 목록을 제공한다
+q90,AdapterView,ListView의 각 항목 클릭 이벤트는?,OnClickListener,OnItemClickListener,OnMoveListener,OnFocusListener,2,아이템 선택 이벤트를 처리한다
+q91,AdapterView,AdapterView의 대표 예가 아닌 것은?,ListView,GridView,Spinner,TextView,4,TextView는 AdapterView가 아니다
+q92,AdapterView,데이터 수가 많을 때 재사용 구조를 사용하는 이유는?,메모리 절약,색상 변경,레이아웃 변경,컴파일 향상,1,성능 최적화를 위해 사용한다
+q93,종합,사용자 입력을 받아 결과를 표시하는 위젯 조합은?,EditText Button TextView,Canvas Paint View,GridView Spinner Toast,MediaPlayer SoundPool Dialog,1,입력 실행 출력 구조이다
+q94,종합,도형 출력에 필요한 핵심 클래스 조합은?,Canvas Paint,Intent Activity,Fragment Adapter,Toast Dialog,1,그리기와 스타일 담당이다
+q95,종합,단일 선택 입력에 적합한 위젯은?,CheckBox,RadioButton,ListView,SeekBar,2,하나만 선택 가능하다
+q96,종합,복수 선택 입력에 적합한 위젯은?,RadioButton,CheckBox,Spinner,ImageView,2,여러 개 선택 가능하다
+q97,종합,드롭다운 선택 UI는?,Spinner,ListView,GridView,ProgressBar,1,콤보박스 역할을 한다
+q98,종합,화면 일부를 재사용 가능한 형태로 구성하는 기술은?,Fragment,Intent,Canvas,Paint,1,모듈화된 UI를 제공한다
+q99,종합,데이터와 화면을 연결하는 핵심 패턴은?,Intent,Adapter,Canvas,Paint,2,Adapter가 데이터와 View를 연결한다
+q100,View,안드로이드의 모든 UI 구성요소가 상속받는 클래스는?,Widget,Layout,View,Activity,3,대부분의 UI 요소는 View 클래스를 상속받는다
+q101,View,뷰의 표시 여부를 설정하는 속성이 아닌 것은?,VISIBLE,INVISIBLE,GONE,HIDDEN,4,HIDDEN은 안드로이드 View 상수가 아니다
+q102,TextView,문자열을 화면에 출력하기 위한 위젯은?,EditText,Button,TextView,ImageView,3,TextView는 텍스트 출력용 위젯이다
+q103,TextView,텍스트 크기를 지정하는 속성은?,textColor,textSize,textStyle,textWidth,2,textSize는 글자 크기를 지정한다
+q104,EditText,사용자로부터 문자열을 입력받는 위젯은?,TextView,Button,EditText,Spinner,3,EditText는 입력 필드이다
+q105,EditText,비밀번호 입력 시 사용하는 inputType은?,text,textPersonName,textPassword,textEmail,3,비밀번호는 textPassword를 사용한다
+q106,Button,버튼 클릭 이벤트를 처리하기 위해 사용하는 리스너는?,OnTouchListener,OnClickListener,OnFocusListener,OnMoveListener,2,클릭 이벤트는 OnClickListener로 처리한다
+q107,ImageView,이미지를 표시하는 위젯은?,TextView,ImageView,Button,SeekBar,2,ImageView는 이미지 출력용이다
+q108,ImageView,프로젝트 이미지 리소스가 저장되는 폴더는?,drawable,layout,mipmap,values,1,일반 이미지 리소스는 drawable에 저장한다
+q109,CheckBox,여러 개를 동시에 선택할 수 있는 위젯은?,RadioButton,Spinner,CheckBox,ToggleButton,3,CheckBox는 복수 선택이 가능하다
+q110,RadioButton,하나만 선택 가능하도록 사용하는 위젯은?,CheckBox,RadioButton,TextView,EditText,2,RadioButton은 단일 선택용이다
+q111,RadioGroup,RadioButton을 그룹으로 묶는 이유는?,스타일 적용,정렬,단일 선택 보장,성능 향상,3,RadioGroup은 하나만 선택되도록 관리한다
+q112,Spinner,드롭다운 목록을 제공하는 위젯은?,ListView,Spinner,GridView,SeekBar,2,Spinner는 콤보박스 형태이다
+q113,Spinner,Spinner 데이터 연결에 사용하는 객체는?,Intent,Adapter,Fragment,Canvas,2,Spinner는 Adapter를 사용한다
+q114,SeekBar,사용자가 값을 슬라이드로 조절하는 위젯은?,ProgressBar,SeekBar,RatingBar,Switch,2,SeekBar는 값을 직접 변경할 수 있다
+q115,SeekBar,SeekBar 값 변경 감지 리스너는?,OnSeekListener,OnValueListener,OnSeekBarChangeListener,OnSliderListener,3,SeekBar 전용 리스너이다
+q116,ProgressBar,진행 상황 표시 위젯은?,ProgressBar,SeekBar,TextView,Spinner,1,ProgressBar는 진행 상태를 나타낸다
+q117,ProgressBar,사용자 입력으로 직접 값을 변경하는 위젯은?,ProgressBar,ImageView,SeekBar,TextView,3,SeekBar는 사용자 조작이 가능하다
+q118,Layout,자식 뷰를 표 형태로 배치하는 레이아웃은?,FrameLayout,TableLayout,LinearLayout,GridLayout,2,TableLayout은 행과 열 구조를 제공한다
+q119,Layout,뷰를 상대적 위치로 배치하는 레이아웃은?,LinearLayout,RelativeLayout,FrameLayout,AbsoluteLayout,2,다른 뷰를 기준으로 배치할 수 있다
+q120,Layout,화면 절대 좌표를 사용하는 레이아웃은?,AbsoluteLayout,RelativeLayout,FrameLayout,LinearLayout,1,현재는 사용이 권장되지 않는다
+q121,Layout,가중치 기반 공간 분배 속성은?,layoutWeight,weight,layout_weight,view_weight,3,LinearLayout에서 사용된다
+q122,Canvas,도형을 그리기 위해 사용하는 클래스는?,Shape,Canvas,Painter,ViewGroup,2,Canvas는 그리기 영역을 제공한다
+q123,Canvas,도형의 색상과 스타일을 지정하는 클래스는?,Brush,Color,Paint,Style,3,Paint 객체로 선과 색상을 지정한다
+q124,Canvas,원을 그리는 메서드는?,drawCircle(),makeCircle(),paintCircle(),createCircle(),1,Canvas의 drawCircle 메서드를 사용한다
+q125,Canvas,직선을 그리는 메서드는?,drawLine(),paintLine(),createLine(),makeLine(),1,Canvas의 기본 메서드이다
+q126,Sound,짧은 효과음을 재생할 때 사용하는 클래스는?,VideoView,MediaPlayer,SoundPool,Canvas,3,효과음 재생에는 SoundPool이 적합하다
+q127,Sound,음악 파일 재생에 주로 사용하는 클래스는?,MediaPlayer,SoundPool,AudioView,MusicView,1,긴 오디오 재생에는 MediaPlayer가 적합하다
+q128,Event,터치 정보를 담는 객체는?,TouchEvent,MotionEvent,InputEvent,PointerEvent,2,터치 이벤트는 MotionEvent로 전달된다
+q129,Event,ACTION_DOWN은 언제 발생하는가?,손가락 이동 시,손가락 뗄 때,터치 시작 시,더블 클릭 시,3,화면을 처음 터치한 순간 발생한다
+q130,Event,ACTION_UP은 언제 발생하는가?,터치 종료 시,터치 시작 시,드래그 시,길게 누를 때,1,손을 떼는 순간 발생한다
+q131,Event,ACTION_MOVE는 언제 발생하는가?,길게 누를 때,드래그할 때,클릭 시,더블 클릭 시,2,손가락 이동 중 반복 발생한다
+q132,ListView,목록 형태 데이터를 출력하는 대표 위젯은?,GridView,ListView,Spinner,TextView,2,ListView는 세로 목록을 제공한다
+q133,ListView,ListView에 데이터를 공급하는 객체는?,Provider,Adapter,Intent,Receiver,2,Adapter가 데이터를 연결한다
+q134,ListView,안드로이드에서 문자열 배열을 쉽게 연결하는 Adapter는?,SimpleAdapter,ArrayAdapter,GridAdapter,TextAdapter,2,문자열 리스트 연결에 자주 사용한다
+q135,GridView,격자 형태로 데이터를 출력하는 위젯은?,ListView,GridView,Spinner,LinearLayout,2,GridView는 행렬 구조를 제공한다
+q136,Dialog,짧은 메시지를 잠시 보여주는 기능은?,Dialog,Toast,Alert,Popup,2,Toast는 자동으로 사라진다
+q137,Dialog,사용자의 확인 또는 취소를 받는 대화상자는?,Toast,AlertDialog,TextView,PopupView,2,AlertDialog를 사용한다
+q138,Dialog,Toast를 생성하는 메서드는?,makeText(),showText(),createToast(),buildToast(),1,Toast.makeText()를 사용한다
+q139,Dialog,Toast를 실제 화면에 출력하는 메서드는?,display(),render(),show(),start(),3,show 호출이 필요하다
+q140,Dialog,AlertDialog 생성에 자주 사용하는 패턴은?,Factory,Builder,Provider,Receiver,2,Builder 패턴을 사용한다
+q141,Resource,문자열 리소스를 저장하는 XML 파일은?,colors.xml,strings.xml,styles.xml,themes.xml,2,문자열은 strings.xml에 저장한다
+q142,Resource,색상 리소스를 저장하는 파일은?,strings.xml,colors.xml,themes.xml,drawable.xml,2,색상 정의를 관리한다
+q143,Resource,앱 아이콘이 주로 저장되는 폴더는?,drawable,mipmap,layout,values,2,앱 런처 아이콘은 mipmap 사용이 권장된다
+q144,AdapterView,Adapter를 사용하는 뷰가 아닌 것은?,ListView,GridView,Spinner,TextView,4,TextView는 AdapterView가 아니다
+q145,AdapterView,AdapterView의 공통 특징은?,데이터 바인딩 사용,Canvas 사용,Intent 필요,Activity 상속,1,Adapter를 통해 데이터를 연결한다
+q146,종합,사용자가 텍스트를 입력하고 버튼을 누르면 결과를 출력하는 앱에서 필요한 위젯 조합은?,ImageView와SeekBar,EditText와Button과TextView,Canvas와Paint,Spinner와GridView,2,입력 실행 출력 구조를 구현한다
+q147,종합,CheckBox와 RadioButton의 가장 큰 차이는?,크기,색상,복수 선택 가능 여부,성능,3,CheckBox는 복수 선택이고 RadioButton은 단일 선택이다
+q148,종합,도형을 직접 그리는 기능 구현에 중요한 클래스 조합은?,Canvas와Paint,Intent와Activity,Adapter와ListView,Toast와Dialog,1,Canvas가 그리고 Paint가 스타일을 담당한다
+q149,종합,ListView와 GridView의 공통점은?,둘 다 Adapter 사용,둘 다 Canvas 사용,둘 다 Fragment 필요,둘 다 SQLite 필요,1,둘 다 Adapter 기반으로 데이터를 표시한다
