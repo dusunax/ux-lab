@@ -11,6 +11,11 @@ const SAMPLE_FILES = [
     source: '샘플: mobile-programming-149.csv',
   },
   {
+    label: '모바일앱 프로그래밍 120문제',
+    path: '/samples/mobile-programming-120.csv',
+    source: '샘플: mobile-programming-120.csv',
+  },
+  {
     label: '데이터 정보처리 100문제',
     path: '/samples/data-processing-100.csv',
     source: '샘플: data-processing-100.csv',
@@ -145,12 +150,12 @@ export function CsvInput({ onLoad, onInvalid }: CsvInputProps) {
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* 탭 */}
-      <div className="flex border-b border-gray-700 mb-6" role="tablist">
+      <div className="flex border-b border-gray-700 mb-4 sm:mb-6" role="tablist">
         <button
           role="tab"
           aria-selected={activeTab === 'file'}
           onClick={() => handleTabChange('file')}
-          className={`px-6 py-3 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+          className={`px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:px-6 ${
             activeTab === 'file'
               ? 'text-white border-b-2 border-blue-500'
               : 'text-gray-400 hover:text-gray-200'
@@ -162,7 +167,7 @@ export function CsvInput({ onLoad, onInvalid }: CsvInputProps) {
           role="tab"
           aria-selected={activeTab === 'text'}
           onClick={() => handleTabChange('text')}
-          className={`px-6 py-3 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+          className={`px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:px-6 ${
             activeTab === 'text'
               ? 'text-white border-b-2 border-blue-500'
               : 'text-gray-400 hover:text-gray-200'
@@ -181,7 +186,7 @@ export function CsvInput({ onLoad, onInvalid }: CsvInputProps) {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onClick={() => fileInputRef.current?.click()}
-          className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
+          className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors sm:p-12 ${
             isDragging
               ? 'border-blue-500 bg-blue-950'
               : 'border-gray-600 hover:border-gray-500 bg-gray-900'
@@ -195,10 +200,10 @@ export function CsvInput({ onLoad, onInvalid }: CsvInputProps) {
             className="sr-only"
             aria-label="CSV/TSV 파일 선택"
           />
-          <div className="text-4xl mb-4" aria-hidden="true">
+          <div className="mb-3 text-2xl sm:mb-4 sm:text-4xl" aria-hidden="true">
             {isDragging ? '📂' : '📄'}
           </div>
-          <p className="text-gray-300 text-lg mb-2">
+          <p className="mb-2 text-base text-gray-300 sm:text-lg">
             파일을 드래그하거나 클릭하여 선택
           </p>
           <p className="text-gray-500 text-sm">.csv / .tsv 지원 · 탭 구분자 자동 감지</p>
@@ -247,7 +252,7 @@ export function CsvInput({ onLoad, onInvalid }: CsvInputProps) {
         ))}
       </div>
 
-      <div className="mt-6 min-h-[58px]">
+      <div className="mt-4 min-h-[58px] sm:mt-6">
         {/* 성공 메시지 */}
         {loadedCount !== null && errors.length === 0 && (
           <div

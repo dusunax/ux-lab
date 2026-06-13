@@ -16,7 +16,7 @@ function getOptionStyle(
   currentResult: QuizResult | undefined
 ): string {
   const BASE =
-    'w-full text-left px-5 py-4 rounded-xl text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 font-medium'
+    'w-full text-left px-4 py-3 rounded-xl text-base transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 font-medium sm:px-5 sm:py-4'
 
   if (!currentResult) {
     return `${BASE} bg-gray-800 hover:bg-gray-700 text-white cursor-pointer`
@@ -77,7 +77,7 @@ export function QuizScreen({
   if (!currentQuiz) return null
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
+    <div className="w-full max-w-2xl mx-auto space-y-4 sm:space-y-6">
       {/* 헤더 영역 */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -117,13 +117,13 @@ export function QuizScreen({
       </div>
 
       {/* 질문 */}
-      <div className="bg-gray-900 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-white text-xl font-semibold leading-relaxed flex-1">
+      <div className="bg-gray-900 rounded-2xl p-4 sm:p-6">
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-lg font-semibold leading-relaxed text-white sm:text-xl flex-1">
             {currentQuiz.question}
           </p>
           <span
-            className="ml-4 text-gray-500 text-sm tabular-nums flex-shrink-0"
+            className="text-sm tabular-nums text-gray-500 flex-shrink-0"
             aria-label={`경과 시간 ${elapsedSec}초`}
           >
             {elapsedSec}s
@@ -156,7 +156,11 @@ export function QuizScreen({
 
       {/* 해설 + 다음 버튼 */}
       {isAnswered && (
-        <div className="space-y-4" role="region" aria-label="해설">
+        <div
+          className="sticky bottom-0 z-20 -mx-4 space-y-3 rounded-t-2xl border-t border-gray-800 bg-gray-950/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur sm:static sm:mx-0 sm:space-y-4 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none"
+          role="region"
+          aria-label="해설"
+        >
           <div
             className={`rounded-xl p-5 border-l-4 ${
               currentResult.status === 'correct'

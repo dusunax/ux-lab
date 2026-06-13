@@ -9,6 +9,7 @@ import { useSessionHistory } from './features/history/useSessionHistory'
 
 type View = 'setup' | 'quiz' | 'result' | 'history'
 
+const MOBILE_VIEWPORT_QUERY = '(max-width: 640px)'
 const AUDIO_FADE_VALUE = 0.0001
 const ANSWER_SOUND_VOLUME = 0.08
 const CORRECT_SOUND_FREQUENCIES = [660, 880]
@@ -46,6 +47,7 @@ export default function App() {
   const [view, setView] = useState<View>('setup')
   const [sessionDurationMs, setSessionDurationMs] = useState(0)
   const [historyRecords, setHistoryRecords] = useState<SessionRecord[]>([])
+  const [isMobileViewport, setIsMobileViewport] = useState(false)
 
   const session = useQuizSession()
   const { loadQuizzes, restartSession, retryWrong } = session
@@ -56,6 +58,15 @@ export default function App() {
   const audioContextRef = useRef<AudioContext | null>(null)
   const lastSourceRef = useRef<string>('')
   const sessionStartRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_VIEWPORT_QUERY)
+    const handleChange = () => setIsMobileViewport(mediaQuery.matches)
+
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
 
   const playAnswerSound = useCallback((isCorrect: boolean) => {
     const AudioContextClass = window.AudioContext
@@ -186,14 +197,14 @@ export default function App() {
   )
 
   const focusQuizKeyInput = useCallback(() => {
-    if (view !== 'quiz') return
+    if (view !== 'quiz' || isMobileViewport) return
 
     const frameId = requestAnimationFrame(() => {
       quizKeyInputRef.current?.focus({ preventScroll: true })
     })
 
     return frameId
-  }, [view])
+  }, [isMobileViewport, view])
 
   useEffect(() => {
     const frameId = focusQuizKeyInput()
@@ -239,6 +250,8 @@ export default function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isMobileViewport) return
+
       const currentQuiz = session.quizzes[session.currentIndex]
       const isAnswered = currentQuiz ? session.results.has(currentQuiz.id) : false
       const isLastQuestion = session.currentIndex === session.quizzes.length - 1
@@ -275,18 +288,18 @@ export default function App() {
 
     document.addEventListener('keydown', handleKeyDown, true)
     return () => document.removeEventListener('keydown', handleKeyDown, true)
-  }, [handleShowResult, handleStart, selectOptionWithFeedback, session, view])
+  }, [handleShowResult, handleStart, isMobileViewport, selectOptionWithFeedback, session, view])
 
   return (
     <div
       ref={appRootRef}
       tabIndex={-1}
       onPointerDownCapture={() => {
-        focusQuizKeyInput()
+        if (!isMobileViewport) focusQuizKeyInput()
       }}
       className="min-h-screen bg-gray-950 text-white focus:outline-none"
     >
-      {view === 'quiz' && (
+      {view === 'quiz' && !isMobileViewport && (
         <input
           ref={quizKeyInputRef}
           id="quiz-key-catcher"
@@ -332,9 +345,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="px-6 py-10">
+      <main className="px-4 py-6 sm:px-6 sm:py-10">
         {view === 'setup' && (
-          <div className="max-w-2xl mx-auto space-y-8">
+          <div className="mx-auto max-w-2xl space-y-5 sm:space-y-8">
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-bold text-white">Quiz Drill AI</h1>
               <p className="text-gray-400">CSV / TSV 파일로 나만의 퀴즈를 만들어 보세요</p>
@@ -342,11 +355,11 @@ export default function App() {
 
             <CsvInput onLoad={handleLoad} onInvalid={handleInvalidInput} />
 
-            <div className="min-h-[60px] text-center">
+            <div className="sticky bottom-3 z-20 min-h-[60px] text-center sm:static">
               {session.quizzes.length > 0 && (
                 <button
                   onClick={handleStart}
-                  className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-lg rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="w-full rounded-xl bg-blue-600 px-10 py-4 text-lg font-semibold text-white shadow-2xl shadow-gray-950/60 transition-colors hover:bg-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:w-auto sm:shadow-none"
                 >
                   시작하기 ({session.quizzes.length}문제)
                 </button>
@@ -381,7 +394,7 @@ export default function App() {
         )}
       </main>
 
-      <footer className="px-6 pb-6 text-center text-xs text-gray-600">
+      <footer className="hidden px-6 pb-6 text-center text-xs text-gray-600 sm:block">
         숫자키 1-4: 답 선택 · Enter/Space: 다음
       </footer>
     </div>
