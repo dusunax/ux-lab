@@ -57,10 +57,10 @@
 ## 수용 기준 (Acceptance Criteria)
 
 **저장 (STORE)**
-- [ ] 세션 완료 시 각 문제의 정답 여부와 선택지가 LocalStorage에 기록된다
+- [x] 세션 완료 시 각 문제의 정답 여부와 선택지가 LocalStorage에 기록된다
 - [x] 브라우저를 새로고침해도 이전 세션 결과가 유지된다
 - [x] 오답만 풀기 실행 시 저장된 세션의 오답 목록이 정확히 불러와진다
-- [ ] 저장 키 충돌 방지를 위해 CSV 파일명 또는 해시를 namespace로 사용한다
+- [x] 저장 키 충돌 방지를 위해 CSV 파일명 또는 해시를 namespace로 사용한다
 
 **통계 (STAT)**
 - [x] 세션 결과 화면에 총 문항 수, 정답 수, 오답 수, 정답률(%)이 표시된다
@@ -95,7 +95,7 @@
 ## 액션 아이템
 
 **FE (Avery)**
-- [ ] LocalStorage 저장 스키마 설계 — CSV namespace, 버전 키 포함 (STORE-1 선행) — STORE-1
+- [x] LocalStorage 저장 스키마 설계 — CSV namespace, 버전 키 포함 (STORE-1 선행) — STORE-1
 - [x] 세션 완료 시 결과 자동 persist 구현 — STORE-1
 - [x] 저장된 오답 목록 기반 retryWrong 세션 재개 구현 — STORE-2
 - [x] 세션 결과 화면에 정답률·소요 시간 통계 표시 — STAT-1
