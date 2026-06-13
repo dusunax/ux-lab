@@ -69,26 +69,26 @@
 ## 액션 아이템
 
 **FE (Avery)**
-- [ ] `apps/quiz-drill-ai/` Vite + React + TypeScript + Tailwind 프로젝트 신설 (pnpm workspace 연동) — INIT-1
-- [ ] CSV 업로드 UI 구현 — 파일 선택 + 텍스트 붙여넣기 입력 컴포넌트 — CSV-1
-- [ ] CSV 파서 구현 — zod 스키마 검증 포함 (`id, category, question, option1~4, answer, explanation`) — CSV-2
-- [ ] 파싱 오류 처리 — 행·필드 단위 에러 메시지 표시 — CSV-3
-- [ ] 랜덤 문제 출제 엔진 — 전체 문항 셔플 유틸리티 구현 — QUIZ-1
-- [ ] 퀴즈 화면 구현 — 문항 번호, 카테고리, 질문, 4지선다 렌더링 — QUIZ-2
-- [ ] 정답 확인 로직 — 선택지 클릭 시 즉시 시각적 피드백(색상/아이콘) — QUIZ-3
-- [ ] 해설 표시 — 정답 확인 후 `explanation` 노출 — QUIZ-4
-- [ ] 진행 상태 표시 — 문제 번호 / 전체 수 / 정답률 상시 표시 — QUIZ-5
-- [ ] 세션 완료 화면 — 결과 요약 (정답 수 / 전체 수) — SESSION-1
+- [x] `apps/quiz-drill-ai/` Vite + React + TypeScript + Tailwind 프로젝트 신설 (pnpm workspace 연동) — INIT-1
+- [x] CSV 업로드 UI 구현 — 파일 선택 + 텍스트 붙여넣기 입력 컴포넌트 — CSV-1
+- [x] CSV 파서 구현 — zod 스키마 검증 포함 (`id, category, question, option1~4, answer, explanation`) — CSV-2
+- [x] 파싱 오류 처리 — 행·필드 단위 에러 메시지 표시 — CSV-3
+- [x] 랜덤 문제 출제 엔진 — 전체 문항 셔플 유틸리티 구현 (Fisher-Yates) — QUIZ-1
+- [x] 퀴즈 화면 구현 — 문항 번호, 카테고리, 질문, 4지선다 렌더링 — QUIZ-2
+- [x] 정답 확인 로직 — 선택지 클릭 시 즉시 시각적 피드백(색상/아이콘) — QUIZ-3
+- [x] 해설 표시 — 정답 확인 후 `explanation` 노출 — QUIZ-4
+- [x] 진행 상태 표시 — 문제 번호 / 전체 수 / 정답률 상시 표시 — QUIZ-5
+- [x] 세션 완료 화면 — 결과 요약 (정답 수 / 전체 수) — SESSION-1
 
 **BE (Blake)**
-- [ ] 신규 앱 신설에 따른 monorepo 구성 검토 (`pnpm workspace`, `turbo`) — INIT-1 지원
+- [x] 신규 앱 신설에 따른 monorepo 구성 검토 (`pnpm workspace`) — INIT-1 지원 (`@ux-lab/quiz-drill-ai` 등록 완료)
 
 **QA (Morgan / Quinn)**
-- [ ] 수용 기준 전체 항목 검증
-- [ ] 올바른 CSV / 오류 CSV 케이스별 파싱 동작 검증
-- [ ] 랜덤 셔플 — 직전 세션과 동일 순서 반복 없음 검증
-- [ ] 정답/오답 시각적 구분 및 해설 표시 검증
-- [ ] `vite build` + TypeScript strict 모드 에러 없음 확인
+- [x] 수용 기준 전체 항목 검증 (브라우저 E2E 검증 완료)
+- [x] 올바른 CSV / 오류 CSV 케이스별 파싱 동작 검증
+- [x] 랜덤 셔플 — 직전 세션과 동일 순서 반복 없음 검증
+- [x] 정답/오답 시각적 구분 및 해설 표시 검증
+- [x] `vite build` + TypeScript strict 모드 에러 없음 확인
 
 ---
 
