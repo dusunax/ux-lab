@@ -75,8 +75,8 @@
 - [x] 문제를 맞추거나 틀렸을 때 서로 다른 효과음이 재생된다
 
 **배포 (DEPLOY)**
-- [ ] `pnpm build` 후 Vercel 정적 서빙이 정상 동작한다
-- [ ] 배포 URL에서 CSV 업로드부터 세션 완료까지 전체 플로우가 동작한다
+- [x] `pnpm build` 후 Vercel 정적 서빙이 정상 동작한다
+- [x] 배포 URL에서 CSV 업로드부터 세션 완료까지 전체 플로우가 동작한다 — https://quiz-drill-ai.vercel.app
 
 **파일 포맷 확장 (CSV-EXT)**
 - [x] `.tsv` 파일 업로드 시 탭 구분자로 파싱되어 CSV와 동일하게 동작한다
@@ -102,7 +102,7 @@
 - [x] 누적 학습 이력 뷰 구현 — 과거 세션 목록(날짜·정답률), CSV별 이력 — STAT-2
 - [x] 키보드 단축키 구현 — 숫자키 답 선택, 답변 후 Enter/Space 이동, 미선택 시 무시 — UX-1
 - [x] 퀴즈 화면 문제별 경과 시간 실시간 표시 구현 — UX-2
-- [ ] Vercel 정적 배포 빌드 설정 및 배포 파이프라인 구성 — DEPLOY-1
+- [x] Vercel 정적 배포 빌드 설정 및 배포 파이프라인 구성 — DEPLOY-1 (https://quiz-drill-ai.vercel.app)
 - [x] `parseQuizCsv.ts` 구분자 자동 감지 로직 추가 — 첫 줄 탭 포함 여부로 `,` vs `\t` 판별 — CSV-EXT-1
 - [x] `.tsv` 파일 확장자 허용 및 파일 업로드 accept 속성 업데이트 — CSV-EXT-1
 - [x] CSV 오류 값 표시 및 오류 시 시작 비활성화 구현 — CSV-VALID-1
