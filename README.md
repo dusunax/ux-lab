@@ -4,6 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
+| **quiz-drill-ai** | CSV/TSV 기반 시험 대비 퀴즈 드릴 앱 ([앱](./apps/quiz-drill-ai), [배포](https://quiz-drill-ai.vercel.app/)) | 2026-06-13 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **projection-art** | WebGL 기반 인터랙티브 프로젝션 아트 PoC ([앱](./apps/projection-art)) | 2026-05-29 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![MediaPipe](https://img.shields.io/badge/MediaPipe-0097A7?logo=google&logoColor=white) |
 | **ai-empathy-diary** | Excel 위장 AI 감정 일기 앱 ([배포](https://ai-empathy-diary.vercel.app/)) | 2026-05-11 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **@ux-lab/stellas-archive** | 게임 ([개발 일지](https://github.com/dusunax/ux-lab/wiki/Development-Log#stellas-archive-game), [배포](https://ux-lab-stellas-archive.vercel.app/)) | 2026-03-14 | dusunax | |
@@ -15,6 +16,14 @@
 | **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - | dusunax | - |
 
 ## 📸 스크린샷
+
+### 📍 quiz-drill-ai
+
+- CSV/TSV와 내장 샘플 데이터 기반 퀴즈 세션 생성
+- 숫자키 답 선택, Enter/Space 이동, 정답/오답 효과음 지원
+- LocalStorage 기반 학습 이력과 오답 다시 풀기 제공
+
+<img width="800" src="./docs/presentations/sprint-quiz-drill-ai-2/shot-answer-correct.png" />
 
 ### 📍 projection-art
 

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Quiz, QuizResult } from '../../types/quiz'
 
 interface QuizScreenProps {
@@ -65,6 +65,15 @@ export function QuizScreen({
     [isAnswered, onSelectOption]
   )
 
+  // UX-2: 문제별 경과 시간 (답변 후 정지)
+  const [elapsedSec, setElapsedSec] = useState(0)
+  useEffect(() => {
+    setElapsedSec(0)
+    if (isAnswered) return
+    const id = setInterval(() => setElapsedSec((s) => s + 1), 1000)
+    return () => clearInterval(id)
+  }, [currentIndex, isAnswered])
+
   if (!currentQuiz) return null
 
   return (
@@ -109,9 +118,17 @@ export function QuizScreen({
 
       {/* 질문 */}
       <div className="bg-gray-900 rounded-2xl p-6">
-        <p className="text-white text-xl font-semibold leading-relaxed">
-          {currentQuiz.question}
-        </p>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-white text-xl font-semibold leading-relaxed flex-1">
+            {currentQuiz.question}
+          </p>
+          <span
+            className="ml-4 text-gray-500 text-sm tabular-nums flex-shrink-0"
+            aria-label={`경과 시간 ${elapsedSec}초`}
+          >
+            {elapsedSec}s
+          </span>
+        </div>
       </div>
 
       {/* 선택지 */}
