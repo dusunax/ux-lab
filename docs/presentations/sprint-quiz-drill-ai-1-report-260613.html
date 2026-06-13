@@ -141,6 +141,31 @@
       text-transform: uppercase;
       margin-bottom: 8px;
     }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .screenshot-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .screenshot-img {
+      width: 100%;
+      max-height: 220px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      object-fit: cover;
+      object-position: top;
+    }
+    .screenshot-caption {
+      font-size: 12px;
+      color: #667085;
+      text-align: center;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -235,7 +260,34 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 4: Implemented scope -->
+  <!-- Slide 4: Screenshots -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">QUIZ FLOW · SCREENSHOTS</div>
+      <h2 class="slide-title">CSV 입력 → 문제 풀이 → 정답 확인 → 결과 화면</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-1/shot-setup.png" alt="CSV 입력 화면">
+          <div class="screenshot-caption">① CSV 붙여넣기 파싱 완료 — 5개 문제 로드</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-1/shot-quiz.png" alt="퀴즈 화면">
+          <div class="screenshot-caption">② 퀴즈 화면 — 번호 · 카테고리 · 4지선다 · 진행률</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-1/shot-answer.png" alt="정답 확인 화면">
+          <div class="screenshot-caption">③ 정답 확인 — 오답(빨강) · 정답(초록) · 해설 즉시 노출</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-1/shot-result.png" alt="결과 화면">
+          <div class="screenshot-caption">④ 세션 결과 — 정답률 80% · 다시 풀기 · 오답만 풀기</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: Implemented scope -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">IMPLEMENTED SCOPE</div>
