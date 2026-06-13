@@ -371,6 +371,10 @@ export default function App() {
           <HistoryView records={historyRecords} onRetryWrong={handleRetryHistoryWrong} />
         )}
       </main>
+
+      <footer className="px-6 pb-6 text-center text-xs text-gray-600">
+        숫자키 1-4: 답 선택 · Enter/Space: 다음
+      </footer>
     </div>
   )
 }

@@ -15,6 +15,16 @@ const SAMPLE_FILES = [
     path: '/samples/data-processing-100.csv',
     source: '샘플: data-processing-100.csv',
   },
+  {
+    label: '데이터 정보처리 77문제',
+    path: '/samples/data-info-processing-77.csv',
+    source: '샘플: 데이터 정보처리 77문제',
+  },
+  {
+    label: '데이터 정보처리 핵심 25문제',
+    path: '/samples/data-info-processing-core-25.csv',
+    source: '샘플: 데이터 정보처리 핵심 25문제',
+  },
 ]
 
 interface CsvInputProps {

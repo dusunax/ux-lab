@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint quiz-drill-ai/2 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f8faf9;
+      border: 1px solid #e5eee8;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+    .mini-note {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.55;
+    }
+    .scope-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e6f2eb;
+      color: #217346;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+    .scope-tag--blue   { background: #eff6ff; color: #1d4ed8; }
+    .scope-tag--amber  { background: #fff8e1; color: #b07c00; }
+    .scope-tag--gray   { background: #f1f5f9; color: #64748b; }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 16px;
+      width: 100%;
+    }
+    .screenshot-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .screenshot-img {
+      width: 100%;
+      max-height: 380px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      object-fit: contain;
+      object-position: top;
+      background: #fafafa;
+    }
+    .screenshot-img--full {
+      width: 100%;
+      max-height: 430px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      object-fit: contain;
+      object-position: top;
+      background: #fafafa;
+    }
+    .screenshot-caption {
+      font-size: 12px;
+      color: #667085;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .scope-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .scope-row:last-child { border-bottom: none; }
+    .scope-row .check-mark {
+      color: #217346;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .risk-card {
+      background: #fffbf0;
+      border: 1px solid #fde68a;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .risk-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #b07c00;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .risk-body {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .deferred-card {
+      background: #fafafa;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .deferred-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .col-head {
+      font-size: 12px;
+      font-weight: 700;
+      color: #888;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .deploy-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #f8fdf9;
+      border: 1px solid #c6e6d2;
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin-top: 16px;
+      width: 100%;
+    }
+    .deploy-url {
+      font-size: 16px;
+      font-weight: 700;
+      color: #217346;
+    }
+    .deploy-url a {
+      color: #217346;
+      text-decoration: none;
+    }
+    .deploy-url a:hover { text-decoration: underline; }
+    .deploy-divider {
+      width: 1px;
+      background: #c6e6d2;
+      height: 28px;
+    }
+    .deploy-detail {
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · quiz-drill-ai</div>
+        <h1 class="cover-title">Sprint quiz-drill-ai / 2</h1>
+        <p class="cover-sub">기억과 습관 — 학습 이력 저장, 누적 통계, 키보드 단축키, Vercel 배포</p>
+        <p class="cover-meta">2026-06-13 완료 보고 · PM</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: Sprint Goal -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SPRINT GOAL</div>
+      <h2 class="slide-title">Sprint 1에서 동작 증명된 퀴즈 루프에 기억과 습관을 더한다</h2>
+      <blockquote class="goal-quote">
+        학습 이력 저장, 누적 통계, 키보드 단축키, Vercel 배포로
+        <strong>실사용 가능한 학습 도구로 완성한다</strong> —
+        반복 학습과 오답 재도전이 습관이 될 수 있도록.
+      </blockquote>
+      <div class="deploy-badge-row">
+        <div>
+          <div class="deploy-url"><a href="https://quiz-drill-ai.vercel.app" target="_blank">quiz-drill-ai.vercel.app</a></div>
+          <div class="deploy-detail">Vercel 정적 배포 완료</div>
+        </div>
+        <div class="deploy-divider"></div>
+        <div>
+          <div class="deploy-url" style="color:#1a1a1a;">13 / 13</div>
+          <div class="deploy-detail">확정 스코프 완료</div>
+        </div>
+        <div class="deploy-divider"></div>
+        <div>
+          <div class="deploy-url" style="color:#1a1a1a;">3</div>
+          <div class="deploy-detail">미결 질문 전원 확정</div>
+        </div>
+        <div class="deploy-divider"></div>
+        <div>
+          <div class="deploy-url" style="color:#1a1a1a;">1</div>
+          <div class="deploy-detail">이월 항목</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: Decisions -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">DECISIONS</div>
+      <h2 class="slide-title">미결 질문 3개 전원 확정</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:80px;">#</th>
+            <th>결정 내용</th>
+            <th style="width:90px;">담당</th>
+            <th style="width:120px;">결과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>OQ-1</td>
+            <td>
+              <strong>LocalStorage 최근 50세션 유지, 초과 시 자동 삭제</strong><br>
+              <span class="mini-note">오래된 세션부터 순차 제거 — 용량 제한 내 안정적 유지</span>
+            </td>
+            <td>FE</td>
+            <td><span class="badge badge-green">확정</span></td>
+          </tr>
+          <tr>
+            <td>OQ-2</td>
+            <td>
+              <strong>문제별 소요 시간 — 퀴즈 카드 내부 인라인 표시</strong><br>
+              <span class="mini-note">별도 패널 없이 카드 내부에서 실시간 초 단위 카운트</span>
+            </td>
+            <td>FE</td>
+            <td><span class="badge badge-green">확정</span></td>
+          </tr>
+          <tr>
+            <td>OQ-3</td>
+            <td>
+              <strong>Vercel apps/quiz-drill-ai 독립 프로젝트, rootDirectory 설정</strong><br>
+              <span class="mini-note">monorepo 내 앱 단위 독립 배포 — vercel.json으로 rootDirectory 지정</span>
+            </td>
+            <td>FE</td>
+            <td><span class="badge badge-green">확정</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: Screenshots — 설정 · 퀴즈 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">QUIZ FLOW · SCREENSHOTS</div>
+      <h2 class="slide-title">설정 화면 · 퀴즈 카드 (문제별 소요 시간 인라인 표시)</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-setup.png" alt="설정 화면">
+          <div class="screenshot-caption">① 설정 화면 — 샘플 2종 내장, TSV 자동 감지, CSV 오류 진단</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-quiz.png" alt="퀴즈 카드">
+          <div class="screenshot-caption">② 퀴즈 카드 — 숫자키 단축키 + 문제별 경과 시간 실시간 표시</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: Screenshots — 정답 · 결과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">QUIZ FLOW · SCREENSHOTS</div>
+      <h2 class="slide-title">정답 확인 · 세션 결과 (정답률 + 소요 시간 통계 카드)</h2>
+      <div class="screenshot-grid">
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-answer.png" alt="정답 확인">
+          <div class="screenshot-caption">③ 정답 확인 — 오답(빨강) · 정답(초록) · 해설 · Web Audio 효과음</div>
+        </div>
+        <div class="screenshot-item">
+          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-result.png" alt="세션 결과">
+          <div class="screenshot-caption">④ 세션 결과 — 정답률 · 소요 시간 통계 카드 + 오답 다시 풀기</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: Screenshots — 이력 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">HISTORY · SCREENSHOTS</div>
+      <h2 class="slide-title">누적 학습 이력 뷰 — 날짜 · 정답률 · 소요 시간 · 오답 재도전</h2>
+      <img class="screenshot-img--full" src="./sprint-quiz-drill-ai-2/shot-history.png" alt="학습 이력 뷰">
+      <div class="screenshot-caption" style="margin-top:8px;">⑤ 학습 이력 — 세션 목록 + 항목별 오답 다시 풀기 버튼 (LocalStorage 최근 50세션)</div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: Implemented Scope -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">IMPLEMENTED SCOPE</div>
+      <h2 class="slide-title">13개 스코프 완료 · FE 액션 아이템 13 / 14</h2>
+      <div class="two-col" style="gap:28px;">
+        <div>
+          <p class="col-head">이력 · 통계</p>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag">STORE-1</span>LocalStorage 세션 결과 persist (최근 50세션)</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag">STORE-2</span>이력 기반 오답 다시 풀기</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag">STAT-1</span>세션 결과 — 정답률 · 소요 시간 통계 카드</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag">STAT-2</span>누적 학습 이력 뷰 (날짜 · 정답률 · 소요 시간)</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag">HISTORY-1</span>이력 항목별 오답 다시 풀기 버튼</span></div>
+          <p class="col-head" style="margin-top:14px;">UX · 퀴즈 강화</p>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--blue">UX-1</span>숫자키 답 선택 + Enter/Space 다음 문제 단축키</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--blue">UX-2</span>퀴즈 카드 내 문제별 경과 시간(초) 실시간 표시</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--blue">AUDIO-1</span>정답 / 오답 Web Audio API 효과음</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--blue">QUIZ-RANDOM-1</span>보기 순서 랜덤화 + 정답 인덱스 재계산</span></div>
+        </div>
+        <div>
+          <p class="col-head">CSV 확장 · 배포</p>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--amber">CSV-EXT-1</span>TSV 구분자 자동 감지 (.tsv + 탭 자동 감지)</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--amber">CSV-SAMPLE-1</span>내장 샘플 2종 (모바일앱 149문제, 데이터 100문제)</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--amber">CSV-VALID-1</span>CSV 오류 진단 + 오류 시 시작 비활성화</span></div>
+          <div class="scope-row"><span class="check-mark">✓</span><span><span class="scope-tag scope-tag--gray">DEPLOY-1</span>Vercel 독립 프로젝트 정적 배포</span></div>
+          <div class="callout" style="margin-top:20px; font-size:14px;">
+            PM 판단: "기억과 습관" 목표 달성. LocalStorage 이력 + 통계 카드 + 키보드 UX + 배포까지 실사용 수준으로 완성.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: Deferred & Risk -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">DEFERRED &amp; RISK</div>
+      <h2 class="slide-title">이월 1건 · 리스크 2건</h2>
+      <div class="two-col" style="gap:28px; align-items:start;">
+        <div>
+          <p class="col-head">이월 항목</p>
+          <div class="deferred-card">
+            <div class="deferred-label">Sprint 3 이연</div>
+            <div class="scope-row" style="border:none; padding:0;">
+              <span class="tag tag-yellow">이월</span>
+              <span style="font-size:14px; line-height:1.6;">
+                <strong>LocalStorage 저장 스키마 namespace 설계</strong><br>
+                앱 간 키 충돌 방지 및 향후 마이그레이션 경로 확보를 위한 namespace 규약 — Sprint 3에서 AI 연동 시 schema 설계와 함께 확정 예정
+              </span>
+            </div>
+          </div>
+          <div class="deferred-card">
+            <div class="deferred-label">QA 미완료</div>
+            <div class="scope-row" style="border:none; padding:0;">
+              <span class="tag tag-yellow">보류</span>
+              <span style="font-size:14px; line-height:1.6;">
+                QA 항목 Sprint 리뷰 이후 진행 예정
+              </span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="col-head">리스크</p>
+          <div class="risk-card">
+            <div class="risk-label">LocalStorage 용량 리스크</div>
+            <div class="risk-body">
+              브라우저 per-origin 5MB 제한 — 149문제 세션 반복 시 용량 근접 가능성.<br>
+              <strong>완화:</strong> 50세션 초과 시 자동 삭제(OQ-1 결정). namespace 설계 이후 재검토.
+            </div>
+          </div>
+          <div class="risk-card">
+            <div class="risk-label">Web Audio API 브라우저 호환성</div>
+            <div class="risk-body">
+              일부 브라우저에서 autoplay 정책에 따라 첫 interaction 이전 효과음 재생 차단 가능.<br>
+              <strong>완화:</strong> 사용자 첫 클릭 이후에만 효과음 활성화되도록 구현.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">Sprint quiz-drill-ai / 2</p>
+      <div class="qa-links">
+        <span>branch: sprint/quiz-drill-ai/2</span>
+        <span><a href="https://quiz-drill-ai.vercel.app" target="_blank" style="color:#217346;">quiz-drill-ai.vercel.app</a></span>
+        <span>report: 2026-06-13</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div>
+
+<div class="nav-hint">← → 키 또는 클릭으로 이동</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
