@@ -53,41 +53,30 @@
     .scope-tag--blue   { background: #eff6ff; color: #1d4ed8; }
     .scope-tag--amber  { background: #fff8e1; color: #b07c00; }
     .scope-tag--gray   { background: #f1f5f9; color: #64748b; }
-    .screenshot-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin-top: 16px;
-      width: 100%;
-    }
-    .screenshot-item {
+    .screenshot-single {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      width: 100%;
     }
     .screenshot-img {
-      width: 100%;
-      max-height: 380px;
-      border-radius: 6px;
+      width: auto;
+      max-width: 100%;
+      max-height: 560px;
+      border-radius: 8px;
       border: 1px solid #e5e7eb;
       object-fit: contain;
       object-position: top;
       background: #fafafa;
-    }
-    .screenshot-img--full {
-      width: 100%;
-      max-height: 430px;
-      border-radius: 6px;
-      border: 1px solid #e5e7eb;
-      object-fit: contain;
-      object-position: top;
-      background: #fafafa;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
     .screenshot-caption {
-      font-size: 12px;
+      font-size: 13px;
       color: #667085;
       text-align: center;
-      line-height: 1.4;
+      line-height: 1.5;
     }
     .scope-row {
       display: flex;
@@ -280,56 +269,98 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 4: Screenshots — 설정 · 퀴즈 -->
+  <!-- Slide 4: Screenshot — 설정 화면 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">QUIZ FLOW · SCREENSHOTS</div>
-      <h2 class="slide-title">설정 화면 · 퀴즈 카드 (문제별 소요 시간 인라인 표시)</h2>
-      <div class="screenshot-grid">
-        <div class="screenshot-item">
-          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-setup.png" alt="설정 화면">
-          <div class="screenshot-caption">① 설정 화면 — 샘플 2종 내장, TSV 자동 감지, CSV 오류 진단</div>
-        </div>
-        <div class="screenshot-item">
-          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-quiz.png" alt="퀴즈 카드">
-          <div class="screenshot-caption">② 퀴즈 카드 — 숫자키 단축키 + 문제별 경과 시간 실시간 표시</div>
-        </div>
+      <div class="slide-label">SCREENSHOT ① · SETUP</div>
+      <h2 class="slide-title">설정 화면 — 파일 업로드 / 샘플 4종 / TSV 자동 감지</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-setup.png" alt="설정 화면">
+        <div class="screenshot-caption">CSV · TSV 파일 업로드, 내장 샘플 4종 버튼, CSV 오류 진단 + 시작 비활성화</div>
       </div>
     </div>
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 5: Screenshots — 정답 · 결과 -->
+  <!-- Slide 5: Screenshot — 샘플 로드 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">QUIZ FLOW · SCREENSHOTS</div>
-      <h2 class="slide-title">정답 확인 · 세션 결과 (정답률 + 소요 시간 통계 카드)</h2>
-      <div class="screenshot-grid">
-        <div class="screenshot-item">
-          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-answer.png" alt="정답 확인">
-          <div class="screenshot-caption">③ 정답 확인 — 오답(빨강) · 정답(초록) · 해설 · Web Audio 효과음</div>
-        </div>
-        <div class="screenshot-item">
-          <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-result.png" alt="세션 결과">
-          <div class="screenshot-caption">④ 세션 결과 — 정답률 · 소요 시간 통계 카드 + 오답 다시 풀기</div>
-        </div>
+      <div class="slide-label">SCREENSHOT ② · SAMPLE LOADED</div>
+      <h2 class="slide-title">샘플 로드 완료 — 25문제 파싱 · 시작하기 버튼 활성화</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-sample-loaded.png" alt="샘플 로드 완료">
+        <div class="screenshot-caption">선택된 샘플 버튼 하이라이트 · "N개 문제 로드됨" 상태 표시 · Enter 키로도 시작 가능</div>
       </div>
     </div>
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 6: Screenshots — 이력 -->
+  <!-- Slide 6: Screenshot — 퀴즈 카드 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">HISTORY · SCREENSHOTS</div>
-      <h2 class="slide-title">누적 학습 이력 뷰 — 날짜 · 정답률 · 소요 시간 · 오답 재도전</h2>
-      <img class="screenshot-img--full" src="./sprint-quiz-drill-ai-2/shot-history.png" alt="학습 이력 뷰">
-      <div class="screenshot-caption" style="margin-top:8px;">⑤ 학습 이력 — 세션 목록 + 항목별 오답 다시 풀기 버튼 (LocalStorage 최근 50세션)</div>
+      <div class="slide-label">SCREENSHOT ③ · QUIZ CARD</div>
+      <h2 class="slide-title">퀴즈 카드 — 숫자키 단축키 · 문제별 경과 시간 실시간 표시</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-quiz.png" alt="퀴즈 카드">
+        <div class="screenshot-caption">숫자키 1–4 답 선택 · 진행률 바 · 경과 시간(초) 인라인 표시 · Web Audio 효과음</div>
+      </div>
     </div>
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 7: Implemented Scope -->
+  <!-- Slide 7: Screenshot — 정답 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SCREENSHOT ④-A · CORRECT ANSWER</div>
+      <h2 class="slide-title">정답 — 선택한 보기 초록 · 해설 자동 펼침</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-answer-correct.png" alt="정답 화면">
+        <div class="screenshot-caption">정답 보기(초록) 강조 · 해설 자동 표시 · Enter / Space 로 다음 문제 이동</div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: Screenshot — 오답 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SCREENSHOT ④-B · WRONG ANSWER</div>
+      <h2 class="slide-title">오답 — 선택한 보기 빨강 · 정답 초록 동시 표시</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-answer-wrong.png" alt="오답 화면">
+        <div class="screenshot-caption">틀린 보기(빨강) + 정답(초록) 동시 표시 · 해설 자동 펼침 · Web Audio 오답음</div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: Screenshot — 세션 결과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SCREENSHOT ⑤ · RESULT</div>
+      <h2 class="slide-title">세션 결과 — 정답률 · 소요 시간 통계 카드</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-result.png" alt="세션 결과">
+        <div class="screenshot-caption">총문항 · 정답 · 오답 · 정답률(%) · 소요 시간(분:초) · 오답만 풀기 버튼</div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 10: Screenshot — 학습 이력 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">SCREENSHOT ⑥ · HISTORY</div>
+      <h2 class="slide-title">누적 학습 이력 — 세션 목록 · 정답률 추이 · 오답 재도전</h2>
+      <div class="screenshot-single">
+        <img class="screenshot-img" src="./sprint-quiz-drill-ai-2/shot-history.png" alt="학습 이력 뷰">
+        <div class="screenshot-caption">소스별 namespace 저장 · 최근 50세션 유지 · 항목별 오답 다시 풀기 버튼</div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 11: Implemented Scope -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">IMPLEMENTED SCOPE</div>
@@ -363,7 +394,7 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 8: Deferred & Risk -->
+  <!-- Slide 12: Deferred & Risk -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">DEFERRED &amp; RISK</div>
@@ -413,7 +444,7 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 9: Q&A -->
+  <!-- Slide 13: Q&A -->
   <div class="slide slide--qa-light">
     <div class="slide-inner">
       <div class="qa-icon">Q&amp;A</div>
