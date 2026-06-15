@@ -1,17 +1,7 @@
-# AGENTS
+# Agent Configuration
 
-이 레포에서 작업하는 모든 에이전트(Codex/Claude/협업 에이전트)는 아래 우선순위로 규칙을 적용합니다.
+> 이 프로젝트는 공유 에이전트 설정을 사용합니다.
+> **작업을 시작하기 전에 [`.agent/AGENT.md`](.agent/AGENT.md)를 반드시 읽으세요.**
 
-1. [`.claude/codex.md`](./.claude/codex.md)
-2. [`.claude/README.md`](./.claude/README.md)
-3. [`.claude/rules/coding-style.md`](./.claude/rules/coding-style.md)
-4. [`.claude/rules/performance.md`](./.claude/rules/performance.md)
-5. [`.claude/rules/security.md`](./.claude/rules/security.md)
-6. [`.claude/skills/*.md`](./.claude/skills/)
-
-## MUST FOLLOW
-
-- Always read this file before making any change
-- Follow project structure strictly
-- Do not create files outside defined directories
-- Use existing generator/harness patterns
+모든 rules, commands, subagents, skills, agent-memory 정의는 `.agent/`에 있습니다.
+`.agent/AGENT.md`와 그곳에서 참조하는 모든 파일을 읽기 전에는 작업을 시작하지 마세요.

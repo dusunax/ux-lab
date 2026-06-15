@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 /Users/du/repository/ux-lab/.claude/hooks/scope-enforcer.py"
+            "command": "python3 /Users/du/repository/ux-lab/.agent/scripts/scope-enforcer.py"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 /Users/du/repository/ux-lab/.claude/hooks/gen-scope-doc.py"
+            "command": "python3 /Users/du/repository/ux-lab/.agent/scripts/gen-scope-doc.py"
           }
         ]
       }

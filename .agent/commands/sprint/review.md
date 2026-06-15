@@ -1,0 +1,212 @@
+---
+description: 스프린트 완료 후 PR을 생성하고 결과를 요약한다. 보고서 HTML 링크를 본문에 첨부. PM(Jordan)이 /sprint:report 이후 실행.
+---
+
+# /sprint:review 하네스
+
+**인수:** $ARGUMENTS
+
+**사양 문서:** `docs/workflow/sprint-git-workflow.md`
+**PR 템플릿:** `docs/workflow/pr-template.md`
+
+---
+
+## Step 0 — 인수 파싱
+
+`$ARGUMENTS`에서 추출:
+
+| 패턴 | 동작 |
+|------|------|
+| (없음) | 현재 브랜치 또는 최신 kickoff 파일에서 N 자동 추론 |
+| `--sprint N` | 지정 N 사용 |
+| `--type TYPE` | PR 제목 prefix 타입 지정 (기본: `feat` / 워크플로우 PR: `chore`) |
+| `--report-url URL` | 보고서 공개 URL 첨부 |
+| `--draft` | Draft PR로 생성 |
+
+---
+
+## Step 1 — 스프린트 N 탐지
+
+```bash
+git branch --show-current
+```
+
+- 현재 브랜치가 `sprint/N` 패턴이면 N 추출.
+- 아니면 `docs/meetings/`에서 가장 최신 `*-sprint-N-kickoff.md` 파일로 N 추론.
+
+```bash
+ls docs/meetings/ | sort | grep -E 'sprint-[0-9]+-kickoff' | tail -1
+```
+
+N을 확정하지 못하면:
+
+```
+⛔ 스프린트 번호를 확인할 수 없습니다.
+   현재 브랜치: [브랜치명]
+   --sprint N 인수를 사용하거나, sprint/N 브랜치로 전환 후 재실행하세요.
+```
+
+**여기서 커맨드를 종료한다.**
+
+---
+
+## Step 2 — 킥오프 파일 읽기
+
+아래 우선순위로 파일을 찾는다:
+
+1. `docs/meetings/*-sprint-N-kickoff.md`
+2. `docs/meetings/*-sprint-N.md` (레거시)
+
+파일에서 추출:
+
+| 추출 항목 | 소스 |
+|-----------|------|
+| 스프린트 목표 | `## Sprint N 목표` |
+| 완료 항목 | `[x]` 체크박스 전체 |
+| 미완료/이월 항목 | `[ ]` 체크박스 전체 |
+| 주요 결정 사항 | `## 결정 사항 요약` 테이블 |
+
+완료율 계산:
+```
+완료율 = 완료 항목 수 / 전체 항목 수 × 100
+```
+
+---
+
+## Step 3 — 보고서 경로 탐지 및 URL 변환
+
+아래 우선순위로 보고서 경로를 결정한다:
+
+| 우선순위 | 조건 | 동작 |
+|---------|------|------|
+| 1 | `--report-url URL` 인수 있음 | 해당 URL 그대로 사용 |
+| 2 | `docs/presentations/.last-report` 파일 있음 | 파일에서 경로 읽기 후 아래 변환 적용 |
+| 3 | 로컬 glob 탐색 | 아래 명령으로 가장 최근 파일 탐지 후 변환 |
+
+**우선순위 2·3 — 로컬 경로 → GitHub Pages URL 변환:**
+
+```bash
+ls -t docs/presentations/sprint-N-report-*.html 2>/dev/null | head -1
+```
+
+탐지된 로컬 경로(`docs/presentations/sprint-N-report-yymmdd.html`)를 아래 규칙으로 GitHub Pages URL로 변환한다:
+
+```
+docs/presentations/{파일명} → https://dusunax.github.io/ux-lab/presentations/{파일명}
+```
+
+`{{REPORT_LINK}}`에는 변환된 URL을 마크다운 링크 형식으로 채운다:
+
+```
+[📊 Sprint N 보고서](https://dusunax.github.io/ux-lab/presentations/sprint-N-report-yymmdd.html)
+```
+
+어느 방법으로도 경로를 찾지 못하면:
+
+```
+(보고서 미생성 — /sprint:report 실행 후 /sprint:review를 재실행하세요)
+```
+
+표시 후 계속 진행한다.
+
+---
+
+## Step 4 — 원격 브랜치 확인
+
+```bash
+git remote get-url origin
+git ls-remote --heads origin sprint/N
+```
+
+- 원격에 `sprint/N`이 없으면:
+
+```
+⚠️ sprint/N 브랜치가 원격에 없습니다.
+   아래 명령으로 먼저 push하세요:
+
+   git push -u origin sprint/N
+
+   push 완료 후 /sprint:review를 다시 실행하세요.
+```
+
+**여기서 커맨드를 종료한다.**
+
+---
+
+## Step 5 — PR 본문 구성 및 생성 (GitHub MCP)
+
+`docs/workflow/pr-template.md`의 템플릿을 읽고, Step 1–3에서 수집한 데이터로 플레이스홀더를 채운다.
+
+| 플레이스홀더 | 채울 값 |
+|-------------|---------|
+| `{{N}}` | Step 1에서 탐지한 스프린트 번호 |
+| `{{GOAL_ONE_LINE}}` | `## Sprint N 목표`의 첫 줄 (`>` 제거) |
+| `{{GOAL_FULL}}` | `## Sprint N 목표` 전체 내용 |
+| `{{DONE_COUNT}}` / `{{TOTAL_COUNT}}` | `[x]` 수 / 전체 체크박스 수 |
+| `{{COMPLETION_RATE}}` | `DONE / TOTAL × 100` (소수점 버림) |
+| `{{COMPLETED_ITEMS}}` | `[x]` 항목 목록 (담당자 그룹 유지) |
+| `{{ROLLOVER_ITEMS}}` | `[ ]` 항목 목록 (없으면 대체 문구) |
+| `{{DECISIONS_TABLE}}` | `## 결정 사항 요약` 테이블 (없으면 섹션 생략) |
+| `{{REPORT_LINK}}` | Step 3 탐지 결과 |
+
+PR 제목: 템플릿 `PR 제목` 섹션에서 플레이스홀더를 채워 사용.
+
+- `{{TYPE}}`: `--type` 인수 값. 없으면 스프린트 번호가 있을 때 `feat`, 없을 때 `chore`
+- `{{N}}`: Step 1에서 탐지한 스프린트 번호. 없으면 `workflow`
+- 결과 예: `feat(sprint/6): 피드백 수집 인프라 완성` / `chore(workflow): 브랜치 전략 정비`
+
+`mcp__github__create_pull_request`를 호출한다.
+
+**호출 파라미터:**
+
+| 파라미터 | 값 |
+|----------|----|
+| `head` | `sprint/N` |
+| `base` | `main` |
+| `title` | `Sprint N — [목표]` |
+| `body` | 위 본문 |
+| `draft` | `--draft` 플래그 여부 |
+| `assignees` | 현재 인증된 GitHub 사용자 (`gh api /user --jq '.login'`로 취득) |
+
+**GitHub MCP 미연결 시:**
+
+```
+⚠️ GitHub MCP가 연결되어 있지 않습니다.
+   아래 PR 본문을 복사해서 수동으로 PR을 생성하세요.
+
+[PR 본문 출력]
+```
+
+---
+
+## Step 5.5 — 라벨 자동 부착
+
+PR 생성 완료 후 아래 라벨을 부착한다.
+
+**고정 라벨:**
+
+| 라벨 | 조건 |
+|------|------|
+| `type: sprint` | 스프린트 번호(N)가 있을 때 |
+| `type: workflow` | 스프린트 번호가 없을 때 (인프라 PR) |
+| `eval: pending` | 항상 부착 |
+
+**라벨 부착 방법 (우선순위):**
+
+- `mcp__github__update_pull_request` (labels 파라미터) 우선 시도
+- 미연결 시: `gh pr edit [NUMBER] --add-label "type: sprint,eval: pending" --repo [REPO]`
+
+---
+
+## Step 6 — 완료 보고
+
+```
+🔀 Sprint N PR 생성 완료
+
+PR:         [URL]
+브랜치:     sprint/N → main
+완료율:     M/T개 ([완료율]%)
+보고서:     [URL 또는 로컬 경로]
+담당자:     [GitHub 사용자명]
+라벨:       type: sprint, eval: pending
+```
