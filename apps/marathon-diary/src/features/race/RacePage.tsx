@@ -5,8 +5,6 @@ import { Route } from '../../App'
 import PhotoSlot from './PhotoSlot'
 import DecoLayer from '../deco/DecoLayer'
 
-type Tab = 'view' | 'deco'
-
 interface Props {
   raceId: string
   onNavigate: (route: Route) => void
@@ -16,7 +14,6 @@ export default function RacePage({ raceId, onNavigate }: Props) {
   const [race, setRace] = useState<Race | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<Tab>('deco')
   const [deleting, setDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
@@ -72,7 +69,7 @@ export default function RacePage({ raceId, onNavigate }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex items-center justify-center" role="status">
+      <div className="h-full bg-cream flex items-center justify-center" role="status">
         <span className="text-bark-light">불러오는 중…</span>
       </div>
     )
@@ -80,7 +77,7 @@ export default function RacePage({ raceId, onNavigate }: Props) {
 
   if (error || !race) {
     return (
-      <div className="min-h-screen bg-cream p-8">
+      <div className="h-full bg-cream p-8">
         <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-red-700 text-sm" role="alert">
           {error ?? '알 수 없는 오류가 발생했습니다.'}
         </div>
@@ -92,9 +89,9 @@ export default function RacePage({ raceId, onNavigate }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-cream flex flex-col">
+    <main className="h-full bg-cream flex flex-col">
       {/* 헤더 */}
-      <header className="px-4 py-4 md:px-8 flex items-center gap-3 border-b border-bark/10 flex-wrap">
+      <header className="px-4 py-4 md:px-8 flex items-center gap-3 border-b border-bark/10 flex-wrap flex-shrink-0">
         <button
           className="btn-ghost text-sm"
           onClick={() => onNavigate({ path: '/' })}
@@ -121,92 +118,34 @@ export default function RacePage({ raceId, onNavigate }: Props) {
         </button>
       </header>
 
-      {/* 탭 */}
-      <div
-        className="flex border-b border-bark/10"
-        role="tablist"
-        aria-label="레이스 페이지 탭"
-      >
-        <TabButton
-          id="tab-view"
-          panelId="panel-view"
-          active={tab === 'view'}
-          onClick={() => setTab('view')}
+      {/* 메인 영역 */}
+      <div className="flex-1 relative overflow-hidden">
+        {/* 사진 그리드 */}
+        <div
+          className="absolute inset-0 p-4 grid grid-cols-2 gap-3 content-start"
+          aria-label="레이스 사진 슬롯"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4 inline-block mr-1.5" aria-hidden="true">
-            <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
-            <circle cx="12" cy="13" r="3"/>
-          </svg>
-          사진 슬롯
-        </TabButton>
-        <TabButton
-          id="tab-deco"
-          panelId="panel-deco"
-          active={tab === 'deco'}
-          onClick={() => setTab('deco')}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4 inline-block mr-1.5" aria-hidden="true">
-            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinejoin="round"/>
-          </svg>
-          꾸미기
-        </TabButton>
+          <PhotoSlot
+            slot="bib"
+            imageId={race.photoIds.bib}
+            onSave={(id) => handlePhotoSave('bib', id)}
+          />
+          <PhotoSlot
+            slot="medal"
+            imageId={race.photoIds.medal}
+            onSave={(id) => handlePhotoSave('medal', id)}
+          />
+          <RecordCard race={race} />
+          <PhotoSlot
+            slot="selfie"
+            imageId={race.photoIds.selfie}
+            onSave={(id) => handlePhotoSave('selfie', id)}
+          />
+        </div>
+
+        {/* 꾸미기 오버레이 */}
+        <DecoLayer raceId={raceId} />
       </div>
-
-      {/* 사진 슬롯 탭 */}
-      {tab === 'view' && (
-        <div
-          id="panel-view"
-          role="tabpanel"
-          aria-labelledby="tab-view"
-          className="flex-1 p-4 md:p-6"
-        >
-          <div
-            className="max-w-md mx-auto grid grid-cols-2 gap-3"
-            aria-label="레이스 사진 슬롯"
-          >
-            <PhotoSlot
-              slot="bib"
-              imageId={race.photoIds.bib}
-              onSave={(id) => handlePhotoSave('bib', id)}
-            />
-            <PhotoSlot
-              slot="medal"
-              imageId={race.photoIds.medal}
-              onSave={(id) => handlePhotoSave('medal', id)}
-            />
-            <RecordCard race={race} />
-            <PhotoSlot
-              slot="selfie"
-              imageId={race.photoIds.selfie}
-              onSave={(id) => handlePhotoSave('selfie', id)}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 꾸미기 탭 */}
-      {tab === 'deco' && (
-        <div
-          id="panel-deco"
-          role="tabpanel"
-          aria-labelledby="tab-deco"
-          className="flex-1 flex flex-col"
-        >
-          <div className="relative flex-1 bg-cream-dark border-b border-bark/10">
-            {/* 배경에 사진 슬롯 미리보기 */}
-            <div className="absolute inset-0 grid grid-cols-2 gap-2 p-3 pointer-events-none opacity-40">
-              <PhotoSlot slot="bib" imageId={race.photoIds.bib} onSave={() => {}} readOnly />
-              <PhotoSlot slot="medal" imageId={race.photoIds.medal} onSave={() => {}} readOnly />
-              <RecordCard race={race} />
-              <PhotoSlot slot="selfie" imageId={race.photoIds.selfie} onSave={() => {}} readOnly />
-            </div>
-            {/* 스티커 레이어 */}
-            <div className="absolute inset-0">
-              <DecoLayer raceId={raceId} />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 삭제 확인 다이얼로그 */}
       {showDeleteConfirm && (
@@ -269,33 +208,5 @@ function RecordCard({ race }: RecordCardProps) {
       <p className="text-bark text-sm font-medium">{race.distance}km</p>
       <p className="text-bark-light text-xs text-center">{race.date}</p>
     </div>
-  )
-}
-
-interface TabButtonProps {
-  id: string
-  panelId: string
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}
-
-function TabButton({ id, panelId, active, onClick, children }: TabButtonProps) {
-  return (
-    <button
-      id={id}
-      role="tab"
-      aria-selected={active}
-      aria-controls={panelId}
-      className={`flex-1 py-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-inset ${
-        active
-          ? 'text-gold border-b-2 border-gold bg-cream'
-          : 'text-bark-light hover:text-bark hover:bg-cream-dark'
-      }`}
-      onClick={onClick}
-      type="button"
-    >
-      {children}
-    </button>
   )
 }

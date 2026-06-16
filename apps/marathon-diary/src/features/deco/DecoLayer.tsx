@@ -4,39 +4,36 @@ import { saveDecorations, getDecorations } from '../db/decorations'
 import { STAMP_MAP } from './stamps'
 import StampPicker from './StampPicker'
 
-const MIN_SCALE = 0.5
-const MAX_SCALE = 2.0
-const SCALE_STEP = 0.25
-const ROTATION_STEP = 15
-
 function generateDecoId(): string {
   return `deco-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
 interface DraggableItemProps {
   deco: Decoration
-  isSelected: boolean
-  onSelect: (id: string) => void
-  onDragEnd: (id: string, x: number, y: number) => void
   containerRef: React.RefObject<HTMLDivElement | null>
+  onDragStart: (id: string) => void
+  onDragEnd: () => void
+  onMove: (id: string, x: number, y: number) => void
+  onDrop: (id: string, clientX: number, clientY: number) => void
 }
 
 const DraggableItem = memo(function DraggableItem({
   deco,
-  isSelected,
-  onSelect,
-  onDragEnd,
   containerRef,
+  onDragStart,
+  onDragEnd,
+  onMove,
+  onDrop,
 }: DraggableItemProps) {
   const asset = STAMP_MAP.get(deco.assetId)
   const isDragging = useRef(false)
   const dragStart = useRef({ mouseX: 0, mouseY: 0, decoX: 0, decoY: 0 })
 
   const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLButtonElement>) => {
+    (e: React.PointerEvent<HTMLSpanElement>) => {
       e.preventDefault()
       e.currentTarget.setPointerCapture(e.pointerId)
-      onSelect(deco.id)
+      onDragStart(deco.id)
       isDragging.current = true
       dragStart.current = {
         mouseX: e.clientX,
@@ -45,50 +42,58 @@ const DraggableItem = memo(function DraggableItem({
         decoY: deco.y,
       }
     },
-    [deco.id, deco.x, deco.y, onSelect]
+    [deco.id, deco.x, deco.y, onDragStart]
   )
 
   const handlePointerMove = useCallback(
-    (e: React.PointerEvent<HTMLButtonElement>) => {
+    (e: React.PointerEvent<HTMLSpanElement>) => {
       if (!isDragging.current || !containerRef.current) return
       const rect = containerRef.current.getBoundingClientRect()
       const dx = ((e.clientX - dragStart.current.mouseX) / rect.width) * 100
       const dy = ((e.clientY - dragStart.current.mouseY) / rect.height) * 100
       const newX = Math.max(0, Math.min(100, dragStart.current.decoX + dx))
       const newY = Math.max(0, Math.min(100, dragStart.current.decoY + dy))
-      onDragEnd(deco.id, newX, newY)
+      onMove(deco.id, newX, newY)
     },
-    [deco.id, containerRef, onDragEnd]
+    [deco.id, containerRef, onMove]
   )
 
-  const handlePointerUp = useCallback(() => {
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent<HTMLSpanElement>) => {
+      if (!isDragging.current) return
+      isDragging.current = false
+      onDrop(deco.id, e.clientX, e.clientY)
+      onDragEnd()
+    },
+    [deco.id, onDrop, onDragEnd]
+  )
+
+  const handlePointerCancel = useCallback(() => {
     isDragging.current = false
-  }, [])
+    onDragEnd()
+  }, [onDragEnd])
 
   if (!asset) return null
 
   return (
-    <button
-      type="button"
+    <span
+      role="img"
+      aria-label={`${asset.label} 스티커, 위치 조정 가능`}
       className="absolute touch-none select-none cursor-grab active:cursor-grabbing focus-visible:ring-2 focus-visible:ring-gold rounded"
       style={{
         left: `${deco.x}%`,
         top: `${deco.y}%`,
         transform: `translate(-50%, -50%) rotate(${deco.rotation}deg) scale(${deco.scale})`,
         fontSize: '2rem',
-        outline: isSelected ? '2px dashed #C9A84C' : undefined,
-        outlineOffset: isSelected ? '2px' : undefined,
-        zIndex: isSelected ? 10 : 1,
+        pointerEvents: 'auto',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-      aria-label={`${asset.label} 스티커, 위치 조정 가능`}
-      aria-pressed={isSelected}
+      onPointerCancel={handlePointerCancel}
     >
-      <span aria-hidden="true">{asset.emoji}</span>
-    </button>
+      {asset.emoji}
+    </span>
   )
 })
 
@@ -99,9 +104,10 @@ interface Props {
 
 export default function DecoLayer({ raceId, readOnly = false }: Props) {
   const [decos, setDecos] = useState<Decoration[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const trashRef = useRef<HTMLDivElement>(null)
 
   // 저장된 데코레이션 로드
   useEffect(() => {
@@ -115,6 +121,18 @@ export default function DecoLayer({ raceId, readOnly = false }: Props) {
     }
     void load()
   }, [raceId])
+
+  const persistDecos = useCallback(
+    async (items: Decoration[]) => {
+      const record: RaceDecorations = { raceId, items }
+      try {
+        await saveDecorations(record)
+      } catch {
+        // 저장 실패 시 조용히 처리
+      }
+    },
+    [raceId]
+  )
 
   // readOnly: 스티커만 표시, 인터랙션 없음
   if (readOnly) {
@@ -143,222 +161,130 @@ export default function DecoLayer({ raceId, readOnly = false }: Props) {
     )
   }
 
-  const persistDecos = useCallback(
-    async (items: Decoration[]) => {
-      const record: RaceDecorations = { raceId, items }
-      try {
-        await saveDecorations(record)
-      } catch {
-        // 저장 실패 시 조용히 처리 (다음 조작 시 재시도됨)
+  const handleDragStart = (id: string) => {
+    setDraggingId(id)
+  }
+
+  const handleDragEnd = () => {
+    setDraggingId(null)
+  }
+
+  const handleMove = (id: string, x: number, y: number) => {
+    setDecos((prev) => prev.map((d) => (d.id === id ? { ...d, x, y } : d)))
+  }
+
+  const handleDrop = (id: string, clientX: number, clientY: number) => {
+    if (trashRef.current) {
+      const trashRect = trashRef.current.getBoundingClientRect()
+      const inTrash =
+        clientX >= trashRect.left &&
+        clientX <= trashRect.right &&
+        clientY >= trashRect.top &&
+        clientY <= trashRect.bottom
+
+      if (inTrash) {
+        setDecos((prev) => {
+          const next = prev.filter((d) => d.id !== id)
+          void persistDecos(next)
+          return next
+        })
+        return
       }
-    },
-    [raceId]
-  )
+    }
 
-  const handleAddStamp = useCallback(
-    (asset: StampAsset) => {
-      const newDeco: Decoration = {
-        id: generateDecoId(),
-        assetId: asset.id,
-        x: 50,
-        y: 50,
-        rotation: 0,
-        scale: 1.0,
-      }
-      setDecos((prev) => {
-        const next = [...prev, newDeco]
-        void persistDecos(next)
-        return next
-      })
-      setSelectedId(newDeco.id)
-      setShowPicker(false)
-    },
-    [persistDecos]
-  )
-
-  const handleDragEnd = useCallback(
-    (id: string, x: number, y: number) => {
-      setDecos((prev) => {
-        const next = prev.map((d) => (d.id === id ? { ...d, x, y } : d))
-        void persistDecos(next)
-        return next
-      })
-    },
-    [persistDecos]
-  )
-
-  const handleRotate = useCallback(
-    (delta: number) => {
-      if (!selectedId) return
-      setDecos((prev) => {
-        const next = prev.map((d) =>
-          d.id === selectedId ? { ...d, rotation: d.rotation + delta } : d
-        )
-        void persistDecos(next)
-        return next
-      })
-    },
-    [selectedId, persistDecos]
-  )
-
-  const handleScale = useCallback(
-    (delta: number) => {
-      if (!selectedId) return
-      setDecos((prev) => {
-        const next = prev.map((d) =>
-          d.id === selectedId
-            ? { ...d, scale: Math.min(MAX_SCALE, Math.max(MIN_SCALE, d.scale + delta)) }
-            : d
-        )
-        void persistDecos(next)
-        return next
-      })
-    },
-    [selectedId, persistDecos]
-  )
-
-  const handleDelete = useCallback(() => {
-    if (!selectedId) return
     setDecos((prev) => {
-      const next = prev.filter((d) => d.id !== selectedId)
+      void persistDecos(prev)
+      return prev
+    })
+  }
+
+  const handleAddStamp = (asset: StampAsset) => {
+    const newDeco: Decoration = {
+      id: generateDecoId(),
+      assetId: asset.id,
+      x: 50,
+      y: 40,
+      rotation: 0,
+      scale: 1.0,
+    }
+    setDecos((prev) => {
+      const next = [...prev, newDeco]
       void persistDecos(next)
       return next
     })
-    setSelectedId(null)
-  }, [selectedId, persistDecos])
-
-  const handleContainerClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) setSelectedId(null)
-  }, [])
-
-  const selectedDeco = decos.find((d) => d.id === selectedId)
+    setShowPicker(false)
+  }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* 데코 오버레이 */}
-      <div
-        ref={containerRef}
-        className="relative flex-1"
-        onClick={handleContainerClick}
-        aria-label="스티커 배치 영역"
-        role="region"
-      >
-        {decos.map((deco) => (
-          <DraggableItem
-            key={deco.id}
-            deco={deco}
-            isSelected={deco.id === selectedId}
-            onSelect={setSelectedId}
-            onDragEnd={handleDragEnd}
-            containerRef={containerRef}
-          />
-        ))}
-      </div>
+    <div
+      ref={containerRef}
+      className="absolute inset-0"
+      style={{ pointerEvents: 'none' }}
+    >
+      {/* 스티커들 */}
+      {decos.map((deco) => (
+        <DraggableItem
+          key={deco.id}
+          deco={deco}
+          containerRef={containerRef}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onMove={handleMove}
+          onDrop={handleDrop}
+        />
+      ))}
 
-      {/* 컨트롤 바 */}
-      {!readOnly && (
+      {/* 쓰레기통 */}
+      {draggingId && (
         <div
-          className="flex flex-col border-t border-bark/10"
-          role="toolbar"
-          aria-label="스티커 편집 도구"
+          ref={trashRef}
+          className="absolute bottom-14 right-4 z-20 w-12 h-12 flex items-center justify-center rounded-full border-2 border-red-400/60 bg-red-900/40 pointer-events-none"
+          aria-hidden="true"
         >
-          {/* 선택된 아이템 컨트롤 */}
-          {selectedDeco && (
-            <div className="flex items-center justify-between px-3 py-2 bg-cream-dark gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <ToolButton
-                  onClick={() => handleRotate(-ROTATION_STEP)}
-                  aria-label={`반시계 방향으로 ${ROTATION_STEP}도 회전`}
-                >
-                  ↺
-                </ToolButton>
-                <ToolButton
-                  onClick={() => handleRotate(ROTATION_STEP)}
-                  aria-label={`시계 방향으로 ${ROTATION_STEP}도 회전`}
-                >
-                  ↻
-                </ToolButton>
-                <span className="text-bark-light text-xs w-px bg-bark/20 h-5 mx-1" aria-hidden="true" />
-                <ToolButton
-                  onClick={() => handleScale(-SCALE_STEP)}
-                  aria-label="스티커 축소"
-                  disabled={selectedDeco.scale <= MIN_SCALE}
-                >
-                  −
-                </ToolButton>
-                <span className="text-bark text-xs min-w-8 text-center">
-                  {Math.round(selectedDeco.scale * 100)}%
-                </span>
-                <ToolButton
-                  onClick={() => handleScale(SCALE_STEP)}
-                  aria-label="스티커 확대"
-                  disabled={selectedDeco.scale >= MAX_SCALE}
-                >
-                  +
-                </ToolButton>
-              </div>
-              <ToolButton
-                onClick={handleDelete}
-                aria-label="선택한 스티커 삭제"
-                className="text-red-500 hover:bg-red-50"
-              >
-                삭제
-              </ToolButton>
-            </div>
-          )}
-
-          {/* 스티커 팔레트 토글 */}
-          <div className="px-3 py-2 flex items-center justify-between">
-            <span className="text-bark-light text-xs">
-              {decos.length > 0 ? `스티커 ${decos.length}개` : '스티커를 추가해보세요'}
-            </span>
-            <button
-              type="button"
-              className="btn-ghost text-sm flex items-center gap-1.5"
-              onClick={() => setShowPicker((v) => !v)}
-              aria-expanded={showPicker}
-              aria-controls="stamp-picker"
-            >
-              <span aria-hidden="true">{showPicker ? '✕' : '＋'}</span>
-              {showPicker ? '닫기' : '스티커 추가'}
-            </button>
-          </div>
-
-          {showPicker && (
-            <div id="stamp-picker">
-              <StampPicker onSelect={handleAddStamp} />
-            </div>
-          )}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-red-300">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       )}
+
+      {/* 하단 팔레트 영역 */}
+      <div className="absolute bottom-0 left-0 right-0 z-10" style={{ pointerEvents: 'auto' }}>
+        {/* slide-up 팔레트 */}
+        <div
+          className={`transition-transform duration-200 ease-out ${showPicker ? 'translate-y-0' : 'translate-y-full'}`}
+        >
+          <StampPicker onSelect={handleAddStamp} />
+        </div>
+
+        {/* 토글 버튼 바 */}
+        <div className="flex items-center justify-between px-4 py-2 bg-cream border-t border-bark/10">
+          <span className="text-bark-light text-xs">
+            {decos.length > 0 ? `스티커 ${decos.length}개` : ''}
+          </span>
+          <button
+            type="button"
+            className="flex items-center gap-1.5 text-sm text-bark hover:text-ink transition-colors"
+            onClick={() => setShowPicker((v) => !v)}
+            aria-label={showPicker ? '팔레트 닫기' : '스티커 추가'}
+          >
+            {showPicker ? (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+                  <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round"/>
+                </svg>
+                닫기
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
+                  <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinejoin="round"/>
+                </svg>
+                꾸미기
+              </>
+            )}
+          </button>
+        </div>
+      </div>
     </div>
-  )
-}
-
-interface ToolButtonProps {
-  onClick: () => void
-  children: React.ReactNode
-  'aria-label': string
-  disabled?: boolean
-  className?: string
-}
-
-function ToolButton({
-  onClick,
-  children,
-  disabled,
-  className = '',
-  ...ariaProps
-}: ToolButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`w-8 h-8 flex items-center justify-center rounded text-sm text-bark hover:bg-bark/10 disabled:opacity-30 focus-visible:ring-2 focus-visible:ring-gold transition-colors ${className}`}
-      {...ariaProps}
-    >
-      {children}
-    </button>
   )
 }
