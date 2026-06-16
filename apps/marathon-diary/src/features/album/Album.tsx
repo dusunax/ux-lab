@@ -91,13 +91,14 @@ function PageStack({ side, count, maxCount }: { side: 'left' | 'right'; count: n
   )
 }
 
-// 레이스 상세 모달
-function RaceModal({ raceId, onClose, onNavigate }: {
+// 레이스 상세 모달 — 페이지 사이즈와 동일
+function RaceModal({ raceId, pageWidth, pageHeight, onClose, onNavigate }: {
   raceId: string
+  pageWidth: number
+  pageHeight: number
   onClose: () => void
   onNavigate: (route: Route) => void
 }) {
-  // 모달 열릴 때 body 스크롤 잠금
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -105,31 +106,30 @@ function RaceModal({ raceId, onClose, onNavigate }: {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(20, 14, 8, 0.85)', backdropFilter: 'blur(4px)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(20, 14, 8, 0.85)', backdropFilter: 'blur(6px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
-        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl"
-        style={{ background: '#faf3e0' }}
+        className="relative overflow-hidden rounded-xl shadow-2xl"
+        style={{ width: pageWidth, height: pageHeight, background: '#faf3e0' }}
       >
         <button
-          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-bark/10 hover:bg-bark/20 text-bark transition-colors"
+          className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-bark/15 hover:bg-bark/25 text-bark transition-colors text-sm"
           onClick={onClose}
           aria-label="닫기"
         >
           ✕
         </button>
-        <RacePage
-          raceId={raceId}
-          onNavigate={(route) => {
-            if (route.path === '/') {
-              onClose()
-            } else {
-              onNavigate(route)
-            }
-          }}
-        />
+        <div className="w-full h-full overflow-y-auto">
+          <RacePage
+            raceId={raceId}
+            onNavigate={(route) => {
+              if (route.path === '/') onClose()
+              else onNavigate(route)
+            }}
+          />
+        </div>
       </div>
     </div>
   )
@@ -303,13 +303,7 @@ export default function Album({ year, onNavigate }: Props) {
 
                   {races.map((race) => (
                     <BookPage key={race.id}>
-                      <button
-                        className="w-full h-full text-left cursor-pointer hover:brightness-95 transition-all"
-                        onClick={() => setSelectedRaceId(race.id)}
-                        aria-label={`${race.date} 레이스 #${race.bibNumber} 상세보기`}
-                      >
-                        <RacePagePreview race={race} />
-                      </button>
+                      <RacePagePreview race={race} onOpen={() => setSelectedRaceId(race.id)} />
                     </BookPage>
                   ))}
 
@@ -349,10 +343,12 @@ export default function Album({ year, onNavigate }: Props) {
         )}
       </div>
 
-      {/* 레이스 상세 모달 */}
+      {/* 레이스 상세 모달 — 페이지 사이즈와 동일 */}
       {selectedRaceId && (
         <RaceModal
           raceId={selectedRaceId}
+          pageWidth={bookSize.width}
+          pageHeight={bookSize.height}
           onClose={() => {
             setSelectedRaceId(null)
             void loadRaces()
@@ -364,41 +360,60 @@ export default function Album({ year, onNavigate }: Props) {
   )
 }
 
-function RacePagePreview({ race }: { race: Race }) {
+// SVG 슬롯 아이콘
+const SlotIcon = {
+  bib: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-bark/35"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h6M8 16h4" strokeLinecap="round"/></svg>,
+  medal: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-bark/35"><circle cx="12" cy="15" r="5"/><path d="M8.5 3.5 12 9l3.5-5.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  selfie: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-bark/35"><path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/><circle cx="12" cy="13" r="3"/></svg>,
+  timer: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5 text-gold/50"><circle cx="12" cy="13" r="7"/><path d="M12 10v4l2.5 2.5M10 3h4M12 3v3" strokeLinecap="round"/></svg>,
+}
+
+// 헤더 클릭 시에만 팝업
+function RacePagePreview({ race, onOpen }: { race: Race; onOpen: () => void }) {
   return (
     <div className="w-full h-full p-4 flex flex-col gap-3" style={{ background: '#faf3e0' }}>
-      <div className="text-center border-b border-bark/20 pb-2 flex-shrink-0">
-        <p className="font-handwriting text-4xl text-ink leading-tight">#{race.bibNumber}</p>
-        <p className="text-bark-light text-xs mt-0.5">{race.date}</p>
-        {race.raceName && <p className="text-bark text-xs mt-0.5 truncate">{race.raceName}</p>}
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
-        <PhotoSlotPreview imageId={race.photoIds.bib} label="배번" emoji="📛" />
-        <PhotoSlotPreview imageId={race.photoIds.medal} label="메달" emoji="🏅" />
-        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gold/40 rounded-lg p-2 bg-cream">
-          <p className="font-handwriting text-xl text-gold leading-none">{race.finishTime || '--:--:--'}</p>
-          <p className="text-bark-light text-xs mt-1">{race.distance}km</p>
+      {/* 헤더 — 클릭하면 모달 열림 */}
+      <button
+        className="text-left border-b border-bark/20 pb-2 flex-shrink-0 hover:bg-bark/5 -mx-2 px-2 rounded-t transition-colors group"
+        onClick={onOpen}
+        aria-label={`${race.date} 레이스 #${race.bibNumber} 상세보기`}
+      >
+        <div className="flex items-start justify-between">
+          <div className="min-w-0">
+            <p className="font-handwriting text-4xl text-ink leading-tight">#{race.bibNumber}</p>
+            <p className="text-bark-light text-xs mt-0.5">{race.date}</p>
+            {race.raceName && <p className="text-bark text-xs mt-0.5 truncate">{race.raceName}</p>}
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 text-bark/30 group-hover:text-bark/60 mt-2 flex-shrink-0 transition-colors">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
-        <PhotoSlotPreview imageId={race.photoIds.selfie} label="셀카" emoji="🤳" />
+      </button>
+
+      {/* 사진 그리드 — 클릭 없음 */}
+      <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
+        <PhotoSlotPreview imageId={race.photoIds.bib} label="배번" icon={SlotIcon.bib} />
+        <PhotoSlotPreview imageId={race.photoIds.medal} label="메달" icon={SlotIcon.medal} />
+        <div className="flex flex-col items-center justify-center border-2 border-dashed border-gold/40 rounded-lg p-2 bg-cream gap-1">
+          {SlotIcon.timer}
+          <p className="font-handwriting text-xl text-gold leading-none">{race.finishTime || '--:--:--'}</p>
+          <p className="text-bark-light text-xs">{race.distance}km</p>
+        </div>
+        <PhotoSlotPreview imageId={race.photoIds.selfie} label="셀카" icon={SlotIcon.selfie} />
       </div>
     </div>
   )
 }
 
-function PhotoSlotPreview({ imageId, label, emoji }: { imageId?: string; label: string; emoji: string }) {
+function PhotoSlotPreview({ imageId, label, icon }: { imageId?: string; label: string; icon: React.ReactNode }) {
   const url = useImageUrl(imageId)
   return (
     <div className="relative overflow-hidden rounded-lg border-2 border-dashed border-bark/25 bg-cream">
       {url ? (
-        <img
-          src={url}
-          alt={label}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <img src={url} alt={label} className="absolute inset-0 w-full h-full object-cover" />
       ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-          <span className="text-2xl">{emoji}</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+          {icon}
           <p className="text-bark-light text-xs">{label}</p>
         </div>
       )}
