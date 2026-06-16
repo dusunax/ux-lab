@@ -142,7 +142,11 @@ export default function AlbumList({ onNavigate }: Props) {
 
         {!loading && !error && seasons.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
-            <span className="text-6xl" aria-hidden="true">🏃</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.2} className="w-16 h-16 text-bark/30" aria-hidden="true">
+              <circle cx="14" cy="4" r="1.5" fill="currentColor"/>
+              <path d="M5 19l4-5 2.5 3L14 12l2 3h3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M9 14l-2 3" strokeLinecap="round"/>
+            </svg>
             <p className="font-handwriting text-3xl text-bark">첫 레이스를 기록해보세요</p>
             <p className="text-bark-light text-sm max-w-xs">
               배번호를 입력하면 스티커 페이지가 생성됩니다. 레이스 1회 = 스티커 페이지 1장.

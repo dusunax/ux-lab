@@ -4,6 +4,7 @@ import { Race } from '../../types/race'
 import { getRaces } from '../db/races'
 import { Route } from '../../App'
 import RacePage from '../race/RacePage'
+import DecoLayer from '../deco/DecoLayer'
 import { useImageUrl } from '../db/useImageUrl'
 
 const BookPage = forwardRef<HTMLDivElement, { children: React.ReactNode }>(
@@ -29,7 +30,11 @@ const CoverPage = memo(function CoverPage({ year, raceCount }: { year: number; r
       <p className="font-handwriting text-3xl text-bark tracking-widest">마라톤 스티커북</p>
       <div className="w-14 h-0.5 bg-gold/70 rounded-full" />
       <p className="text-bark-light text-sm mt-2 tracking-wide">{raceCount}번의 레이스</p>
-      <span className="text-6xl mt-1">🏅</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.2} className="w-14 h-14 text-gold/80 mt-1" aria-hidden="true">
+        <circle cx="12" cy="15" r="5" fillOpacity={0.18} fill="currentColor"/>
+        <circle cx="12" cy="15" r="5"/>
+        <path d="M8.5 3.5 12 9l3.5-5.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
     </div>
   )
 })
@@ -42,7 +47,11 @@ function BackCoverPage() {
     >
       <div className="absolute inset-4 border-2 border-gold/40 rounded pointer-events-none" />
       <span className="font-handwriting text-2xl text-bark/70">계속 달리세요</span>
-      <span className="text-5xl">🏃</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} className="w-14 h-14 text-bark/50" aria-hidden="true">
+        <circle cx="14" cy="4" r="1.5" fill="currentColor"/>
+        <path d="M5 19l4-5 2.5 3L14 12l2 3h3" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 14l-2 3" strokeLinecap="round"/>
+      </svg>
     </div>
   )
 }
@@ -58,7 +67,7 @@ function PageStack({ side, count, maxCount }: { side: 'left' | 'right'; count: n
         [side]: 0,
         width: `${thickness}px`,
         transform: side === 'left' ? 'translateX(-100%)' : 'translateX(100%)',
-        zIndex: 10,
+        zIndex: 0,
       }}
     >
       {Array.from({ length: lines }).map((_, i) => {
@@ -121,7 +130,7 @@ function RaceModal({ raceId, pageWidth, pageHeight, onClose, onNavigate }: {
         >
           ✕
         </button>
-        <div className="w-full h-full overflow-y-auto">
+        <div className="absolute inset-0 overflow-hidden">
           <RacePage
             raceId={raceId}
             onNavigate={(route) => {
@@ -227,7 +236,11 @@ export default function Album({ year, onNavigate }: Props) {
 
         {!loading && !error && races.length === 0 && (
           <div className="flex flex-col items-center gap-4 text-center p-8">
-            <span className="text-5xl">📖</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.4} className="w-14 h-14 text-cream/30" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20V5H6.5A2.5 2.5 0 004 7.5v12z"/>
+              <path d="M4 19.5V7.5" strokeLinecap="round"/>
+              <path d="M8 9h8M8 12h6M8 15h4" strokeLinecap="round"/>
+            </svg>
             <p className="font-handwriting text-3xl text-cream/60">{year}년 레이스가 없습니다</p>
             <button
               className="px-6 py-2 rounded bg-gold text-ink font-medium hover:bg-gold-light transition-colors"
@@ -371,7 +384,7 @@ const SlotIcon = {
 // 헤더 클릭 시에만 팝업
 function RacePagePreview({ race, onOpen }: { race: Race; onOpen: () => void }) {
   return (
-    <div className="w-full h-full p-4 flex flex-col gap-3" style={{ background: '#faf3e0' }}>
+    <div className="w-full h-full p-4 flex flex-col gap-3 relative" style={{ background: '#faf3e0' }}>
       {/* 헤더 — 클릭하면 모달 열림 */}
       <button
         className="text-left border-b border-bark/20 pb-2 flex-shrink-0 hover:bg-bark/5 -mx-2 px-2 rounded-t transition-colors group"
@@ -400,6 +413,11 @@ function RacePagePreview({ race, onOpen }: { race: Race; onOpen: () => void }) {
           <p className="text-bark-light text-xs">{race.distance}km</p>
         </div>
         <PhotoSlotPreview imageId={race.photoIds.selfie} label="셀카" icon={SlotIcon.selfie} />
+      </div>
+
+      {/* 꾸미기 오버레이 — 책 페이지에서 스티커 표시 */}
+      <div className="absolute inset-0 overflow-hidden rounded">
+        <DecoLayer raceId={race.id} readOnly />
       </div>
     </div>
   )

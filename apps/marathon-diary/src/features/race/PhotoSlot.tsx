@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, memo } from 'react'
+import React from 'react'
 import { RacePhotoSlot } from '../../types/race'
 import { saveImage, getImage } from '../db/images'
 
@@ -8,10 +9,25 @@ const SLOT_LABELS: Record<RacePhotoSlot, string> = {
   selfie: '셀카 사진',
 }
 
-const SLOT_ICONS: Record<RacePhotoSlot, string> = {
-  bib: '📛',
-  medal: '🏅',
-  selfie: '🤳',
+const SLOT_ICONS: Record<RacePhotoSlot, React.ReactNode> = {
+  bib: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-10 h-10 text-bark/40" aria-hidden="true">
+      <rect x="4" y="3" width="16" height="18" rx="2"/>
+      <path d="M8 8h8M8 12h6M8 16h4" strokeLinecap="round"/>
+    </svg>
+  ),
+  medal: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-10 h-10 text-bark/40" aria-hidden="true">
+      <circle cx="12" cy="15" r="5"/>
+      <path d="M8.5 3.5 12 9l3.5-5.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  selfie: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-10 h-10 text-bark/40" aria-hidden="true">
+      <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
+      <circle cx="12" cy="13" r="3"/>
+    </svg>
+  ),
 }
 
 interface Props {
@@ -94,7 +110,7 @@ export default memo(function PhotoSlot({ slot, imageId, onSave, readOnly = false
         />
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center gap-2 p-3">
-          <span className="text-4xl" aria-hidden="true">{icon}</span>
+          {icon}
           <p className="text-bark-light text-xs text-center">{label}</p>
           {!readOnly && (
             <p className="text-gold text-xs">눌러서 추가</p>

@@ -48,6 +48,7 @@
 /* react-pageflip overrides */
 .stf__parent {
   touch-action: pan-y;
+  background: transparent !important;
 }
 
 .stf__block {

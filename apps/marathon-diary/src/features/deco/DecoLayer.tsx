@@ -116,6 +116,33 @@ export default function DecoLayer({ raceId, readOnly = false }: Props) {
     void load()
   }, [raceId])
 
+  // readOnly: 스티커만 표시, 인터랙션 없음
+  if (readOnly) {
+    return (
+      <div className="relative w-full h-full" aria-hidden="true" style={{ pointerEvents: 'none' }}>
+        {decos.map((deco) => {
+          const asset = STAMP_MAP.get(deco.assetId)
+          if (!asset) return null
+          return (
+            <span
+              key={deco.id}
+              className="absolute"
+              style={{
+                left: `${deco.x}%`,
+                top: `${deco.y}%`,
+                transform: `translate(-50%, -50%) rotate(${deco.rotation}deg) scale(${deco.scale})`,
+                fontSize: '2rem',
+                pointerEvents: 'none',
+              }}
+            >
+              {asset.emoji}
+            </span>
+          )
+        })}
+      </div>
+    )
+  }
+
   const persistDecos = useCallback(
     async (items: Decoration[]) => {
       const record: RaceDecorations = { raceId, items }

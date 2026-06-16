@@ -130,7 +130,7 @@ export default function RaceForm({ onNavigate }: Props) {
           disabled={saving}
           aria-busy={saving}
         >
-          {saving ? '저장 중…' : '스티커 페이지 만들기 🏅'}
+          {saving ? '저장 중…' : '스티커 페이지 만들기'}
         </button>
       </form>
     </main>

@@ -61,7 +61,16 @@ export default memo(function BibInput({ value, onChange, photoId, onPhotoSave }:
           className="flex items-center justify-center gap-2 border-2 border-dashed border-bark/30 rounded-lg px-4 py-3 cursor-pointer hover:border-gold hover:bg-gold/5 transition-colors focus-within:ring-2 focus-within:ring-gold"
           aria-label="배번 사진 촬영 또는 업로드"
         >
-          <span className="text-2xl" aria-hidden="true">{photoId ? '✅' : '📷'}</span>
+          {photoId ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-6 h-6 text-green-600 flex-shrink-0" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-bark/50 flex-shrink-0" aria-hidden="true">
+              <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
+          )}
           <span className="text-bark text-sm">
             {photoId ? '사진이 저장됨 (다시 촬영)' : '카메라로 배번 촬영'}
           </span>

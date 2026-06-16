@@ -16,7 +16,7 @@ export default function RacePage({ raceId, onNavigate }: Props) {
   const [race, setRace] = useState<Race | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [tab, setTab] = useState<Tab>('view')
+  const [tab, setTab] = useState<Tab>('deco')
   const [deleting, setDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
@@ -133,7 +133,11 @@ export default function RacePage({ raceId, onNavigate }: Props) {
           active={tab === 'view'}
           onClick={() => setTab('view')}
         >
-          📸 사진 슬롯
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4 inline-block mr-1.5" aria-hidden="true">
+            <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
+            <circle cx="12" cy="13" r="3"/>
+          </svg>
+          사진 슬롯
         </TabButton>
         <TabButton
           id="tab-deco"
@@ -141,7 +145,10 @@ export default function RacePage({ raceId, onNavigate }: Props) {
           active={tab === 'deco'}
           onClick={() => setTab('deco')}
         >
-          ✨ 꾸미기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4 inline-block mr-1.5" aria-hidden="true">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" strokeLinejoin="round"/>
+          </svg>
+          꾸미기
         </TabButton>
       </div>
 
@@ -252,7 +259,10 @@ function RecordCard({ race }: RecordCardProps) {
       className="flex flex-col items-center justify-center border border-bark/20 rounded-lg bg-cream aspect-square p-3 gap-2"
       aria-label="완주 기록"
     >
-      <span className="text-3xl" aria-hidden="true">⏱️</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-8 h-8 text-gold/80" aria-hidden="true">
+        <circle cx="12" cy="13" r="7"/>
+        <path d="M12 10v4l2.5 2.5M10 3h4M12 3v3" strokeLinecap="round"/>
+      </svg>
       <p className="font-handwriting text-2xl text-gold leading-tight text-center">
         {race.finishTime}
       </p>
