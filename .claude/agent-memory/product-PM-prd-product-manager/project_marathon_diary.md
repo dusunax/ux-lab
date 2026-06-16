@@ -40,10 +40,10 @@ marathon-diary는 연 2~3회 10km 마라톤에 참가하는 취미 러너를 위
 
 INIT-1, BOOK-1, ALBUM-1, PAGE-1, BIB-1, PHOTO-1, RECORD-1, DECO-1, DATA-1, DESIGN-1, DEPLOY-1
 
-## Open Questions (미결)
+## Open Questions (전체 확정)
 
-- OQ-1: 배번호 OCR(Tesseract.js) vs 수동 입력만
-- OQ-2: 3D page-flip CSS transforms vs Three.js/WebGL
-- OQ-3: monorepo vercel.json 충돌 방지 방안
+- OQ-1 ✅: Sprint 1 수동 입력 + 사진 첨부 분리. OCR(Tesseract.js)은 Sprint 2 이연
+- OQ-2 ✅: `react-pageflip` 라이브러리 사용 (CSS 기반, 추후 WebGL 교체 여지)
+- OQ-3 ✅: `apps/marathon-diary/vercel.json` rootDirectory 설정 — quiz-drill-ai 동일 패턴
 
 **How to apply:** 기능 우선순위 결정 시 "배번호 중심 수집·꾸미기 경험" 기준. 완주증 슬롯 없음. IndexedDB 사용(localStorage 아님).

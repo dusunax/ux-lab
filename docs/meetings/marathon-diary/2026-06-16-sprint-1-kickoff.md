@@ -68,6 +68,9 @@
 | 4 | 3D 책 UI: CSS 3D perspective + page-flip 애니메이션 (OQ-2 해결 전 CSS 우선 시도) | Avery |
 | 5 | 이미지 저장: Sprint 1은 IndexedDB 사용 (Base64 5MB 한계 회피) | Avery / Blake |
 | 6 | Vercel 정적 배포 설정 (`vercel.json`, SPA fallback) | Blake / Chase |
+| 7 | 배번호 인식: Sprint 1 수동 입력 + 사진 첨부 분리. OCR(Tesseract.js)은 Sprint 2 이연 (OQ-1) | Avery |
+| 8 | 3D page-flip: `react-pageflip` 라이브러리 사용 (OQ-2) | Avery |
+| 9 | monorepo Vercel: `apps/marathon-diary/vercel.json` rootDirectory 설정 — quiz-drill-ai 패턴 동일 (OQ-3) | Blake |
 
 ---
 
@@ -133,11 +136,11 @@
 
 ## Open Questions
 
-| 질문 | 담당 | 기한 | 상태 |
+| 질문 | 담당 | 상태 | 결정 |
 |------|------|------|------|
-| 배번호 인식 방식 — Tesseract.js OCR vs 수동 입력만 제공 | FE | BIB-1 착수 전 | ⚠️ Open |
-| 3D page-flip — CSS 3D transforms 단독 vs Three.js/WebGL | FE | BOOK-1 착수 전 | ⚠️ Open |
-| monorepo `vercel.json` 충돌 방지 방안 | BE/PERF | 배포 설정 전 | ⚠️ Open |
+| 배번호 인식 방식 — Tesseract.js OCR vs 수동 입력 | FE | ✅ 확정 | Sprint 1: 수동 입력 + 사진 첨부 분리. OCR은 Sprint 2 이연 |
+| 3D page-flip — CSS transforms vs Three.js vs 라이브러리 | FE | ✅ 확정 | `react-pageflip` 사용 (CSS 기반 경량, 추후 WebGL 교체 여지) |
+| monorepo `vercel.json` 충돌 방지 방안 | BE/PERF | ✅ 확정 | `apps/marathon-diary/vercel.json`에 `rootDirectory` 설정 (quiz-drill-ai 동일 패턴) |
 
 ---
 
