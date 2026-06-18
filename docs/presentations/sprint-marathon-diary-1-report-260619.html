@@ -233,7 +233,7 @@
           <div class="metric-label">구현 항목 완료</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">8<span style="font-size:16px">/10</span></div>
+          <div class="metric-value">9<span style="font-size:16px">/10</span></div>
           <div class="metric-label">수용 기준 달성</div>
         </div>
         <div class="metric-card">
@@ -241,7 +241,7 @@
           <div class="metric-label">구현 완료율</div>
         </div>
         <div class="metric-card">
-          <div class="metric-value">2</div>
+          <div class="metric-value">1</div>
           <div class="metric-label">이월 AC 항목</div>
         </div>
       </div>
@@ -405,15 +405,15 @@
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">미완료 / 이월</div>
-      <h2 class="slide-title">수용 기준 미달 2건 + Sprint 2 이연</h2>
+      <h2 class="slide-title">수용 기준 미달 1건 + Sprint 2 이연</h2>
       <div style="margin-top:14px;width:100%">
-        <div class="defer-card">
-          <strong>수용 기준 미달 — Vercel 배포 URL 접근 확인</strong><br>
-          <code>vercel.json</code> 설정 완료. 실제 배포 후 URL 접근 및 SPA routing 검증 필요.
-        </div>
         <div class="defer-card">
           <strong>수용 기준 미달 — 모바일 375px 레이아웃 검증</strong><br>
           80vw 책 비율 구현 완료. 실기기 375px QA (책 비율·드래그·카메라 접근) 미진행.
+        </div>
+        <div class="defer-card defer-card--gray">
+          <strong>처리 완료 — Vercel 배포 URL 접근 확인</strong><br>
+          <a href="https://marathon-diary-three.vercel.app">marathon-diary-three.vercel.app</a> root 및 <code>/album/2026/page/1</code> HTTP 200 확인.
         </div>
         <div class="defer-card defer-card--gray">
           <strong>Sprint 2 이연 — OCR 배번호 자동 인식 (Tesseract.js)</strong><br>
@@ -437,7 +437,7 @@
         <div>
           <p class="col-section-head">배포 · QA 완성</p>
           <ul class="bullet-list">
-            <li>Vercel 배포 URL 확인 및 도메인 연결</li>
+            <li>커스텀 도메인 연결 여부 결정</li>
             <li>모바일 375px QA — 책 비율·스티커 드래그·카메라 접근</li>
             <li>iOS Safari 3D 애니메이션 성능 검증</li>
             <li>PWA <code>manifest.json</code> + 홈 화면 추가 지원</li>

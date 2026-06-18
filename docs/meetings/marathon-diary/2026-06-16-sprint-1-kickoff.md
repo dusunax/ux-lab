@@ -102,7 +102,7 @@
 - [x] 완주기록(시간·거리·날짜)을 텍스트로 입력할 수 있다
 - [x] 도장/스티커를 페이지에 드래그해서 자유 배치하고 저장할 수 있다
 - [x] 페이지 새로고침 후에도 사진·기록·데코 데이터가 유지된다 (IndexedDB)
-- [ ] Vercel 배포 URL이 정상 접근 가능하다
+- [x] Vercel 배포 URL이 정상 접근 가능하다 — https://marathon-diary-three.vercel.app (root 및 `/album/2026/page/1` HTTP 200 확인)
 - [ ] 모바일(375px 기준) 레이아웃이 깨지지 않는다 → **Sprint 2 이월**
 
 ---
@@ -130,7 +130,7 @@
 - [x] 도장/스티커 드래그 배치 → 저장 → 새로고침 후 복원 검증 — DECO-1
 - [ ] iOS Safari 카메라 접근 권한 및 3D 애니메이션 호환성 검증 → **Sprint 2 이월**
 - [ ] 모바일 375px 기준 레이아웃 깨짐 여부 확인 → **Sprint 2 이월**
-- [ ] Vercel 배포 URL 정상 접근 확인
+- [x] Vercel 배포 URL 정상 접근 확인 — https://marathon-diary-three.vercel.app
 
 ---
 
