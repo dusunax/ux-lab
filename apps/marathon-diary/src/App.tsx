@@ -1,34 +1,45 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import AlbumList from './features/album/AlbumList'
 import Album from './features/album/Album'
-import RaceForm from './features/race/RaceForm'
-import RacePage from './features/race/RacePage'
 
-export type Route =
-  | { path: '/' }
-  | { path: '/album/:year'; year: number }
-  | { path: '/race/new' }
-  | { path: '/race/:id'; id: string }
+type AppRoute =
+  | { path: '/'; }
+  | { path: '/album'; year: number; page: number; hasPageSegment: boolean }
+
+function parseRoute(): AppRoute {
+  const path = window.location.pathname
+  const m = path.match(/^\/album\/(\d+)(?:\/page\/(\d+))?$/)
+  if (m) {
+    return {
+      path: '/album',
+      year: parseInt(m[1], 10),
+      page: m[2] ? parseInt(m[2], 10) : 0,
+      hasPageSegment: m[2] !== undefined,
+    }
+  }
+  return { path: '/' }
+}
+
+export type Navigate = (url: string, replace?: boolean) => void
 
 export default function App() {
-  const [route, setRoute] = useState<Route>({ path: '/' })
+  const [route, setRoute] = useState<AppRoute>(parseRoute)
 
-  const navigate = useCallback((next: Route) => {
-    setRoute(next)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  useEffect(() => {
+    const onPop = () => setRoute(parseRoute())
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
   }, [])
 
-  if (route.path === '/album/:year') {
-    return <Album year={route.year} onNavigate={navigate} />
+  const navigate = useCallback<Navigate>((url, replace = false) => {
+    if (replace) window.history.replaceState(null, '', url)
+    else window.history.pushState(null, '', url)
+    setRoute(parseRoute())
+  }, [])
+
+  if (route.path === '/album') {
+    return <Album year={route.year} initialPage={route.page} initialOpen={route.hasPageSegment} navigate={navigate} />
   }
 
-  if (route.path === '/race/new') {
-    return <RaceForm onNavigate={navigate} />
-  }
-
-  if (route.path === '/race/:id') {
-    return <RacePage raceId={route.id} onNavigate={navigate} />
-  }
-
-  return <AlbumList onNavigate={navigate} />
+  return <AlbumList navigate={navigate} />
 }

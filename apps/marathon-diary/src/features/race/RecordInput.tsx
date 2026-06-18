@@ -1,11 +1,7 @@
 import { useCallback, memo } from 'react'
+import { RecordValues } from '../../types/record'
 
-export interface RecordValues {
-  date: string
-  distance: number
-  finishTime: string
-  raceName: string
-}
+export type { RecordValues }
 
 interface TimeFields {
   hh: string
@@ -14,19 +10,25 @@ interface TimeFields {
 }
 
 function parseFinishTime(finishTime: string): TimeFields {
+  if (!finishTime) return { hh: '', mm: '', ss: '' }
   const parts = finishTime.split(':')
   return {
-    hh: parts[0] ?? '00',
-    mm: parts[1] ?? '00',
-    ss: parts[2] ?? '00',
+    hh: parts[0] ?? '',
+    mm: parts[1] ?? '',
+    ss: parts[2] ?? '',
   }
 }
 
 function buildFinishTime(fields: TimeFields): string {
-  return `${fields.hh.padStart(2, '0')}:${fields.mm.padStart(2, '0')}:${fields.ss.padStart(2, '0')}`
+  if (!fields.hh && !fields.mm && !fields.ss) return ''
+  const hh = (fields.hh || '0').padStart(2, '0')
+  const mm = (fields.mm || '0').padStart(2, '0')
+  const ss = (fields.ss || '0').padStart(2, '0')
+  return `${hh}:${mm}:${ss}`
 }
 
 function clampTimeField(value: string, max: number): string {
+  if (!value.trim()) return ''
   const num = parseInt(value, 10)
   if (isNaN(num)) return '00'
   return String(Math.min(Math.max(0, num), max)).padStart(2, '0')
@@ -82,6 +84,22 @@ export default memo(function RecordInput({ values, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* 대회명 (선택) — 맨 위 */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="race-name" className="text-bark text-sm font-medium">
+          대회명 <span className="text-bark-light font-normal">(선택)</span>
+        </label>
+        <input
+          id="race-name"
+          type="text"
+          value={values.raceName}
+          onChange={handleRaceNameChange}
+          placeholder="예: 서울마라톤 2026"
+          maxLength={50}
+          className="border border-bark/30 rounded-lg px-4 py-2.5 text-ink bg-cream focus:outline-none focus:ring-2 focus:ring-gold"
+        />
+      </div>
+
       {/* 날짜 */}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="race-date" className="text-bark text-sm font-medium">
@@ -157,22 +175,6 @@ export default memo(function RecordInput({ values, onChange }: Props) {
           />
         </div>
       </div>
-
-      {/* 대회명 (선택) */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="race-name" className="text-bark text-sm font-medium">
-          대회명 <span className="text-bark-light font-normal">(선택)</span>
-        </label>
-        <input
-          id="race-name"
-          type="text"
-          value={values.raceName}
-          onChange={handleRaceNameChange}
-          placeholder="예: 서울마라톤 2026"
-          maxLength={50}
-          className="border border-bark/30 rounded-lg px-4 py-2.5 text-ink bg-cream focus:outline-none focus:ring-2 focus:ring-gold"
-        />
-      </div>
     </div>
   )
 })
@@ -198,6 +200,7 @@ function TimeField({ id, label, value, onChange, onBlur }: TimeFieldProps) {
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onBlur(e.target.value)}
         maxLength={2}
+        placeholder={label === '시간' ? '04' : '00'}
         className="w-full border border-bark/30 rounded-lg px-2 py-2.5 text-center text-2xl font-handwriting text-ink bg-cream focus:outline-none focus:ring-2 focus:ring-gold"
         aria-label={label}
       />

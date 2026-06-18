@@ -1,21 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Race } from '../../types/race'
 import { getRace, saveRace, deleteRace } from '../db/races'
-import { Route } from '../../App'
 import PhotoSlot from './PhotoSlot'
 import DecoLayer from '../deco/DecoLayer'
 
 interface Props {
   raceId: string
-  onNavigate: (route: Route) => void
+  onClose: () => void
 }
 
-export default function RacePage({ raceId, onNavigate }: Props) {
+export default function RacePage({ raceId, onClose }: Props) {
   const [race, setRace] = useState<Race | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const showPicker = true
 
   const loadRace = useCallback(async () => {
     try {
@@ -58,14 +58,14 @@ export default function RacePage({ raceId, onNavigate }: Props) {
     setDeleting(true)
     try {
       await deleteRace(raceId)
-      onNavigate({ path: '/' })
+      onClose()
     } catch {
       setError('삭제에 실패했습니다.')
     } finally {
       setDeleting(false)
       setShowDeleteConfirm(false)
     }
-  }, [raceId, onNavigate])
+  }, [raceId, onClose])
 
   if (loading) {
     return (
@@ -77,50 +77,19 @@ export default function RacePage({ raceId, onNavigate }: Props) {
 
   if (error || !race) {
     return (
-      <div className="h-full bg-cream p-8">
+      <div className="h-full bg-cream p-8 flex flex-col items-center justify-center gap-4">
         <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-red-700 text-sm" role="alert">
           {error ?? '알 수 없는 오류가 발생했습니다.'}
         </div>
-        <button className="btn-ghost mt-4" onClick={() => onNavigate({ path: '/' })}>
-          목록으로
-        </button>
+        <button className="btn-ghost text-sm" onClick={onClose}>닫기</button>
       </div>
     )
   }
 
   return (
     <main className="h-full bg-cream flex flex-col">
-      {/* 헤더 */}
-      <header className="px-4 py-4 md:px-8 flex items-center gap-3 border-b border-bark/10 flex-wrap flex-shrink-0">
-        <button
-          className="btn-ghost text-sm"
-          onClick={() => onNavigate({ path: '/' })}
-          aria-label="앨범 목록으로 돌아가기"
-        >
-          ← 목록
-        </button>
-
-        <div className="flex-1 min-w-0">
-          <h1 className="font-handwriting text-2xl text-ink leading-tight truncate">
-            #{race.bibNumber}
-            {race.raceName && <span className="text-bark-light text-lg ml-2">{race.raceName}</span>}
-          </h1>
-          <p className="text-bark-light text-xs">{race.date} · {race.distance}km · {race.finishTime}</p>
-        </div>
-
-        <button
-          className="text-bark-light text-sm hover:text-red-500 transition-colors focus-visible:ring-2 focus-visible:ring-red-400 rounded px-2 py-1"
-          onClick={() => setShowDeleteConfirm(true)}
-          aria-label="레이스 삭제"
-          type="button"
-        >
-          삭제
-        </button>
-      </header>
-
-      {/* 메인 영역 */}
+      {/* 메인 영역 — 사진 그리드 + 꾸미기 오버레이 */}
       <div className="flex-1 relative overflow-hidden">
-        {/* 사진 그리드 */}
         <div
           className="absolute inset-0 p-4 grid grid-cols-2 gap-3 content-start"
           aria-label="레이스 사진 슬롯"
@@ -144,8 +113,34 @@ export default function RacePage({ raceId, onNavigate }: Props) {
         </div>
 
         {/* 꾸미기 오버레이 */}
-        <DecoLayer raceId={raceId} />
+        <DecoLayer
+          raceId={raceId}
+          showPicker={showPicker}
+        />
       </div>
+
+      {/* 푸터 — 헤더 높이와 동일 52px */}
+      <footer className="flex-shrink-0 h-[52px] flex items-center gap-3 px-4 border-t border-bark/10 bg-cream">
+        <div className="flex-1 min-w-0">
+          <p className="font-handwriting text-lg text-ink leading-tight truncate">
+            #{race.bibNumber}
+            {race.raceName && <span className="text-bark-light text-base ml-1.5">{race.raceName}</span>}
+          </p>
+          <p className="text-bark-light text-xs truncate">
+            {race.date} · {race.distance}km · {race.finishTime}
+          </p>
+        </div>
+
+        {/* 삭제 버튼 */}
+        <button
+          type="button"
+          className="text-sm text-bark-light hover:text-red-500 transition-colors focus-visible:ring-2 focus-visible:ring-red-400 rounded px-2 py-1"
+          onClick={() => setShowDeleteConfirm(true)}
+          aria-label="레이스 삭제"
+        >
+          삭제
+        </button>
+      </footer>
 
       {/* 삭제 확인 다이얼로그 */}
       {showDeleteConfirm && (
@@ -188,19 +183,15 @@ export default function RacePage({ raceId, onNavigate }: Props) {
   )
 }
 
-interface RecordCardProps {
-  race: Race
-}
-
-function RecordCard({ race }: RecordCardProps) {
+function RecordCard({ race }: { race: Race }) {
   return (
     <div
       className="flex flex-col items-center justify-center border border-bark/20 rounded-lg bg-cream aspect-square p-3 gap-2"
       aria-label="완주 기록"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-8 h-8 text-gold/80" aria-hidden="true">
-        <circle cx="12" cy="13" r="7"/>
-        <path d="M12 10v4l2.5 2.5M10 3h4M12 3v3" strokeLinecap="round"/>
+        <circle cx="12" cy="13" r="7" />
+        <path d="M12 10v4l2.5 2.5M10 3h4M12 3v3" strokeLinecap="round" />
       </svg>
       <p className="font-handwriting text-2xl text-gold leading-tight text-center">
         {race.finishTime}

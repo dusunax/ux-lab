@@ -1,5 +1,6 @@
 import { useCallback, memo } from 'react'
 import { saveImage } from '../db/images'
+import { useImageUrl } from '../db/useImageUrl'
 
 interface Props {
   value: string
@@ -9,6 +10,8 @@ interface Props {
 }
 
 export default memo(function BibInput({ value, onChange, photoId, onPhotoSave }: Props) {
+  const previewUrl = useImageUrl(photoId)
+
   const handleCameraCapture = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
@@ -58,22 +61,29 @@ export default memo(function BibInput({ value, onChange, photoId, onPhotoSave }:
       <div className="flex flex-col gap-1.5">
         <span className="text-bark text-sm font-medium">배번 사진 촬영</span>
         <label
-          className="flex items-center justify-center gap-2 border-2 border-dashed border-bark/30 rounded-lg px-4 py-3 cursor-pointer hover:border-gold hover:bg-gold/5 transition-colors focus-within:ring-2 focus-within:ring-gold"
+          className="relative overflow-hidden border-2 border-dashed border-bark/30 rounded-lg cursor-pointer hover:border-gold transition-colors focus-within:ring-2 focus-within:ring-gold"
           aria-label="배번 사진 촬영 또는 업로드"
         >
-          {photoId ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-6 h-6 text-green-600 flex-shrink-0" aria-hidden="true">
-              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+          {previewUrl ? (
+            <>
+              <img src={previewUrl} alt="배번 사진 미리보기" className="w-full max-h-48 object-cover" />
+              <div className="absolute inset-0 bg-ink/40 flex items-center justify-center gap-2 opacity-0 hover:opacity-100 transition-opacity">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5 text-white" aria-hidden="true">
+                  <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
+                <span className="text-white text-sm font-medium">다시 촬영</span>
+              </div>
+            </>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-bark/50 flex-shrink-0" aria-hidden="true">
-              <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
-              <circle cx="12" cy="13" r="3"/>
-            </svg>
+            <div className="flex items-center justify-center gap-2 px-4 py-3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-bark/50 flex-shrink-0" aria-hidden="true">
+                <path d="M14.5 4H9.5L7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-3L14.5 4z"/>
+                <circle cx="12" cy="13" r="3"/>
+              </svg>
+              <span className="text-bark text-sm">카메라로 배번 촬영</span>
+            </div>
           )}
-          <span className="text-bark text-sm">
-            {photoId ? '사진이 저장됨 (다시 촬영)' : '카메라로 배번 촬영'}
-          </span>
           <input
             type="file"
             accept="image/*"
