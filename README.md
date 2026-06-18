@@ -24,8 +24,6 @@
 - 연도별 시즌 앨범과 3D page-flip 책 UI 제공
 - IndexedDB 기반 사진·기록·스티커 위치 저장
 
-<img width="800" src="./docs/presentations/sprint-marathon-diary-1/shot-album-cover.png" />
-
 <img width="800" src="./docs/presentations/sprint-marathon-diary-1/shot-album-example.png" />
 
 ### 📍 quiz-drill-ai
