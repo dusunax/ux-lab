@@ -4,6 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
+| **marathon-diary** | 배번호와 셀피를 마라톤 앨범으로 남기는 3D 책 UI 앱 ([앱](./apps/marathon-diary), [배포](https://marathon-diary-three.vercel.app/)) | 2026-06-16 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **quiz-drill-ai** | CSV/TSV 기반 시험 대비 퀴즈 드릴 앱 ([앱](./apps/quiz-drill-ai), [배포](https://quiz-drill-ai.vercel.app/)) | 2026-06-13 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **projection-art** | WebGL 기반 인터랙티브 프로젝션 아트 PoC ([앱](./apps/projection-art)) | 2026-05-29 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![MediaPipe](https://img.shields.io/badge/MediaPipe-0097A7?logo=google&logoColor=white) |
 | **ai-empathy-diary** | Excel 위장 AI 감정 일기 앱 ([배포](https://ai-empathy-diary.vercel.app/)) | 2026-05-11 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
@@ -16,6 +17,16 @@
 | **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - | dusunax | - |
 
 ## 📸 스크린샷
+
+### 📍 marathon-diary
+
+- 배번호 사진, 셀피 폴라로이드, 완주 기록을 한 장의 앨범 페이지로 구성
+- 연도별 시즌 앨범과 3D page-flip 책 UI 제공
+- IndexedDB 기반 사진·기록·스티커 위치 저장
+
+<img width="800" src="./docs/presentations/sprint-marathon-diary-1/shot-album-cover.png" />
+
+<img width="800" src="./docs/presentations/sprint-marathon-diary-1/shot-album-example.png" />
 
 ### 📍 quiz-drill-ai
 
