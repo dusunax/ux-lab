@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint marathon-diary/1 보고 — 2026-06-19</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* 메트릭 카드 그리드 */
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #fdfaf4;
+      border: 1px solid #e5d9b8;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: #b89040;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+
+    /* 핵심 메커니즘 리스트 */
+    .mechanism-list {
+      list-style: none;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .mechanism-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 14px;
+      padding: 7px 0;
+      border-bottom: 1px solid #f0f0f0;
+      line-height: 1.55;
+      color: #333;
+    }
+    .mechanism-list li:last-child { border-bottom: none; }
+    .mechanism-num {
+      min-width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #217346;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* 스크린샷 프레임 */
+    .screenshot-frame {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      max-height: 340px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1008;
+    }
+    .screenshot-frame img {
+      width: 100%;
+      max-height: 340px;
+      object-fit: contain;
+    }
+    .demo-gallery {
+      display: grid;
+      grid-template-columns: 1.06fr 1fr;
+      gap: 18px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .demo-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .demo-shot {
+      border: 1px solid #e5d9b8;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(30, 22, 16, 0.18);
+      background: #1e1610;
+      aspect-ratio: 16 / 9;
+    }
+    .demo-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .demo-shot--wide { aspect-ratio: 1361 / 875; }
+    .demo-caption {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #667085;
+    }
+    .demo-caption strong {
+      color: #217346;
+      font-weight: 700;
+    }
+    .demo-hero-shot {
+      width: 100%;
+      height: 430px;
+      border: 1px solid #e5d9b8;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #1e1610;
+      box-shadow: 0 10px 34px rgba(30, 22, 16, 0.2);
+    }
+    .demo-hero-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      background: #1e1610;
+    }
+    .decision-table th:last-child,
+    .decision-table td:last-child {
+      width: 124px;
+      white-space: nowrap;
+    }
+
+    /* 이월/미완 카드 */
+    .defer-card {
+      border-left: 4px solid #b89040;
+      background: #fdfaf4;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+    .defer-card--gray { border-left-color: #aaa; background: #f9fafb; }
+
+    /* 완료 항목 태그 */
+    .scope-tag {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e6f2eb;
+      color: #217346;
+      margin-right: 5px;
+      white-space: nowrap;
+    }
+    .scope-tag--be { background: #e8f0fe; color: #1a56db; }
+
+    /* Sprint 2 방향 섹션 헤더 */
+    .col-section-head {
+      font-size: 13px;
+      font-weight: 700;
+      color: #217346;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #217346;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · marathon-diary</div>
+        <h1 class="cover-title">Sprint marathon-diary / 1</h1>
+        <p class="cover-sub">마라톤 앨범 MVP — 3D 책 UI + 드래그 앤 드롭 데코</p>
+        <p class="cover-meta">2026-06-16 킥오프 · 2026-06-19 보고 · PM</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: 목표 + 핵심 메커니즘 + 지표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Sprint 목표</div>
+      <h2 class="slide-title">달린 날만큼, 페이지가 쌓인다</h2>
+      <blockquote class="goal-quote">
+        배번호(Bib Number)를 촬영하면 자동으로 스티커 페이지가 생성되는 마라톤 앨범 MVP를 3D 책 UI로 Vercel에 배포한다.
+      </blockquote>
+      <ul class="mechanism-list">
+        <li>
+          <span class="mechanism-num">1</span>
+          <span><strong>배번호(Bib Number) 촬영</strong> — 페이지 생성 트리거 / Bib Number = 레이스 primary key</span>
+        </li>
+        <li>
+          <span class="mechanism-num">2</span>
+          <span><strong>스티커 페이지 슬롯</strong> — 배번호 사진 / 셀카 / 완주기록 / 데코 영역</span>
+        </li>
+        <li>
+          <span class="mechanism-num">3</span>
+          <span><strong>도장 &amp; 스티커 드래그 앤 드롭</strong> — 자유 배치, 위치·회전·크기 IndexedDB 저장</span>
+        </li>
+        <li>
+          <span class="mechanism-num">4</span>
+          <span><strong>시즌 앨범</strong> — 연도별 자동 그룹핑, 3D 책 page-flip 애니메이션</span>
+        </li>
+      </ul>
+      <div class="metric-row">
+        <div class="metric-card">
+          <div class="metric-value">11<span style="font-size:16px">/11</span></div>
+          <div class="metric-label">구현 항목 완료</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">9<span style="font-size:16px">/10</span></div>
+          <div class="metric-label">수용 기준 달성</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">100<span style="font-size:16px">%</span></div>
+          <div class="metric-label">구현 완료율</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">1</div>
+          <div class="metric-label">이월 AC 항목</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: 주요 결정 사항 — 9개 (테이블형) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정 사항</div>
+      <h2 class="slide-title">주요 기술 결정 — 9개</h2>
+      <table class="data-table decision-table" style="margin-top:6px">
+        <thead>
+          <tr>
+            <th style="width:30px">#</th>
+            <th>결정 내용</th>
+            <th>분류</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>앱 위치: <code>apps/marathon-diary</code> monorepo 신설 — Vite + React + TS + Tailwind</td>
+            <td><span class="badge badge-green">아키텍처</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>핵심 단위: Bib Number = 레이스 primary key (스티커 페이지 생성 트리거)</td>
+            <td><span class="badge badge-green">PM</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>완주증 슬롯 제외 → 완주기록(시간·거리·날짜) 텍스트 입력으로 대체</td>
+            <td><span class="badge badge-yellow">스코프</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>3D 책 UI: <code>react-pageflip</code> (CSS 기반 경량) — 닫힌 책→클릭 오픈, 페이지 전환 사운드</td>
+            <td><span class="badge badge-green">FE</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>이미지 저장: IndexedDB (Base64 5MB 한계 회피), 레이스·이미지·데코 레이어 분리</td>
+            <td><span class="badge badge-green">FE</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Vercel 정적 배포: <code>apps/marathon-diary/vercel.json</code> SPA fallback</td>
+            <td><span class="badge badge-green">BE</span></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>배번호 인식: Sprint 1 수동 입력 + 사진 첨부. OCR(Tesseract.js) Sprint 2 이연</td>
+            <td><span class="badge badge-yellow">이연</span></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>UX: 닫힌 책→클릭 열기, 페이지 전환 사운드 (Web Audio API), resize 대응</td>
+            <td><span class="badge badge-green">UX</span></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>스티커: StampPicker Portal(<code>document.body</code>), 드래그 ghost element, 페이지 밖 드롭→삭제</td>
+            <td><span class="badge badge-green">FE</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: 닫힌 앨범 커버 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">앱 화면 — 시즌 앨범 커버</h2>
+      <figure class="demo-card" style="width:100%">
+        <div class="demo-hero-shot">
+          <img src="./sprint-marathon-diary-1/shot-album-cover.png" alt="2026 시즌 마라톤 앨범 닫힌 커버 화면">
+        </div>
+        <figcaption class="demo-caption">
+          <strong>진입 화면</strong> — 연도별 시즌 앨범을 닫힌 책 형태로 보여주고, 최근 배번과 날짜를 커버에 요약한다.
+        </figcaption>
+      </figure>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: 완성 앨범 페이지 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">앱 화면 — 완성된 앨범 페이지</h2>
+      <figure class="demo-card" style="width:100%">
+        <div class="demo-hero-shot">
+          <img src="./sprint-marathon-diary-1/shot-album-example.png" alt="배번호 사진, 셀피 폴라로이드, 스티커가 배치된 마라톤 앨범 페이지">
+        </div>
+        <figcaption class="demo-caption">
+          <strong>완성 예시</strong> — 배번호 사진 중심 페이지, 셀피 폴라로이드, 자유 배치 스티커, 하단 레이스 메타 정보.
+        </figcaption>
+      </figure>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: 레이스 추가 흐름 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모</div>
+      <h2 class="slide-title">앱 화면 — 레이스 추가 흐름</h2>
+      <figure class="demo-card" style="width:100%">
+        <div class="demo-hero-shot">
+          <img src="./sprint-marathon-diary-1/shot-album-page-layout.png" alt="빈 배번호 슬롯과 오른쪽 레이스 추가 페이지가 보이는 앨범 화면">
+        </div>
+        <figcaption class="demo-caption">
+          <strong>추가 흐름</strong> — 빈 슬롯 클릭 업로드, 오른쪽 레이스 추가 페이지, 하단 도장 팔레트.
+        </figcaption>
+      </figure>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: 완료 항목 (2컬럼 check-list) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료 항목</div>
+      <h2 class="slide-title">Sprint 1 구현 완료 — 11 / 11</h2>
+      <div class="two-col" style="margin-top:14px">
+        <div>
+          <p class="col-head">FE (10)</p>
+          <ul class="check-list">
+            <li class="done"><span class="scope-tag">INIT-1</span> Vite + React + TS + Tailwind 초기 세팅</li>
+            <li class="done"><span class="scope-tag">BOOK-1</span> react-pageflip 3D 책 UI — 닫힌 책→펼침, 사운드, resize re-mount</li>
+            <li class="done"><span class="scope-tag">ALBUM-1</span> 시즌 앨범 목록 — 연도별 카드 그리드</li>
+            <li class="done"><span class="scope-tag">PAGE-1</span> 스티커 페이지 레이아웃 (배번호·사진·기록·데코)</li>
+            <li class="done"><span class="scope-tag">BIB-1</span> 배번호 입력 — 카메라 촬영 + 수동 입력 fallback</li>
+            <li class="done"><span class="scope-tag">PHOTO-1</span> 사진 슬롯 — 촬영/업로드 + IndexedDB 저장</li>
+            <li class="done"><span class="scope-tag">RECORD-1</span> 완주기록 폼 — HH:MM:SS·km·날짜, landscape 2-col</li>
+            <li class="done"><span class="scope-tag">DECO-1</span> 스티커 드래그 앤 드롭 — Pointer Events, ghost element, IndexedDB</li>
+            <li class="done"><span class="scope-tag">DATA-1</span> IndexedDB CRUD 유틸 — 레이스·이미지·데코 레이어</li>
+            <li class="done"><span class="scope-tag">DESIGN-1</span> 디자인 토큰 — 크림·갈색·금박, 손글씨 타이포</li>
+          </ul>
+        </div>
+        <div>
+          <p class="col-head">BE (1)</p>
+          <ul class="check-list">
+            <li class="done"><span class="scope-tag scope-tag--be">DEPLOY-1</span> vercel.json SPA fallback + monorepo 충돌 방지</li>
+          </ul>
+          <div class="callout" style="margin-top:16px">
+            <strong>스코프 외 UX 추가:</strong><br>
+            닫힌 책 클릭 오픈 · 페이지 전환 사운드 · resize key re-mount · BackCoverPage 인라인 폼 · StampPicker Portal · 드래그 ghost element
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: 이월 항목 + 미완 수용 기준 (불렛) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">미완료 / 이월</div>
+      <h2 class="slide-title">수용 기준 미달 1건 + Sprint 2 이연</h2>
+      <div style="margin-top:14px;width:100%">
+        <div class="defer-card">
+          <strong>수용 기준 미달 — 모바일 375px 레이아웃 검증</strong><br>
+          80vw 책 비율 구현 완료. 실기기 375px QA (책 비율·드래그·카메라 접근) 미진행.
+        </div>
+        <div class="defer-card defer-card--gray">
+          <strong>처리 완료 — Vercel 배포 URL 접근 확인</strong><br>
+          <a href="https://marathon-diary-three.vercel.app">marathon-diary-three.vercel.app</a> root 및 <code>/album/2026/page/1</code> HTTP 200 확인.
+        </div>
+        <div class="defer-card defer-card--gray">
+          <strong>Sprint 2 이연 — OCR 배번호 자동 인식 (Tesseract.js)</strong><br>
+          Sprint 1: 수동 입력 + 사진 첨부 분리. OCR은 Sprint 2에서 구현 예정.
+        </div>
+        <div class="defer-card defer-card--gray">
+          <strong>Sprint 2 후보 — iOS Safari 3D 애니메이션 호환성 검증</strong><br>
+          iOS PWA 환경 <code>input[capture=camera]</code> + <code>will-change</code> 최적화 검증 대기.
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: 다음 스프린트 방향 (2컬럼) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">다음 스프린트</div>
+      <h2 class="slide-title">Sprint 2 후보 방향</h2>
+      <div class="two-col" style="margin-top:20px">
+        <div>
+          <p class="col-section-head">배포 · QA 완성</p>
+          <ul class="bullet-list">
+            <li>커스텀 도메인 연결 여부 결정</li>
+            <li>모바일 375px QA — 책 비율·스티커 드래그·카메라 접근</li>
+            <li>iOS Safari 3D 애니메이션 성능 검증</li>
+            <li>PWA <code>manifest.json</code> + 홈 화면 추가 지원</li>
+          </ul>
+        </div>
+        <div>
+          <p class="col-section-head">OCR · 기능 확장</p>
+          <ul class="bullet-list">
+            <li>Tesseract.js 배번호 자동 인식 (OCR 이연 해소)</li>
+            <li>OCR 실패 fallback — 수동 입력 유도 UX</li>
+            <li>스티커 페이지 공유 / 스크린샷 내보내기</li>
+            <li>스티커 페이지 내 OCR 재인식 기능</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 10: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">마라톤 앨범 — Sprint 1 완료</p>
+      <div class="qa-links">
+        <span>Branch: sprint/marathon-diary/1</span>
+        <span>·</span>
+        <span>앱: apps/marathon-diary</span>
+        <span>·</span>
+        <span>2026-06-19</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div>
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

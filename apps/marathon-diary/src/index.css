@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-cream: #faf3e0;
+  --color-cream-dark: #f0e6cc;
+  --color-bark: #8b6f47;
+  --color-bark-light: #a0856a;
+  --color-gold: #c9a84c;
+  --color-gold-light: #e2c17a;
+  --color-ink: #2c1810;
+}
+
+@layer base {
+  html {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  .page-shadow {
+    box-shadow: 4px 4px 20px rgba(44, 24, 16, 0.15);
+  }
+
+  .album-page {
+    background-color: var(--color-cream-dark);
+    border: 1px solid rgba(139, 111, 71, 0.2);
+  }
+
+  .btn-primary {
+    @apply bg-gold text-ink font-medium px-4 py-2 rounded-md transition-colors hover:bg-gold-light focus-visible:ring-2 focus-visible:ring-gold;
+  }
+
+  .btn-ghost {
+    @apply text-bark border border-bark/30 px-4 py-2 rounded-md transition-colors hover:bg-bark/10 focus-visible:ring-2 focus-visible:ring-bark;
+  }
+}
+
+/* react-pageflip overrides */
+.stf__parent {
+  touch-action: pan-y;
+  background: transparent !important;
+}
+
+.stf__block {
+  border-radius: 2px;
+}
