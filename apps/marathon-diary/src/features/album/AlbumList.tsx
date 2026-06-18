@@ -194,7 +194,7 @@ export default function AlbumList({ navigate }: { navigate: Navigate }) {
             </svg>
             <p className="font-handwriting text-3xl text-bark">첫 레이스를 기록해보세요</p>
             <p className="text-bark-light text-sm max-w-xs">
-              배번호를 입력하면 스티커 페이지가 생성됩니다. 레이스 1회 = 스티커 페이지 1장.
+              배번호를 입력하면 앨범 페이지가 생성됩니다. 레이스 1회 = 앨범 페이지 1장.
             </p>
           </div>
         )}

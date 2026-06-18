@@ -63,7 +63,7 @@ async function playPageFlipSound() {
 const BookPage = forwardRef<HTMLDivElement, { children: React.ReactNode }>(
   function BookPage({ children }, ref) {
     return (
-      <div ref={ref} className="sticker-book-page w-full h-full overflow-hidden relative">
+      <div ref={ref} className="album-page w-full h-full overflow-hidden relative">
         {children}
       </div>
     )

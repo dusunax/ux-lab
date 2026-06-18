@@ -94,43 +94,43 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] `apps/marathon-diary`에서 `pnpm dev`로 로컬 실행 가능
-- [ ] 시즌 앨범 목록에서 연도별 앨범 카드를 볼 수 있다
-- [ ] 앨범을 클릭하면 3D 책이 펼쳐지는 애니메이션이 실행된다
-- [ ] 새 페이지 추가 시 배번호를 카메라로 촬영하거나 직접 입력할 수 있다
-- [ ] 스티커 페이지에 메달·셀카 사진을 촬영 또는 업로드할 수 있다
-- [ ] 완주기록(시간·거리·날짜)을 텍스트로 입력할 수 있다
-- [ ] 도장/스티커를 페이지에 드래그해서 자유 배치하고 저장할 수 있다
-- [ ] 페이지 새로고침 후에도 사진·기록·데코 데이터가 유지된다 (IndexedDB)
+- [x] `apps/marathon-diary`에서 `pnpm dev`로 로컬 실행 가능
+- [x] 시즌 앨범 목록에서 연도별 앨범 카드를 볼 수 있다
+- [x] 앨범을 클릭하면 3D 책이 펼쳐지는 애니메이션이 실행된다
+- [x] 새 페이지 추가 시 배번호를 카메라로 촬영하거나 직접 입력할 수 있다
+- [x] 스티커 페이지에 메달·셀카 사진을 촬영 또는 업로드할 수 있다
+- [x] 완주기록(시간·거리·날짜)을 텍스트로 입력할 수 있다
+- [x] 도장/스티커를 페이지에 드래그해서 자유 배치하고 저장할 수 있다
+- [x] 페이지 새로고침 후에도 사진·기록·데코 데이터가 유지된다 (IndexedDB)
 - [ ] Vercel 배포 URL이 정상 접근 가능하다
-- [ ] 모바일(375px 기준) 레이아웃이 깨지지 않는다
+- [ ] 모바일(375px 기준) 레이아웃이 깨지지 않는다 → **Sprint 2 이월**
 
 ---
 
 ## 액션 아이템
 
 **FE (Avery)**
-- [ ] `apps/marathon-diary/` Vite + React + TypeScript + Tailwind 프로젝트 신설 — INIT-1
-- [ ] 3D 책 UI 구현 — CSS perspective + page-flip 애니메이션, 앨범 표지·페이지 전환 — BOOK-1
-- [ ] 시즌 앨범 목록 화면 구현 — 연도별 앨범 카드 그리드 — ALBUM-1
-- [ ] 스티커 페이지 4슬롯 레이아웃 구현 (배번호 / 메달 / 완주기록 / 셀카) — PAGE-1
-- [ ] 배번호 입력 구현 — 카메라 촬영 + 수동 입력 fallback — BIB-1
-- [ ] 사진 슬롯 구현 — 촬영/업로드 + IndexedDB 저장 — PHOTO-1
-- [ ] 완주기록 입력 폼 구현 — HH:MM:SS · km · 날짜 — RECORD-1
-- [ ] 도장 & 스티커 꾸미기 구현 — 드래그 배치, 위치·회전·크기 저장 — DECO-1
-- [ ] IndexedDB CRUD 유틸 분리 구현 (레이스·이미지·데코 레이어 포함) — DATA-1
-- [ ] 스티커북 테마 디자인 토큰 정의 (크림·갈색·금박, 손글씨 타이포) — DESIGN-1
+- [x] `apps/marathon-diary/` Vite + React + TypeScript + Tailwind 프로젝트 신설 — INIT-1
+- [x] 3D 책 UI 구현 — react-pageflip, 닫힌 책 → 펼치기 UX, 페이지 전환 사운드 — BOOK-1
+- [x] 시즌 앨범 목록 화면 구현 — 연도별 앨범 카드 그리드 — ALBUM-1
+- [x] 스티커 페이지 4슬롯 레이아웃 구현 (배번호 / 완주기록 / 셀카 / 데코) — PAGE-1
+- [x] 배번호 입력 구현 — 카메라 촬영 + 수동 입력 fallback — BIB-1
+- [x] 사진 슬롯 구현 — 촬영/업로드 + IndexedDB 저장 — PHOTO-1
+- [x] 완주기록 입력 폼 구현 — HH:MM:SS · km · 날짜 (landscape 2-col 폼 포함) — RECORD-1
+- [x] 도장 & 스티커 꾸미기 구현 — 드래그 앤 드롭 배치, 위치·회전·크기 저장, 페이지 밖 드롭 시 삭제 — DECO-1
+- [x] IndexedDB CRUD 유틸 분리 구현 (레이스·이미지·데코 레이어 포함) — DATA-1
+- [x] 스티커북 테마 디자인 토큰 정의 (크림·갈색·금박, 손글씨 타이포) — DESIGN-1
 
 **BE (Blake)**
-- [ ] monorepo 구성 검토 (`pnpm workspace`) — INIT-1 지원
-- [ ] Vercel 정적 배포 설정 — `vercel.json` SPA fallback 및 monorepo 충돌 방지 — DEPLOY-1
+- [x] monorepo 구성 검토 (`pnpm workspace`) — INIT-1 지원
+- [x] Vercel 정적 배포 설정 — `vercel.json` SPA fallback 및 monorepo 충돌 방지 — DEPLOY-1
 
 **QA (Morgan / Quinn)**
-- [ ] 수용 기준 전체 항목 검증
-- [ ] 사진 업로드 → IndexedDB 저장 → 새로고침 후 복원 플로우 검증
-- [ ] 도장/스티커 드래그 배치 → 저장 → 새로고침 후 복원 검증 — DECO-1
-- [ ] iOS Safari 카메라 접근 권한 및 3D 애니메이션 호환성 검증
-- [ ] 모바일 375px 기준 레이아웃 깨짐 여부 확인
+- [x] 사진 업로드 → IndexedDB 저장 → 새로고침 후 복원 플로우 검증
+- [x] 도장/스티커 드래그 배치 → 저장 → 새로고침 후 복원 검증 — DECO-1
+- [ ] iOS Safari 카메라 접근 권한 및 3D 애니메이션 호환성 검증 → **Sprint 2 이월**
+- [ ] 모바일 375px 기준 레이아웃 깨짐 여부 확인 → **Sprint 2 이월**
+- [ ] Vercel 배포 URL 정상 접근 확인
 
 ---
 
