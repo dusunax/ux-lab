@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint mini-judge/1 보고 — 2026-06-21</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* 메트릭 카드 그리드 */
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+
+    /* 5단계 플로우 리스트 */
+    .flow-list {
+      list-style: none;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .flow-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 14px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f0f0;
+      line-height: 1.6;
+      color: #24292f;
+    }
+    .flow-list li:last-child { border-bottom: none; }
+    .flow-num {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #24292f;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8c959f;
+      font-size: 12px;
+      padding: 4px 0;
+      font-weight: 500;
+    }
+
+    /* 완료 항목 태그 */
+    .scope-tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #ddf4ff;
+      color: #0969da;
+      margin-right: 5px;
+      white-space: nowrap;
+    }
+    .scope-tag--ai {
+      background: #e6f4ff;
+      color: #0969da;
+    }
+    .scope-tag--parse {
+      background: #fff8c5;
+      color: #9a6700;
+    }
+    .scope-tag--output {
+      background: #dafbe1;
+      color: #1a7f37;
+    }
+    .scope-tag--print {
+      background: #f6f8fa;
+      color: #57606a;
+    }
+
+    /* 이월 카드 */
+    .defer-card {
+      border-left: 4px solid #d0d7de;
+      background: #f6f8fa;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      width: 100%;
+      color: #24292f;
+    }
+    .defer-card strong {
+      color: #24292f;
+    }
+
+    /* Sprint 2 방향 섹션 헤더 */
+    .col-section-head {
+      font-size: 13px;
+      font-weight: 700;
+      color: #217346;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #217346;
+    }
+
+    /* 디자인 특징 카드 */
+    .design-feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+      width: 100%;
+    }
+    .design-feature-card {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #24292f;
+    }
+    .design-feature-card strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #57606a;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    /* 리스크 항목 */
+    .risk-tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #fff1f0;
+      color: #cf222e;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · mini-judge</div>
+        <h1 class="cover-title">Sprint mini-judge / 1</h1>
+        <p class="cover-sub">미니 심사위원 도구 MVP — URL 하나, 팀 고유 평가표 하나</p>
+        <p class="cover-meta">2026-06-20 킥오프 · 2026-06-21 보고 · PM</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: Sprint 목표 + 컨셉 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Sprint 목표</div>
+      <h2 class="slide-title">URL 하나, 팀 고유 평가표 하나</h2>
+      <blockquote class="goal-quote">
+        URL 입력만으로 팀별 평가표와 질문 시트를 자동 생성하는 미니 심사위원 MVP를 완성한다.
+      </blockquote>
+      <ul class="flow-list">
+        <li>
+          <span class="flow-num">1</span>
+          <span><strong>심사위원 프로필 설정</strong> — 이름 입력, 주니어 / 미드 / 시니어 레벨 선택</span>
+        </li>
+        <li>
+          <span class="flow-num">2</span>
+          <span><strong>팀 URL 입력</strong> — GitHub README + Notion 공개 페이지 URL 등록, 팀 목록 관리</span>
+        </li>
+        <li>
+          <span class="flow-num">3</span>
+          <span><strong>자동 파싱</strong> — GitHub raw fetch (main→master), Notion HTML 스크레이핑. 실패 시 수동 보강</span>
+        </li>
+        <li>
+          <span class="flow-num">4</span>
+          <span><strong>AI 생성</strong> — openrouter-proxy(model:auto) 연동, 레벨별 프롬프트 분기로 평가표 + 질문 시트 즉시 생성</span>
+        </li>
+        <li>
+          <span class="flow-num">5</span>
+          <span><strong>출력 / 인쇄</strong> — 팀 결과 카드 + 질문 시트(기술 3 + 포괄 2) 렌더링, print CSS 팀당 1페이지 PDF 내보내기</span>
+        </li>
+      </ul>
+      <div class="metric-row">
+        <div class="metric-card">
+          <div class="metric-value">11<span style="font-size:16px">/11</span></div>
+          <div class="metric-label">구현 항목 완료</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">100<span style="font-size:16px">%</span></div>
+          <div class="metric-label">완료율</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">8</div>
+          <div class="metric-label">OQ 확정 결정</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">3</div>
+          <div class="metric-label">심사위원 레벨</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: 핵심 플로우 — 5단계 심사 메커니즘 (테이블형) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">핵심 메커니즘</div>
+      <h2 class="slide-title">5단계 심사 플로우</h2>
+      <table class="data-table" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th style="width:36px">단계</th>
+            <th>동작</th>
+            <th>상세</th>
+            <th style="width:100px">분류</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center;font-weight:700">1</td>
+            <td><strong>심사위원 프로필</strong></td>
+            <td>이름 + 레벨(주니어/미드/시니어) 설정</td>
+            <td><span class="badge badge-green">UX</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center;font-weight:700">2</td>
+            <td><strong>팀 목록 입력</strong></td>
+            <td>제목·설명·GitHub URL·Notion URL — n개 추가/삭제, 상태 뱃지</td>
+            <td><span class="badge badge-green">FE</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center;font-weight:700">3</td>
+            <td><strong>자동 파싱</strong></td>
+            <td>GitHub raw fetch (main→master 자동 시도) + Notion HTML 스크레이핑. 실패 시 수동 보강 모달</td>
+            <td><span class="badge badge-yellow">파싱</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center;font-weight:700">4</td>
+            <td><strong>AI 생성</strong></td>
+            <td>openrouter-proxy(model:auto) + 레벨별 프롬프트 분기. 평가표 + 질문 시트(기술 3 + 포괄 2) 생성</td>
+            <td><span class="badge badge-green">AI</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center;font-weight:700">5</td>
+            <td><strong>출력 / 인쇄</strong></td>
+            <td>팀 결과 카드(요약·스택·완성도) + 질문 시트 렌더링 + print CSS 팀당 1페이지 PDF</td>
+            <td><span class="badge badge-green">출력</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout" style="margin-top:14px">
+        <strong>핵심 차별점:</strong> 부트캠프 출품회 부스를 돌며 각 팀 URL 하나만으로 팀 고유 맥락을 즉시 파악 — 심사위원 레벨에 따라 질문 관점이 달라진다.
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: OQ 확정 결정 사항 8개 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정 사항</div>
+      <h2 class="slide-title">OQ 확정 결정 — 8개</h2>
+      <table class="data-table" style="margin-top:8px;font-size:13px">
+        <thead>
+          <tr>
+            <th style="width:28px">#</th>
+            <th>결정 내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>앱 위치: <code>apps/mini-judge/</code> — Vite + React + TypeScript + Tailwind + Zod</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>심사위원 레벨 3단계: 주니어 / 미드 / 시니어 — 레벨별 프롬프트 분기</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Notion 파싱: 공개 URL HTML 스크레이핑, 실패 시 수동 보강 textarea fallback</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>AI API: 기존 <code>openrouter-proxy</code> 재사용, <code>model:"auto"</code> 무료 모델 자동 폴백</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>GitHub Private 레포: raw fetch 실패 시 수동 텍스트 입력 fallback</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>질문 시트: 기술 3개 + 포괄 2개, 팀 고유 내용 최소 1개 포함</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>인쇄 내보내기: print CSS 기반, 팀당 1페이지</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>파싱 실패 UX: 실패 항목 명시 + 수동 보강 입력 모달</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: 완료 스코프 11/11 + 기술 스택 (2컬럼) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료 항목</div>
+      <h2 class="slide-title">Sprint 1 구현 완료 — 11 / 11</h2>
+      <div class="two-col" style="margin-top:12px">
+        <div>
+          <p class="col-section-head">구현 항목 (11개)</p>
+          <ul class="check-list" style="font-size:12.5px">
+            <li class="done"><span class="scope-tag">INIT-1</span> Vite + React + TS + Tailwind + Zod 초기 세팅</li>
+            <li class="done"><span class="scope-tag">INIT-2</span> 심사위원 프로필 설정 화면 (이름, 레벨)</li>
+            <li class="done"><span class="scope-tag">INPUT-1</span> 팀 입력 폼 (제목·설명·GitHub·Notion URL)</li>
+            <li class="done"><span class="scope-tag">INPUT-2</span> 팀 목록 관리 (n개 추가/삭제, 상태 뱃지)</li>
+            <li class="done"><span class="scope-tag scope-tag--parse">PARSE-1</span> GitHub README raw fetch (main→master)</li>
+            <li class="done"><span class="scope-tag scope-tag--parse">PARSE-2</span> Notion HTML 스크레이핑 + 수동 보강 UX</li>
+            <li class="done"><span class="scope-tag scope-tag--ai">AI-1</span> openrouter-proxy 연동, 평가표 + 질문 시트 생성</li>
+            <li class="done"><span class="scope-tag scope-tag--ai">AI-2</span> 레벨별 프롬프트 분기 (주니어/미드/시니어)</li>
+            <li class="done"><span class="scope-tag scope-tag--output">OUTPUT-1</span> 팀별 결과 카드 (요약·기술 스택·완성도)</li>
+            <li class="done"><span class="scope-tag scope-tag--output">OUTPUT-2</span> 질문 시트 렌더링 (Tech/General 배지)</li>
+            <li class="done"><span class="scope-tag scope-tag--print">PRINT-1</span> print CSS 인쇄/PDF 내보내기 (팀당 1페이지)</li>
+          </ul>
+        </div>
+        <div>
+          <p class="col-section-head">기술 스택</p>
+          <ul class="bullet-list" style="font-size:13px">
+            <li><strong>Frontend</strong> — React 18, TypeScript (strict), Vite, Tailwind CSS 3, Zod</li>
+            <li><strong>AI</strong> — openrouter-proxy (NestJS) + OpenRouter 무료 모델 자동 폴백</li>
+            <li><strong>파싱</strong> — browser fetch (GitHub raw) + HTML 스크레이핑 (Notion)</li>
+          </ul>
+          <div class="callout" style="margin-top:14px;font-size:13px">
+            <strong>재사용:</strong> openrouter-proxy는 기존 모노레포 내 NestJS 서비스를 그대로 연동 — 별도 백엔드 신규 구축 없음
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: 디자인 컨셉 — GitHub 개발자 친화 스타일 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">디자인 컨셉</div>
+      <h2 class="slide-title">GitHub 개발자 친화 스타일</h2>
+      <blockquote class="goal-quote">
+        심사위원이 부스에서 스마트폰이나 노트북을 들고 빠르게 확인할 수 있도록 — 불필요한 꾸밈 없이 정보 밀도와 가독성 우선.
+      </blockquote>
+      <div class="design-feature-grid">
+        <div class="design-feature-card">
+          <strong>캔버스</strong>
+          #f6f8fa 배경 — GitHub 캔버스 색상 그대로 사용. 익숙한 개발자 환경 맥락 활용
+        </div>
+        <div class="design-feature-card">
+          <strong>카드</strong>
+          흰 배경 카드 + #d0d7de 테두리. 팀별 결과를 시각적으로 분리
+        </div>
+        <div class="design-feature-card">
+          <strong>헤더</strong>
+          다크 헤더 (#24292f). 앱 제목·레벨 표시 영역을 명확히 구분
+        </div>
+        <div class="design-feature-card">
+          <strong>아이콘</strong>
+          shield-check 아이콘 계열 사용. 심사(Judging) 맥락 시각화
+        </div>
+        <div class="design-feature-card">
+          <strong>질문 배지</strong>
+          Tech <span class="tag tag-green" style="font-size:10px">기술</span> / General <span class="tag tag-yellow" style="font-size:10px">포괄</span> — 색상으로 즉시 구분
+        </div>
+        <div class="design-feature-card">
+          <strong>인쇄</strong>
+          print CSS: 팀당 1페이지 레이아웃, 화면 UI 요소 자동 숨김
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: 이월 항목 + Sprint 2 방향 (2컬럼) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">이월 / Sprint 2</div>
+      <h2 class="slide-title">Sprint 2 방향</h2>
+      <div class="two-col" style="margin-top:14px">
+        <div>
+          <p class="col-section-head">이월 항목 (6건)</p>
+          <div class="defer-card">
+            <strong>심사 점수 입력 및 집계</strong><br>
+            팀별 항목별 점수 입력, 합계 자동 계산
+          </div>
+          <div class="defer-card">
+            <strong>팀 간 순위 비교</strong><br>
+            총점 기준 랭킹 뷰, 항목별 비교 테이블
+          </div>
+          <div class="defer-card">
+            <strong>질문 수동 편집 / 저장</strong><br>
+            AI 생성 질문을 심사위원이 직접 수정·저장
+          </div>
+        </div>
+        <div>
+          <p class="col-section-head">Sprint 2 확장 후보</p>
+          <ul class="bullet-list" style="font-size:13px">
+            <li>Notion OAuth 연동 (Private 페이지 지원)</li>
+            <li>GitHub Private 레포 인증 지원</li>
+            <li>모바일 반응형 최적화</li>
+            <li>평가 결과 공유 / 내보내기 (CSV / PDF)</li>
+          </ul>
+          <div class="callout" style="margin-top:12px;font-size:13px">
+            <strong>우선순위:</strong> 점수 집계 + 순위 비교가 실사용 핵심 — Sprint 2 1순위 타겟
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">mini-judge — Sprint 1 완료</p>
+      <div class="qa-links">
+        <span>Branch: sprint/mini-judge/1</span>
+        <span>·</span>
+        <span>앱: apps/mini-judge</span>
+        <span>·</span>
+        <span>2026-06-21</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div>
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
