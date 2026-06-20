@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #0c0c0e;
+    color: #f0ece2;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0c0c0e;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a2a30;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #c8a96e;
+  }
+}
+
+@layer utilities {
+  .tracking-widest {
+    letter-spacing: 0.15em;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  .bg-judge-bg,
+  .bg-judge-surface {
+    background: #fff !important;
+  }
+
+  .text-judge-cream,
+  .text-judge-gold,
+  .text-judge-muted,
+  .text-judge-gold-dim {
+    color: #111 !important;
+  }
+
+  .border-judge-border,
+  .border-judge-gold {
+    border-color: #ccc !important;
+  }
+
+  .font-display {
+    color: #111 !important;
+  }
+}
