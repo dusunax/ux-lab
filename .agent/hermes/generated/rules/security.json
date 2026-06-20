@@ -1,0 +1,9 @@
+{
+  "id": "security",
+  "instructions": "# Security Rules\n\n## Secrets (CRITICAL)\n\nNever hardcode secrets:\n\n```typescript\n// NEVER\nconst apiKey = \"sk-proj-xxxxx\"\n\n// ALWAYS\nconst apiKey = process.env.API_KEY\nif (!apiKey) throw new Error('API_KEY not configured')\n```\n\n## Before Every Commit\n\n- [ ] No hardcoded API keys, passwords, tokens\n- [ ] No .env files committed\n- [ ] User inputs validated (zod recommended)\n- [ ] SQL/NoSQL queries parameterized\n- [ ] HTML outputs sanitized (XSS prevention)\n- [ ] Error messages don't expose internals\n\n## Input Validation\n\n```typescript\n// Recommended: Use validation library like zod\nimport { z } from 'zod'\n\nconst schema = z.object({\n  email: z.string().email(),\n  amount: z.number().positive()\n})\n\nconst data = schema.parse(userInput)\n\n// Alternative: Basic validation with regex\nconst emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/\nif (!emailRegex.test(email)) {\n  throw new Error('Invalid email')\n}\n```\n\n## If Security Issue Found\n\n1. STOP immediately\n2. Fix before continuing\n3. Rotate any exposed secrets\n4. Check for similar issues elsewhere\n",
+  "kind": "rule",
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "source": {
+    "path": ".agent/rules/security.md"
+  }
+}
