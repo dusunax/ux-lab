@@ -4,8 +4,8 @@
 
 @layer base {
   html {
-    background-color: #0c0c0e;
-    color: #f0ece2;
+    background-color: #f6f8fa;
+    color: #1f2328;
   }
 
   * {
@@ -13,22 +13,43 @@
   }
 
   ::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #0c0c0e;
+    background: #f6f8fa;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2a30;
+    background: #d0d7de;
+    border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #c8a96e;
+    background: #8c959f;
   }
 }
 
-@layer utilities {
-  .tracking-widest {
-    letter-spacing: 0.15em;
+@layer components {
+  .gh-input {
+    @apply w-full bg-gh-surface border border-gh-border text-gh-fg font-sans px-3 py-1.5 text-sm rounded-md focus:outline-none focus:border-gh-blue focus:shadow-input transition-all placeholder:text-gh-fg-subtle;
+  }
+
+  .gh-textarea {
+    @apply w-full bg-gh-surface border border-gh-border text-gh-fg font-sans px-3 py-1.5 text-sm rounded-md focus:outline-none focus:border-gh-blue focus:shadow-input transition-all placeholder:text-gh-fg-subtle resize-none;
+  }
+
+  .gh-btn-primary {
+    @apply bg-gh-green text-white font-sans font-semibold text-sm px-4 py-1.5 rounded-md border border-gh-green hover:bg-gh-green-hover transition-colors;
+  }
+
+  .gh-btn-secondary {
+    @apply bg-gh-surface text-gh-fg font-sans font-medium text-sm px-4 py-1.5 rounded-md border border-gh-border hover:bg-gh-canvas transition-colors;
+  }
+
+  .gh-label {
+    @apply block text-gh-fg font-sans font-semibold text-sm mb-1.5;
+  }
+
+  .gh-card {
+    @apply bg-gh-surface border border-gh-border rounded-md shadow-card;
   }
 }
 
@@ -38,29 +59,14 @@
     margin: 16mm 14mm;
   }
 
-  body {
-    background: #fff;
-    color: #111;
+  .no-print {
+    display: none !important;
   }
 
-  .bg-judge-bg,
-  .bg-judge-surface {
-    background: #fff !important;
-  }
-
-  .text-judge-cream,
-  .text-judge-gold,
-  .text-judge-muted,
-  .text-judge-gold-dim {
-    color: #111 !important;
-  }
-
-  .border-judge-border,
-  .border-judge-gold {
-    border-color: #ccc !important;
-  }
-
-  .font-display {
-    color: #111 !important;
+  .gh-card {
+    box-shadow: none !important;
+    border: 1px solid #d0d7de !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }

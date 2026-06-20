@@ -30,108 +30,104 @@ export function TeamForm({ onAdd, onCancel }: Props) {
     onAdd(form)
   }
 
+  const showReadmeFallback = !form.githubUrl
+  const showNotionFallback = !form.notionUrl
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="block font-display text-judge-gold tracking-widest text-xs mb-2">
-          PROJECT NAME *
-        </label>
-        <input
-          type="text"
-          value={form.title}
-          onChange={(e) => set('title', e.target.value)}
-          placeholder="팀 / 프로젝트명"
-          className="w-full bg-judge-bg border border-judge-border text-judge-cream font-sans px-4 py-2.5 focus:outline-none focus:border-judge-gold transition-colors placeholder:text-judge-muted text-sm"
-        />
-      </div>
-
-      <div>
-        <label className="block font-display text-judge-gold tracking-widest text-xs mb-2">
-          DESCRIPTION
-        </label>
-        <textarea
-          value={form.description}
-          onChange={(e) => set('description', e.target.value)}
-          placeholder="팀 소개 또는 프로젝트 한 줄 설명"
-          rows={2}
-          className="w-full bg-judge-bg border border-judge-border text-judge-cream font-sans px-4 py-2.5 focus:outline-none focus:border-judge-gold transition-colors placeholder:text-judge-muted text-sm resize-none"
-        />
-      </div>
-
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
+          <label className="gh-label">Project name <span className="text-gh-red">*</span></label>
+          <input
+            type="text"
+            value={form.title}
+            onChange={(e) => set('title', e.target.value)}
+            placeholder="팀 / 프로젝트명"
+            className="gh-input"
+            autoFocus
+          />
+        </div>
+
+        <div className="col-span-2">
+          <label className="gh-label">Description</label>
+          <textarea
+            value={form.description}
+            onChange={(e) => set('description', e.target.value)}
+            placeholder="한 줄 팀 소개 (선택)"
+            rows={2}
+            className="gh-textarea"
+          />
+        </div>
+
         <div>
-          <label className="block font-display text-judge-gold tracking-widest text-xs mb-2">
-            GITHUB URL
-          </label>
+          <label className="gh-label">GitHub URL</label>
           <input
             type="url"
             value={form.githubUrl}
             onChange={(e) => set('githubUrl', e.target.value)}
-            placeholder="https://github.com/..."
-            className="w-full bg-judge-bg border border-judge-border text-judge-cream font-mono px-4 py-2.5 focus:outline-none focus:border-judge-gold transition-colors placeholder:text-judge-muted text-xs"
+            placeholder="https://github.com/owner/repo"
+            className="gh-input font-mono text-xs"
           />
         </div>
+
         <div>
-          <label className="block font-display text-judge-gold tracking-widest text-xs mb-2">
-            NOTION URL
-          </label>
+          <label className="gh-label">Notion URL</label>
           <input
             type="url"
             value={form.notionUrl}
             onChange={(e) => set('notionUrl', e.target.value)}
             placeholder="https://notion.so/..."
-            className="w-full bg-judge-bg border border-judge-border text-judge-cream font-mono px-4 py-2.5 focus:outline-none focus:border-judge-gold transition-colors placeholder:text-judge-muted text-xs"
+            className="gh-input font-mono text-xs"
           />
         </div>
       </div>
 
-      {/* Manual fallback fields */}
-      {(!form.githubUrl) && (
-        <div>
-          <label className="block font-display text-judge-muted tracking-widest text-xs mb-2">
-            README 직접 입력 (GitHub URL 없을 때)
-          </label>
-          <textarea
-            value={form.manualReadme}
-            onChange={(e) => set('manualReadme', e.target.value)}
-            placeholder="README 내용을 붙여넣으세요"
-            rows={3}
-            className="w-full bg-judge-bg border border-judge-border text-judge-cream font-mono px-4 py-2.5 focus:outline-none focus:border-judge-gold/50 transition-colors placeholder:text-judge-muted text-xs resize-none"
-          />
+      {(showReadmeFallback || showNotionFallback) && (
+        <details className="group">
+          <summary className="text-gh-fg-muted font-sans text-xs cursor-pointer hover:text-gh-fg select-none list-none flex items-center gap-1">
+            <svg className="w-3 h-3 group-open:rotate-90 transition-transform" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/>
+            </svg>
+            URL 없이 직접 입력
+          </summary>
+          <div className="mt-3 space-y-3 pl-4 border-l-2 border-gh-border-muted">
+            {showReadmeFallback && (
+              <div>
+                <label className="gh-label text-gh-fg-muted">README 내용 붙여넣기</label>
+                <textarea
+                  value={form.manualReadme}
+                  onChange={(e) => set('manualReadme', e.target.value)}
+                  placeholder="README.md 내용을 여기에 붙여넣으세요"
+                  rows={4}
+                  className="gh-textarea font-mono text-xs"
+                />
+              </div>
+            )}
+            {showNotionFallback && (
+              <div>
+                <label className="gh-label text-gh-fg-muted">Notion 내용 붙여넣기</label>
+                <textarea
+                  value={form.manualNotion}
+                  onChange={(e) => set('manualNotion', e.target.value)}
+                  placeholder="Notion 페이지 내용을 여기에 붙여넣으세요"
+                  rows={4}
+                  className="gh-textarea font-mono text-xs"
+                />
+              </div>
+            )}
+          </div>
+        </details>
+      )}
+
+      {error && (
+        <div className="bg-gh-red-subtle border border-gh-red/30 rounded-md px-3 py-2">
+          <p className="font-sans text-gh-red text-sm">{error}</p>
         </div>
       )}
 
-      {(!form.notionUrl) && (
-        <div>
-          <label className="block font-display text-judge-muted tracking-widest text-xs mb-2">
-            NOTION 내용 직접 입력 (Notion URL 없을 때)
-          </label>
-          <textarea
-            value={form.manualNotion}
-            onChange={(e) => set('manualNotion', e.target.value)}
-            placeholder="Notion 페이지 내용을 붙여넣으세요"
-            rows={3}
-            className="w-full bg-judge-bg border border-judge-border text-judge-cream font-mono px-4 py-2.5 focus:outline-none focus:border-judge-gold/50 transition-colors placeholder:text-judge-muted text-xs resize-none"
-          />
-        </div>
-      )}
-
-      {error && <p className="font-sans text-judge-error text-sm">{error}</p>}
-
-      <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          className="flex-1 bg-judge-gold text-judge-bg font-display tracking-widest text-sm py-3 hover:bg-judge-cream transition-colors"
-        >
-          ADD TEAM
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-6 border border-judge-border text-judge-muted font-display tracking-widest text-sm py-3 hover:border-judge-gold hover:text-judge-cream transition-colors"
-        >
-          CANCEL
-        </button>
+      <div className="flex gap-2 pt-1">
+        <button type="submit" className="gh-btn-primary">Add team</button>
+        <button type="button" onClick={onCancel} className="gh-btn-secondary">Cancel</button>
       </div>
     </form>
   )
