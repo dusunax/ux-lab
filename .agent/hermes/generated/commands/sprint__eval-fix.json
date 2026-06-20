@@ -1,0 +1,28 @@
+{
+  "argumentsVariable": "$ARGUMENTS",
+  "description": "eval 지적 사항 처리 결과를 PR에 댓글로 등록한다. Sprint 6 형식 유지.",
+  "detectedToolMentions": [
+    "mcp__github__add_issue_comment"
+  ],
+  "flags": [
+    "--pr"
+  ],
+  "id": "sprint/eval-fix",
+  "instructions": "# /sprint:eval-fix 하네스\n\n**인수:** $ARGUMENTS\n\n---\n\n## Step 0 — 인수 파싱\n\n| 패턴 | 동작 |\n|------|------|\n| (없음) | 현재 브랜치에서 PR 번호 자동 탐지 |\n| `--pr NUMBER` | 지정 PR 번호 사용 |\n\n---\n\n## Step 1 — PR 번호 탐지\n\n인수 없으면:\n\n```bash\ngit branch --show-current  # sprint/N 패턴에서 N 추출\ngh pr list --repo [REPO] --head sprint/N --json number --jq '.[0].number'\n```\n\nPR 번호를 확정하지 못하면:\n\n```\n⛔ PR 번호를 확인할 수 없습니다.\n   --pr NUMBER 인수를 사용하거나 sprint/N 브랜치로 전환 후 재실행하세요.\n```\n\n---\n\n## Step 2 — eval 댓글 읽기\n\n```bash\ngh pr view [NUMBER] --repo [REPO] --comments --json comments\n```\n\neval 댓글(`🏁 Sprint N 평가 — Nolan (EV)`)을 찾아 **Review Findings 테이블**을 추출한다.\n\n각 항목의 등급(🔴 Blocker / 🟡 Major / 🟢 Minor)과 항목명을 목록화한다.\n\n---\n\n## Step 3 — 처리 결과 수집\n\n각 finding 항목에 대해:\n\n1. **처리 완료** — 관련 커밋 SHA 또는 파일명 확인\n2. **미처리 (의도된 한계)** — 사유 명시\n3. **미처리 (이월)** — 이월 스프린트 명시\n\n최근 커밋 이력을 참고한다:\n\n```bash\ngit log --oneline -10\n```\n\n---\n\n## Step 4 — 댓글 본문 작성\n\n아래 형식을 **반드시** 그대로 유지한다 (Sprint 6 표준):\n\n```markdown\n## 🔧 Review Findings — 처리 결과\n\n---\n\n### [등급아이콘] [항목명]: [✅ 완료 | ❌ 미처리]\n\n[처리 내용 또는 사유. 완료 시 커밋 SHA 포함.]\n\n### [등급아이콘] [항목명]: [✅ 완료 | ❌ 미처리]\n\n**사유:** [미처리 사유 — 의도된 한계 / 이월 스프린트]\n\n---\n\n*🤖 /sprint:eval 후속 조치 — [오늘날짜]*\n```\n\n**규칙:**\n\n- 각 finding 항목을 `### [등급아이콘] [항목명]: ✅/❌` 형식의 H3으로 작성\n- 완료 항목: 무엇을 어떻게 했는지 + 커밋 SHA (있으면)\n- 미처리 항목: `**사유:**` 라벨로 명확히 구분\n- 등급 순서: 🔴 → 🟡 → 🟢\n- 에이전트 실명(Jordan, Blake 등)은 역할명(PM, BE 등)으로 대체\n- 마지막 줄: `*🤖 /sprint:eval 후속 조치 — YYYY-MM-DD*`\n\n---\n\n## Step 5 — 댓글 등록\n\n```bash\ngh pr comment [NUMBER] --repo [REPO] --body \"[본문]\"\n```\n\nGitHub MCP(`mcp__github__add_issue_comment`) 우선 시도, 미연결 시 `gh` CLI 폴백.\n\n---\n\n## Step 6 — 라벨 업데이트\n\n처리 결과에 따라 라벨을 교체한다.\n\n**모든 finding이 처리 완료된 경우:**\n- `finding: major` / `finding: blocker` 제거\n- `finding: clear` + `ready to merge` 추가\n\n**미처리(이월) 항목이 남은 경우:**\n- 라벨 변경 없음. 댓글에 이월 항목 명시로 대신함.\n\n```bash\ngh api repos/[REPO]/issues/[NUMBER]/labels --method DELETE ...\ngh api repos/[REPO]/issues/[NUMBER]/labels --method POST ...\n```\n\n---\n\n## Step 7 — 완료 보고\n\n```\n✅ eval 처리 결과 댓글 등록 완료\n\nPR:       [URL]\n댓글:     [댓글 URL]\n처리:     [완료 N건 / 미처리 N건]\n라벨:     [변경 내용 또는 \"변경 없음\"]\n```\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/sprint:eval-fix"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/sprint/eval-fix.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

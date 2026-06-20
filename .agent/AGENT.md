@@ -137,6 +137,19 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | [scripts/scope-enforcer.py](scripts/scope-enforcer.py) | Claude `PreToolUse` hook, 에이전트 파일 범위 제한 |
 | [scripts/gen-scope-doc.py](scripts/gen-scope-doc.py) | Claude `PostToolUse` hook, scope 문서 생성 |
 | [scripts/sync-agent-wrappers.py](scripts/sync-agent-wrappers.py) | `.agent` 원본 frontmatter를 Claude/Cursor wrapper에 동기화 |
+| [scripts/export-hermes.py](scripts/export-hermes.py) | `.agent` 원본을 Hermes가 읽을 수 있는 JSON bundle로 변환 |
+
+## Hermes Export
+
+Hermes용 기계 판독 산출물은 [hermes/](hermes/)에 생성합니다.
+
+```bash
+python3 .agent/scripts/export-hermes.py
+```
+
+생성 결과:
+- 단일 bundle: `.agent/hermes/generated/manifest.json`
+- 분할 JSON: `.agent/hermes/generated/{agents,commands,skills,rules,memory}/`
 
 ---
 

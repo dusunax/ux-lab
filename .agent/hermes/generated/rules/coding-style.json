@@ -1,0 +1,9 @@
+{
+  "id": "coding-style",
+  "instructions": "# Coding Style\n\n## Immutability\n\nPrefer immutable patterns for state and props:\n\n```typescript\n// Prefer immutable for state/props\nconst updated = { ...user, name: newName }\nconst newArray = [...array, item]\n\n// Mutation acceptable for:\n// - Local temporary arrays during construction\n// - Performance-critical loops\n// - Builder patterns\n```\n\n## File Size\n\n- Target: 200-400 lines\n- Maximum: 800 lines\n- Extract when exceeding limits\n\n## Function Size\n\n- Target: < 30 lines\n- Maximum: 50 lines\n- Single responsibility\n\n## Error Handling\n\n```typescript\ntry {\n  const result = await operation()\n  return result\n} catch (error) {\n  console.error('Context:', error)\n  throw new Error('User-friendly message')\n}\n```\n\n## Naming\n\n- Components: `PascalCase`\n- Functions/variables: `camelCase`\n- Constants: `UPPER_SNAKE_CASE`\n- Files: `camelCase.ts` or `PascalCase.tsx`\n\n## Before Completion\n\n- [ ] No console.log in client-side production code\n- [ ] Server-side/dev console.log is acceptable for debugging\n- [ ] No TODO without ticket/issue\n- [ ] No magic numbers\n- [ ] Error handling in place\n- [ ] Types defined (no `any`)\n- [ ] Update existing markdown documentation whenever significant logic changes occur to keep docs and implementation consistent\n\n## Structural Rule\n\n- Place feature implementations under the `features` folder by feature area.\n- Prefer minimal file splitting for a feature; keep related logic and rendering together.\n- Split files only when complexity requires it to keep maintenance cost predictable.\n",
+  "kind": "rule",
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "source": {
+    "path": ".agent/rules/coding-style.md"
+  }
+}

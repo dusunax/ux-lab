@@ -1,0 +1,12 @@
+{
+  "entries": [],
+  "id": "eng-BE-backend-architect",
+  "index": {
+    "path": ".agent/agent-memory/eng-BE-backend-architect/MEMORY.md"
+  },
+  "kind": "memoryStore",
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "source": {
+    "path": ".agent/agent-memory/eng-BE-backend-architect"
+  }
+}
