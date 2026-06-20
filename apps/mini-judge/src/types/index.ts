@@ -1,22 +1,19 @@
 import { z } from 'zod'
 
-export const JudgeLevelSchema = z.enum(['junior', 'mid', 'senior'])
-export type JudgeLevel = z.infer<typeof JudgeLevelSchema>
-
 export const JudgeProfileSchema = z.object({
   name: z.string().min(1, '이름을 입력해주세요'),
-  level: JudgeLevelSchema,
 })
 export type JudgeProfile = z.infer<typeof JudgeProfileSchema>
 
 export const TeamInputSchema = z.object({
   id: z.string(),
+  teamNumber: z.string(),
   title: z.string().min(1, '팀/프로젝트명을 입력해주세요'),
   description: z.string(),
   githubUrl: z.string().url('유효한 URL을 입력해주세요').or(z.literal('')),
-  notionUrl: z.string().url('유효한 URL을 입력해주세요').or(z.literal('')),
+  notionUrl: z.string(),
   manualReadme: z.string(),
-  manualNotion: z.string(),
+  notionImage: z.string(),
 })
 export type TeamInput = z.infer<typeof TeamInputSchema>
 
@@ -38,7 +35,11 @@ export interface EvalResult {
   projectSummary: string
   techStack: string[]
   checklist: string[]
-  questions: EvalQuestion[]
+  questions: {
+    junior: EvalQuestion[]
+    mid: EvalQuestion[]
+    senior: EvalQuestion[]
+  }
 }
 
 export type TeamStatus = 'pending' | 'parsing' | 'generating' | 'done' | 'error'

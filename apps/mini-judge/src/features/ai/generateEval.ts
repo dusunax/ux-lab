@@ -1,29 +1,17 @@
-import type { EvalResult, JudgeLevel, ParseResult, TeamInput } from '../../types'
+import type { EvalResult, ParseResult, TeamInput } from '../../types'
 
 const PROXY_URL = 'http://localhost:3035/api/chat'
 
-const LEVEL_GUIDE: Record<JudgeLevel, string> = {
-  junior:
-    '주니어 심사위원 관점: 구현 경험 중심 질문. "어떻게 만들었나요?", "가장 어려웠던 부분은?", "이 기능을 구현할 때 어떤 방법을 선택했나요?" 수준.',
-  mid: '미드 심사위원 관점: 구현 + 설계 판단 질문. "왜 이 구조를 선택했나요?", "다른 방법도 고려했나요?" 수준.',
-  senior:
-    '시니어 심사위원 관점: 설계 의도·트레이드오프 중심 질문. "이 아키텍처의 한계는?", "확장 시 어떤 문제가 생길 수 있나요?" 수준.',
-}
-
-function buildPrompt(team: TeamInput, parse: ParseResult, level: JudgeLevel): string {
+function buildPrompt(team: TeamInput, parse: ParseResult): string {
   const context = [
-    `팀/프로젝트명: ${team.title}`,
+    `팀/프로젝트명: ${team.teamNumber ? `[${team.teamNumber}] ` : ''}${team.title}`,
     team.description ? `팀 소개: ${team.description}` : '',
     parse.githubContent
       ? `GitHub README:\n${parse.githubContent.slice(0, 3000)}`
       : team.manualReadme
         ? `README (수동 입력):\n${team.manualReadme.slice(0, 3000)}`
         : '',
-    parse.notionContent
-      ? `Notion 페이지:\n${parse.notionContent.slice(0, 2000)}`
-      : team.manualNotion
-        ? `Notion (수동 입력):\n${team.manualNotion.slice(0, 2000)}`
-        : '',
+    team.notionImage ? 'Notion 페이지 스크린샷이 첨부되어 있습니다. 이미지에서 프로젝트 내용을 파악하세요.' : '',
   ]
     .filter(Boolean)
     .join('\n\n')
@@ -31,11 +19,14 @@ function buildPrompt(team: TeamInput, parse: ParseResult, level: JudgeLevel): st
   return `당신은 부트캠프 수료 발표회의 미니 심사위원입니다.
 피심사자는 취업을 희망하는 예비 개발자입니다. 목표는 평가가 아니라 이해 지원과 건설적 피드백입니다.
 
-${LEVEL_GUIDE[level]}
-
 아래 팀 정보를 바탕으로 평가 시트를 JSON으로 작성하세요.
 질문은 반드시 이 팀의 프로젝트 내용을 기반으로 해야 합니다 (Generic 질문 금지).
 질문 난이도: 예비 개발자가 자신이 만든 것을 설명하고 회고할 수 있는 수준.
+
+관점별 기준:
+- junior: 구현 경험 중심. "어떻게 만들었나요?", "가장 어려웠던 부분은?" 수준
+- mid: 구현 + 설계 판단. "왜 이 구조를 선택했나요?", "다른 방법도 고려했나요?" 수준
+- senior: 트레이드오프 중심. "이 아키텍처의 한계는?", "확장 시 어떤 문제가 생길 수 있나요?" 수준
 
 ---
 ${context}
@@ -52,34 +43,64 @@ ${context}
     "완성도 체크 항목 4",
     "완성도 체크 항목 5"
   ],
-  "questions": [
-    {"type": "tech", "question": "기술 관련 질문 1 (이 프로젝트 고유 내용 포함)"},
-    {"type": "tech", "question": "기술 관련 질문 2"},
-    {"type": "tech", "question": "기술 관련 질문 3"},
-    {"type": "general", "question": "포괄 질문 1 (어려웠던 점·배운 점 등)"},
-    {"type": "general", "question": "포괄 질문 2"}
-  ]
+  "questions": {
+    "junior": [
+      {"type": "tech", "question": "이 프로젝트 고유 내용 포함한 구현 경험 질문"},
+      {"type": "tech", "question": "구현 경험 질문 2"},
+      {"type": "tech", "question": "구현 경험 질문 3"},
+      {"type": "general", "question": "어려웠던 점·배운 점 질문"},
+      {"type": "general", "question": "회고·성장 관련 질문"}
+    ],
+    "mid": [
+      {"type": "tech", "question": "설계 판단 질문 1"},
+      {"type": "tech", "question": "설계 판단 질문 2"},
+      {"type": "tech", "question": "설계 판단 질문 3"},
+      {"type": "general", "question": "협업·의사결정 질문"},
+      {"type": "general", "question": "개선 방향 질문"}
+    ],
+    "senior": [
+      {"type": "tech", "question": "트레이드오프 질문 1"},
+      {"type": "tech", "question": "트레이드오프 질문 2"},
+      {"type": "tech", "question": "확장성·한계 질문"},
+      {"type": "general", "question": "아키텍처 의도 질문"},
+      {"type": "general", "question": "다음 단계 설계 질문"}
+    ]
+  }
 }`
 }
 
 export async function generateEval(
   team: TeamInput,
   parse: ParseResult,
-  level: JudgeLevel,
 ): Promise<EvalResult> {
-  const prompt = buildPrompt(team, parse, level)
+  const prompt = buildPrompt(team, parse)
 
-  const res = await fetch(PROXY_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'auto',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1200,
-    }),
-  })
+  const messages = team.notionImage
+    ? [{ role: 'user', content: [
+        { type: 'text', text: prompt },
+        { type: 'image_url', image_url: { url: team.notionImage } },
+      ]}]
+    : [{ role: 'user', content: prompt }]
 
-  if (!res.ok) throw new Error(`AI API 오류 (${res.status})`)
+  let res: Response
+  try {
+    res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'auto',
+        messages,
+        max_tokens: 2500,
+      }),
+    })
+  } catch {
+    throw new Error(`openrouter-proxy에 연결할 수 없습니다 — 터미널에서 pnpm dev:openrouter 를 먼저 실행하세요 (${PROXY_URL})`)
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({})) as { error?: string }
+    throw new Error(body.error ?? `AI API 오류 (${res.status})`)
+  }
 
   const data = (await res.json()) as {
     choices?: { message?: { content?: string } }[]

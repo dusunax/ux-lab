@@ -2,24 +2,20 @@ import { useState } from 'react'
 import type { Team, TeamInput, JudgeProfile } from '../../types'
 import { TeamForm } from './TeamForm'
 import { TeamCard } from './TeamCard'
+import { exportTeamsCsv } from '../../utils/exportCsv'
 
 interface Props {
   profile: JudgeProfile
   teams: Team[]
   onAdd: (input: Omit<TeamInput, 'id'>) => void
   onRemove: (id: string) => void
+  onEdit: (id: string, input: Omit<TeamInput, 'id'>) => void
   onRun: (id: string) => void
-  onFallback: (id: string, field: 'manualReadme' | 'manualNotion', value: string) => void
+  onFallback: (id: string, field: 'manualReadme', value: string) => void
   onReset: () => void
 }
 
-const LEVEL_BADGE: Record<JudgeProfile['level'], string> = {
-  junior: 'bg-gh-green-subtle text-gh-green border-gh-green/30',
-  mid:    'bg-gh-blue-subtle text-gh-blue border-gh-blue/30',
-  senior: 'bg-gh-purple-subtle text-gh-purple border-gh-purple/30',
-}
-
-export function TeamList({ profile, teams, onAdd, onRemove, onRun, onFallback, onReset }: Props) {
+export function TeamList({ profile, teams, onAdd, onRemove, onEdit, onRun, onFallback, onReset }: Props) {
   const [showForm, setShowForm] = useState(false)
 
   function handleAdd(input: Omit<TeamInput, 'id'>) {
@@ -42,15 +38,24 @@ export function TeamList({ profile, teams, onAdd, onRemove, onRun, onFallback, o
           </div>
           <span className="text-gh-header-muted text-sm">/</span>
           <span className="text-gh-header-text font-sans text-sm">{profile.name}</span>
-          <span className={`font-sans text-xs font-medium border rounded-full px-2 py-0.5 ${LEVEL_BADGE[profile.level]}`}>
-            {profile.level}
-          </span>
         </div>
         <div className="flex items-center gap-4">
           {doneCount > 0 && (
-            <span className="font-mono text-gh-header-muted text-xs">
-              {doneCount}/{teams.length} done
-            </span>
+            <>
+              <span className="font-mono text-gh-header-muted text-xs">
+                {doneCount}/{teams.length} done
+              </span>
+              <button
+                onClick={() => exportTeamsCsv(teams)}
+                className="font-sans text-gh-header-muted hover:text-gh-header-text text-xs transition-colors flex items-center gap-1.5"
+              >
+                <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+                  <path d="M2.75 14A1.75 1.75 0 0 1 1 12.25v-2.5a.75.75 0 0 1 1.5 0v2.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 1.5 0v2.5A1.75 1.75 0 0 1 13.25 14Z"/>
+                  <path d="M7.25 7.689V2a.75.75 0 0 1 1.5 0v5.689l1.97-1.97a.749.749 0 1 1 1.06 1.061l-3.25 3.25a.749.749 0 0 1-1.06 0L4.22 6.78a.749.749 0 1 1 1.06-1.061Z"/>
+                </svg>
+                Export CSV
+              </button>
+            </>
           )}
           <button
             onClick={onReset}
@@ -65,7 +70,7 @@ export function TeamList({ profile, teams, onAdd, onRemove, onRun, onFallback, o
         {/* Page title (print only) */}
         <div className="hidden print:block mb-6">
           <h1 className="font-sans font-bold text-xl text-gh-fg">
-            Mini Judge — {profile.name} ({profile.level})
+            Mini Judge — {profile.name}
           </h1>
         </div>
 
@@ -89,6 +94,7 @@ export function TeamList({ profile, teams, onAdd, onRemove, onRun, onFallback, o
             index={i}
             onRun={() => onRun(team.input.id)}
             onRemove={() => onRemove(team.input.id)}
+            onEdit={(input) => onEdit(team.input.id, input)}
             onFallback={(field, value) => onFallback(team.input.id, field, value)}
           />
         ))}
