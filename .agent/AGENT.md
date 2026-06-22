@@ -24,7 +24,8 @@
 | 3 | [rules/coding-style.md](rules/coding-style.md) | 코딩 스타일, 파일/함수 크기, 구조 규칙 |
 | 4 | [rules/conflict-resolution.md](rules/conflict-resolution.md) | 충돌 발생 시 설명, 계획, 검증 절차 |
 | 5 | [rules/agent-scope.md](rules/agent-scope.md) | 에이전트별 파일 소유권과 작업 범위 |
-| 6 | [rules/agent-creation.md](rules/agent-creation.md) | 새 에이전트 생성 규칙 |
+| 6 | [rules/worktree-hygiene.md](rules/worktree-hygiene.md) | 작업 전환 전후 worktree 점검과 정리 절차 |
+| 7 | [rules/agent-creation.md](rules/agent-creation.md) | 새 에이전트 생성 규칙 |
 
 규칙 충돌 시 `security` > `performance` > `coding-style` > `skills` 순서로 적용합니다.
 
@@ -88,6 +89,7 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 |---------|------|
 | [commands/code-review.md](commands/code-review.md) | 커밋 전 코드 품질 및 보안 검토 |
 | [commands/refactor-clean.md](commands/refactor-clean.md) | 미사용 코드 탐지 및 안전 제거 |
+| [commands/worktree-check.md](commands/worktree-check.md) | 작업 시작/종료 전 worktree 상태 점검 |
 | [commands/notion-daily.md](commands/notion-daily.md) | 오늘자 노션 기록 페이지 생성/업데이트 |
 | [commands/dev-team/orchestrate.md](commands/dev-team/orchestrate.md) | 요청 분석 후 적합한 서브에이전트 라우팅 |
 | [commands/dev-team/oc.md](commands/dev-team/oc.md) | `/orchestrate` 축약 별칭 |
