@@ -16,6 +16,7 @@
 | [ai-empathy-diary/2026-05-23-sprint-7-kickoff.md](./ai-empathy-diary/2026-05-23-sprint-7-kickoff.md) | Sprint ai-empathy-diary/7 킥오프 | 2026-05-23 | 모델별 만족도 대시보드 구현 + CORS 정책 강화 |
 | [ai-empathy-diary/2026-05-24-sprint-8-kickoff.md](./ai-empathy-diary/2026-05-24-sprint-8-kickoff.md) | Sprint ai-empathy-diary/8 킥오프 | 2026-05-24 | Firebase Auth 서버사이드 검증 + model_labels 컬렉션 분리 |
 | [ai-empathy-diary/2026-05-26-sprint-9-kickoff.md](./ai-empathy-diary/2026-05-26-sprint-9-kickoff.md) | Sprint ai-empathy-diary/9 킥오프 | 2026-05-26 | 오케스트레이터 파일 영역 분리 제약 도입 + 에이전트 간 충돌 제거 |
+| [ai-empathy-diary/2026-06-27-sprint-10-kickoff.md](./ai-empathy-diary/2026-06-27-sprint-10-kickoff.md) | Sprint ai-empathy-diary/10 킥오프 | 2026-06-27 | 모바일 카드형 전환 + 외부 클릭 해제 + 감정 수정 UI |
 
 ### ai-musician
 
