@@ -70,7 +70,9 @@ function buildRow(entry, rowNumber) {
 
   var emotionCell = isLoading
     ? '<span class="skeleton-bar badge"></span>'
-    : (entry.emotion ? buildEmotionBadge(entry.emotion) : '');
+    : (entry.emotion
+      ? buildEmotionBadge(entry.emotion) + '<button class="emotion-edit-btn" data-action="edit-emotion" aria-label="감정 수정" title="감정 수정">✎</button>'
+      : '');
   var empathyCell = isLoading
     ? '<span class="skeleton-bar line"></span>'
     : escapeHtml(entry.empathy || '');
