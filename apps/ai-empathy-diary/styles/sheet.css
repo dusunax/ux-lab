@@ -534,15 +534,16 @@
     border-right: 1px solid var(--cell-border);
   }
 
-  /* col-c: 감정 배지 + 수정 버튼 수직 배치 */
+  /* col-c: 감정 배지 + 피드백 버튼 수직 배치 */
   .cell.col-c {
     width: 72px;
     flex-shrink: 0;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 6px;
     overflow: visible;
+    padding: 6px 4px;
   }
 
   /* 날짜 태그 표시 */
@@ -558,15 +559,14 @@
   /* 삭제 버튼: col-e 숨김으로 자동 제거 */
   .delete-btn { display: none; }
 
-  /* 피드백 버튼: col-b 안에 인라인 표시 */
+  /* 피드백 버튼: col-c 안에 감정 배지 아래 */
   .feedback-mobile {
     display: flex;
-    gap: 6px;
-    margin-top: 6px;
+    gap: 4px;
   }
   .feedback-mobile .feedback-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 15px;
+    width: 26px;
+    height: 26px;
+    padding: 5px;
   }
 }
