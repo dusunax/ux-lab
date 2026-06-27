@@ -458,6 +458,8 @@
 }
 
 /* ─── Feedback Buttons ───────────────────────── */
+.feedback-mobile { display: none; }
+
 .feedback-pair {
   display: flex;
   gap: 4px;
@@ -555,4 +557,16 @@
 
   /* 삭제 버튼: col-e 숨김으로 자동 제거 */
   .delete-btn { display: none; }
+
+  /* 피드백 버튼: col-b 안에 인라인 표시 */
+  .feedback-mobile {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .feedback-mobile .feedback-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+  }
 }

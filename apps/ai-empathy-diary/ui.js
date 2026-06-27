@@ -109,6 +109,7 @@ function buildRow(entry, rowNumber) {
     '<div class="cell col-b" role="cell">' +
       escapeHtml(entry.text) +
       '<span class="cell-date-tag">' + escapeHtml(entry.date) + '</span>' +
+      (feedbackHtml ? '<div class="feedback-mobile" aria-hidden="true">' + feedbackHtml + '</div>' : '') +
     '</div>' +
     '<div class="cell col-c" role="cell">' + emotionCell + '</div>' +
     '<div class="cell col-d" role="cell" title="' + escapeHtml(entry.empathy || '') + '">' + empathyCell + '</div>' +

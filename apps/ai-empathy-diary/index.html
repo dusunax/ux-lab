@@ -491,6 +491,10 @@ function handleEmotionEdit(row, id) {
   if (!cell || cell.querySelector('.emotion-select-edit')) return;
   const select = document.createElement('select');
   select.className = 'emotion-select-edit';
+  const reanalyzeOpt = document.createElement('option');
+  reanalyzeOpt.value = '__ai_reanalyze__';
+  reanalyzeOpt.textContent = '♻ AI 재분석';
+  select.appendChild(reanalyzeOpt);
   Object.keys(EMOTION_CONFIG).forEach(em => {
     const opt = document.createElement('option');
     opt.value = em; opt.textContent = em;
@@ -504,6 +508,26 @@ function handleEmotionEdit(row, id) {
   function commit() {
     if (done) return; done = true;
     const next = select.value;
+    if (next === '__ai_reanalyze__') {
+      cell.innerHTML = '<span class="skeleton-bar badge"></span>';
+      updateEntryInFirestore(id, { userEdited: false }).then(async () => {
+        try {
+          const result = await analyzeEmotion(entry.text);
+          entry.emotion = result.emotion;
+          entry.empathy = result.empathy;
+          entry.model = result.model;
+          entry.modelLabel = result.modelLabel || null;
+          delete entry.userEdited;
+          await updateEntryInFirestore(id, {
+            emotion: result.emotion, empathy: result.empathy,
+            model: result.model, modelLabel: result.modelLabel || null, userEdited: false,
+          });
+          logEvent('emotion_reanalyzed', { to: result.emotion });
+        } catch { showError('AI 재분석에 실패했어요. 다시 시도해주세요.'); }
+        invalidateSort(); rebuildEntryMap(); updateRowDOM(id);
+      }).catch(() => { updateRowDOM(id); showError('재분석 초기화에 실패했어요.'); });
+      return;
+    }
     if (next !== entry.emotion) {
       const prev = entry.emotion;
       entry.emotion = next;
