@@ -345,6 +345,49 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
+/* ─── Mobile Layout (≤767px) ─────────────────── */
+@media (max-width: 767px) {
+  .excel-window {
+    width: 100%;
+    height: 100vh;
+    border: none;
+    box-shadow: none;
+  }
+  .menu-bar,
+  .ribbon-tabs,
+  .toolbar,
+  .title-bar-text,
+  .window-controls { display: none; }
+
+  .formula-bar {
+    height: 52px;
+    flex-wrap: nowrap;
+    position: relative;
+  }
+  .name-box { display: none; }
+  .formula-icons { border-right: none; order: 2; }
+  .fi-btn.cancel { display: none; }
+  .fi-btn.confirm {
+    width: 52px;
+    height: 52px;
+    font-size: 0;
+    order: 2;
+    background: var(--ribbon-bg);
+    color: #fff;
+    border-radius: 0;
+    font-family: var(--font-ui);
+    font-weight: 700;
+  }
+  .fi-btn.confirm::after {
+    content: '전송';
+    font-size: 12px;
+  }
+  .fi-fx { display: none; }
+  .formula-input-wrap { order: 1; flex: 1; }
+
+  .sheet-tabs { height: 40px; }
+}
+
 /* ─── User Info (title bar) ──────────────────── */
 .user-info {
   display: flex;
