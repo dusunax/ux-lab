@@ -517,39 +517,66 @@
   cursor: pointer;
 }
 
-/* ─── Mobile Card Layout (≤767px) ────────────── */
-@media (max-width: 767px) {
-  .col-headers, .subheader-row { display: none; }
+/* ─── Date Tag (모바일에서만 표시) ────────────── */
+.cell-date-tag { display: none; }
 
-  .data-row {
+/* ─── Mobile Chat Layout (≤767px) ────────────── */
+@media (max-width: 767px) {
+  /* 컬럼 헤더: 유지하되 col-a/d/e 숨김 */
+  .ch-corner { width: 30px; }
+  .ch-cell.col-a, .ch-cell.col-d, .ch-cell.col-e { display: none; }
+  .ch-cell.col-b { flex: 1; }
+  .ch-cell.col-c { width: 72px; }
+
+  .subheader-row { display: none; }
+
+  /* 행: 수평 구조 유지 */
+  .data-row { min-height: unset; }
+  .row-num { width: 30px; font-size: 10px; }
+
+  /* 숨길 컬럼 */
+  .cell.col-a, .cell.col-d, .cell.col-e { display: none; }
+
+  /* col-b: 채팅 버블처럼 */
+  .cell.col-b {
+    flex: 1;
     flex-direction: column;
-    align-items: stretch;
-    min-height: unset;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--cell-border);
-    gap: 4px;
-  }
-  .row-num { display: none; }
-  .cell {
-    width: 100% !important;
-    border-right: none;
-    padding: 0;
-    min-height: unset;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: unset;
-  }
-  .cell.col-a { font-size: 11px; color: #999; }
-  .cell.col-b { font-size: 14px; padding-top: 2px; padding-bottom: 2px; align-items: flex-start; }
-  .cell.col-c { justify-content: flex-start; }
-  .cell.col-d { font-size: 13px; padding-top: 2px; padding-bottom: 2px; align-items: flex-start; }
-  .cell.col-e {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    align-items: flex-start;
     min-height: 44px;
+    padding: 7px 10px;
+    font-size: 13px;
+    white-space: normal;
+    word-break: break-word;
+    text-overflow: unset;
+    line-height: 1.55;
+    overflow: visible;
+    border-right: 1px solid var(--cell-border);
   }
-  .delete-btn { opacity: 1; min-height: 44px; padding: 0 8px; }
-  .feedback-pair { opacity: 1; }
-  .emotion-edit-btn { opacity: 1; }
+
+  /* col-c: 감정 배지 + 수정 버튼 수직 배치 */
+  .cell.col-c {
+    width: 72px;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    overflow: visible;
+  }
+
+  /* 날짜 태그 표시 */
+  .cell-date-tag {
+    display: block;
+    font-size: 10px;
+    color: #aaa;
+    font-family: var(--font-chrome);
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  /* 감정 수정 버튼: 모바일에서 항상 표시 */
+  .emotion-edit-btn { opacity: 1; margin-left: 0; font-size: 10px; }
+
+  /* 삭제 버튼: 공간 없으므로 숨김 */
+  .delete-btn { display: none; }
 }

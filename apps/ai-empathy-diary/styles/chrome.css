@@ -370,8 +370,17 @@
   .fi-btn.confirm {
     width: 52px;
     height: 52px;
-    font-size: 20px;
+    font-size: 0;
     order: 2;
+    background: var(--ribbon-bg);
+    color: #fff;
+    border-radius: 0;
+    font-family: var(--font-ui);
+    font-weight: 700;
+  }
+  .fi-btn.confirm::after {
+    content: '전송';
+    font-size: 12px;
   }
   .fi-fx { display: none; }
   .formula-input-wrap { order: 1; flex: 1; }
