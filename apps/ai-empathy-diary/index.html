@@ -488,7 +488,7 @@ function handleEmotionEdit(row, id) {
   const entry = entryMap.get(id);
   if (!entry || entry._loading || !entry.emotion) return;
   const cell = row.querySelector('.col-c');
-  if (!cell) return;
+  if (!cell || cell.querySelector('.emotion-select-edit')) return;
   const select = document.createElement('select');
   select.className = 'emotion-select-edit';
   Object.keys(EMOTION_CONFIG).forEach(em => {
@@ -608,7 +608,7 @@ function bindRowDelegation() {
     if (e.target.closest('[data-action="delete"]')) { handleDeleteRow(row.dataset.id); return; }
     const feedbackBtn = e.target.closest('[data-action="feedback"]');
     if (feedbackBtn) { handleFeedback(row.dataset.id, feedbackBtn.dataset.value); return; }
-    if (e.target.closest('[data-action="edit-emotion"]')) { handleEmotionEdit(row, row.dataset.id); return; }
+    if (e.target.closest('.col-c')) { handleEmotionEdit(row, row.dataset.id); return; }
     handleRowClick({ currentTarget: row, target: e.target });
   });
   container.addEventListener('keydown', e => {
