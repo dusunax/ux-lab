@@ -1,0 +1,24 @@
+{
+  "argumentsVariable": null,
+  "description": "커밋 전 코드 품질 및 보안 검토. 변경된 파일 분석.",
+  "detectedToolMentions": [],
+  "flags": [],
+  "id": "code-review",
+  "instructions": "# Code Review\n\nReview uncommitted changes for quality and security.\n\n## Steps\n\n1. Run `git diff --name-only HEAD` to get changed files\n2. Read each changed file\n3. Check against criteria below\n4. Report findings by severity\n\n## Security (CRITICAL)\n\n- Hardcoded credentials, API keys\n- SQL injection (string concatenation in queries)\n- XSS (unescaped user input in HTML)\n- Missing input validation\n- Exposed sensitive data in errors\n\n## Quality (HIGH)\n\n- Functions > 50 lines\n- Files > 800 lines\n- Nesting > 4 levels deep\n- Missing error handling\n- console.log statements\n- Mutation instead of immutability\n\n## Report Format\n\n```\n[CRITICAL] Issue title\nFile: path/to/file.ts:42\nProblem: Description\nFix: How to resolve\n```\n\n## Decision\n\n- ✅ Approve: No CRITICAL/HIGH issues\n- ❌ Block: CRITICAL or HIGH issues found\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/code-review"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/code-review.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

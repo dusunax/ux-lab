@@ -1,0 +1,32 @@
+{
+  "argumentsVariable": "$ARGUMENTS",
+  "description": [
+    "스프린트 현재 상태를 docs(PPT·MD)·git·PR에 한 번에 동기화한다. QA 완료",
+    "결정 확정 등 중간 업데이트 시 사용."
+  ],
+  "detectedToolMentions": [],
+  "flags": [
+    "--dry-run",
+    "--message",
+    "--pr",
+    "--sprint"
+  ],
+  "id": "sprint/sync",
+  "instructions": "# /sprint:sync 하네스\n\n**인수:** $ARGUMENTS\n\n---\n\n## Step 0 — 인수 파싱\n\n| 패턴 | 동작 |\n|------|------|\n| (없음) | 현재 브랜치에서 N 자동 추론, 미확정 변경 모두 커밋 |\n| `--sprint N` | 지정 N 사용 |\n| `--pr NUMBER` | PR 번호 직접 지정 (자동 탐지 생략) |\n| `--message \"msg\"` | 커밋 메시지 오버라이드 |\n| `--dry-run` | 커밋·push·PR 업데이트 없이 실행 계획만 출력 |\n\n---\n\n## Step 1 — 스프린트 N 탐지\n\n```bash\ngit branch --show-current\n```\n\n브랜치가 `sprint/N` 패턴이면 N 추출.\n아니면 `docs/meetings/`에서 가장 최신 `*-sprint-N-kickoff.md`로 N 추론.\n\nN 확정 실패 시:\n\n```\n⛔ 스프린트 번호를 확인할 수 없습니다.\n   --sprint N 인수를 사용하거나 sprint/N 브랜치에서 재실행하세요.\n```\n\n**커맨드를 종료한다.**\n\n---\n\n## Step 2 — 변경 파일 수집\n\n```bash\ngit status --short\n```\n\n커밋 대상: `docs/` 하위 변경 파일 (PPT HTML, MD, 스크린샷 등).\n`apps/`, `api/`, `src/` 등 **코드 파일이 섞여 있으면 커밋에서 제외**하고 사용자에게 알린다.\n\n변경 파일이 없으면 커밋 단계를 건너뛰고 push·PR 동기화만 수행한다.\n\n---\n\n## Step 3 — 킥오프 파일 읽기\n\n```bash\nls docs/meetings/ | sort | grep -E \"sprint-N\" | tail -1\n```\n\n추출 항목:\n- 완료 항목 (`[x]`), 미완료 항목 (`[ ]`)\n- 주요 결정 사항 테이블\n\n완료율 = `완료 수 / 전체 수 × 100` (소수점 버림)\n\n킥오프 파일이 없으면 git log로 대체하고 \"킥오프 파일 미발견 — git log 기반 추정\"을 명시한다.\n\n---\n\n## Step 4 — 커밋 (변경 있을 때만)\n\n기본 커밋 메시지:\n\n```\ndocs(sprint/N): 스프린트 문서 동기화 — PPT·QA·결정 사항 반영\n```\n\n`--message`가 있으면 해당 메시지 사용.\n\n```bash\ngit add docs/\ngit commit -m \"<메시지>\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\"\n```\n\n`--dry-run`이면 커밋하지 않고 메시지·대상 파일만 출력한다.\n\n---\n\n## Step 5 — Push\n\n```bash\ngit push origin sprint/N\n# 원격 브랜치가 없으면:\ngit push -u origin sprint/N\n```\n\n`--dry-run`이면 `git push --dry-run origin sprint/N` 으로 대체한다.\n\n---\n\n## Step 6 — PR 탐지 및 본문 동기화\n\n### 6-1. PR 탐지\n\n`--pr NUMBER`가 있으면 사용.\n없으면:\n\n```bash\ngh pr list --head sprint/N --json number,title,url,state\n```\n\nPR이 없으면:\n\n```\n⚠️ sprint/N PR이 존재하지 않습니다. /sprint:review 를 먼저 실행해 PR을 생성하세요.\n```\n\nStep 7로 이동한다.\n\n### 6-2. PR 본문 재구성\n\nStep 3 데이터로 PR 본문을 재구성한다.\n\n```markdown\n## Sprint N — {목표 한 줄}\n\n> **{목표 전문}**\n\n**완료율:** {완료}/{전체}개 ({완료율}%)\n\n---\n\n### 📋 주요 결정 사항\n\n{결정 사항 테이블 — 없으면 섹션 생략}\n\n### 📊 보고서\n\n{docs/presentations/sprint-N-report-*.html 경로 — 없으면 \"보고서 미생성\"}\n\n---\n\n### ✅ 완료 항목\n\n<details>\n<summary>완료율: {완료}/{전체}개 ({완료율}%)</summary>\n\n{[x] 항목 목록, 담당자 그룹 유지}\n\n</details>\n\n### ⏭️ 이월 항목\n\n{[ ] 항목 목록 — 없으면 \"이월 항목 없음 🎉\"}\n\n---\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n```\n\n### 6-3. PR 업데이트\n\n> ⚠️ `gh pr edit` 는 Projects classic 경고로 exit code 1을 반환한다. 항상 **GitHub REST API**를 사용한다.\n\n```bash\nOWNER_REPO=$(git remote get-url origin | sed 's/.*github.com[:/]//' | sed 's/\\.git$//')\n\ngh api \\\n  --method PATCH \\\n  -H \"Accept: application/vnd.github+json\" \\\n  /repos/$OWNER_REPO/pulls/$PR_NUMBER \\\n  --field body=\"$NEW_BODY\" \\\n  --jq '.number,.title,.state'\n```\n\n`--dry-run`이면 API 호출 대신 재구성된 본문을 stdout에 출력한다.\n\n---\n\n## Step 7 — 완료 보고\n\n```\n🔄 Sprint N 동기화 완료\n\n커밋:     {해시} — {메시지}  (변경 없으면 \"커밋 없음\")\nPush:     origin/sprint/N\nPR:       #{NUMBER} 본문 갱신 — 완료율 {완료율}%\n보고서:   {HTML 경로 또는 \"미생성\"}\n\n이월:     {이월 항목 수}건\n```\n\n---\n\n## 주의사항\n\n- `apps/`, `api/` 등 코드 파일을 docs 커밋에 포함하지 않는다.\n- `gh pr edit` 대신 `gh api PATCH` 를 항상 사용한다.\n- `--dry-run`에서는 파일시스템·git·GitHub 어느 것도 변경하지 않는다.\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/sprint:sync"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/sprint/sync.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

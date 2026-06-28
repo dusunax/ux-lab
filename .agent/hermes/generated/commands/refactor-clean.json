@@ -1,0 +1,27 @@
+{
+  "argumentsVariable": null,
+  "description": [
+    "미사용 코드 탐지 및 안전하게 제거. knip",
+    "depcheck 사용."
+  ],
+  "detectedToolMentions": [],
+  "flags": [],
+  "id": "refactor-clean",
+  "instructions": "# Refactor Clean\n\nSafely identify and remove dead code.\n\n## Steps\n\n1. **Find dead code**\n   ```bash\n   # Unused exports/files\n   npx knip\n\n   # Unused dependencies\n   npx depcheck\n\n   # Unused TypeScript exports\n   npx ts-prune\n   ```\n\n2. **Categorize by risk**\n   - SAFE: Unused utilities, test helpers, old components\n   - CAUTION: API routes, shared components\n   - DANGER: Config files, entry points, providers\n\n3. **Before each deletion**\n   - Run tests (if available in workspace): `pnpm --filter <workspace> test`\n   - Run build: `pnpm run build:all` or specific workspace build\n   - Verify no errors\n   - Delete only if safe\n\n4. **Report findings**\n   ```\n   [SAFE] Unused export: formatDate in utils/date.ts\n   [CAUTION] Unused component: OldButton.tsx (check imports)\n   [DANGER] Skip: next.config.js (config file)\n   ```\n\n## Rules\n\n- Never delete without verifying build passes\n- Skip config files and entry points\n- Check git history for recent usage\n- When in doubt, ask user first\n\n## Output\n\nSummary of:\n- Files analyzed\n- Dead code found\n- Items safely removed\n- Items skipped (with reason)\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/refactor-clean"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/refactor-clean.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

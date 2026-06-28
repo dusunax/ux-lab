@@ -128,8 +128,6 @@
 
 /* Delete button */
 .delete-btn {
-  opacity: 0;
-  transition: opacity 0.15s;
   background: none;
   border: none;
   cursor: pointer;
@@ -140,7 +138,6 @@
   border-radius: 2px;
 }
 .delete-btn:hover { color: #c0392b; background: #fff0f0; }
-.data-row:hover .delete-btn { opacity: 1; }
 .data-row:hover .row-num {
   background: #e8e8e8;
 }
@@ -461,15 +458,13 @@
 }
 
 /* ─── Feedback Buttons ───────────────────────── */
+.feedback-mobile { display: none; }
+
 .feedback-pair {
   display: flex;
   gap: 4px;
   align-items: center;
-  opacity: 0;
-  transition: opacity 0.15s;
 }
-.data-row:hover .feedback-pair { opacity: 1; }
-.data-row .feedback-pair.has-feedback { opacity: 1; }
 
 .feedback-btn {
   background: none;
@@ -486,3 +481,92 @@
 .feedback-btn.selected-neg { color: #c0392b; background: #fff0f0; }
 .feedback-btn.dim { color: #ddd; }
 .feedback-btn.dim:hover { color: #999; background: #f5f5f5; }
+
+/* ─── Emotion Edit (배지 클릭) ───────────────── */
+.cell.col-c:has(.emotion-badge) { cursor: pointer; }
+.cell.col-c:has(.emotion-badge):hover .emotion-badge { opacity: 0.75; }
+.emotion-select-edit {
+  max-width: 88px;
+  border: 1px solid var(--cell-selected-border);
+  border-radius: 2px;
+  font-size: 11px;
+  font-family: var(--font-ui);
+  padding: 2px 4px;
+  background: #fff;
+  color: var(--chrome-text);
+  outline: 2px solid var(--cell-selected-border);
+  cursor: pointer;
+}
+
+/* ─── Date Tag (모바일에서만 표시) ────────────── */
+.cell-date-tag { display: none; }
+
+/* ─── Mobile Chat Layout (≤767px) ────────────── */
+@media (max-width: 767px) {
+  /* 컬럼 헤더: 유지하되 col-a/d/e 숨김 */
+  .ch-corner { width: 30px; }
+  .ch-cell.col-a, .ch-cell.col-d, .ch-cell.col-e { display: none; }
+  .ch-cell.col-b { flex: 1; }
+  .ch-cell.col-c { width: 72px; }
+
+  .subheader-row { display: none; }
+
+  /* 행: 수평 구조 유지 */
+  .data-row { min-height: unset; }
+  .row-num { width: 30px; font-size: 10px; }
+
+  /* 숨길 컬럼 */
+  .cell.col-a, .cell.col-d, .cell.col-e { display: none; }
+
+  /* col-b: 채팅 버블처럼 */
+  .cell.col-b {
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 44px;
+    padding: 7px 10px;
+    font-size: 13px;
+    white-space: normal;
+    word-break: break-word;
+    text-overflow: unset;
+    line-height: 1.55;
+    overflow: visible;
+    border-right: 1px solid var(--cell-border);
+  }
+
+  /* col-c: 감정 배지 + 피드백 버튼 수직 배치 */
+  .cell.col-c {
+    width: 72px;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    overflow: visible;
+    padding: 6px 4px;
+  }
+
+  /* 날짜 태그 표시 */
+  .cell-date-tag {
+    display: block;
+    font-size: 10px;
+    color: #aaa;
+    font-family: var(--font-chrome);
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  /* 삭제 버튼: col-e 숨김으로 자동 제거 */
+  .delete-btn { display: none; }
+
+  /* 피드백 버튼: col-c 안에 감정 배지 아래 */
+  .feedback-mobile {
+    display: flex;
+    gap: 4px;
+  }
+  .feedback-mobile .feedback-btn {
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+  }
+}

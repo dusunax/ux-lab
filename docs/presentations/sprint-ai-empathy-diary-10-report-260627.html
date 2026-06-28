@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint ai-empathy-diary / 10 보고 — 수산시장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* Metric cards */
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+      margin-top: 22px;
+    }
+    .metric-card {
+      background: #f8fdf9;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 18px 12px;
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      font-size: 12px;
+      color: #555;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* Col section head */
+    .col-section-head {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: #217346;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #d1fae5;
+    }
+
+    /* Scope tags */
+    .scope-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      background: #dcfce7;
+      color: #166534;
+      margin-right: 5px;
+      vertical-align: middle;
+      letter-spacing: .04em;
+    }
+    .scope-tag--be {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* Defer cards */
+    .defer-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 22px 18px;
+      font-size: 15px;
+      color: #166534;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .defer-card--gray {
+      background: #f9fafb;
+      border-color: #e5e7eb;
+      color: #6b7280;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · ai-empathy-diary</div>
+        <h1 class="cover-title" style="font-size: 42px;">Sprint ai-empathy-diary / 10</h1>
+        <p class="cover-sub">모바일 접근성 확보 및 핵심 인터랙션 완성</p>
+        <p class="cover-meta">2026-06-27 완료 · 액션 6/6 · AC 8/8</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 목표 + 완료 지표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title" style="margin-bottom: 18px;">Sprint 10 목표 &amp; 완료 지표</h2>
+      <blockquote class="goal-quote">
+        <strong>모바일 접근성 확보 및 핵심 인터랙션 완성</strong>으로<br>
+        ai-empathy-diary의 <strong>일기 작성 경험을 실 사용 수준으로 끌어올린다.</strong>
+      </blockquote>
+      <div class="metric-row">
+        <div class="metric-card">
+          <div class="metric-value">6 / 6</div>
+          <div class="metric-label">액션 아이템</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">8 / 8</div>
+          <div class="metric-label">수용 기준 (AC)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">100%</div>
+          <div class="metric-label">완료율</div>
+        </div>
+        <div class="metric-card" style="border-color: #e5e7eb; background: #f9fafb;">
+          <div class="metric-value" style="color: #9ca3af;">0</div>
+          <div class="metric-label">이월 항목</div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 주요 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title" style="margin-bottom: 20px;">주요 결정 사항</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 72px;">#</th>
+            <th>결정 내용</th>
+            <th style="width: 72px;">분류</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>OQ-1</strong></td>
+            <td>
+              <strong>모바일 레이아웃: 카드형 → 카카오 엑셀 테마 horizontal grid</strong><br>
+              <span style="font-size: 13px; color: #888;">행 번호 + col-b/c 유지, <code>min-width</code> 제거, <code>mobile-overlay</code> 제거, 767px 대응</span>
+            </td>
+            <td><span class="badge badge-yellow">UX</span></td>
+          </tr>
+          <tr>
+            <td><strong>OQ-2</strong></td>
+            <td>
+              <strong>감정 수정: AI 레이블 풀 드롭다운 재사용, ✎ 버튼 제거</strong><br>
+              <span style="font-size: 13px; color: #888;">감정 배지 직접 클릭으로 수정 트리거 — 인터랙션 단순화, 재사용성 확보</span>
+            </td>
+            <td><span class="badge badge-green">FE</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Sprint 10 구현 완료 — 6/6 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현</div>
+      <h2 class="slide-title" style="margin-bottom: 16px;">
+        Sprint 10 구현 완료
+        <span style="font-size: 14px; color: #217346; font-weight: 600; margin-left: 8px;">6 / 6</span>
+      </h2>
+      <div class="two-col" style="gap: 32px;">
+        <div>
+          <p class="col-section-head"><span class="scope-tag">FE</span> 프론트엔드 — 5항목</p>
+          <ul class="check-list">
+            <li class="done">행 외부 클릭 시 선택 해제 (<code>bindDeselect</code>) + 행 내부 클릭 버블링 차단 (<code>stopPropagation</code>)</li>
+            <li class="done"><code>min-width: 900px</code> 제거, <code>mobile-overlay</code> 제거, 767px 반응형 (카카오 엑셀 테마 horizontal grid)</li>
+            <li class="done">감정 배지 직접 클릭 → 인라인 드롭다운 수정 (<code>handleEmotionEdit</code>), ✎ 버튼 제거</li>
+            <li class="done">감정 수정 드롭다운 — AI 레이블 풀 재사용, <code>userEdited: true</code> 플래그로 AI 재분석 제외</li>
+            <li class="done"><code>emotion_label_edited</code> GA4 이벤트 전송 (<code>{ from, to }</code> 파라미터, 텍스트 원문 제외)</li>
+          </ul>
+        </div>
+        <div>
+          <p class="col-section-head"><span class="scope-tag scope-tag--be">BE</span> 백엔드 — 1항목</p>
+          <ul class="check-list">
+            <li class="done">감정 수정 시 Firestore <code>entries/{id}.emotion</code> + <code>userEdited</code> 필드 즉시 업데이트</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 화면 캡처 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">캡처</div>
+      <h2 class="slide-title" style="margin-bottom: 12px;">화면 캡처</h2>
+      <div style="display: flex; gap: 20px; align-items: flex-start; width: 100%;">
+        <div style="display: flex; flex-direction: column; gap: 6px; flex-shrink: 1; min-width: 0;">
+          <p class="col-section-head" style="margin-bottom: 0;">데스크탑 — 일기 목록 (실 데이터)</p>
+          <img
+            src="./sprint-ai-empathy-diary-10/shot-desktop.png"
+            alt="데스크탑: 엑셀 테마 일기 목록, 감정 배지 클릭 수정, 삭제·피드백 버튼 항상 표시"
+            style="max-height: 400px; width: auto; max-width: 100%; border: 1px solid #e5e7eb; border-radius: 6px; display: block;"
+          />
+          <p style="font-size: 11px; color: #9ca3af; line-height: 1.4; margin: 0;">
+            감정 배지 직접 클릭 수정 · ✕ 삭제 · ☆ 피드백 항상 표시
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;">
+          <p class="col-section-head" style="margin-bottom: 0;">모바일 390px — KakaoTalk 엑셀 테마</p>
+          <img
+            src="./sprint-ai-empathy-diary-10/shot-mobile.png"
+            alt="모바일: 390px KakaoTalk 스타일 horizontal grid, 행 번호 + col-b/c"
+            style="max-height: 400px; width: auto; border: 1px solid #e5e7eb; border-radius: 6px; display: block;"
+          />
+          <p style="font-size: 11px; color: #9ca3af; line-height: 1.4; margin: 0;">
+            행 번호 + col-b/c 유지 · 날짜 인라인 · 전송 버튼 초록
+          </p>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: UX 개선 — 스코프 외 추가 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">UX</div>
+      <h2 class="slide-title" style="margin-bottom: 16px;">UX 개선 — 스코프 외 추가</h2>
+      <ul class="bullet-list" style="margin-bottom: 20px;">
+        <li>삭제(✕) 버튼 <strong>항상 표시</strong> — hover 기반 UX 탈피, 모바일 탭 접근성 확보</li>
+        <li>피드백(👍👎) 버튼 <strong>항상 표시</strong> — 미선택 상태에서도 노출, 피드백 수집 유도 향상</li>
+        <li>모바일 전송 버튼 <strong>초록 배경 + "전송" 텍스트</strong> — KakaoTalk 스타일 일관성</li>
+      </ul>
+      <div class="callout">
+        스코프 정의 시점에서 포착하지 못한 모바일 UX 갭을 구현 과정에서 발견하여 즉시 반영.
+        핵심 일기 작성 흐름의 <strong>완성도를 높이는 방향</strong>으로 기준 외 개선 3건을 추가 완료.
+        모든 항목이 기존 컴포넌트 범위 내에서 처리되어 별도 리뷰 없이 병합.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: 이월 없음 + Sprint 11 방향 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">다음 단계</div>
+      <h2 class="slide-title" style="margin-bottom: 16px;">이월 없음 + Sprint 11 방향</h2>
+      <div class="two-col" style="gap: 40px;">
+        <div>
+          <p class="col-section-head">이월 항목</p>
+          <div class="defer-card">
+            Sprint 10 100% 완료
+            <span style="display: block; font-size: 13px; font-weight: 400; color: #217346; margin-top: 6px;">이월 항목 없음</span>
+          </div>
+        </div>
+        <div>
+          <p class="col-section-head">Sprint 11 후보 방향</p>
+          <ul class="bullet-list">
+            <li><strong>모바일 푸시 알림</strong> — Web Push / FCM (모바일 UI 안정화 완료로 검토 가능)</li>
+            <li><strong>전체 익별 집계</strong> — Cloud Function (DAU 증가 후 BE 설계 필요)</li>
+            <li><strong>FEEDBACK_MIN_SAMPLE 복원</strong> — DAU 50+ 또는 2주치 피드백 충족 시</li>
+            <li><strong>동의 배너 (GDPR/non-KR)</strong> — 트리거 조건 재검토 필요</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수산시장</span>
+        <span>ai-empathy-diary · Sprint 10</span>
+        <span>2026-06-27</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div><!-- .deck -->
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+{
+  "data": {
+    "_comment": "SSOT: 이 파일이 단일 진실 공급원. scope-enforcer.py 훅이 읽고, gen-scope-doc.py 훅이 agent-scope.md를 자동 재생성한다. agent-scope.md를 직접 수정하지 말 것.",
+    "boundary": {
+      "apps/**/app/api/**/route.ts": "BE",
+      "apps/**/app/layout.tsx": "FE",
+      "apps/**/app/page.tsx": "FE",
+      "apps/**/pages/api/**": "BE",
+      "apps/ai-empathy-diary/api/*.js": "BE",
+      "apps/ai-empathy-diary/index.html": "FE"
+    },
+    "boundary_meta": {
+      "apps/**/app/api/**/route.ts": "Next.js App Router API Route는 서버사이드 코드",
+      "apps/**/app/layout.tsx": "렌더링 책임",
+      "apps/**/app/page.tsx": "렌더링 책임",
+      "apps/**/pages/api/**": "Pages Router API Route도 서버사이드 코드",
+      "apps/ai-empathy-diary/api/*.js": "Vercel serverless function",
+      "apps/ai-empathy-diary/index.html": "싱글 HTML 구조의 UI 레이어"
+    },
+    "roles": {
+      "AI": {
+        "agent": "Sage",
+        "allow": [
+          "apps/openrouter-proxy/**"
+        ],
+        "deny": [
+          ".agent/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "description": "LLM 통합, 프롬프트, AI 파이프라인",
+        "layer": "AI"
+      },
+      "BE": {
+        "agent": "Blake",
+        "allow": [
+          "apps/**/api/**",
+          "apps/**/app/api/**",
+          "apps/**/lib/**",
+          "apps/puppeteer-api/**"
+        ],
+        "deny": [
+          "apps/**/components/**",
+          "apps/**/styles/**",
+          ".agent/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "description": "서버 로직, DB, 외부 서비스 연동",
+        "layer": "API"
+      },
+      "FE": {
+        "agent": "Avery",
+        "allow": [
+          "apps/**/components/**",
+          "apps/**/styles/**",
+          "apps/**/public/**",
+          "apps/**/app/**",
+          "apps/**/src/**",
+          "apps/**/pages/**"
+        ],
+        "deny": [
+          "apps/**/api/**",
+          "apps/**/app/api/**",
+          "apps/**/lib/**",
+          ".agent/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "description": "렌더링, 컴포넌트, 스타일",
+        "layer": "UI"
+      },
+      "OC": {
+        "agent": "Sam",
+        "allow": [
+          ".agent/subagents/**",
+          ".agent/commands/**",
+          ".agent/rules/**",
+          ".agent/scripts/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "deny": [
+          "apps/**",
+          "docs/**"
+        ],
+        "description": "에이전트 정의, 라우팅 규칙, 소유권 정책",
+        "layer": "에이전트 메타"
+      },
+      "PERF": {
+        "agent": "Chase",
+        "allow": [
+          "*.config.js",
+          "*.config.ts",
+          "vercel.json",
+          "vercel.ts",
+          "package.json",
+          "pnpm-lock.yaml",
+          ".npmrc",
+          ".env*",
+          "Dockerfile",
+          "**/Dockerfile",
+          "**/package.json",
+          "**/*.config.js",
+          "**/*.config.ts"
+        ],
+        "deny": [
+          ".agent/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "description": "성능 최적화, 번들 분석, 빌드 설정 (Core Web Vitals · 렌더링 병목 전담)",
+        "layer": "성능"
+      },
+      "PM": {
+        "agent": "Jordan",
+        "allow": [
+          "docs/**",
+          ".agent/agent-memory/**"
+        ],
+        "deny": [
+          "apps/**",
+          ".agent/subagents/**",
+          ".agent/commands/**",
+          ".agent/rules/**",
+          ".agent/scripts/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "description": "스프린트 기록, 의사결정 문서",
+        "layer": "문서"
+      },
+      "QA": {
+        "agent": "Morgan, Quinn",
+        "allow": [],
+        "deny": [],
+        "description": "검증, 피드백 — 파일 수정 없음",
+        "layer": "읽기 전용",
+        "readonly": true
+      },
+      "TS": {
+        "agent": "Alex",
+        "allow": [
+          "docs/meetings/**",
+          "docs/**"
+        ],
+        "deny": [
+          "apps/**",
+          ".agent/subagents/**",
+          ".agent/commands/**",
+          ".agent/rules/**",
+          ".claude/**",
+          ".cursor/**"
+        ],
+        "description": "회의록, 스프린트 기록",
+        "layer": "문서"
+      },
+      "UX": {
+        "agent": "Riley",
+        "allow": [],
+        "deny": [],
+        "description": "검증, 피드백 — 파일 수정 없음",
+        "layer": "읽기 전용",
+        "readonly": true
+      }
+    }
+  },
+  "id": "agent-scope",
+  "kind": "scope",
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "source": {
+    "path": ".agent/rules/agent-scope.json"
+  }
+}

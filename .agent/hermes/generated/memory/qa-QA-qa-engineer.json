@@ -1,0 +1,12 @@
+{
+  "entries": [],
+  "id": "qa-QA-qa-engineer",
+  "index": {
+    "path": ".agent/agent-memory/qa-QA-qa-engineer/MEMORY.md"
+  },
+  "kind": "memoryStore",
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "source": {
+    "path": ".agent/agent-memory/qa-QA-qa-engineer"
+  }
+}

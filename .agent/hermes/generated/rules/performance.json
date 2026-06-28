@@ -1,0 +1,9 @@
+{
+  "id": "performance",
+  "instructions": "# Performance Rules\n\n## React/Next.js\n\n### Avoid Unnecessary Re-renders\n\n```typescript\nimport { memo, useCallback, useMemo } from 'react'\n\n// Use memo for expensive components\nconst ExpensiveList = memo(function ExpensiveList({ items }) {\n  return items.map(item => <Item key={item.id} {...item} />)\n})\n\n// Use useCallback for handlers passed to children\nconst handleClick = useCallback(() => {\n  doSomething(id)\n}, [id])\n\n// Use useMemo for expensive calculations\nconst sorted = useMemo(() =>\n  items.sort((a, b) => a.name.localeCompare(b.name)),\n  [items]\n)\n```\n\n### Images\n\n- Use `next/image` for automatic optimization\n- Specify `width` and `height` to prevent layout shift\n- Use `priority` for above-the-fold images\n- Use appropriate formats (WebP, AVIF)\n\n### Data Fetching\n\n- Fetch at the page level, not component level\n- Use React Server Components when possible\n- Implement proper caching strategies\n- Avoid waterfalls (parallel fetches)\n\n## Algorithm Complexity\n\n- Prefer O(n) or O(n log n) over O(n²)\n- Use Map/Set for lookups instead of array.find()\n- Paginate large lists (don't render 1000+ items)\n\n## Bundle Size\n\n- Dynamic import for heavy components\n- Analyze with `next build --analyze`\n- Tree-shake unused exports\n- Lazy load below-the-fold content\n\n```typescript\nimport dynamic from 'next/dynamic'\n\n// Dynamic import\nconst HeavyChart = dynamic(() => import('./Chart'), {\n  loading: () => <Skeleton />\n})\n```\n\n## Checklist\n\n- [ ] No unnecessary re-renders\n- [ ] Images optimized\n- [ ] Large lists virtualized or paginated\n- [ ] Heavy components lazy loaded\n- [ ] No O(n²) in hot paths\n",
+  "kind": "rule",
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "source": {
+    "path": ".agent/rules/performance.md"
+  }
+}

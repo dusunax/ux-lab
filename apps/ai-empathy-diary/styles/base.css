@@ -56,10 +56,9 @@ body {
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  min-width: 900px;
 }
-@media (max-width: 899px) {
-  body { min-width: unset; padding: 0; }
+@media (max-width: 767px) {
+  body { padding: 0; background: #f5f5f5; }
 }
 
 /* ─── Scrollbar ──────────────────────────────── */
