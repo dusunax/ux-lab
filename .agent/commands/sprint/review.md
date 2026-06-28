@@ -95,11 +95,14 @@ ls -t docs/presentations/sprint-N-report-*.html 2>/dev/null | head -1
 docs/presentations/{파일명} → https://dusunax.github.io/ux-lab/presentations/{파일명}
 ```
 
-`{{REPORT_LINK}}`에는 변환된 URL을 마크다운 링크 형식으로 채운다:
+`{{REPORT_LINK}}`에는 변환된 URL을 **반드시 마크다운 클릭 가능 링크** 형식으로 채운다:
 
 ```
 [📊 Sprint N 보고서](https://dusunax.github.io/ux-lab/presentations/sprint-N-report-yymmdd.html)
 ```
+
+> ⚠️ **금지**: 로컬 경로를 backtick(`` ` ``)으로 감싸거나 plain text로 출력하지 않는다.
+> PR 본문에서 클릭할 수 없는 경로는 의미가 없다.
 
 어느 방법으로도 경로를 찾지 못하면:
 
@@ -136,6 +139,15 @@ git ls-remote --heads origin sprint/N
 ## Step 5 — PR 본문 구성 및 생성 (GitHub MCP)
 
 `docs/workflow/pr-template.md`의 템플릿을 읽고, Step 1–3에서 수집한 데이터로 플레이스홀더를 채운다.
+
+> ⚠️ **이미지 URL 규칙**: PR 본문에 스크린샷을 삽입할 때는 **스프린트 브랜치 raw URL을 절대 사용하지 않는다**.
+> 스프린트 브랜치는 merge 후 삭제되므로 `raw/sprint/…/` URL은 반드시 404가 된다.
+> 이미지가 필요하면 반드시 `main` 브랜치 기준 URL을 사용한다:
+> ```
+> https://github.com/dusunax/ux-lab/raw/main/docs/presentations/{dir}/{file}.png
+> ```
+> 단, 해당 파일이 `main`에 merge된 이후에만 링크가 유효하다.
+> merge 전 PR 생성 시에는 이미지 섹션을 생략하고 보고서 링크로 대체한다.
 
 | 플레이스홀더 | 채울 값 |
 |-------------|---------|
