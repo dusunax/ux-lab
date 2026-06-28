@@ -84,33 +84,46 @@
       width: 100%;
       margin-top: 10px;
     }
+    .slide--screenshot .slide-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 24px 40px 16px;
+      box-sizing: border-box;
+    }
     .shot-card {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-width: 0;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
     }
     .shot-frame {
       border: 1px solid #e5e7eb;
       border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.13);
       background: #f8f5ef;
-      max-height: 280px;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      justify-content: center;
+      max-height: calc(100vh - 180px);
+      width: 100%;
     }
     .shot-frame img {
-      width: 100%;
-      max-height: 280px;
-      object-fit: cover;
-      object-position: top;
+      width: auto;
+      max-width: 100%;
+      max-height: calc(100vh - 180px);
+      object-fit: contain;
       display: block;
     }
     .shot-caption {
-      font-size: 12px;
+      font-size: 13px;
       color: #667085;
       line-height: 1.5;
+      text-align: center;
     }
     .shot-caption strong { color: #217346; font-weight: 700; }
     .scope-tag {
@@ -301,16 +314,15 @@
   </div>
 
   <!-- Slide 5: 앱 화면 — Quest Board -->
-  <div class="slide">
+  <div class="slide slide--screenshot">
     <div class="slide-inner">
-      <div class="slide-label">데모 1 / 4</div>
-      <h2 class="slide-title">Quest Board — 오늘의 의뢰</h2>
-      <div class="shot-card" style="margin-top:12px">
-        <div class="shot-frame" style="max-height:400px">
+      <div class="slide-label">데모 1 / 4 — Quest Board</div>
+      <div class="shot-card">
+        <div class="shot-frame">
           <img src="./sprint-bucket-exchange-1/shot-board.png" alt="Quest Board — 오늘의 의뢰 목록">
         </div>
-        <p class="shot-caption" style="margin-top:10px">
-          <strong>Quest Board</strong> — Firestore 실시간 데이터, 카테고리 탭 필터(ALL / TRAVEL / CHALLENGE / LEARN / BONDS),
+        <p class="shot-caption">
+          <strong>Quest Board</strong> — Firestore 실시간 데이터, 카테고리 탭 필터,
           <span class="stamp-badge">RECRUITING</span> 스탬프 배지
         </p>
       </div>
@@ -319,15 +331,14 @@
   </div>
 
   <!-- Slide 6: 앱 화면 — Dream Order 상세 -->
-  <div class="slide">
+  <div class="slide slide--screenshot">
     <div class="slide-inner">
-      <div class="slide-label">데모 2 / 4</div>
-      <h2 class="slide-title">Dream Order — 의뢰 상세</h2>
-      <div class="shot-card" style="margin-top:12px">
-        <div class="shot-frame" style="max-height:400px">
+      <div class="slide-label">데모 2 / 4 — Dream Order</div>
+      <div class="shot-card">
+        <div class="shot-frame">
           <img src="./sprint-bucket-exchange-1/shot-detail.png" alt="Dream Order 상세 — 종이 의뢰서 스타일">
         </div>
-        <p class="shot-caption" style="margin-top:10px">
+        <p class="shot-caption">
           <strong>Dream Order 상세</strong> — Paper #F8F5EF 배경, 점선 구분선,
           보상·난이도·지원자·마감일 메타 그리드, Apply CTA
         </p>
@@ -337,15 +348,14 @@
   </div>
 
   <!-- Slide 7: 앱 화면 — 의뢰 등록 -->
-  <div class="slide">
+  <div class="slide slide--screenshot">
     <div class="slide-inner">
-      <div class="slide-label">데모 3 / 4</div>
-      <h2 class="slide-title">Create Quest — 의뢰 등록</h2>
-      <div class="shot-card" style="margin-top:12px">
-        <div class="shot-frame" style="max-height:400px">
+      <div class="slide-label">데모 3 / 4 — Create Quest</div>
+      <div class="shot-card">
+        <div class="shot-frame">
           <img src="./sprint-bucket-exchange-1/shot-create.png" alt="Create Quest — 의뢰 등록 폼">
         </div>
-        <p class="shot-caption" style="margin-top:10px">
+        <p class="shot-caption">
           <strong>Create Quest</strong> — 제목·내용·카테고리·보상·마감일 입력,
           POST 시 Firestore 저장 후 Board 리다이렉트
         </p>
@@ -355,15 +365,14 @@
   </div>
 
   <!-- Slide 8: 앱 화면 — 지원서 -->
-  <div class="slide">
+  <div class="slide slide--screenshot">
     <div class="slide-inner">
-      <div class="slide-label">데모 4 / 4</div>
-      <h2 class="slide-title">Application Form — 지원서 작성</h2>
-      <div class="shot-card" style="margin-top:12px">
-        <div class="shot-frame" style="max-height:400px">
+      <div class="slide-label">데모 4 / 4 — Application Form</div>
+      <div class="shot-card">
+        <div class="shot-frame">
           <img src="./sprint-bucket-exchange-1/shot-apply.png" alt="Application Form — 지원서 작성">
         </div>
-        <p class="shot-caption" style="margin-top:10px">
+        <p class="shot-caption">
           <strong>Application Form</strong> — 닉네임·지원이유·수행계획·일정·희망보상,
           중복 지원 방지(409), 제출 완료 화면
         </p>
