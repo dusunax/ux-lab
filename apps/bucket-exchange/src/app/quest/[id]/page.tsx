@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getQuestById } from '@/data/quests';
+import { adminDb } from '@/lib/firebase-admin';
+import type { FirestoreQuest } from '@/types/quest';
 import StampBadge from '@/components/StampBadge';
 
 const DIFFICULTY_LABEL = { easy: '쉬움 ●○○', medium: '보통 ●●○', hard: '어려움 ●●●' };
@@ -11,13 +12,37 @@ const CATEGORY_LABEL = {
   bonds: '인연',
 };
 
+async function getQuest(id: string): Promise<FirestoreQuest | null> {
+  const doc = await adminDb.collection('quests').doc(id).get();
+  if (!doc.exists) return null;
+  const data = doc.data()!;
+  return {
+    id: doc.id,
+    title: data.title ?? '',
+    subtitle: data.subtitle ?? `Dream Order · 의뢰 #${doc.id.slice(-3)}`,
+    category: data.category ?? 'challenge',
+    status: data.status ?? 'recruiting',
+    reward: data.reward ?? 0,
+    difficulty: data.difficulty ?? 'medium',
+    applicantCount: data.applicantCount ?? 0,
+    maxApplicants: data.maxApplicants ?? 1,
+    deadline: data.deadline ?? '',
+    description: data.description ?? '',
+    questioner: data.questioner ?? '익명',
+    postedAt:
+      data.postedAt?.toDate?.()?.toISOString().split('T')[0] ??
+      new Date().toISOString().split('T')[0],
+    tags: data.tags ?? [],
+  };
+}
+
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export default async function QuestDetailPage({ params }: Props) {
   const { id } = await params;
-  const quest = getQuestById(id);
+  const quest = await getQuest(id);
   if (!quest) notFound();
 
   const spotsLeft = quest.maxApplicants - quest.applicantCount;
@@ -25,7 +50,6 @@ export default async function QuestDetailPage({ params }: Props) {
 
   return (
     <div>
-      {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-[10px] text-ink/40 font-mono">
         <Link href="/" className="hover:text-primary transition-colors">
           Quest Board
@@ -33,35 +57,27 @@ export default async function QuestDetailPage({ params }: Props) {
         <span>›</span>
         <span>{CATEGORY_LABEL[quest.category]}</span>
         <span>›</span>
-        <span className="text-ink/60">{quest.subtitle.split('·')[1]?.trim()}</span>
+        <span className="text-ink/60">{quest.subtitle?.split('·')[1]?.trim()}</span>
       </div>
 
-      {/* Dream Order Card */}
       <div
         className="relative bg-paper border border-ink/20 shadow-md"
         style={{ fontFamily: 'Georgia, serif' }}
       >
-        {/* Top edge - torn paper */}
         <div className="absolute top-0 left-0 right-0 flex">
           {Array.from({ length: 40 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 border-t-2 border-ink/20"
-              style={{ borderStyle: 'dashed' }}
-            />
+            <div key={i} className="flex-1 border-t-2 border-ink/20" style={{ borderStyle: 'dashed' }} />
           ))}
         </div>
 
-        {/* Content */}
         <div className="p-6 pt-8">
-          {/* Label + Stamp */}
           <div className="flex items-start justify-between mb-5">
             <div>
               <p className="text-[9px] text-ink/30 tracking-[0.3em] uppercase mb-1">
                 Dream Order · 의뢰서
               </p>
               <p className="text-[11px] text-ink/50 tracking-widest font-mono">
-                #{quest.id.toUpperCase()} · {CATEGORY_LABEL[quest.category]}
+                #{quest.id.slice(-6).toUpperCase()} · {CATEGORY_LABEL[quest.category]}
               </p>
             </div>
             <div className="stamp-animate">
@@ -69,14 +85,11 @@ export default async function QuestDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Title */}
           <h1 className="text-xl font-bold text-ink mb-2 leading-snug">{quest.title}</h1>
           <p className="text-xs text-ink/40 tracking-widest font-mono mb-6">{quest.subtitle}</p>
 
-          {/* Dashed divider */}
           <div className="divider-dashed mb-5" />
 
-          {/* Meta grid */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <MetaItem label="Reward · 보상" value={`${quest.reward.toLocaleString()}P`} highlight />
             <MetaItem label="Difficulty · 난이도" value={DIFFICULTY_LABEL[quest.difficulty]} />
@@ -85,13 +98,11 @@ export default async function QuestDetailPage({ params }: Props) {
               value={`${quest.applicantCount}명 지원 중 (잔여 ${spotsLeft}자리)`}
               warn={spotsLeft <= 1}
             />
-            <MetaItem label="Deadline · 마감일" value={quest.deadline} />
+            <MetaItem label="Deadline · 마감일" value={quest.deadline || '미정'} />
           </div>
 
-          {/* Dashed divider */}
           <div className="divider-dashed mb-5" />
 
-          {/* Description */}
           <div className="mb-6">
             <p className="text-[10px] text-ink/40 tracking-widest uppercase mb-3">
               의뢰 내용 · Details
@@ -101,22 +112,21 @@ export default async function QuestDetailPage({ params }: Props) {
             </p>
           </div>
 
-          {/* Tags */}
-          <div className="flex gap-2 flex-wrap mb-6">
-            {quest.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] text-ink/40 font-mono border border-ink/15 px-2 py-0.5"
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+          {(quest.tags ?? []).length > 0 && (
+            <div className="flex gap-2 flex-wrap mb-6">
+              {(quest.tags ?? []).map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[10px] text-ink/40 font-mono border border-ink/15 px-2 py-0.5"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
 
-          {/* Dashed divider */}
           <div className="divider-dashed mb-5" />
 
-          {/* Questioner */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-[9px] text-ink/30 tracking-widest uppercase mb-1">의뢰인</p>
@@ -128,7 +138,6 @@ export default async function QuestDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* CTA */}
           {canApply ? (
             <Link
               href={`/quest/${quest.id}/apply`}
@@ -143,19 +152,13 @@ export default async function QuestDetailPage({ params }: Props) {
           )}
         </div>
 
-        {/* Bottom edge */}
         <div className="absolute bottom-0 left-0 right-0 flex">
           {Array.from({ length: 40 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 border-b-2 border-ink/20"
-              style={{ borderStyle: 'dashed' }}
-            />
+            <div key={i} className="flex-1 border-b-2 border-ink/20" style={{ borderStyle: 'dashed' }} />
           ))}
         </div>
       </div>
 
-      {/* Back link */}
       <div className="mt-6">
         <Link
           href="/"
@@ -169,24 +172,14 @@ export default async function QuestDetailPage({ params }: Props) {
 }
 
 function MetaItem({
-  label,
-  value,
-  highlight,
-  warn,
+  label, value, highlight, warn,
 }: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-  warn?: boolean;
+  label: string; value: string; highlight?: boolean; warn?: boolean;
 }) {
   return (
     <div>
       <p className="text-[9px] text-ink/30 tracking-widest uppercase mb-1">{label}</p>
-      <p
-        className={`text-sm font-bold ${
-          highlight ? 'text-primary' : warn ? 'text-stamp' : 'text-ink'
-        }`}
-      >
+      <p className={`text-sm font-bold ${highlight ? 'text-primary' : warn ? 'text-stamp' : 'text-ink'}`}>
         {value}
       </p>
     </div>
