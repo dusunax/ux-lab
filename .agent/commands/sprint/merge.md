@@ -113,6 +113,40 @@ git commit -m "chore(agent-memory): 스프린트 마무리 메모리 정리"
 
 ---
 
+## Step 4.5 — 워크트리 정리
+
+머지 완료 후 불필요한 worktree를 정리한다.
+
+### 현재 worktree 목록 확인
+
+```bash
+git worktree list
+```
+
+### 삭제 대상 판별
+
+아래 조건을 **모두** 만족하는 worktree만 제거한다:
+
+| 조건 | 확인 방법 |
+|------|-----------|
+| main 브랜치가 아닌 worktree | `git worktree list`에서 HEAD 브랜치 확인 |
+| 이미 merge된 브랜치 | `git branch --merged main` 또는 PR `merged: true` |
+| 미커밋 변경 없음 | `git -C {worktree_path} status --porcelain` 결과 비어있음 |
+
+조건을 하나라도 충족하지 못하면 **건너뛰고 사용자에게 알린다**.
+
+### 제거
+
+```bash
+git worktree remove {worktree_path} --force
+git branch -d {branch_name}
+```
+
+- `--force`는 worktree 디렉토리가 남아있을 때만 사용한다.
+- 브랜치 삭제는 원격에서도 확인 후 로컬만 제거한다 (원격은 GitHub에서 merge 시 자동 삭제 옵션에 맡긴다).
+
+---
+
 ## Step 5 — 최종 push 및 확인
 
 ```bash
