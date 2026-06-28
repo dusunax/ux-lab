@@ -37,10 +37,11 @@
 
 ### 포함 (P1 — 여유 시 추가)
 
-| # | 항목 | 우선순위 | 담당 | 화면 |
-|---|------|----------|------|------|
-| 6 | **Selection (지원자 선정)** — 지원자 목록, 지원 내용 카드, 선정 버튼 | P1 | FE | Screen 5 |
-| 7 | **Profile** — 닉네임/완료 퀘스트 수/만족도/포인트/배지 컬렉션 | P1 | FE | Screen 6 |
+| # | 항목 | 우선순위 | 담당 |
+|---|------|----------|------|
+| 6 | **Firebase Firestore 연동** — `quests` 컬렉션 read/write, `applications` 컬렉션 write | P1 | BE |
+| 7 | **Next.js API Routes** — `GET /api/quests`, `POST /api/quests`, `POST /api/applications` | P1 | BE |
+| 8 | **Firebase Auth (Anonymous)** — 익명 로그인으로 의뢰인/지원자 식별 | P1 | BE |
 
 ### 제외 (Sprint 2 이월)
 
@@ -49,7 +50,8 @@
 | Proof (인증 자료 제출) | 파일 업로드 플로우 — Sprint 2에서 별도 설계 |
 | Journey Log | 그라디언트 배경 + 에디터 — UI 복잡도 높음 |
 | Mission Complete 인증서 | Certificate 디자인 — Sprint 2 목표 |
-| Firebase Auth/Firestore | 백엔드 연동 전 UI 완성 우선 |
+| Selection (지원자 선정) UI | Sprint 2 이월 — 백엔드 연동 후 구현 |
+| Profile UI | Sprint 2 이월 — 백엔드 연동 후 구현 |
 | 실시간 모집 현황 (WebSocket) | MVP 이후 |
 
 ---
@@ -89,7 +91,8 @@
 |------|------|------|------|
 | CSS 프레임워크: Tailwind vs CSS Modules? | FE Avery | Sprint 1 시작 | ⚠️ Open |
 | 라우팅: App Router pages 구조 확정 | FE Avery | Sprint 1 시작 | ⚠️ Open |
-| P1 화면(Selection, Profile) Sprint 1 내 포함 여부 | PM Jordan | 진행 중 판단 | ⚠️ Open |
+| Firebase vs Supabase — Firestore 재사용 vs 새 DB 선택 | BE Blake | Sprint 1 백엔드 시작 전 | ⚠️ Open |
+| Anonymous Auth vs Google Login — 지원자 식별 방식 | PM Jordan | Sprint 1 백엔드 시작 전 | ⚠️ Open |
 
 ---
 
