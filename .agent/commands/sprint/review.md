@@ -22,6 +22,7 @@ description: 스프린트 완료 후 PR을 생성하고 결과를 요약한다. 
 | `--type TYPE` | PR 제목 prefix 타입 지정 (기본: `feat` / 워크플로우 PR: `chore`) |
 | `--report-url URL` | 보고서 공개 URL 첨부 |
 | `--draft` | Draft PR로 생성 |
+| `--post-merge` | merge 완료 후 실행 — PR 본문 이미지 URL을 sprint 브랜치 → main으로 교체 |
 
 ---
 
@@ -140,14 +141,15 @@ git ls-remote --heads origin sprint/N
 
 `docs/workflow/pr-template.md`의 템플릿을 읽고, Step 1–3에서 수집한 데이터로 플레이스홀더를 채운다.
 
-> ⚠️ **이미지 URL 규칙**: PR 본문에 스크린샷을 삽입할 때는 **스프린트 브랜치 raw URL을 절대 사용하지 않는다**.
-> 스프린트 브랜치는 merge 후 삭제되므로 `raw/sprint/…/` URL은 반드시 404가 된다.
-> 이미지가 필요하면 반드시 `main` 브랜치 기준 URL을 사용한다:
-> ```
-> https://github.com/dusunax/ux-lab/raw/main/docs/presentations/{dir}/{file}.png
-> ```
-> 단, 해당 파일이 `main`에 merge된 이후에만 링크가 유효하다.
-> merge 전 PR 생성 시에는 이미지 섹션을 생략하고 보고서 링크로 대체한다.
+> **이미지 URL — merge 전후 전략:**
+>
+> | 시점 | 사용할 URL | 이유 |
+> |------|-----------|------|
+> | PR 생성 시 (merge 전) | `raw/sprint/{branch}/docs/presentations/…` | 브랜치가 살아 있어 즉시 표시됨 |
+> | merge 완료 후 | `raw/main/docs/presentations/…` | 브랜치 삭제 후에도 영구 유효 |
+>
+> PR 생성 시에는 스프린트 브랜치 URL을 사용하고, merge 후 `--post-merge` 플래그로 재실행해 URL을 교체한다.
+> merge 전 main URL을 쓰면 파일이 없어 이미지가 표시되지 않는다.
 
 | 플레이스홀더 | 채울 값 |
 |-------------|---------|
@@ -221,4 +223,67 @@ PR:         [URL]
 보고서:     [URL 또는 로컬 경로]
 담당자:     [GitHub 사용자명]
 라벨:       type: sprint, eval: pending
+
+⚠️  이미지 URL이 sprint 브랜치 기준입니다.
+    merge 완료 후 아래 커맨드를 실행해 main URL로 교체하세요:
+    /sprint:review --post-merge
+```
+
+---
+
+## Step 7 — post-merge 이미지 URL 교체 (`--post-merge` 전용)
+
+`--post-merge` 플래그 없이 실행된 경우 이 단계를 건너뛴다.
+
+### 7-1. merge 여부 확인
+
+```bash
+gh api /repos/dusunax/ux-lab/pulls/{PR_NUMBER} --jq '.merged'
+```
+
+`true`가 아니면:
+
+```
+⛔ PR이 아직 merge되지 않았습니다. merge 완료 후 재실행하세요.
+```
+
+커맨드를 종료한다.
+
+### 7-2. PR 번호 탐지
+
+```bash
+gh pr list --head sprint/{N} --repo dusunax/ux-lab --json number --jq '.[0].number'
+```
+
+### 7-3. 현재 PR 본문 읽기
+
+```bash
+gh api /repos/dusunax/ux-lab/pulls/{PR_NUMBER} --jq '.body'
+```
+
+### 7-4. 이미지 URL 교체
+
+본문 내 모든 스프린트 브랜치 raw URL을 main 기준으로 교체한다:
+
+```
+https://github.com/dusunax/ux-lab/raw/sprint/{branch}/
+→
+https://github.com/dusunax/ux-lab/raw/main/
+```
+
+교체 후 PR 본문을 업데이트한다:
+
+```bash
+gh api --method PATCH /repos/dusunax/ux-lab/pulls/{PR_NUMBER} \
+  --field body="{교체된 본문}"
+```
+
+### 7-5. 완료 보고
+
+```
+✅ 이미지 URL 교체 완료
+
+PR:      [URL]
+변경:    raw/sprint/{branch}/ → raw/main/
+교체 수: N개
 ```
