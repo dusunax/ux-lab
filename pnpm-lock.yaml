@@ -108,6 +108,43 @@ importers:
         specifier: ^3.4.0
         version: 3.4.19
 
+  apps/bucket-exchange:
+    dependencies:
+      lucide-react:
+        specifier: ^0.400.0
+        version: 0.400.0(react@19.1.0)
+      next:
+        specifier: 15.5.9
+        version: 15.5.9(react-dom@19.1.0)(react@19.1.0)
+      react:
+        specifier: 19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: 19.1.0
+        version: 19.1.0(react@19.1.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.27
+      '@types/react':
+        specifier: ^19
+        version: 19.2.8
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.8)
+      autoprefixer:
+        specifier: ^10
+        version: 10.4.23(postcss@8.5.8)
+      postcss:
+        specifier: ^8
+        version: 8.5.8
+      tailwindcss:
+        specifier: ^3
+        version: 3.4.19
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   apps/cad-viewer:
     dependencies:
       '@react-three/drei':

@@ -23,6 +23,12 @@
 |------|----------|------|-----------|
 | [ai-musician/2026-06-07-sprint-1-kickoff.md](./ai-musician/2026-06-07-sprint-1-kickoff.md) | Sprint ai-musician/1 킥오프 | 2026-06-07 | AI 뮤지션 페르소나 정의 + 프롬프트 기반 음원 생성 PoC — localStorage, JSON 다운로드, 단일 트랙 검증 |
 
+### bucket-exchange
+
+| 파일 | 스프린트 | 날짜 | 주요 결정 |
+|------|----------|------|-----------|
+| [bucket-exchange/2026-06-28-sprint-1-kickoff.md](./bucket-exchange/2026-06-28-sprint-1-kickoff.md) | Sprint bucket-exchange/1 킥오프 | 2026-06-28 | Next.js + 정적 mock — Quest Board·Quest Card·Application Form·Create Quest 4개 화면 구현 |
+
 ### quiz-drill-ai
 
 | 파일 | 스프린트 | 날짜 | 주요 결정 |
