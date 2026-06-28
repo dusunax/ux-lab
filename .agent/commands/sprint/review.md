@@ -212,6 +212,20 @@ PR 생성 완료 후 아래 라벨을 부착한다.
 
 ---
 
+## Step 5.7 — 메모리 커밋 (선택)
+
+리포지토리 내 서브에이전트 메모리 파일(`.claude/agent-memory/`)에 변경·추가된 파일이 있으면 함께 커밋한다.
+
+```bash
+git add .claude/agent-memory/
+git diff --cached --quiet || git commit -m "chore(agent-memory): 스프린트 마무리 메모리 업데이트"
+```
+
+- 리포 내 메모리 파일이 없거나 변경이 없으면 이 단계를 건너뛴다.
+- 필수 작업이 아니다.
+
+---
+
 ## Step 6 — 완료 보고
 
 ```
