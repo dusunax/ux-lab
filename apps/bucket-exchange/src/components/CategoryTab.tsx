@@ -1,6 +1,6 @@
 'use client';
 
-import type { QuestCategory } from '@/data/quests';
+import type { QuestCategory } from '@/types/quest';
 
 const CATEGORIES: { value: QuestCategory; label: string }[] = [
   { value: 'all', label: 'ALL' },

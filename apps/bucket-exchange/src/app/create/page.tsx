@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { QuestCategory, Difficulty } from '@/data/quests';
+import type { QuestCategory, Difficulty } from '@/types/quest';
 import { useAuth } from '@/lib/useAuth';
 
 const CATEGORIES: { value: Exclude<QuestCategory, 'all'>; label: string }[] = [

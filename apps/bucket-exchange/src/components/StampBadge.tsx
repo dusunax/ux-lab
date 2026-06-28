@@ -1,4 +1,4 @@
-import type { QuestStatus } from '@/data/quests';
+import type { QuestStatus } from '@/types/quest';
 
 interface Props {
   status: QuestStatus;

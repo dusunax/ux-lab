@@ -1,34 +1,6 @@
-export type QuestStatus = 'recruiting' | 'closing' | 'completed' | 'in_progress';
-export type QuestCategory = 'all' | 'travel' | 'challenge' | 'learn' | 'bonds';
-export type Difficulty = 'easy' | 'medium' | 'hard';
+import type { Quest, Applicant } from '@/types/quest';
 
-export interface Quest {
-  id: string;
-  title: string;
-  subtitle: string;
-  category: Exclude<QuestCategory, 'all'>;
-  status: QuestStatus;
-  reward: number;
-  difficulty: Difficulty;
-  applicantCount: number;
-  maxApplicants: number;
-  deadline: string;
-  description: string;
-  questioner: string;
-  postedAt: string;
-  tags: string[];
-}
-
-export interface Applicant {
-  id: string;
-  questId: string;
-  nickname: string;
-  reason: string;
-  plan: string;
-  schedule: string;
-  desiredReward: number;
-  appliedAt: string;
-}
+export type { Quest, Applicant };
 
 export const QUESTS: Quest[] = [
   {

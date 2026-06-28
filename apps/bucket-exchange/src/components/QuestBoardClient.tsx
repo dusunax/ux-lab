@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { QuestCategory } from '@/data/quests';
+import type { QuestCategory } from '@/types/quest';
 import CategoryTab from './CategoryTab';
 import QuestCard from './QuestCard';
 import type { FirestoreQuest } from '@/types/quest';
