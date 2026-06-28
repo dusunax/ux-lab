@@ -18,15 +18,15 @@
       margin-top: 18px;
     }
     .metric-card {
-      background: #f5f3ff;
-      border: 1px solid #c4b5fd;
+      background: #f0f7f3;
+      border: 1px solid #b6d4c2;
       border-radius: 8px;
       padding: 14px 16px;
     }
     .metric-value {
       font-size: 30px;
       font-weight: 700;
-      color: #4f46e5;
+      color: #217346;
       line-height: 1.1;
     }
     .metric-label {
@@ -51,12 +51,12 @@
     .arch-box-title {
       font-size: 12px;
       font-weight: 700;
-      color: #4f46e5;
+      color: #217346;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       margin-bottom: 10px;
       padding-bottom: 6px;
-      border-bottom: 2px solid #e0e7ff;
+      border-bottom: 2px solid #c8e6d5;
     }
     .arch-box ul {
       list-style: none;
@@ -72,7 +72,7 @@
     .arch-box li:last-child { border-bottom: none; }
     .arch-box code {
       background: #ede9fe;
-      color: #4f46e5;
+      color: #217346;
       padding: 1px 5px;
       border-radius: 3px;
       font-size: 11px;
@@ -112,15 +112,15 @@
       color: #667085;
       line-height: 1.5;
     }
-    .shot-caption strong { color: #4f46e5; font-weight: 700; }
+    .shot-caption strong { color: #217346; font-weight: 700; }
     .scope-tag {
       display: inline-block;
       padding: 1px 8px;
       border-radius: 3px;
       font-size: 11px;
       font-weight: 700;
-      background: #e0e7ff;
-      color: #4f46e5;
+      background: #c8e6d5;
+      color: #217346;
       margin-right: 5px;
       white-space: nowrap;
     }
@@ -128,14 +128,14 @@
     .col-section-head {
       font-size: 13px;
       font-weight: 700;
-      color: #4f46e5;
+      color: #217346;
       margin-bottom: 10px;
       padding-bottom: 6px;
-      border-bottom: 2px solid #4f46e5;
+      border-bottom: 2px solid #217346;
     }
     .defer-card {
-      border-left: 4px solid #c4b5fd;
-      background: #f5f3ff;
+      border-left: 4px solid #b6d4c2;
+      background: #f0f7f3;
       border-radius: 0 6px 6px 0;
       padding: 10px 14px;
       font-size: 13px;
@@ -149,8 +149,8 @@
     }
     .stamp-badge {
       display: inline-block;
-      border: 2px solid #4f46e5;
-      color: #4f46e5;
+      border: 2px solid #217346;
+      color: #217346;
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.15em;
@@ -300,65 +300,79 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 5: 앱 화면 — Board + Detail -->
+  <!-- Slide 5: 앱 화면 — Quest Board -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">데모</div>
-      <h2 class="slide-title">앱 화면 — Quest Board · Dream Order</h2>
-      <div class="screenshot-grid">
-        <div class="shot-card">
-          <div class="shot-frame">
-            <img src="./sprint-bucket-exchange-1/shot-board.png" alt="Quest Board — 오늘의 의뢰 목록">
-          </div>
-          <p class="shot-caption">
-            <strong>Quest Board</strong> — Firestore 실시간 데이터, 카테고리 탭 필터,
-            <span class="stamp-badge">RECRUITING</span> 스탬프 배지
-          </p>
+      <div class="slide-label">데모 1 / 4</div>
+      <h2 class="slide-title">Quest Board — 오늘의 의뢰</h2>
+      <div class="shot-card" style="margin-top:12px">
+        <div class="shot-frame" style="max-height:400px">
+          <img src="./sprint-bucket-exchange-1/shot-board.png" alt="Quest Board — 오늘의 의뢰 목록">
         </div>
-        <div class="shot-card">
-          <div class="shot-frame">
-            <img src="./sprint-bucket-exchange-1/shot-detail.png" alt="Dream Order 상세 — 종이 의뢰서 스타일">
-          </div>
-          <p class="shot-caption">
-            <strong>Dream Order 상세</strong> — Paper #F8F5EF 배경, 점선 구분선,
-            보상·난이도·지원자·마감일 메타 그리드, Apply CTA
-          </p>
-        </div>
+        <p class="shot-caption" style="margin-top:10px">
+          <strong>Quest Board</strong> — Firestore 실시간 데이터, 카테고리 탭 필터(ALL / TRAVEL / CHALLENGE / LEARN / BONDS),
+          <span class="stamp-badge">RECRUITING</span> 스탬프 배지
+        </p>
       </div>
     </div>
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 6: 앱 화면 — Create + Apply -->
+  <!-- Slide 6: 앱 화면 — Dream Order 상세 -->
   <div class="slide">
     <div class="slide-inner">
-      <div class="slide-label">데모</div>
-      <h2 class="slide-title">앱 화면 — 의뢰 등록 · 지원서</h2>
-      <div class="screenshot-grid">
-        <div class="shot-card">
-          <div class="shot-frame">
-            <img src="./sprint-bucket-exchange-1/shot-create.png" alt="Create Quest — 의뢰 등록 폼">
-          </div>
-          <p class="shot-caption">
-            <strong>Create Quest</strong> — 제목·내용·카테고리·보상·마감일 입력,
-            POST 시 Firestore 저장 후 Board 리다이렉트
-          </p>
+      <div class="slide-label">데모 2 / 4</div>
+      <h2 class="slide-title">Dream Order — 의뢰 상세</h2>
+      <div class="shot-card" style="margin-top:12px">
+        <div class="shot-frame" style="max-height:400px">
+          <img src="./sprint-bucket-exchange-1/shot-detail.png" alt="Dream Order 상세 — 종이 의뢰서 스타일">
         </div>
-        <div class="shot-card">
-          <div class="shot-frame">
-            <img src="./sprint-bucket-exchange-1/shot-apply.png" alt="Application Form — 지원서 작성">
-          </div>
-          <p class="shot-caption">
-            <strong>Application Form</strong> — 닉네임·지원이유·수행계획·일정·희망보상,
-            중복 지원 방지(409), 제출 완료 화면
-          </p>
-        </div>
+        <p class="shot-caption" style="margin-top:10px">
+          <strong>Dream Order 상세</strong> — Paper #F8F5EF 배경, 점선 구분선,
+          보상·난이도·지원자·마감일 메타 그리드, Apply CTA
+        </p>
       </div>
     </div>
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 7: 완료 항목 -->
+  <!-- Slide 7: 앱 화면 — 의뢰 등록 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모 3 / 4</div>
+      <h2 class="slide-title">Create Quest — 의뢰 등록</h2>
+      <div class="shot-card" style="margin-top:12px">
+        <div class="shot-frame" style="max-height:400px">
+          <img src="./sprint-bucket-exchange-1/shot-create.png" alt="Create Quest — 의뢰 등록 폼">
+        </div>
+        <p class="shot-caption" style="margin-top:10px">
+          <strong>Create Quest</strong> — 제목·내용·카테고리·보상·마감일 입력,
+          POST 시 Firestore 저장 후 Board 리다이렉트
+        </p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: 앱 화면 — 지원서 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데모 4 / 4</div>
+      <h2 class="slide-title">Application Form — 지원서 작성</h2>
+      <div class="shot-card" style="margin-top:12px">
+        <div class="shot-frame" style="max-height:400px">
+          <img src="./sprint-bucket-exchange-1/shot-apply.png" alt="Application Form — 지원서 작성">
+        </div>
+        <p class="shot-caption" style="margin-top:10px">
+          <strong>Application Form</strong> — 닉네임·지원이유·수행계획·일정·희망보상,
+          중복 지원 방지(409), 제출 완료 화면
+        </p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: 완료 항목 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">완료 항목</div>
@@ -392,7 +406,7 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 8: 이월 / Sprint 2 방향 -->
+  <!-- Slide 10: 이월 / Sprint 2 방향 -->
   <div class="slide">
     <div class="slide-inner">
       <div class="slide-label">Sprint 2 방향</div>
@@ -429,7 +443,7 @@
     <div class="slide-counter"></div>
   </div>
 
-  <!-- Slide 9: Q&A -->
+  <!-- Slide 11: Q&A -->
   <div class="slide slide--qa-light">
     <div class="slide-inner">
       <div class="qa-icon">Q&amp;A</div>
