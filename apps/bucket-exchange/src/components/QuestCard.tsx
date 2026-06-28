@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import type { Quest } from '@/data/quests';
+import type { FirestoreQuest } from '@/types/quest';
 import StampBadge from './StampBadge';
 
 interface Props {
-  quest: Quest;
+  quest: FirestoreQuest;
 }
 
 const DIFFICULTY_LABEL = { easy: '쉬움', medium: '보통', hard: '어려움' };
@@ -33,7 +33,7 @@ export default function QuestCard({ quest }: Props) {
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
             <p className="text-[10px] text-ink/40 tracking-widest font-mono mb-1 uppercase">
-              {CATEGORY_LABEL[quest.category]} · {quest.subtitle.split('·')[1]?.trim()}
+              {CATEGORY_LABEL[quest.category]} · {quest.subtitle?.split('·')[1]?.trim()}
             </p>
             <h3 className="text-sm font-bold text-ink leading-snug group-hover:text-primary transition-colors line-clamp-2">
               {quest.title}
@@ -66,7 +66,7 @@ export default function QuestCard({ quest }: Props) {
 
         {/* Tags */}
         <div className="flex gap-1 flex-wrap mt-2">
-          {quest.tags.slice(0, 3).map((tag) => (
+          {(quest.tags ?? []).slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="text-[9px] text-ink/40 font-mono tracking-wide"
