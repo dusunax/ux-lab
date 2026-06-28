@@ -69,6 +69,49 @@ Nolan의 평가 결과를 PR에 코멘트로 등록한다.
 
 ---
 
+## Step 3.2 — Lessons Learned Discussion 추가
+
+PR 코멘트 등록 후, **Blocker 또는 Major** RF 항목이 하나라도 있으면 재발 방지 코멘트를 Discussion에 추가한다.
+
+**대상 Discussion:** https://github.com/dusunax/ux-lab/discussions/42  
+**Discussion ID:** `D_kwDOP7cpz84AnajL`
+
+각 Blocker/Major RF 항목을 아래 형식으로 코멘트에 추가한다:
+
+```
+## [날짜] [앱/모듈] {RF 제목}
+
+**원인**
+{TOCTOU, 누락된 검증, 타입 혼재 등 — 구체적으로}
+
+**대책**
+{코드 수준 해결책 — 스니펫 포함 권장}
+
+**규칙**
+{동일 패턴 재발을 막을 한 줄 원칙}
+
+**관련 PR:** {repo}#{PR_NUMBER} ({RF 등급})
+```
+
+**추가 방법:**
+
+```bash
+gh api graphql -f query='
+mutation {
+  addDiscussionComment(input: {
+    discussionId: "D_kwDOP7cpz84AnajL"
+    body: "[코멘트 본문]"
+  }) {
+    comment { url }
+  }
+}'
+```
+
+- Minor RF는 추가하지 않는다.
+- 이미 같은 내용이 Discussion에 있으면 중복 추가하지 않는다.
+
+---
+
 ## Step 3.5 — 라벨 자동 업데이트
 
 PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
@@ -103,4 +146,5 @@ PR:       [URL]
 관점:     [ops / marketing / business / all]
 코멘트:   [URL]
 라벨:     eval: done + finding: [blocker | major | clear]
+재발방지: https://github.com/dusunax/ux-lab/discussions/42  (Blocker/Major RF가 있을 때만)
 ```

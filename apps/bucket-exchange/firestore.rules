@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // quests: 공개 읽기, 클라이언트 직접 쓰기 차단 (API Routes / Admin SDK 경유)
+    match /quests/{questId} {
+      allow read: if true;
+      allow write: if false;
+
+      // applications: 본인 지원서만 읽기, 클라이언트 직접 쓰기 차단
+      match /applications/{appId} {
+        allow read: if request.auth != null
+                    && resource.data.applicantId == request.auth.uid;
+        allow write: if false;
+      }
+    }
+  }
+}

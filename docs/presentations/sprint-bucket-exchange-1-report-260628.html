@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint bucket-exchange/1 보고 — 2026-06-28</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f0f7f3;
+      border: 1px solid #b6d4c2;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .arch-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .arch-box-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #217346;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #c8e6d5;
+    }
+    .arch-box ul {
+      list-style: none;
+      margin: 0; padding: 0;
+    }
+    .arch-box li {
+      font-size: 13px;
+      color: #374151;
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+      line-height: 1.5;
+    }
+    .arch-box li:last-child { border-bottom: none; }
+    .arch-box code {
+      background: #ede9fe;
+      color: #217346;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .slide--screenshot .slide-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 24px 40px 16px;
+      box-sizing: border-box;
+    }
+    .shot-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .shot-frame {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+      background: #f8f5ef;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      max-height: calc(100vh - 180px);
+      width: 100%;
+    }
+    .shot-frame img {
+      width: auto;
+      max-width: 100%;
+      max-height: calc(100vh - 180px);
+      object-fit: contain;
+      display: block;
+    }
+    .shot-caption {
+      font-size: 13px;
+      color: #667085;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .shot-caption strong { color: #217346; font-weight: 700; }
+    .scope-tag {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #c8e6d5;
+      color: #217346;
+      margin-right: 5px;
+      white-space: nowrap;
+    }
+    .scope-tag--be { background: #dcfce7; color: #15803d; }
+    .col-section-head {
+      font-size: 13px;
+      font-weight: 700;
+      color: #217346;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #217346;
+    }
+    .defer-card {
+      border-left: 4px solid #b6d4c2;
+      background: #f0f7f3;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+    .defer-card--gray {
+      border-left-color: #d1d5db;
+      background: #f9fafb;
+    }
+    .stamp-badge {
+      display: inline-block;
+      border: 2px solid #217346;
+      color: #217346;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      padding: 2px 8px;
+      transform: rotate(-2deg);
+      font-family: Georgia, serif;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · bucket-exchange</div>
+        <h1 class="cover-title">Sprint bucket-exchange / 1</h1>
+        <p class="cover-sub">Paper First UI + Firebase 백엔드 연동 — Experience Marketplace PoC</p>
+        <p class="cover-meta">2026-06-28 킥오프 · 2026-06-28 완료 · PM</p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 2: 목표 + 지표 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Sprint 목표</div>
+      <h2 class="slide-title">버킷리스트를 의뢰로 교환하다</h2>
+      <blockquote class="goal-quote">
+        Claude 디자인 파일(9개 화면) 기반으로 Bucket Exchange UI를 구현하고 Firebase 백엔드까지 연동한다 — Next.js App Router + Firestore + Anonymous Auth.
+      </blockquote>
+      <div class="metric-row">
+        <div class="metric-card">
+          <div class="metric-value">12<span style="font-size:16px">/12</span></div>
+          <div class="metric-label">수용 기준 달성</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">5<span style="font-size:16px">/5</span></div>
+          <div class="metric-label">P0 화면 구현</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">3<span style="font-size:16px">/3</span></div>
+          <div class="metric-label">P1 백엔드 항목</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">0</div>
+          <div class="metric-label">이월 AC 항목</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 3: 결정 사항 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정 사항</div>
+      <h2 class="slide-title">주요 기술 결정 — 7개</h2>
+      <table class="data-table" style="margin-top:8px">
+        <thead>
+          <tr><th style="width:30px">#</th><th>결정 내용</th><th style="width:90px">분류</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><code>apps/bucket-exchange</code> 신규 생성 — Next.js 15 App Router + TypeScript + Tailwind</td>
+            <td><span class="badge badge-green">아키텍처</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Firebase 신규 프로젝트 <code>bucket-exchange</code> — ai-empathy-diary와 완전 분리</td>
+            <td><span class="badge badge-green">BE</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>인증 방식: Anonymous Auth — 별도 회원가입 없이 의뢰인·지원자 식별</td>
+            <td><span class="badge badge-green">BE</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Paper First 테마: Primary #4F46E5 / Paper #F8F5EF / Ink #2F2F2F / Stamp #D64545</td>
+            <td><span class="badge badge-green">디자인</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>CSS 프레임워크: Tailwind CSS 확정 (CSS Modules 미사용)</td>
+            <td><span class="badge badge-green">FE</span></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Server Component 기본, 인터랙션만 Client Component로 분리 (Quest Board / Apply Form)</td>
+            <td><span class="badge badge-green">아키텍처</span></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>P1 스코프 변경 — Selection·Profile UI → Firebase 연동으로 교체, UI는 Sprint 2 이월</td>
+            <td><span class="badge badge-yellow">스코프</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 4: 기술 아키텍처 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">기술 현황</div>
+      <h2 class="slide-title">아키텍처 — Next.js + Firestore</h2>
+      <div class="arch-grid">
+        <div class="arch-box">
+          <div class="arch-box-title">API Routes (서버)</div>
+          <ul>
+            <li><code>GET /api/quests</code> — Firestore 목록 조회 (최신순 50개)</li>
+            <li><code>POST /api/quests</code> — 의뢰 등록, Bearer 토큰 검증</li>
+            <li><code>POST /api/applications</code> — 지원서 제출, 중복 방지 (409)</li>
+          </ul>
+        </div>
+        <div class="arch-box">
+          <div class="arch-box-title">Firestore 컬렉션</div>
+          <ul>
+            <li><code>quests/{id}</code> — 제목, 카테고리, 보상, 상태, 지원자 수</li>
+            <li><code>quests/{id}/applications/{id}</code> — 닉네임, 이유, 계획, 일정</li>
+            <li><code>applicantCount</code> — 지원 시 <code>increment(1)</code> 원자적 증가</li>
+          </ul>
+        </div>
+        <div class="arch-box">
+          <div class="arch-box-title">클라이언트 Auth</div>
+          <ul>
+            <li><code>signInAnonymously()</code> — 앱 진입 시 자동 실행</li>
+            <li><code>useAuth()</code> 훅 → <code>getIdToken()</code> 제공</li>
+            <li>API 호출 시 <code>Authorization: Bearer {token}</code> 첨부</li>
+          </ul>
+        </div>
+        <div class="arch-box">
+          <div class="arch-box-title">페이지 렌더링 전략</div>
+          <ul>
+            <li>Quest Board: Server Component → adminDb 직접 조회</li>
+            <li>Quest Detail: Server Component → doc(id) 단일 조회</li>
+            <li>Apply Form: Server(데이터) + Client(폼 인터랙션) 분리</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 5: 앱 화면 — Quest Board -->
+  <div class="slide slide--screenshot">
+    <div class="slide-inner">
+      <div class="slide-label">데모 1 / 4 — Quest Board</div>
+      <div class="shot-card">
+        <div class="shot-frame">
+          <img src="./sprint-bucket-exchange-1/shot-board.png" alt="Quest Board — 오늘의 의뢰 목록">
+        </div>
+        <p class="shot-caption">
+          <strong>Quest Board</strong> — Firestore 실시간 데이터, 카테고리 탭 필터,
+          <span class="stamp-badge">RECRUITING</span> 스탬프 배지
+        </p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 6: 앱 화면 — Dream Order 상세 -->
+  <div class="slide slide--screenshot">
+    <div class="slide-inner">
+      <div class="slide-label">데모 2 / 4 — Dream Order</div>
+      <div class="shot-card">
+        <div class="shot-frame">
+          <img src="./sprint-bucket-exchange-1/shot-detail.png" alt="Dream Order 상세 — 종이 의뢰서 스타일">
+        </div>
+        <p class="shot-caption">
+          <strong>Dream Order 상세</strong> — Paper #F8F5EF 배경, 점선 구분선,
+          보상·난이도·지원자·마감일 메타 그리드, Apply CTA
+        </p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 7: 앱 화면 — 의뢰 등록 -->
+  <div class="slide slide--screenshot">
+    <div class="slide-inner">
+      <div class="slide-label">데모 3 / 4 — Create Quest</div>
+      <div class="shot-card">
+        <div class="shot-frame">
+          <img src="./sprint-bucket-exchange-1/shot-create.png" alt="Create Quest — 의뢰 등록 폼">
+        </div>
+        <p class="shot-caption">
+          <strong>Create Quest</strong> — 제목·내용·카테고리·보상·마감일 입력,
+          POST 시 Firestore 저장 후 Board 리다이렉트
+        </p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 8: 앱 화면 — 지원서 -->
+  <div class="slide slide--screenshot">
+    <div class="slide-inner">
+      <div class="slide-label">데모 4 / 4 — Application Form</div>
+      <div class="shot-card">
+        <div class="shot-frame">
+          <img src="./sprint-bucket-exchange-1/shot-apply.png" alt="Application Form — 지원서 작성">
+        </div>
+        <p class="shot-caption">
+          <strong>Application Form</strong> — 닉네임·지원이유·수행계획·일정·희망보상,
+          중복 지원 방지(409), 제출 완료 화면
+        </p>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 9: 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료 항목</div>
+      <h2 class="slide-title">Sprint 1 구현 완료 — P0 5 + P1 3</h2>
+      <div class="two-col" style="margin-top:14px">
+        <div>
+          <p class="col-section-head">FE — 화면 구현 (5)</p>
+          <ul class="check-list">
+            <li class="done"><span class="scope-tag">INIT</span> Next.js 앱 세팅 — App Router, Tailwind, 디자인 토큰</li>
+            <li class="done"><span class="scope-tag">BOARD</span> Quest Board — Server Component, Firestore 실시간 조회</li>
+            <li class="done"><span class="scope-tag">DETAIL</span> Dream Order 상세 — 종이 의뢰서 스타일, Firestore ID 지원</li>
+            <li class="done"><span class="scope-tag">APPLY</span> 지원서 작성 — Server + Client 분리, 중복 방지</li>
+            <li class="done"><span class="scope-tag">CREATE</span> 의뢰 등록 — POST 연동, 완료 후 Board 이동</li>
+          </ul>
+        </div>
+        <div>
+          <p class="col-section-head">BE — Firebase 연동 (3)</p>
+          <ul class="check-list">
+            <li class="done"><span class="scope-tag scope-tag--be">AUTH</span> Anonymous Auth 자동 로그인, <code>useAuth()</code> 훅</li>
+            <li class="done"><span class="scope-tag scope-tag--be">API</span> GET·POST /api/quests, POST /api/applications</li>
+            <li class="done"><span class="scope-tag scope-tag--be">DB</span> Firestore 컬렉션 구조, applicantCount 원자 증가</li>
+          </ul>
+          <div class="callout" style="margin-top:14px">
+            <strong>스코프 외 추가:</strong><br>
+            Firestore Security Rules 설정 · FirestoreQuest 공통 타입 분리 ·
+            QuestBoardClient Server/Client 컴포넌트 분리 패턴 도입
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 10: 이월 / Sprint 2 방향 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Sprint 2 방향</div>
+      <h2 class="slide-title">이월 항목 + 다음 스프린트 후보</h2>
+      <div class="two-col" style="margin-top:14px">
+        <div>
+          <p class="col-section-head">UI 이월 (Sprint 2)</p>
+          <div class="defer-card">
+            <strong>Selection — 지원자 선정</strong><br>
+            의뢰인이 지원자 목록을 보고 선정하는 화면. 백엔드 연동 완료 후 구현.
+          </div>
+          <div class="defer-card">
+            <strong>Profile — 활동 통계</strong><br>
+            닉네임·완료 퀘스트 수·만족도·포인트·배지 컬렉션. 포인트 시스템 설계 필요.
+          </div>
+          <div class="defer-card defer-card--gray">
+            <strong>Proof / Journey Log / Certificate</strong><br>
+            파일 업로드·에디터·인증서 디자인 — UI 복잡도 높음.
+          </div>
+        </div>
+        <div>
+          <p class="col-section-head">기능 확장 후보</p>
+          <ul class="bullet-list">
+            <li>Google Login 도입 — 기기 간 의뢰 이력 연속성</li>
+            <li>Quest 상태 전환 — <code>recruiting → in_progress → completed</code></li>
+            <li>Selection 화면 — 지원자 목록, 선정 버튼, applicantId 저장</li>
+            <li>Proof 제출 — Firebase Storage 이미지 업로드</li>
+            <li>포인트 시스템 — 의뢰 완료 시 reward 지급 로직</li>
+            <li>실시간 지원자 수 — Firestore onSnapshot 리스너</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+  <!-- Slide 11: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">Bucket Exchange — Sprint 1 완료</p>
+      <div class="qa-links">
+        <span>Branch: sprint/bucket-exchange/1</span>
+        <span>·</span>
+        <span>앱: apps/bucket-exchange</span>
+        <span>·</span>
+        <span>Firebase: bucket-exchange</span>
+        <span>·</span>
+        <span>2026-06-28</span>
+      </div>
+    </div>
+    <div class="slide-counter"></div>
+  </div>
+
+</div>
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   show(current - 1);
+  });
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

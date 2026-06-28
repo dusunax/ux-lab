@@ -97,6 +97,7 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | [commands/sprint/eval.md](commands/sprint/eval.md) | 스프린트 PR 평가 |
 | [commands/sprint/eval-fix.md](commands/sprint/eval-fix.md) | eval 지적 사항 처리 결과 PR 댓글 등록 |
 | [commands/sprint/report.md](commands/sprint/report.md) | 회의록 기반 HTML 보고서 생성 |
+| [commands/sprint/merge.md](commands/sprint/merge.md) | 머지 마무리 — 충돌 해결·이미지 URL 교체·메모리 커밋 |
 | [commands/figma-harness.md](commands/figma-harness.md) | Figma 단일 노드 구현 |
 | [commands/figma-harness-all.md](commands/figma-harness-all.md) | Figma 페이지 전체 구현 |
 | [commands/figma-harness-snapshots.md](commands/figma-harness-snapshots.md) | Figma 스냅샷 형식 구현 |
