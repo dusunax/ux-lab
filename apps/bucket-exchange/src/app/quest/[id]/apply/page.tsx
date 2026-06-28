@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, use } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getQuestById } from '@/data/quests';
+import { useAuth } from '@/lib/useAuth';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -15,7 +15,7 @@ export default function ApplyPage({ params }: Props) {
   const quest = getQuestById(id);
   if (!quest) notFound();
 
-  const router = useRouter();
+  const { getIdToken, loading: authLoading } = useAuth();
   const [form, setForm] = useState({
     nickname: '',
     reason: '',
@@ -23,7 +23,9 @@ export default function ApplyPage({ params }: Props) {
     schedule: '',
     desiredReward: quest.reward,
   });
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -35,9 +37,31 @@ export default function ApplyPage({ params }: Props) {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError('');
+    setSubmitting(true);
+    try {
+      const token = await getIdToken();
+      const res = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ questId: id, ...form }),
+      });
+      if (res.status === 409) {
+        setError('이미 지원한 의뢰입니다.');
+        return;
+      }
+      if (!res.ok) throw new Error('server error');
+      setSubmitted(true);
+    } catch {
+      setError('제출에 실패했어요. 다시 시도해주세요.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -75,11 +99,8 @@ export default function ApplyPage({ params }: Props) {
 
   return (
     <div>
-      {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6 text-[10px] text-ink/40 font-mono">
-        <Link href="/" className="hover:text-primary transition-colors">
-          Quest Board
-        </Link>
+        <Link href="/" className="hover:text-primary transition-colors">Quest Board</Link>
         <span>›</span>
         <Link href={`/quest/${id}`} className="hover:text-primary transition-colors">
           {quest.title}
@@ -88,7 +109,6 @@ export default function ApplyPage({ params }: Props) {
         <span className="text-ink/60">지원서</span>
       </div>
 
-      {/* Form Header */}
       <div className="mb-6" style={{ fontFamily: 'Georgia, serif' }}>
         <p className="text-[10px] text-ink/30 tracking-[0.3em] uppercase mb-1">
           Application Form · 지원서
@@ -97,16 +117,8 @@ export default function ApplyPage({ params }: Props) {
         <p className="text-xs text-ink/40 font-mono">{quest.subtitle}</p>
       </div>
 
-      {/* Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-paper border border-ink/15 p-6 flex flex-col gap-5"
-      >
-        <FormField
-          label="닉네임 · Nickname"
-          required
-          hint="활동할 닉네임을 입력하세요"
-        >
+      <form onSubmit={handleSubmit} className="bg-paper border border-ink/15 p-6 flex flex-col gap-5">
+        <FormField label="닉네임 · Nickname" required hint="활동할 닉네임을 입력하세요">
           <input
             type="text"
             name="nickname"
@@ -121,11 +133,7 @@ export default function ApplyPage({ params }: Props) {
 
         <div className="divider-dashed" />
 
-        <FormField
-          label="지원 이유 · Why Apply"
-          required
-          hint="왜 이 의뢰에 지원하는지 알려주세요 (최대 300자)"
-        >
+        <FormField label="지원 이유 · Why Apply" required hint="왜 이 의뢰에 지원하는지 알려주세요 (최대 300자)">
           <textarea
             name="reason"
             value={form.reason}
@@ -141,11 +149,7 @@ export default function ApplyPage({ params }: Props) {
           </p>
         </FormField>
 
-        <FormField
-          label="수행 계획 · Plan"
-          required
-          hint="어떻게 진행할지 구체적으로 알려주세요"
-        >
+        <FormField label="수행 계획 · Plan" required hint="어떻게 진행할지 구체적으로 알려주세요">
           <textarea
             name="plan"
             value={form.plan}
@@ -158,10 +162,7 @@ export default function ApplyPage({ params }: Props) {
           />
         </FormField>
 
-        <FormField
-          label="예상 일정 · Schedule"
-          hint="완료 예정 시기를 알려주세요"
-        >
+        <FormField label="예상 일정 · Schedule" hint="완료 예정 시기를 알려주세요">
           <input
             type="text"
             name="schedule"
@@ -173,10 +174,7 @@ export default function ApplyPage({ params }: Props) {
           />
         </FormField>
 
-        <FormField
-          label={`희망 보상 · Reward (제시 보상: ${quest.reward.toLocaleString()}P)`}
-          hint="희망하는 보상 포인트를 입력하세요"
-        >
+        <FormField label={`희망 보상 · Reward (제시 보상: ${quest.reward.toLocaleString()}P)`} hint="희망하는 보상 포인트를 입력하세요">
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -193,22 +191,21 @@ export default function ApplyPage({ params }: Props) {
 
         <div className="divider-dashed" />
 
-        {/* Submit */}
+        {error && (
+          <p className="text-xs text-stamp font-mono">{error}</p>
+        )}
+
         <button
           type="submit"
-          disabled={!form.nickname || !form.reason || !form.plan}
+          disabled={!form.nickname || !form.reason || !form.plan || submitting || authLoading}
           className="w-full py-3 bg-primary text-white text-xs font-bold tracking-widest uppercase hover:bg-primary-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          제출하기 · Submit
+          {submitting ? '제출 중...' : '제출하기 · Submit'}
         </button>
       </form>
 
-      {/* Back */}
       <div className="mt-4">
-        <Link
-          href={`/quest/${id}`}
-          className="text-[10px] text-ink/40 font-mono hover:text-primary transition-colors tracking-widest"
-        >
+        <Link href={`/quest/${id}`} className="text-[10px] text-ink/40 font-mono hover:text-primary transition-colors tracking-widest">
           ← 의뢰 상세로 돌아가기
         </Link>
       </div>
@@ -217,21 +214,14 @@ export default function ApplyPage({ params }: Props) {
 }
 
 function FormField({
-  label,
-  children,
-  required,
-  hint,
+  label, children, required, hint,
 }: {
-  label: string;
-  children: React.ReactNode;
-  required?: boolean;
-  hint?: string;
+  label: string; children: React.ReactNode; required?: boolean; hint?: string;
 }) {
   return (
     <div>
       <label className="block text-[10px] text-ink/50 tracking-widest uppercase mb-2 font-mono">
-        {label}
-        {required && <span className="text-stamp ml-1">*</span>}
+        {label}{required && <span className="text-stamp ml-1">*</span>}
       </label>
       {hint && <p className="text-[10px] text-ink/30 mb-2">{hint}</p>}
       {children}

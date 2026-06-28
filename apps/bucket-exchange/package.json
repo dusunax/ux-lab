@@ -8,6 +8,8 @@
     "start": "next start -p 3040"
   },
   "dependencies": {
+    "firebase": "^12.3.0",
+    "firebase-admin": "^13.0.0",
     "lucide-react": "^0.400.0",
     "next": "15.5.9",
     "react": "19.1.0",
