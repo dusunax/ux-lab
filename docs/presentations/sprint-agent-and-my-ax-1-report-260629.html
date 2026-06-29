@@ -151,6 +151,35 @@
       color: #667085;
       background: #f9fafb;
     }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 16px;
+    }
+    .screenshot-tile {
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+    }
+    .screenshot-tile img {
+      display: block;
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .screenshot-tile-title {
+      padding: 8px 10px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
+      background: #f9fafb;
+    }
   </style>
 </head>
 <body>
@@ -197,6 +226,31 @@
       </div>
       <div class="callout" style="margin-top:22px;">
         Sprint 1의 가장 중요한 검증 포인트는 <strong>Run 결과 화면</strong>이다. 단순 text 출력이 아니라 업무 결과물처럼 쓸 수 있는 구조화된 결과 카드로 개선했다.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">화면 캡처</div>
+      <h2 class="slide-title">핵심 화면 스냅샷</h2>
+      <p class="body-text">
+        Sprint 1은 Home Feed에서 Agent를 발견하고, Detail에서 맥락을 확인한 뒤, Ranking으로 공유 동기를 확인하는 기본 제품 흐름을 완성했다.
+      </p>
+      <div class="screenshot-grid">
+        <div class="screenshot-tile">
+          <img src="./sprint-agent-and-my-ax-1/home-feed.png" alt="Agent를 부탁해 Home Feed 스크린샷">
+          <div class="screenshot-tile-title">Home Feed — 탐색 · 검색 · 정렬</div>
+        </div>
+        <div class="screenshot-tile">
+          <img src="./sprint-agent-and-my-ax-1/agent-detail.png" alt="Agent를 부탁해 Agent Detail 스크린샷">
+          <div class="screenshot-tile-title">Agent Detail — 메타데이터 · 사용 가이드</div>
+        </div>
+        <div class="screenshot-tile">
+          <img src="./sprint-agent-and-my-ax-1/ranking.png" alt="Agent를 부탁해 Ranking 스크린샷">
+          <div class="screenshot-tile-title">Ranking — 개인 · 팀 랭킹</div>
+        </div>
       </div>
       <div class="slide-counter"></div>
     </div>
