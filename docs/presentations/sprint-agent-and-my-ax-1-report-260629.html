@@ -154,7 +154,7 @@
       <div class="metric-row">
         <div class="metric-card"><div class="metric-value">4</div><div class="metric-label">핵심 화면<br>Home · Detail · Run · Ranking</div></div>
         <div class="metric-card"><div class="metric-value">4</div><div class="metric-label">API Routes<br>agents · detail · run · rankings</div></div>
-        <div class="metric-card"><div class="metric-value">34/34</div><div class="metric-label">체크리스트 완료<br>100% 완료율</div></div>
+        <div class="metric-card"><div class="metric-value">40/40</div><div class="metric-label">체크리스트 완료<br>100% 완료율</div></div>
         <div class="metric-card"><div class="metric-value">5</div><div class="metric-label">OQ 결정<br>인증 · 실행 · 랭킹 · Fork</div></div>
       </div>
       <div class="slide-counter"></div>
@@ -192,6 +192,8 @@
           <tr><td>D-11</td><td><strong>Agent 실행:</strong> API proxy 기본, 외부 URL은 새 탭 fallback</td><td>BE</td></tr>
           <tr><td>D-13</td><td><strong>랭킹 산식:</strong> likes * 3 + triedCount * 5 + registeredAgents * 10</td><td>PM</td></tr>
           <tr><td>D-16</td><td><strong>Agent 메타데이터:</strong> Platform, Usage Guide, Visibility 필드 추가</td><td>PM</td></tr>
+          <tr><td>D-17</td><td><strong>작성자 결과 계약:</strong> resultPreset, downloads를 Agent 데이터에 포함</td><td>PM</td></tr>
+          <tr><td>D-18</td><td><strong>다운로드 가이드:</strong> 파일별 사용 위치를 아코디언과 Target Usage로 제공</td><td>UX</td></tr>
         </tbody>
       </table>
       <div class="slide-counter"></div>
@@ -243,6 +245,9 @@
             <li><code>platform</code>: ChatGPT, Claude, Gen.AI 등 실행 위치</li>
             <li><code>usageGuide</code>: 가장 잘 동작하는 사용법</li>
             <li><code>visibility</code>: 전체 공개, 팀 공개, 비공개</li>
+            <li><code>resultPreset</code>: 작성자가 정의한 결과 카드</li>
+            <li><code>downloads</code>: Cursor, Claude, Codex, Prompt 파일</li>
+            <li><code>Target Usage</code>: 내려받은 파일의 사용 위치 안내</li>
           </ul>
         </div>
       </div>
@@ -263,6 +268,8 @@
             <li class="done">Run Agent 결과 화면 고도화</li>
             <li class="done">Ranking 개인/팀 화면</li>
             <li class="done">Platform · Visibility 카드 노출</li>
+            <li class="done">상세 · Use 다운로드 버튼</li>
+            <li class="done">다운로드 아코디언 가이드</li>
           </ul>
         </div>
         <div>
@@ -272,11 +279,13 @@
             <li class="done">OQ 5개 결정 완료</li>
             <li class="done">API run 결과와 UI 연결</li>
             <li class="done">Usage Guide 상세 섹션 추가</li>
+            <li class="done">작성자 resultPreset 기반 결과</li>
+            <li class="done">파일 내부 Target Usage 보강</li>
             <li class="done">Build · API · Playwright 검증</li>
           </ul>
         </div>
       </div>
-      <p class="mini-note">체크리스트 기준 완료율: <strong>34/34개, 100%</strong>. P1 후보(Create Agent, Request Board, Profile)는 다음 Sprint 계획 후보로 유지한다.</p>
+      <p class="mini-note">체크리스트 기준 완료율: <strong>40/40개, 100%</strong>. P1 후보(Create Agent, Request Board, Profile)는 다음 Sprint 계획 후보로 유지한다.</p>
       <div class="slide-counter"></div>
     </div>
   </div>
@@ -290,8 +299,8 @@
         <tbody>
           <tr><td>1</td><td><code>pnpm --filter @ux-lab/agent-and-my-ax run build</code></td><td><span class="badge badge-green">통과</span></td></tr>
           <tr><td>2</td><td><code>GET /api/agents</code>, <code>POST /api/agents/[id]/run</code>, <code>GET /api/rankings</code></td><td><span class="badge badge-green">응답 확인</span></td></tr>
-          <tr><td>3</td><td>Playwright: Run → 공통 결과 카드 렌더링</td><td><span class="badge badge-green">통과</span></td></tr>
-          <tr><td>4</td><td>Playwright: 모바일 390px Home 레이아웃 및 콘솔 오류</td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>3</td><td>Playwright: Run → 작성자 resultPreset 공통 결과 카드 렌더링</td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>4</td><td>Playwright: 상세/Use 다운로드 버튼, 아코디언 가이드, 모바일 레이아웃</td><td><span class="badge badge-green">통과</span></td></tr>
         </tbody>
       </table>
       <div class="slide-counter"></div>

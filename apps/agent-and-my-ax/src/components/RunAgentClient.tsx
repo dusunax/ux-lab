@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { findUser, visibilityLabels } from '@/data/mock';
 import type { AgentItem, RunAgentResult, RunArtifact } from '@/types';
+import AgentDownloadButtons from './AgentDownloadButtons';
 
 interface RunAgentClientProps {
   agent: AgentItem;
@@ -68,7 +69,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="space-y-4 lg:order-none">
+        <aside className="min-w-0 space-y-4 lg:order-none">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">
             <div className="mb-4 flex items-center gap-3">
               <span
@@ -100,6 +101,12 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
             </div>
           </div>
 
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-slate-400">다운로드</p>
+            <p className="mb-4 text-xs leading-5 text-slate-500">Cursor, Claude, Codex, Prompt 형식으로 실행 지시를 받을 수 있습니다.</p>
+            <AgentDownloadButtons downloads={agent.downloads} />
+          </div>
+
           <div className="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline lg:block">
             <p className="mb-3 text-xs font-extrabold uppercase tracking-wider text-slate-400">최근 실행</p>
             <div className="space-y-3">
@@ -113,7 +120,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
           </div>
         </aside>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline md:p-7">
+        <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline md:p-7">
           <div className="mb-5 flex flex-wrap items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="mb-1 text-xs font-bold text-slate-400">Run Agent</p>

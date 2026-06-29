@@ -38,6 +38,8 @@
 | D-14 | Fork는 단순 복사가 아니라 `parentAgentId`, `forkedFromVersion`을 유지하는 파생 관계로 추적한다 | PM Jordan |
 | D-15 | Sprint 1 백엔드는 Next API Routes 기반 mock service로 구현하고 Firestore 전환은 Sprint 2에서 진행한다 | BE Blake |
 | D-16 | Agent 데이터에 Platform, Usage Guide, Visibility 필드를 추가해 실행 맥락과 공개 범위를 명확히 한다 | PM Jordan |
+| D-17 | 작성자가 정의한 결과 프리셋과 다운로드 에셋을 Agent 데이터에 포함해 여러 Agent/UI/API가 같은 계약을 쓰게 한다 | PM Jordan |
+| D-18 | 다운로드 파일은 버튼만 제공하지 않고 Cursor, Claude, Codex, Prompt별 사용 위치를 아코디언 가이드로 제공한다 | UX Riley |
 
 ---
 
@@ -58,8 +60,10 @@
 | 9 | Run Agent 결과 화면을 입력 요약, 처리 단계, 공통 결과 카드, 후속 CTA 중심으로 개선 | ✅ | FE Avery |
 | 10 | Next API Routes mock backend 구현: agents, agent detail, run, rankings | ✅ | BE Blake |
 | 11 | Agent 데이터 필드 추가: Platform, Usage Guide, Visibility | ✅ | PM Jordan |
-| 12 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
-| 13 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
+| 12 | 작성자 정의 결과 프리셋과 Cursor/Claude/Codex/Prompt 다운로드 에셋 추가 | ✅ | PM Jordan |
+| 13 | 다운로드 아코디언 가이드 표시 및 파일 내부 Target Usage 보강 | ✅ | UX Riley |
+| 14 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
+| 15 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
 
 ### P1 — 시간 여유 시
 
@@ -97,6 +101,9 @@
 - [x] `POST /api/agents/[id]/run`으로 mock backend 실행 결과를 받을 수 있다
 - [x] `GET /api/agents`, `GET /api/agents/[id]`, `GET /api/rankings`가 mock 데이터를 반환한다
 - [x] Agent 카드와 상세 화면에서 Platform, Usage Guide, Visibility를 확인할 수 있다
+- [x] 더미 Agent별 작성자 결과 프리셋이 Run 화면의 공통 결과 카드 UI로 표시된다
+- [x] 상세 화면과 Run 화면에서 Cursor, Claude, Codex, Prompt 파일을 다운로드할 수 있다
+- [x] 다운로드 아코디언 가이드에서 파일별 사용 위치를 확인할 수 있다
 - [x] 실행 후 "써봤어요" 상태와 카운터가 local state로 반영된다
 - [x] 좋아요, Fork, 댓글 작성 UI가 local state로 동작한다
 - [x] `/ranking`에서 개인 랭킹과 팀 랭킹을 확인할 수 있다
@@ -115,6 +122,8 @@
 - [x] 좋아요, 써봤어요, 댓글, Fork local state 구현
 - [x] 모바일/데스크톱 반응형 레이아웃 조정
 - [x] Platform, Usage Guide, Visibility 표시 반영
+- [x] 상세/Run 화면 다운로드 버튼 구현
+- [x] 다운로드 아코디언 가이드 표시 및 파일 내부 Target Usage 보강
 
 **UX (Riley)**
 - [x] PRD HTML 4개 화면에서 색상, 간격, 컴포넌트 패턴 추출
@@ -127,6 +136,7 @@
 - [x] 실제 Agent 실행 URL 보안 제약 초안 작성
 - [x] Next API Routes mock backend 구현
 - [x] Run Agent 화면을 `/api/agents/[id]/run`에 연결
+- [x] Run API를 작성자 `resultPreset` 기반 응답으로 변경
 
 **QA (Morgan)**
 - [x] Feed → Detail → Run → Tried → Ranking 핵심 플로우 테스트
@@ -166,6 +176,7 @@
 | `apps/agent-and-my-ax/src/components/AgentDetailClient.tsx` | 상세 정보, 좋아요, 써봤어요, Fork, 댓글 local state |
 | `apps/agent-and-my-ax/src/app/agent/[id]/run/page.tsx` | Run Agent 라우트 |
 | `apps/agent-and-my-ax/src/components/RunAgentClient.tsx` | 입력, API 실행, 구조화된 결과 페이지, 써봤어요 CTA |
+| `apps/agent-and-my-ax/src/components/AgentDownloadButtons.tsx` | Cursor/Claude/Codex/Prompt 파일 다운로드 버튼과 아코디언 사용 위치 가이드 |
 | `apps/agent-and-my-ax/src/app/ranking/page.tsx` | 개인/팀 랭킹 화면 |
 | `apps/agent-and-my-ax/src/data/mock.ts` | Sprint 1 mock 데이터 |
 | `apps/agent-and-my-ax/src/server/agentService.ts` | mock backend service |

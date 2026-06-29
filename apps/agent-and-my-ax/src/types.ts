@@ -6,6 +6,8 @@ export type AgentPlatform = 'ChatGPT' | 'Claude' | 'Gen.AI' | 'Document.AI' | 'A
 
 export type AgentVisibility = 'company' | 'team' | 'private';
 
+export type AgentDownloadKind = 'cursor' | 'claude' | 'codex' | 'prompt';
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -39,6 +41,8 @@ export interface AgentItem {
   runPlaceholder: string;
   sampleInput: string;
   sampleOutput: string;
+  resultPreset: AgentResultPreset;
+  downloads: AgentDownloadAsset[];
   usage: string[];
   history: string[];
   likes: number;
@@ -48,6 +52,13 @@ export interface AgentItem {
   createdAt: string;
   updatedAt: string;
   badge?: AgentBadge;
+}
+
+export interface AgentDownloadAsset {
+  kind: AgentDownloadKind;
+  label: string;
+  filename: string;
+  content: string;
 }
 
 export interface PersonRank {
@@ -76,6 +87,12 @@ export interface RunArtifact {
     label: string;
     value: string;
   }>;
+}
+
+export interface AgentResultPreset {
+  resultTitle: string;
+  primaryActionLabel: string;
+  artifacts: RunArtifact[];
 }
 
 export interface RunAgentResult {

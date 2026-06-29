@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CheckCircle2, GitFork, MessageCircle, Play, ThumbsUp } from 'lucide-react';
 import { categoryColors, categoryLabels, commentsByAgent, findUser, visibilityLabels } from '@/data/mock';
 import type { AgentComment, AgentItem } from '@/types';
+import AgentDownloadButtons from './AgentDownloadButtons';
 
 interface AgentDetailClientProps {
   agent: AgentItem;
@@ -182,6 +183,14 @@ export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
           <Metric icon={<MessageCircle size={15} />} label="댓글" value={String(comments.length)} />
           <Metric icon={<CheckCircle2 size={15} />} label="써봤어요" value={String(agent.triedCount + (tried ? 1 : 0))} />
           <Metric icon={<GitFork size={15} />} label="Fork" value={String(agent.forkCount + (forked ? 1 : 0))} />
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">
+          <p className="mb-2 text-sm font-extrabold text-ink">다운로드</p>
+          <p className="mb-4 text-xs leading-5 text-slate-500">
+            작성자가 준비한 실행 파일을 환경별로 내려받아 사용할 수 있습니다.
+          </p>
+          <AgentDownloadButtons downloads={agent.downloads} />
         </div>
       </aside>
     </div>
