@@ -2,6 +2,12 @@
 
 ## 스프린트 회의록
 
+### agent-and-my-ax
+
+| 파일 | 스프린트 | 날짜 | 주요 결정 |
+|------|----------|------|-----------|
+| [agent-and-my-ax/2026-06-29-sprint-1-kickoff.md](./agent-and-my-ax/2026-06-29-sprint-1-kickoff.md) | Sprint agent-and-my-ax/1 킥오프 | 2026-06-29 | Agent를 부탁해 핵심 탐색-상세-실행-랭킹 흐름을 Next.js mock 앱으로 구현 |
+
 ### ai-empathy-diary
 
 | 파일 | 스프린트 | 날짜 | 주요 결정 |

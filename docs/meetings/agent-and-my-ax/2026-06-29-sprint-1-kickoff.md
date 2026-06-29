@@ -1,0 +1,154 @@
+# Sprint 1 킥오프 회의록 — agent-and-my-ax
+
+**날짜:** 2026-06-29  
+**참석자:** PM Jordan, FE Avery, BE Blake, QA Morgan, TS Alex, UX Riley  
+**진행자:** PM Jordan
+
+---
+
+## Sprint 1 목표
+
+> **Agent를 부탁해의 핵심 탐색-상세-실행-랭킹 흐름을 Next.js 기반 mock 앱으로 구현한다.**
+
+---
+
+## 이전 스프린트 완료 검증
+
+신규 프로젝트 첫 스프린트이므로 이전 스프린트 완료 게이트는 적용하지 않는다.
+
+---
+
+## 결정 사항 요약
+
+| # | 결정 내용 | 담당 |
+|---|-----------|------|
+| D-1 | 앱 위치는 `apps/agent-and-my-ax`로 신규 생성한다 | FE Avery |
+| D-2 | 기술 스택은 Next.js App Router + TypeScript + Tailwind CSS를 우선한다 | FE Avery |
+| D-3 | Sprint 1은 Firestore 없이 mock 데이터와 local state로 핵심 UX를 검증한다 | PM Jordan |
+| D-4 | 디자인 기준은 `docs/PRD/agent-and-my-ax`의 4개 HTML 화면을 따른다 | UX Riley |
+| D-5 | 브랜드명은 `Agent를 부탁해`, 보조 표기는 `Agent & My AX`로 사용한다 | PM Jordan |
+| D-6 | 라우팅은 `/`, `/agent/[id]`, `/agent/[id]/run`, `/ranking`을 P0로 둔다 | FE Avery |
+| D-7 | 실명제 회원 모델은 mock user seed로 표현하고 실제 인증은 Sprint 2 이후로 이월한다 | BE Blake |
+| D-8 | 좋아요, 써봤어요, 댓글, Fork는 Sprint 1에서 UI 상태와 카운터 동작까지만 구현한다 | FE Avery |
+| D-9 | Firestore 컬렉션 구조는 PRD를 기준으로 문서화하되 실제 저장소 연결은 제외한다 | BE Blake |
+
+---
+
+## Sprint 1 확정 스코프
+
+### P0 — 완료 목표
+
+| # | 항목 | 상태 | 담당 |
+|---|------|------|------|
+| 1 | Next.js 앱 초기 세팅 (`apps/agent-and-my-ax`) | ☐ | FE Avery |
+| 2 | 공통 레이아웃, 헤더, 검색 입력, 카테고리 필터, 반응형 shell 구현 | ☐ | FE Avery |
+| 3 | mock 데이터 모델 정의: users, agents, comments, tried, rankings | ☐ | FE Avery |
+| 4 | Home Feed 구현: Agent 카드 목록, 검색, 카테고리, 정렬 UI | ☐ | FE Avery |
+| 5 | Agent Detail 구현: 소개, 사용 방법, 예시, 작성자, 업데이트 이력, 댓글 | ☐ | FE Avery |
+| 6 | Run Agent 구현: 입력 폼, 실행 버튼, mock 결과, 써봤어요 CTA | ☐ | FE Avery |
+| 7 | Ranking 구현: 개인 랭킹과 팀 랭킹, 월간 필터 UI | ☐ | FE Avery |
+| 8 | 좋아요, 써봤어요, Fork, 댓글 작성의 local state 동작 | ☐ | FE Avery |
+| 9 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ☐ | UX Riley |
+| 10 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ☐ | QA Morgan |
+
+### P1 — 시간 여유 시
+
+| # | 항목 | 담당 |
+|---|------|------|
+| 11 | Create Agent mock 폼과 등록 후 Feed 반영 | FE Avery |
+| 12 | Request Board mock 화면 초안 | FE Avery |
+| 13 | Profile mock 화면 초안 | FE Avery |
+| 14 | 빈 상태, 검색 결과 없음, 실행 실패 mock 상태 | QA Quinn |
+
+### 제외 (Sprint 2 이후 이월)
+
+| 항목 | 이연 사유 |
+|------|-----------|
+| Firebase Auth / 사내 SSO | 인증 방식과 실명제 계정 소스 결정 필요 |
+| Firestore 실제 연동 | Sprint 1은 UI/정보구조 검증이 우선 |
+| 관리자 페이지 | MVP 제외 범위 |
+| AI 추천 | PRD 향후 계획 항목 |
+| Slack / Google Chat / Gen.AI 연동 | 외부 실행 권한과 API 설계 필요 |
+| Badge 자동 발급 | 랭킹 산식과 운영 정책 확정 후 구현 |
+| Notification | MVP 제외 범위 |
+
+---
+
+## 수용 기준 (Acceptance Criteria)
+
+- [ ] `apps/agent-and-my-ax`에서 개발 서버로 앱이 실행된다
+- [ ] `/`에서 Agent 목록이 카드 형태로 렌더링되고 검색어 입력이 가능하다
+- [ ] 카테고리 필터와 정렬 UI가 Home Feed에서 표시된다
+- [ ] Agent 카드 클릭 시 `/agent/[id]` 상세 화면으로 이동한다
+- [ ] 상세 화면에 소개, 사용 방법, 입력 예시, 출력 예시, 작성자 정보가 표시된다
+- [ ] 상세 화면에서 실행 CTA를 통해 `/agent/[id]/run`으로 이동한다
+- [ ] Run 화면에서 입력값을 넣고 mock 결과를 확인할 수 있다
+- [ ] 실행 후 "써봤어요" 상태와 카운터가 local state로 반영된다
+- [ ] 좋아요, Fork, 댓글 작성 UI가 local state로 동작한다
+- [ ] `/ranking`에서 개인 랭킹과 팀 랭킹을 확인할 수 있다
+- [ ] 모바일 390px 화면에서 주요 텍스트와 버튼이 겹치거나 넘치지 않는다
+- [ ] 데스크톱 화면에서 Home Feed, Detail, Run, Ranking의 정보 밀도가 디자인 레퍼런스와 유사하다
+
+---
+
+## 액션 아이템
+
+**FE (Avery)**
+- [ ] `apps/agent-and-my-ax` Next.js 앱 생성
+- [ ] Tailwind CSS와 전역 디자인 토큰 구성
+- [ ] mock 데이터와 타입 정의
+- [ ] Home Feed, Agent Detail, Run Agent, Ranking 라우트 구현
+- [ ] 좋아요, 써봤어요, 댓글, Fork local state 구현
+- [ ] 모바일/데스크톱 반응형 레이아웃 조정
+
+**UX (Riley)**
+- [ ] PRD HTML 4개 화면에서 색상, 간격, 컴포넌트 패턴 추출
+- [ ] Product Hunt + GitHub + Linear + Reddit 톤이 과도하게 한쪽으로 치우치지 않는지 리뷰
+- [ ] 검색, 실행, 랭킹 흐름의 CTA 우선순위 검토
+
+**BE (Blake)**
+- [ ] PRD의 Firestore 구조를 Sprint 2 구현 후보로 정리
+- [ ] 인증/실명제 요구사항과 사내 계정 소스 Open Question 정리
+- [ ] 실제 Agent 실행 URL 보안 제약 초안 작성
+
+**QA (Morgan)**
+- [ ] Feed → Detail → Run → Tried → Ranking 핵심 플로우 테스트
+- [ ] 검색/필터/정렬 조합별 표시 상태 확인
+- [ ] 모바일 390px, 데스크톱 1024px 이상 시각 회귀 체크
+
+---
+
+## Open Questions
+
+| # | 질문 | 담당 | 기한 | 상태 |
+|---|------|------|------|------|
+| OQ-1 | 실명제 인증은 사내 SSO, Google Workspace, 수동 프로필 중 무엇을 기준으로 할까? | BE Blake | Sprint 1 리뷰 | ⚠️ Open |
+| OQ-2 | Agent 실행은 외부 URL iframe, 새 탭 이동, API proxy 중 어떤 방식을 기본으로 할까? | BE Blake | Sprint 1 리뷰 | ⚠️ Open |
+| OQ-3 | "좋아요"와 "써봤어요"를 중복 클릭 가능하게 할지 사용자당 1회로 제한할지 결정이 필요하다 | PM Jordan | Sprint 1 리뷰 | ⚠️ Open |
+| OQ-4 | 랭킹 산식은 좋아요 중심인지, 써봤어요와 등록 Agent 수까지 가중합할지 결정이 필요하다 | PM Jordan | Sprint 1 리뷰 | ⚠️ Open |
+| OQ-5 | Fork는 단순 복사인지, 원본-파생 관계와 변경 이력을 추적해야 하는지 결정이 필요하다 | PM Jordan | Sprint 2 계획 전 | ⚠️ Open |
+
+---
+
+## 비고
+
+### 리스크
+
+- PRD의 MVP 범위가 넓어 Sprint 1에서 전체 기능을 구현하려 하면 품질이 낮아질 수 있다.
+- 디자인 레퍼런스는 4개 화면만 있으므로 Create Agent, Request Board, Profile은 별도 설계가 필요하다.
+- 실제 Agent 실행 URL은 사내 보안 정책과 외부 링크 허용 범위에 영향을 받는다.
+- 실명제와 팀 랭킹은 인증 소스가 결정되지 않으면 실제 데이터로 전환하기 어렵다.
+
+### 참조 문서
+
+| 파일 | 용도 |
+|------|------|
+| `docs/PRD/agent-and-my-ax/PRD-agent-and-my-ax.docx` | PRD 원본 |
+| `docs/PRD/agent-and-my-ax/Agent Hub - Home Feed.html` | Home Feed 디자인 레퍼런스 |
+| `docs/PRD/agent-and-my-ax/Agent Hub - Agent Detail.html` | Agent Detail 디자인 레퍼런스 |
+| `docs/PRD/agent-and-my-ax/Agent Hub - Run Agent.html` | Run Agent 디자인 레퍼런스 |
+| `docs/PRD/agent-and-my-ax/Agent Hub - Ranking.html` | Ranking 디자인 레퍼런스 |
+
+---
+
+*회의록 작성: TS Alex | 다음 회의: Sprint 1 리뷰*
