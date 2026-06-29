@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint agent-and-my-ax/1 보고 — 2026-06-29</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f0f7f3;
+      border: 1px solid #b6d4c2;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .flow-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+    .flow-num {
+      display: inline-flex;
+      width: 26px;
+      height: 26px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #217346;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .flow-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+    .flow-desc {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #667085;
+    }
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      margin-top: 14px;
+    }
+    .arch-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .arch-box-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #217346;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #c8e6d5;
+    }
+    .arch-box ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .arch-box li {
+      font-size: 13px;
+      color: #374151;
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+      line-height: 1.45;
+    }
+    .arch-box li:last-child { border-bottom: none; }
+    .arch-box code {
+      background: #eef2f7;
+      color: #217346;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    .compact-table td,
+    .compact-table th {
+      font-size: 12px;
+      line-height: 1.35;
+      padding: 7px 9px;
+    }
+    .mini-note {
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #667085;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · Agent를 부탁해</div>
+        <h1 class="cover-title">Sprint 1</h1>
+        <p class="cover-sub">탐색-상세-실행-랭킹 흐름과 mock backend 완성</p>
+        <p class="cover-meta">2026-06-29 킥오프 · 2026-06-29 리뷰</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 1 목표</h2>
+      <blockquote class="goal-quote">
+        <strong>Agent를 부탁해</strong>의 핵심 탐색-상세-실행-랭킹 흐름을 Next.js 기반 mock 앱으로 구현한다.
+      </blockquote>
+      <div class="metric-row">
+        <div class="metric-card"><div class="metric-value">4</div><div class="metric-label">핵심 화면<br>Home · Detail · Run · Ranking</div></div>
+        <div class="metric-card"><div class="metric-value">4</div><div class="metric-label">API Routes<br>agents · detail · run · rankings</div></div>
+        <div class="metric-card"><div class="metric-value">32/32</div><div class="metric-label">체크리스트 완료<br>100% 완료율</div></div>
+        <div class="metric-card"><div class="metric-value">5</div><div class="metric-label">OQ 결정<br>인증 · 실행 · 랭킹 · Fork</div></div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">흐름</div>
+      <h2 class="slide-title">사용자 핵심 플로우</h2>
+      <div class="flow-grid">
+        <div class="flow-card"><div class="flow-num">1</div><div class="flow-title">Home Feed</div><div class="flow-desc">Agent 목록, 검색, 카테고리, 정렬 UI로 발견성을 검증한다.</div></div>
+        <div class="flow-card"><div class="flow-num">2</div><div class="flow-title">Agent Detail</div><div class="flow-desc">소개, 사용 방법, 예시, 업데이트 이력, 댓글을 한 화면에 모은다.</div></div>
+        <div class="flow-card"><div class="flow-num">3</div><div class="flow-title">Run Result</div><div class="flow-desc">입력 요약, 처리 단계, Jira 티켓 초안, 후속 CTA를 결과 중심으로 제공한다.</div></div>
+        <div class="flow-card"><div class="flow-num">4</div><div class="flow-title">Ranking</div><div class="flow-desc">개인/팀 랭킹으로 사내 공유와 선의의 경쟁 구조를 보여준다.</div></div>
+      </div>
+      <div class="callout" style="margin-top:22px;">
+        Sprint 1의 가장 중요한 검증 포인트는 <strong>Run 결과 화면</strong>이다. 단순 text 출력이 아니라 업무 결과물처럼 쓸 수 있는 구조화된 결과 카드로 개선했다.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+      <table class="data-table compact-table">
+        <thead><tr><th>#</th><th>결정 내용</th><th>담당</th></tr></thead>
+        <tbody>
+          <tr><td>D-1</td><td><strong>앱 위치:</strong> <code>apps/agent-and-my-ax</code></td><td>FE</td></tr>
+          <tr><td>D-2</td><td><strong>기술 스택:</strong> Next.js App Router + TypeScript + Tailwind CSS</td><td>FE</td></tr>
+          <tr><td>D-3</td><td><strong>Sprint 1 저장소:</strong> Firestore 없이 mock 데이터와 local state로 검증</td><td>PM</td></tr>
+          <tr><td>D-10</td><td><strong>실명제 인증:</strong> Google Workspace SSO를 기본안으로 결정</td><td>BE</td></tr>
+          <tr><td>D-11</td><td><strong>Agent 실행:</strong> API proxy 기본, 외부 URL은 새 탭 fallback</td><td>BE</td></tr>
+          <tr><td>D-13</td><td><strong>랭킹 산식:</strong> likes * 3 + triedCount * 5 + registeredAgents * 10</td><td>PM</td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">아키텍처</div>
+      <h2 class="slide-title">구현 구조</h2>
+      <div class="arch-grid">
+        <div class="arch-box">
+          <div class="arch-box-title">Frontend Routes</div>
+          <ul>
+            <li><code>/</code> Home Feed</li>
+            <li><code>/agent/[id]</code> Agent Detail</li>
+            <li><code>/agent/[id]/run</code> Run Agent 결과 중심 화면</li>
+            <li><code>/ranking</code> 개인/팀 랭킹</li>
+          </ul>
+        </div>
+        <div class="arch-box">
+          <div class="arch-box-title">Backend Mock API</div>
+          <ul>
+            <li><code>GET /api/agents</code> 목록 · 검색 · 정렬</li>
+            <li><code>GET /api/agents/[id]</code> 상세 데이터</li>
+            <li><code>POST /api/agents/[id]/run</code> 구조화된 실행 결과</li>
+            <li><code>GET /api/rankings</code> 랭킹 데이터</li>
+          </ul>
+        </div>
+      </div>
+      <div class="arch-grid">
+        <div class="arch-box">
+          <div class="arch-box-title">State Strategy</div>
+          <ul>
+            <li>좋아요, 써봤어요, Fork, 댓글은 Sprint 1 local state</li>
+            <li>실제 저장소는 Sprint 2 Firestore 전환</li>
+          </ul>
+        </div>
+        <div class="arch-box">
+          <div class="arch-box-title">Result Design</div>
+          <ul>
+            <li>입력 요약 → 처리 단계 → Jira 티켓 초안</li>
+            <li>복사, Jira 전송, 써봤어요, 다시 실행 CTA 제공</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">완료</div>
+      <h2 class="slide-title">완료 항목 요약</h2>
+      <div class="two-col">
+        <div>
+          <ul class="check-list">
+            <li class="done">Next.js 앱 초기 세팅</li>
+            <li class="done">Home Feed 검색 · 필터 · 정렬</li>
+            <li class="done">Agent Detail 정보 구조</li>
+            <li class="done">Run Agent 결과 화면 고도화</li>
+            <li class="done">Ranking 개인/팀 화면</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="check-list">
+            <li class="done">Mock 데이터 모델 정의</li>
+            <li class="done">Next API Routes mock backend</li>
+            <li class="done">OQ 5개 결정 완료</li>
+            <li class="done">API run 결과와 UI 연결</li>
+            <li class="done">Build · API · Playwright 검증</li>
+          </ul>
+        </div>
+      </div>
+      <p class="mini-note">체크리스트 기준 완료율: <strong>32/32개, 100%</strong>. P1 후보(Create Agent, Request Board, Profile)는 다음 Sprint 계획 후보로 유지한다.</p>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">검증 결과</h2>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>검증 항목</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code>pnpm --filter @ux-lab/agent-and-my-ax run build</code></td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>2</td><td><code>GET /api/agents</code>, <code>POST /api/agents/[id]/run</code>, <code>GET /api/rankings</code></td><td><span class="badge badge-green">응답 확인</span></td></tr>
+          <tr><td>3</td><td>Playwright: Run → Jira 티켓 초안 결과 렌더링</td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>4</td><td>Playwright: 모바일 390px Home 레이아웃 및 콘솔 오류</td><td><span class="badge badge-green">통과</span></td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">다음</div>
+      <h2 class="slide-title">Sprint 2 후보</h2>
+      <ul class="items">
+        <li><strong>Firebase Auth / Google Workspace SSO</strong> — 실명제 계정과 팀 정보를 실제 사용자 데이터로 전환</li>
+        <li><strong>Firestore 연동</strong> — users, agents, comments, tried, requests 컬렉션 연결</li>
+        <li><strong>Create Agent</strong> — 등록 폼과 Feed 반영 플로우 구현</li>
+        <li><strong>Request Board / Profile</strong> — PRD의 남은 핵심 화면 설계 및 구현</li>
+        <li><strong>Fork 관계 추적</strong> — parentAgentId, forkedFromVersion 기반 파생 이력 저장</li>
+      </ul>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">Agent를 부탁해 Sprint 1 리뷰</p>
+      <div class="qa-links">
+        <span>Branch: sprint/agent-and-my-ax/1</span>
+        <span>App: apps/agent-and-my-ax</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div>
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
