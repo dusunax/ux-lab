@@ -59,3 +59,22 @@ export interface TeamRank {
   agents: number;
   likes: number;
 }
+
+export interface RunTicket {
+  title: string;
+  priority: 'P0' | 'P1' | 'P2';
+  assignee: string;
+  due: string;
+}
+
+export interface RunAgentResult {
+  agentId: string;
+  inputSummary: string;
+  steps: Array<{
+    title: string;
+    detail: string;
+  }>;
+  tickets: RunTicket[];
+  copyText: string;
+  createdAt: string;
+}

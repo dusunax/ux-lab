@@ -31,6 +31,12 @@
 | D-7 | 실명제 회원 모델은 mock user seed로 표현하고 실제 인증은 Sprint 2 이후로 이월한다 | BE Blake |
 | D-8 | 좋아요, 써봤어요, 댓글, Fork는 Sprint 1에서 UI 상태와 카운터 동작까지만 구현한다 | FE Avery |
 | D-9 | Firestore 컬렉션 구조는 PRD를 기준으로 문서화하되 실제 저장소 연결은 제외한다 | BE Blake |
+| D-10 | 실명제 인증 소스는 Google Workspace SSO를 기본으로 한다 | BE Blake |
+| D-11 | Agent 실행은 API proxy를 기본으로 하고, 외부 URL은 새 탭 fallback으로 제한한다 | BE Blake |
+| D-12 | 좋아요와 써봤어요는 사용자당 1회로 제한한다. 좋아요는 toggle, 써봤어요는 후기 수정 플로우로 확장한다 | PM Jordan |
+| D-13 | 월간 랭킹 산식은 `likes * 3 + triedCount * 5 + registeredAgents * 10`을 기본안으로 검증한다 | PM Jordan |
+| D-14 | Fork는 단순 복사가 아니라 `parentAgentId`, `forkedFromVersion`을 유지하는 파생 관계로 추적한다 | PM Jordan |
+| D-15 | Sprint 1 백엔드는 Next API Routes 기반 mock service로 구현하고 Firestore 전환은 Sprint 2에서 진행한다 | BE Blake |
 
 ---
 
@@ -48,8 +54,10 @@
 | 6 | Run Agent 구현: 입력 폼, 실행 버튼, mock 결과, 써봤어요 CTA | ✅ | FE Avery |
 | 7 | Ranking 구현: 개인 랭킹과 팀 랭킹, 월간 필터 UI | ✅ | FE Avery |
 | 8 | 좋아요, 써봤어요, Fork, 댓글 작성의 local state 동작 | ✅ | FE Avery |
-| 9 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
-| 10 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
+| 9 | Run Agent 결과 화면을 입력 요약, 처리 단계, Jira 티켓 초안, 후속 CTA 중심으로 개선 | ✅ | FE Avery |
+| 10 | Next API Routes mock backend 구현: agents, agent detail, run, rankings | ✅ | BE Blake |
+| 11 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
+| 12 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
 
 ### P1 — 시간 여유 시
 
@@ -83,6 +91,9 @@
 - [x] 상세 화면에 소개, 사용 방법, 입력 예시, 출력 예시, 작성자 정보가 표시된다
 - [x] 상세 화면에서 실행 CTA를 통해 `/agent/[id]/run`으로 이동한다
 - [x] Run 화면에서 입력값을 넣고 mock 결과를 확인할 수 있다
+- [x] Run 결과가 입력 요약, 처리 단계, Jira 티켓 초안, 복사/Jira 전송/써봤어요 CTA로 구조화된다
+- [x] `POST /api/agents/[id]/run`으로 mock backend 실행 결과를 받을 수 있다
+- [x] `GET /api/agents`, `GET /api/agents/[id]`, `GET /api/rankings`가 mock 데이터를 반환한다
 - [x] 실행 후 "써봤어요" 상태와 카운터가 local state로 반영된다
 - [x] 좋아요, Fork, 댓글 작성 UI가 local state로 동작한다
 - [x] `/ranking`에서 개인 랭킹과 팀 랭킹을 확인할 수 있다
@@ -107,9 +118,11 @@
 - [x] 검색, 실행, 랭킹 흐름의 CTA 우선순위 검토
 
 **BE (Blake)**
-- [ ] PRD의 Firestore 구조를 Sprint 2 구현 후보로 정리
-- [ ] 인증/실명제 요구사항과 사내 계정 소스 Open Question 정리
-- [ ] 실제 Agent 실행 URL 보안 제약 초안 작성
+- [x] PRD의 Firestore 구조를 Sprint 2 구현 후보로 정리
+- [x] 인증/실명제 요구사항과 사내 계정 소스 Open Question 정리
+- [x] 실제 Agent 실행 URL 보안 제약 초안 작성
+- [x] Next API Routes mock backend 구현
+- [x] Run Agent 화면을 `/api/agents/[id]/run`에 연결
 
 **QA (Morgan)**
 - [x] Feed → Detail → Run → Tried → Ranking 핵심 플로우 테스트
@@ -122,11 +135,11 @@
 
 | # | 질문 | 담당 | 기한 | 상태 |
 |---|------|------|------|------|
-| OQ-1 | 실명제 인증은 사내 SSO, Google Workspace, 수동 프로필 중 무엇을 기준으로 할까? | BE Blake | Sprint 1 리뷰 | ⚠️ Open |
-| OQ-2 | Agent 실행은 외부 URL iframe, 새 탭 이동, API proxy 중 어떤 방식을 기본으로 할까? | BE Blake | Sprint 1 리뷰 | ⚠️ Open |
-| OQ-3 | "좋아요"와 "써봤어요"를 중복 클릭 가능하게 할지 사용자당 1회로 제한할지 결정이 필요하다 | PM Jordan | Sprint 1 리뷰 | ⚠️ Open |
-| OQ-4 | 랭킹 산식은 좋아요 중심인지, 써봤어요와 등록 Agent 수까지 가중합할지 결정이 필요하다 | PM Jordan | Sprint 1 리뷰 | ⚠️ Open |
-| OQ-5 | Fork는 단순 복사인지, 원본-파생 관계와 변경 이력을 추적해야 하는지 결정이 필요하다 | PM Jordan | Sprint 2 계획 전 | ⚠️ Open |
+| OQ-1 | 실명제 인증은 사내 SSO, Google Workspace, 수동 프로필 중 무엇을 기준으로 할까? | BE Blake | Sprint 1 | ✅ Google Workspace SSO |
+| OQ-2 | Agent 실행은 외부 URL iframe, 새 탭 이동, API proxy 중 어떤 방식을 기본으로 할까? | BE Blake | Sprint 1 | ✅ API proxy 기본, 외부 URL 새 탭 fallback |
+| OQ-3 | "좋아요"와 "써봤어요"를 중복 클릭 가능하게 할지 사용자당 1회로 제한할지 결정이 필요하다 | PM Jordan | Sprint 1 | ✅ 사용자당 1회 |
+| OQ-4 | 랭킹 산식은 좋아요 중심인지, 써봤어요와 등록 Agent 수까지 가중합할지 결정이 필요하다 | PM Jordan | Sprint 1 | ✅ likes * 3 + triedCount * 5 + registeredAgents * 10 |
+| OQ-5 | Fork는 단순 복사인지, 원본-파생 관계와 변경 이력을 추적해야 하는지 결정이 필요하다 | PM Jordan | Sprint 1 | ✅ parentAgentId + forkedFromVersion 추적 |
 
 ---
 
@@ -148,9 +161,14 @@
 | `apps/agent-and-my-ax/src/app/agent/[id]/page.tsx` | Agent Detail 라우트 |
 | `apps/agent-and-my-ax/src/components/AgentDetailClient.tsx` | 상세 정보, 좋아요, 써봤어요, Fork, 댓글 local state |
 | `apps/agent-and-my-ax/src/app/agent/[id]/run/page.tsx` | Run Agent 라우트 |
-| `apps/agent-and-my-ax/src/components/RunAgentClient.tsx` | 입력, mock 결과, 써봤어요 CTA |
+| `apps/agent-and-my-ax/src/components/RunAgentClient.tsx` | 입력, API 실행, 구조화된 결과 페이지, 써봤어요 CTA |
 | `apps/agent-and-my-ax/src/app/ranking/page.tsx` | 개인/팀 랭킹 화면 |
 | `apps/agent-and-my-ax/src/data/mock.ts` | Sprint 1 mock 데이터 |
+| `apps/agent-and-my-ax/src/server/agentService.ts` | mock backend service |
+| `apps/agent-and-my-ax/src/app/api/agents/route.ts` | Agent 목록 API |
+| `apps/agent-and-my-ax/src/app/api/agents/[id]/route.ts` | Agent 상세 API |
+| `apps/agent-and-my-ax/src/app/api/agents/[id]/run/route.ts` | Agent 실행 API |
+| `apps/agent-and-my-ax/src/app/api/rankings/route.ts` | 랭킹 API |
 
 ### 검증
 
