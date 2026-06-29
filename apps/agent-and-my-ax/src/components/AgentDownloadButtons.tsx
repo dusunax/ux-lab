@@ -28,7 +28,7 @@ const guideDetails: Record<AgentDownloadAsset['kind'], { placement: string; usag
 };
 
 export default function AgentDownloadButtons({ downloads }: AgentDownloadButtonsProps) {
-  const [isGuideOpen, setIsGuideOpen] = useState(true);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
 
   const downloadAsset = (asset: AgentDownloadAsset) => {
     const blob = new Blob([asset.content], { type: 'text/markdown;charset=utf-8' });
@@ -76,10 +76,12 @@ export default function AgentDownloadButtons({ downloads }: AgentDownloadButtons
             {downloads.map((asset) => {
               const guide = guideDetails[asset.kind];
               return (
-                <article key={`${asset.kind}-guide`} className="rounded-md border border-slate-100 bg-white px-2.5 py-2">
+                <article key={`${asset.kind}-guide`} className="min-w-0 rounded-md border border-slate-100 bg-white px-2.5 py-2">
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-extrabold text-ink">{asset.label}</span>
-                    <span className="truncate text-[10px] font-bold text-slate-400">{asset.filename}</span>
+                    <span className="flex-none text-[11px] font-extrabold text-ink">{asset.label}</span>
+                    <span className="min-w-0 break-words text-right text-[10px] font-bold leading-4 text-slate-400">
+                      {asset.filename}
+                    </span>
                   </div>
                   <GuideRow label="넣는 곳" value={guide.placement} />
                   <GuideRow label="사용법" value={guide.usage} />
