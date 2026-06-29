@@ -40,16 +40,16 @@
 
 | # | 항목 | 상태 | 담당 |
 |---|------|------|------|
-| 1 | Next.js 앱 초기 세팅 (`apps/agent-and-my-ax`) | ☐ | FE Avery |
-| 2 | 공통 레이아웃, 헤더, 검색 입력, 카테고리 필터, 반응형 shell 구현 | ☐ | FE Avery |
-| 3 | mock 데이터 모델 정의: users, agents, comments, tried, rankings | ☐ | FE Avery |
-| 4 | Home Feed 구현: Agent 카드 목록, 검색, 카테고리, 정렬 UI | ☐ | FE Avery |
-| 5 | Agent Detail 구현: 소개, 사용 방법, 예시, 작성자, 업데이트 이력, 댓글 | ☐ | FE Avery |
-| 6 | Run Agent 구현: 입력 폼, 실행 버튼, mock 결과, 써봤어요 CTA | ☐ | FE Avery |
-| 7 | Ranking 구현: 개인 랭킹과 팀 랭킹, 월간 필터 UI | ☐ | FE Avery |
-| 8 | 좋아요, 써봤어요, Fork, 댓글 작성의 local state 동작 | ☐ | FE Avery |
-| 9 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ☐ | UX Riley |
-| 10 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ☐ | QA Morgan |
+| 1 | Next.js 앱 초기 세팅 (`apps/agent-and-my-ax`) | ✅ | FE Avery |
+| 2 | 공통 레이아웃, 헤더, 검색 입력, 카테고리 필터, 반응형 shell 구현 | ✅ | FE Avery |
+| 3 | mock 데이터 모델 정의: users, agents, comments, tried, rankings | ✅ | FE Avery |
+| 4 | Home Feed 구현: Agent 카드 목록, 검색, 카테고리, 정렬 UI | ✅ | FE Avery |
+| 5 | Agent Detail 구현: 소개, 사용 방법, 예시, 작성자, 업데이트 이력, 댓글 | ✅ | FE Avery |
+| 6 | Run Agent 구현: 입력 폼, 실행 버튼, mock 결과, 써봤어요 CTA | ✅ | FE Avery |
+| 7 | Ranking 구현: 개인 랭킹과 팀 랭킹, 월간 필터 UI | ✅ | FE Avery |
+| 8 | 좋아요, 써봤어요, Fork, 댓글 작성의 local state 동작 | ✅ | FE Avery |
+| 9 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
+| 10 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
 
 ### P1 — 시간 여유 시
 
@@ -76,35 +76,35 @@
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] `apps/agent-and-my-ax`에서 개발 서버로 앱이 실행된다
-- [ ] `/`에서 Agent 목록이 카드 형태로 렌더링되고 검색어 입력이 가능하다
-- [ ] 카테고리 필터와 정렬 UI가 Home Feed에서 표시된다
-- [ ] Agent 카드 클릭 시 `/agent/[id]` 상세 화면으로 이동한다
-- [ ] 상세 화면에 소개, 사용 방법, 입력 예시, 출력 예시, 작성자 정보가 표시된다
-- [ ] 상세 화면에서 실행 CTA를 통해 `/agent/[id]/run`으로 이동한다
-- [ ] Run 화면에서 입력값을 넣고 mock 결과를 확인할 수 있다
-- [ ] 실행 후 "써봤어요" 상태와 카운터가 local state로 반영된다
-- [ ] 좋아요, Fork, 댓글 작성 UI가 local state로 동작한다
-- [ ] `/ranking`에서 개인 랭킹과 팀 랭킹을 확인할 수 있다
-- [ ] 모바일 390px 화면에서 주요 텍스트와 버튼이 겹치거나 넘치지 않는다
-- [ ] 데스크톱 화면에서 Home Feed, Detail, Run, Ranking의 정보 밀도가 디자인 레퍼런스와 유사하다
+- [x] `apps/agent-and-my-ax`에서 개발 서버로 앱이 실행된다
+- [x] `/`에서 Agent 목록이 카드 형태로 렌더링되고 검색어 입력이 가능하다
+- [x] 카테고리 필터와 정렬 UI가 Home Feed에서 표시된다
+- [x] Agent 카드 클릭 시 `/agent/[id]` 상세 화면으로 이동한다
+- [x] 상세 화면에 소개, 사용 방법, 입력 예시, 출력 예시, 작성자 정보가 표시된다
+- [x] 상세 화면에서 실행 CTA를 통해 `/agent/[id]/run`으로 이동한다
+- [x] Run 화면에서 입력값을 넣고 mock 결과를 확인할 수 있다
+- [x] 실행 후 "써봤어요" 상태와 카운터가 local state로 반영된다
+- [x] 좋아요, Fork, 댓글 작성 UI가 local state로 동작한다
+- [x] `/ranking`에서 개인 랭킹과 팀 랭킹을 확인할 수 있다
+- [x] 모바일 390px 화면에서 주요 텍스트와 버튼이 겹치거나 넘치지 않는다
+- [x] 데스크톱 화면에서 Home Feed, Detail, Run, Ranking의 정보 밀도가 디자인 레퍼런스와 유사하다
 
 ---
 
 ## 액션 아이템
 
 **FE (Avery)**
-- [ ] `apps/agent-and-my-ax` Next.js 앱 생성
-- [ ] Tailwind CSS와 전역 디자인 토큰 구성
-- [ ] mock 데이터와 타입 정의
-- [ ] Home Feed, Agent Detail, Run Agent, Ranking 라우트 구현
-- [ ] 좋아요, 써봤어요, 댓글, Fork local state 구현
-- [ ] 모바일/데스크톱 반응형 레이아웃 조정
+- [x] `apps/agent-and-my-ax` Next.js 앱 생성
+- [x] Tailwind CSS와 전역 디자인 토큰 구성
+- [x] mock 데이터와 타입 정의
+- [x] Home Feed, Agent Detail, Run Agent, Ranking 라우트 구현
+- [x] 좋아요, 써봤어요, 댓글, Fork local state 구현
+- [x] 모바일/데스크톱 반응형 레이아웃 조정
 
 **UX (Riley)**
-- [ ] PRD HTML 4개 화면에서 색상, 간격, 컴포넌트 패턴 추출
-- [ ] Product Hunt + GitHub + Linear + Reddit 톤이 과도하게 한쪽으로 치우치지 않는지 리뷰
-- [ ] 검색, 실행, 랭킹 흐름의 CTA 우선순위 검토
+- [x] PRD HTML 4개 화면에서 색상, 간격, 컴포넌트 패턴 추출
+- [x] Product Hunt + GitHub + Linear + Reddit 톤이 과도하게 한쪽으로 치우치지 않는지 리뷰
+- [x] 검색, 실행, 랭킹 흐름의 CTA 우선순위 검토
 
 **BE (Blake)**
 - [ ] PRD의 Firestore 구조를 Sprint 2 구현 후보로 정리
@@ -112,9 +112,9 @@
 - [ ] 실제 Agent 실행 URL 보안 제약 초안 작성
 
 **QA (Morgan)**
-- [ ] Feed → Detail → Run → Tried → Ranking 핵심 플로우 테스트
-- [ ] 검색/필터/정렬 조합별 표시 상태 확인
-- [ ] 모바일 390px, 데스크톱 1024px 이상 시각 회귀 체크
+- [x] Feed → Detail → Run → Tried → Ranking 핵심 플로우 테스트
+- [x] 검색/필터/정렬 조합별 표시 상태 확인
+- [x] 모바일 390px, 데스크톱 1024px 이상 시각 회귀 체크
 
 ---
 
@@ -138,6 +138,25 @@
 - 디자인 레퍼런스는 4개 화면만 있으므로 Create Agent, Request Board, Profile은 별도 설계가 필요하다.
 - 실제 Agent 실행 URL은 사내 보안 정책과 외부 링크 허용 범위에 영향을 받는다.
 - 실명제와 팀 랭킹은 인증 소스가 결정되지 않으면 실제 데이터로 전환하기 어렵다.
+
+### 구현 결과 요약
+
+| 파일 | 역할 |
+|------|------|
+| `apps/agent-and-my-ax/src/app/page.tsx` | Home Feed 진입 화면 |
+| `apps/agent-and-my-ax/src/components/HomeFeed.tsx` | 검색, 카테고리, 정렬, 카드 목록 상태 |
+| `apps/agent-and-my-ax/src/app/agent/[id]/page.tsx` | Agent Detail 라우트 |
+| `apps/agent-and-my-ax/src/components/AgentDetailClient.tsx` | 상세 정보, 좋아요, 써봤어요, Fork, 댓글 local state |
+| `apps/agent-and-my-ax/src/app/agent/[id]/run/page.tsx` | Run Agent 라우트 |
+| `apps/agent-and-my-ax/src/components/RunAgentClient.tsx` | 입력, mock 결과, 써봤어요 CTA |
+| `apps/agent-and-my-ax/src/app/ranking/page.tsx` | 개인/팀 랭킹 화면 |
+| `apps/agent-and-my-ax/src/data/mock.ts` | Sprint 1 mock 데이터 |
+
+### 검증
+
+- `pnpm --filter @ux-lab/agent-and-my-ax run build` 통과
+- Playwright: Home → Agent Detail → Run Agent → Tried 상태 변경 → Ranking 확인
+- Playwright: 모바일 390px Home 레이아웃 및 콘솔 오류 없음 확인
 
 ### 참조 문서
 
