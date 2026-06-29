@@ -45,6 +45,12 @@
 | [projection-art/2026-06-01-sprint-2-kickoff.md](./projection-art/2026-06-01-sprint-2-kickoff.md) | Sprint projection-art/2 킥오프 | 2026-06-01 | MediaPipe 웹캠 모션 인터랙션 도입 + Demo D 구현 |
 | [projection-art/2026-06-02-sprint-3-kickoff.md](./projection-art/2026-06-02-sprint-3-kickoff.md) | Sprint projection-art/3 킥오프 | 2026-06-02 | 전신 모션 + 생성형 AI 비주얼 연동 — Demo E + LLM 파라미터 반응형 연출 |
 
+### where-is-that-slide
+
+| 파일 | 스프린트 | 날짜 | 주요 결정 |
+|------|----------|------|-----------|
+| [where-is-that-slide/2026-06-29-sprint-1-kickoff.md](./where-is-that-slide/2026-06-29-sprint-1-kickoff.md) | Sprint where-is-that-slide/1 킥오프 | 2026-06-29 | FastAPI + ChromaDB + OpenAI Embedding으로 사내 문서 자연어 검색 MVP — 슬라이드 단위 결과 제공 |
+
 ---
 
 ## 프로세스 회의록
