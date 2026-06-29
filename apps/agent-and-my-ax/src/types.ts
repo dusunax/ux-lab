@@ -2,6 +2,10 @@ export type AgentCategory = 'productivity' | 'development' | 'planning' | 'analy
 
 export type AgentBadge = 'Official' | 'Rising' | 'Top Creator' | 'Most Used';
 
+export type AgentPlatform = 'ChatGPT' | 'Claude' | 'Gen.AI' | 'Document.AI' | 'Agent Builder';
+
+export type AgentVisibility = 'company' | 'team' | 'private';
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -27,6 +31,9 @@ export interface AgentItem {
   description: string;
   category: AgentCategory;
   tags: string[];
+  platform: AgentPlatform;
+  usageGuide: string;
+  visibility: AgentVisibility;
   creatorId: string;
   runLabel: string;
   runPlaceholder: string;
@@ -60,21 +67,28 @@ export interface TeamRank {
   likes: number;
 }
 
-export interface RunTicket {
+export interface RunArtifact {
   title: string;
-  priority: 'P0' | 'P1' | 'P2';
-  assignee: string;
-  due: string;
+  kind: 'task' | 'finding' | 'summary' | 'recommendation';
+  badge: string;
+  description: string;
+  meta: Array<{
+    label: string;
+    value: string;
+  }>;
 }
 
 export interface RunAgentResult {
   agentId: string;
   inputSummary: string;
+  resultTitle: string;
+  resultCountLabel: string;
+  primaryActionLabel: string;
   steps: Array<{
     title: string;
     detail: string;
   }>;
-  tickets: RunTicket[];
+  artifacts: RunArtifact[];
   copyText: string;
   createdAt: string;
 }

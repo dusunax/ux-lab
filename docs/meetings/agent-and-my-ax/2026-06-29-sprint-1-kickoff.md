@@ -37,6 +37,7 @@
 | D-13 | 월간 랭킹 산식은 `likes * 3 + triedCount * 5 + registeredAgents * 10`을 기본안으로 검증한다 | PM Jordan |
 | D-14 | Fork는 단순 복사가 아니라 `parentAgentId`, `forkedFromVersion`을 유지하는 파생 관계로 추적한다 | PM Jordan |
 | D-15 | Sprint 1 백엔드는 Next API Routes 기반 mock service로 구현하고 Firestore 전환은 Sprint 2에서 진행한다 | BE Blake |
+| D-16 | Agent 데이터에 Platform, Usage Guide, Visibility 필드를 추가해 실행 맥락과 공개 범위를 명확히 한다 | PM Jordan |
 
 ---
 
@@ -54,10 +55,11 @@
 | 6 | Run Agent 구현: 입력 폼, 실행 버튼, mock 결과, 써봤어요 CTA | ✅ | FE Avery |
 | 7 | Ranking 구현: 개인 랭킹과 팀 랭킹, 월간 필터 UI | ✅ | FE Avery |
 | 8 | 좋아요, 써봤어요, Fork, 댓글 작성의 local state 동작 | ✅ | FE Avery |
-| 9 | Run Agent 결과 화면을 입력 요약, 처리 단계, Jira 티켓 초안, 후속 CTA 중심으로 개선 | ✅ | FE Avery |
+| 9 | Run Agent 결과 화면을 입력 요약, 처리 단계, 공통 결과 카드, 후속 CTA 중심으로 개선 | ✅ | FE Avery |
 | 10 | Next API Routes mock backend 구현: agents, agent detail, run, rankings | ✅ | BE Blake |
-| 11 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
-| 12 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
+| 11 | Agent 데이터 필드 추가: Platform, Usage Guide, Visibility | ✅ | PM Jordan |
+| 12 | 모바일 390px와 데스크톱 1024px 이상에서 디자인 레퍼런스와 주요 밀도 일치 | ✅ | UX Riley |
+| 13 | 핵심 플로우 QA: Feed → Detail → Run → Tried → Ranking 확인 | ✅ | QA Morgan |
 
 ### P1 — 시간 여유 시
 
@@ -91,9 +93,10 @@
 - [x] 상세 화면에 소개, 사용 방법, 입력 예시, 출력 예시, 작성자 정보가 표시된다
 - [x] 상세 화면에서 실행 CTA를 통해 `/agent/[id]/run`으로 이동한다
 - [x] Run 화면에서 입력값을 넣고 mock 결과를 확인할 수 있다
-- [x] Run 결과가 입력 요약, 처리 단계, Jira 티켓 초안, 복사/Jira 전송/써봤어요 CTA로 구조화된다
+- [x] Run 결과가 입력 요약, 처리 단계, 공통 결과 카드, 복사/내보내기/써봤어요 CTA로 구조화된다
 - [x] `POST /api/agents/[id]/run`으로 mock backend 실행 결과를 받을 수 있다
 - [x] `GET /api/agents`, `GET /api/agents/[id]`, `GET /api/rankings`가 mock 데이터를 반환한다
+- [x] Agent 카드와 상세 화면에서 Platform, Usage Guide, Visibility를 확인할 수 있다
 - [x] 실행 후 "써봤어요" 상태와 카운터가 local state로 반영된다
 - [x] 좋아요, Fork, 댓글 작성 UI가 local state로 동작한다
 - [x] `/ranking`에서 개인 랭킹과 팀 랭킹을 확인할 수 있다
@@ -111,6 +114,7 @@
 - [x] Home Feed, Agent Detail, Run Agent, Ranking 라우트 구현
 - [x] 좋아요, 써봤어요, 댓글, Fork local state 구현
 - [x] 모바일/데스크톱 반응형 레이아웃 조정
+- [x] Platform, Usage Guide, Visibility 표시 반영
 
 **UX (Riley)**
 - [x] PRD HTML 4개 화면에서 색상, 간격, 컴포넌트 패턴 추출

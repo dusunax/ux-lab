@@ -16,6 +16,12 @@ export const categoryColors: Record<AgentCategory, string> = {
   communication: '#BE185D',
 };
 
+export const visibilityLabels = {
+  company: '전체 공개',
+  team: '팀 공개',
+  private: '비공개',
+} as const;
+
 export const users: UserProfile[] = [
   {
     id: 'dusun',
@@ -65,6 +71,9 @@ export const agents: AgentItem[] = [
     description: '회의록을 붙여넣으면 결정 사항, 담당자, Jira 티켓 초안을 자동으로 정리합니다.',
     category: 'productivity',
     tags: ['회의록', 'Jira', 'Action Item'],
+    platform: 'Claude',
+    usageGuide: '회의록 원문을 그대로 붙여넣고, 결정 사항과 담당자가 드러나는 문장을 지우지 않는 것이 가장 좋습니다.',
+    visibility: 'company',
     creatorId: 'dusun',
     runLabel: '회의록 붙여넣기',
     runPlaceholder: '오늘 회의 내용을 붙여넣으세요...',
@@ -86,6 +95,9 @@ export const agents: AgentItem[] = [
     description: '목표, 범위, 수용 기준의 빈틈을 찾아 PM 리뷰 코멘트로 변환합니다.',
     category: 'planning',
     tags: ['PRD', 'PM', 'Review'],
+    platform: 'ChatGPT',
+    usageGuide: '목표, 포함 범위, 제외 범위, 수용 기준을 한 번에 넣으면 누락된 의사결정을 더 잘 찾습니다.',
+    visibility: 'company',
     creatorId: 'seoyeon',
     runLabel: 'PRD 초안',
     runPlaceholder: '검토할 PRD 내용을 붙여넣으세요...',
@@ -107,6 +119,9 @@ export const agents: AgentItem[] = [
     description: '복잡한 쿼리를 사람이 읽기 쉬운 단계별 설명과 성능 리스크로 바꿉니다.',
     category: 'development',
     tags: ['SQL', 'Explain', '성능'],
+    platform: 'Gen.AI',
+    usageGuide: '쿼리와 함께 테이블 목적, 예상 데이터 규모, 느린 구간을 같이 적으면 성능 리스크 설명이 정확해집니다.',
+    visibility: 'team',
     creatorId: 'minjun',
     runLabel: 'SQL 쿼리',
     runPlaceholder: 'SELECT ...',
@@ -127,6 +142,9 @@ export const agents: AgentItem[] = [
     description: '고객 문의를 주제별로 묶고 긴급도와 담당팀 후보를 제안합니다.',
     category: 'analytics',
     tags: ['VOC', '분석', 'CS'],
+    platform: 'Document.AI',
+    usageGuide: '문의 내용을 줄 단위로 나누고, 날짜나 채널 정보가 있으면 함께 붙여넣으세요.',
+    visibility: 'team',
     creatorId: 'haneul',
     runLabel: 'VOC 목록',
     runPlaceholder: '고객 문의를 줄 단위로 붙여넣으세요...',
@@ -148,6 +166,9 @@ export const agents: AgentItem[] = [
     description: '긴 스레드에서 합의 사항과 미답변 질문만 뽑아 공유 가능한 요약으로 만듭니다.',
     category: 'communication',
     tags: ['Chat', '요약', '공유'],
+    platform: 'Agent Builder',
+    usageGuide: '스레드 전체를 시간순으로 붙여넣으면 결정/미결정 항목을 더 안정적으로 구분합니다.',
+    visibility: 'private',
     creatorId: 'dusun',
     runLabel: '채팅 스레드',
     runPlaceholder: '요약할 채팅 내용을 붙여넣으세요...',

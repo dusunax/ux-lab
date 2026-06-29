@@ -12,8 +12,8 @@ import {
   Send,
   Sparkles,
 } from 'lucide-react';
-import { findUser } from '@/data/mock';
-import type { AgentItem, RunAgentResult, RunTicket } from '@/types';
+import { findUser, visibilityLabels } from '@/data/mock';
+import type { AgentItem, RunAgentResult, RunArtifact } from '@/types';
 
 interface RunAgentClientProps {
   agent: AgentItem;
@@ -88,6 +88,16 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
             >
               Agent 정보 보기
             </Link>
+            <div className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-500">
+              <div className="flex items-center justify-between gap-3">
+                <span>Platform</span>
+                <span className="text-ink">{agent.platform}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span>Visibility</span>
+                <span className="text-ink">{visibilityLabels[agent.visibility]}</span>
+              </div>
+            </div>
           </div>
 
           <div className="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline lg:block">
@@ -141,8 +151,11 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
               copied={copied}
               inputSummary={result.inputSummary}
               output={result.copyText}
+              resultTitle={result.resultTitle}
+              resultCountLabel={result.resultCountLabel}
+              primaryActionLabel={result.primaryActionLabel}
               steps={result.steps}
-              tickets={result.tickets}
+              artifacts={result.artifacts}
               tried={tried}
               triedCount={agent.triedCount + (tried ? 1 : 0)}
               onCopy={copyResult}
@@ -159,7 +172,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
                 결과 미리보기
               </div>
               <p className="rounded-xl bg-white p-4 text-sm leading-6 text-slate-400">
-                Run을 누르면 입력 요약, 처리 단계, Jira 티켓 초안, 후속 CTA가 결과 페이지 형태로 표시됩니다.
+                Run을 누르면 입력 요약, 처리 단계, 결과 카드, 후속 CTA가 공통 결과 페이지 형태로 표시됩니다.
               </p>
             </div>
           )}
@@ -173,8 +186,11 @@ function ResultPanel({
   copied,
   inputSummary,
   output,
+  resultTitle,
+  resultCountLabel,
+  primaryActionLabel,
   steps,
-  tickets,
+  artifacts,
   tried,
   triedCount,
   onCopy,
@@ -184,8 +200,11 @@ function ResultPanel({
   copied: boolean;
   inputSummary: string;
   output: string;
+  resultTitle: string;
+  resultCountLabel: string;
+  primaryActionLabel: string;
   steps: RunAgentResult['steps'];
-  tickets: RunTicket[];
+  artifacts: RunArtifact[];
   tried: boolean;
   triedCount: number;
   onCopy: () => void;
@@ -196,7 +215,7 @@ function ResultPanel({
     <div className="mt-6 space-y-4">
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <div className="mb-2 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-extrabold text-ink">입력한 회의록</h2>
+          <h2 className="text-sm font-extrabold text-ink">입력 요약</h2>
           <span className="text-xs font-bold text-[#0C7A59]">요약됨</span>
         </div>
         <p className="text-sm leading-6 text-slate-600">{inputSummary}</p>
@@ -217,7 +236,7 @@ function ResultPanel({
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-extrabold text-ink">
-            Jira 티켓 초안 <span className="text-mint">{tickets.length}건</span>
+            {resultTitle} <span className="text-mint">{resultCountLabel}</span>
           </h2>
           <button
             type="button"
@@ -229,21 +248,21 @@ function ResultPanel({
           </button>
         </div>
         <div className="space-y-2">
-          {tickets.map((ticket) => (
-            <article key={ticket.title} className="rounded-xl border border-slate-100 p-4">
+          {artifacts.map((artifact) => (
+            <article key={artifact.title} className="rounded-xl border border-slate-100 p-4">
               <div className="mb-2 flex items-start justify-between gap-3">
-                <h3 className="text-sm font-extrabold leading-5 text-ink">{ticket.title}</h3>
+                <h3 className="text-sm font-extrabold leading-5 text-ink">{artifact.title}</h3>
                 <span className="flex-none rounded-md bg-[#E6F8F1] px-2 py-1 text-[11px] font-extrabold text-[#0C7A59]">
-                  {ticket.priority}
+                  {artifact.badge}
                 </span>
               </div>
+              <p className="mb-2 text-sm leading-6 text-slate-600">{artifact.description}</p>
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold text-slate-400">
-                <span>
-                  담당 <b className="text-slate-600">{ticket.assignee}</b>
-                </span>
-                <span>
-                  마감 <b className="text-slate-600">{ticket.due}</b>
-                </span>
+                {artifact.meta.map((item) => (
+                  <span key={`${artifact.title}-${item.label}`}>
+                    {item.label} <b className="text-slate-600">{item.value}</b>
+                  </span>
+                ))}
               </div>
             </article>
           ))}
@@ -254,7 +273,7 @@ function ResultPanel({
           className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-extrabold text-ink transition hover:bg-slate-50 focus-ring"
         >
           <ExternalLink size={16} />
-          Jira로 보내기
+          {primaryActionLabel}
         </button>
       </div>
 
@@ -287,7 +306,7 @@ function ResultPanel({
 
       <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-hairline">
         <div className="min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-400">
-          다른 회의록을 넣고 다시 실행...
+          다른 입력으로 다시 실행...
         </div>
         <button
           type="button"

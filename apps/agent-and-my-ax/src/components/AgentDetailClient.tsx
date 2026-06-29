@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, GitFork, MessageCircle, Play, ThumbsUp } from 'lucide-react';
-import { categoryColors, categoryLabels, commentsByAgent, findUser } from '@/data/mock';
+import { categoryColors, categoryLabels, commentsByAgent, findUser, visibilityLabels } from '@/data/mock';
 import type { AgentComment, AgentItem } from '@/types';
 
 interface AgentDetailClientProps {
@@ -47,6 +47,12 @@ export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
             >
               {categoryLabels[agent.category]}
             </span>
+            <span className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1 text-xs font-bold text-slate-600">
+              {agent.platform}
+            </span>
+            <span className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1 text-xs font-bold text-slate-600">
+              {visibilityLabels[agent.visibility]}
+            </span>
             {agent.badge && (
               <span className="rounded-full bg-[#E6F8F1] px-2.5 py-1 text-xs font-bold text-[#0C7A59]">
                 {agent.badge}
@@ -66,6 +72,12 @@ export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
         </div>
 
         <div className="grid gap-6 p-5 md:p-7">
+          <InfoBlock title="Usage Guide">
+            <p className="rounded-xl border border-[#BDEBDA] bg-[#E6F8F1] p-4 text-sm leading-6 text-[#0C7A59]">
+              {agent.usageGuide}
+            </p>
+          </InfoBlock>
+
           <InfoBlock title="사용 방법">
             <ol className="grid gap-2">
               {agent.usage.map((step, index) => (
@@ -165,6 +177,8 @@ export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">
           <p className="mb-3 text-sm font-extrabold text-ink">지표</p>
+          <Metric icon={<Play size={15} />} label="Platform" value={agent.platform} />
+          <Metric icon={<CheckCircle2 size={15} />} label="공개 범위" value={visibilityLabels[agent.visibility]} />
           <Metric icon={<MessageCircle size={15} />} label="댓글" value={String(comments.length)} />
           <Metric icon={<CheckCircle2 size={15} />} label="써봤어요" value={String(agent.triedCount + (tried ? 1 : 0))} />
           <Metric icon={<GitFork size={15} />} label="Fork" value={String(agent.forkCount + (forked ? 1 : 0))} />

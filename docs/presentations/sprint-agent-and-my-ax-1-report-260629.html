@@ -154,7 +154,7 @@
       <div class="metric-row">
         <div class="metric-card"><div class="metric-value">4</div><div class="metric-label">핵심 화면<br>Home · Detail · Run · Ranking</div></div>
         <div class="metric-card"><div class="metric-value">4</div><div class="metric-label">API Routes<br>agents · detail · run · rankings</div></div>
-        <div class="metric-card"><div class="metric-value">32/32</div><div class="metric-label">체크리스트 완료<br>100% 완료율</div></div>
+        <div class="metric-card"><div class="metric-value">34/34</div><div class="metric-label">체크리스트 완료<br>100% 완료율</div></div>
         <div class="metric-card"><div class="metric-value">5</div><div class="metric-label">OQ 결정<br>인증 · 실행 · 랭킹 · Fork</div></div>
       </div>
       <div class="slide-counter"></div>
@@ -168,7 +168,7 @@
       <div class="flow-grid">
         <div class="flow-card"><div class="flow-num">1</div><div class="flow-title">Home Feed</div><div class="flow-desc">Agent 목록, 검색, 카테고리, 정렬 UI로 발견성을 검증한다.</div></div>
         <div class="flow-card"><div class="flow-num">2</div><div class="flow-title">Agent Detail</div><div class="flow-desc">소개, 사용 방법, 예시, 업데이트 이력, 댓글을 한 화면에 모은다.</div></div>
-        <div class="flow-card"><div class="flow-num">3</div><div class="flow-title">Run Result</div><div class="flow-desc">입력 요약, 처리 단계, Jira 티켓 초안, 후속 CTA를 결과 중심으로 제공한다.</div></div>
+        <div class="flow-card"><div class="flow-num">3</div><div class="flow-title">Run Result</div><div class="flow-desc">입력 요약, 처리 단계, 공통 결과 카드, 후속 CTA를 Agent 공통 형태로 제공한다.</div></div>
         <div class="flow-card"><div class="flow-num">4</div><div class="flow-title">Ranking</div><div class="flow-desc">개인/팀 랭킹으로 사내 공유와 선의의 경쟁 구조를 보여준다.</div></div>
       </div>
       <div class="callout" style="margin-top:22px;">
@@ -191,6 +191,7 @@
           <tr><td>D-10</td><td><strong>실명제 인증:</strong> Google Workspace SSO를 기본안으로 결정</td><td>BE</td></tr>
           <tr><td>D-11</td><td><strong>Agent 실행:</strong> API proxy 기본, 외부 URL은 새 탭 fallback</td><td>BE</td></tr>
           <tr><td>D-13</td><td><strong>랭킹 산식:</strong> likes * 3 + triedCount * 5 + registeredAgents * 10</td><td>PM</td></tr>
+          <tr><td>D-16</td><td><strong>Agent 메타데이터:</strong> Platform, Usage Guide, Visibility 필드 추가</td><td>PM</td></tr>
         </tbody>
       </table>
       <div class="slide-counter"></div>
@@ -232,8 +233,16 @@
         <div class="arch-box">
           <div class="arch-box-title">Result Design</div>
           <ul>
-            <li>입력 요약 → 처리 단계 → Jira 티켓 초안</li>
-            <li>복사, Jira 전송, 써봤어요, 다시 실행 CTA 제공</li>
+            <li>입력 요약 → 처리 단계 → 공통 결과 카드</li>
+            <li>복사, 내보내기, 써봤어요, 다시 실행 CTA 제공</li>
+          </ul>
+        </div>
+        <div class="arch-box">
+          <div class="arch-box-title">Agent Metadata</div>
+          <ul>
+            <li><code>platform</code>: ChatGPT, Claude, Gen.AI 등 실행 위치</li>
+            <li><code>usageGuide</code>: 가장 잘 동작하는 사용법</li>
+            <li><code>visibility</code>: 전체 공개, 팀 공개, 비공개</li>
           </ul>
         </div>
       </div>
@@ -253,6 +262,7 @@
             <li class="done">Agent Detail 정보 구조</li>
             <li class="done">Run Agent 결과 화면 고도화</li>
             <li class="done">Ranking 개인/팀 화면</li>
+            <li class="done">Platform · Visibility 카드 노출</li>
           </ul>
         </div>
         <div>
@@ -261,11 +271,12 @@
             <li class="done">Next API Routes mock backend</li>
             <li class="done">OQ 5개 결정 완료</li>
             <li class="done">API run 결과와 UI 연결</li>
+            <li class="done">Usage Guide 상세 섹션 추가</li>
             <li class="done">Build · API · Playwright 검증</li>
           </ul>
         </div>
       </div>
-      <p class="mini-note">체크리스트 기준 완료율: <strong>32/32개, 100%</strong>. P1 후보(Create Agent, Request Board, Profile)는 다음 Sprint 계획 후보로 유지한다.</p>
+      <p class="mini-note">체크리스트 기준 완료율: <strong>34/34개, 100%</strong>. P1 후보(Create Agent, Request Board, Profile)는 다음 Sprint 계획 후보로 유지한다.</p>
       <div class="slide-counter"></div>
     </div>
   </div>
@@ -279,7 +290,7 @@
         <tbody>
           <tr><td>1</td><td><code>pnpm --filter @ux-lab/agent-and-my-ax run build</code></td><td><span class="badge badge-green">통과</span></td></tr>
           <tr><td>2</td><td><code>GET /api/agents</code>, <code>POST /api/agents/[id]/run</code>, <code>GET /api/rankings</code></td><td><span class="badge badge-green">응답 확인</span></td></tr>
-          <tr><td>3</td><td>Playwright: Run → Jira 티켓 초안 결과 렌더링</td><td><span class="badge badge-green">통과</span></td></tr>
+          <tr><td>3</td><td>Playwright: Run → 공통 결과 카드 렌더링</td><td><span class="badge badge-green">통과</span></td></tr>
           <tr><td>4</td><td>Playwright: 모바일 390px Home 레이아웃 및 콘솔 오류</td><td><span class="badge badge-green">통과</span></td></tr>
         </tbody>
       </table>

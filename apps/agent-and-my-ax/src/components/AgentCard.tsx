@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { CheckCircle2, MessageCircle, GitFork, Play } from 'lucide-react';
-import { categoryColors, categoryLabels, findUser } from '@/data/mock';
+import { categoryColors, categoryLabels, findUser, visibilityLabels } from '@/data/mock';
 import type { AgentItem } from '@/types';
 
 interface AgentCardProps {
@@ -54,6 +54,12 @@ export default function AgentCard({ agent, liked, onLike }: AgentCardProps) {
           <span className="inline-flex items-center gap-1 rounded-md border border-slate-100 bg-slate-50 px-2 py-0.5 text-slate-600">
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: categoryColor }} />
             {categoryLabels[agent.category]}
+          </span>
+          <span className="rounded-md border border-slate-100 bg-slate-50 px-2 py-0.5 text-slate-600">
+            {agent.platform}
+          </span>
+          <span className="rounded-md border border-slate-100 bg-slate-50 px-2 py-0.5 text-slate-600">
+            {visibilityLabels[agent.visibility]}
           </span>
           <span
             className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-extrabold"
