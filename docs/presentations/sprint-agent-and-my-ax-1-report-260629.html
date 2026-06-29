@@ -127,6 +127,30 @@
       line-height: 1.6;
       color: #667085;
     }
+    .screenshot-frame {
+      width: 100%;
+      margin-top: 16px;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+    .screenshot-frame img {
+      display: block;
+      width: 100%;
+      max-height: 440px;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .screenshot-caption {
+      padding: 9px 12px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #667085;
+      background: #f9fafb;
+    }
   </style>
 </head>
 <body>
@@ -173,6 +197,22 @@
       </div>
       <div class="callout" style="margin-top:22px;">
         Sprint 1의 가장 중요한 검증 포인트는 <strong>Run 결과 화면</strong>이다. 단순 text 출력이 아니라 업무 결과물처럼 쓸 수 있는 구조화된 결과 카드로 개선했다.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결과 화면</div>
+      <h2 class="slide-title">Run 결과 페이지</h2>
+      <p class="body-text">
+        Sprint 1에서 가장 중요한 검증 대상은 Agent 실행 후 사용자가 바로 업무 결과물로 이해할 수 있는 결과 페이지다.
+        작성자 <code>resultPreset</code> 기반 결과 카드와 후속 CTA가 같은 UI 계약으로 렌더링된다.
+      </p>
+      <div class="screenshot-frame">
+        <img src="./sprint-agent-and-my-ax-1/run-result.png" alt="Agent를 부탁해 Run 결과 페이지 스크린샷">
+        <div class="screenshot-caption">Run Agent 결과: 입력 요약, 처리 단계, 작성자 결과 카드, 복사/내보내기/써봤어요 CTA.</div>
       </div>
       <div class="slide-counter"></div>
     </div>
