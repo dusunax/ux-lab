@@ -68,7 +68,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
         </Link>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <div className="grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="min-w-0 space-y-4 lg:order-none">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">
             <div className="mb-4 flex items-center gap-3">
