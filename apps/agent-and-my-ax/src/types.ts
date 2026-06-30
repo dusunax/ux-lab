@@ -8,6 +8,10 @@ export type AgentVisibility = 'company' | 'team' | 'private';
 
 export type AgentDownloadKind = 'cursor' | 'claude' | 'codex' | 'prompt';
 
+export type RequestStatus = 'open' | 'planned' | 'in-progress' | 'shipped';
+
+export type AgentInteractionKind = 'likes' | 'tried' | 'forks';
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -54,6 +58,23 @@ export interface AgentItem {
   badge?: AgentBadge;
 }
 
+export interface CreateAgentInput {
+  title: string;
+  description: string;
+  category: AgentCategory;
+  tags: string[];
+  platform: AgentPlatform;
+  usageGuide: string;
+  visibility: AgentVisibility;
+  runLabel: string;
+  runPlaceholder: string;
+  sampleInput: string;
+  sampleOutput: string;
+  prompt: string;
+  resultTitle: string;
+  primaryActionLabel: string;
+}
+
 export interface AgentDownloadAsset {
   kind: AgentDownloadKind;
   label: string;
@@ -76,6 +97,34 @@ export interface TeamRank {
   members: number;
   agents: number;
   likes: number;
+}
+
+export interface AgentRequest {
+  id: string;
+  title: string;
+  description: string;
+  requesterId: string;
+  team: string;
+  status: RequestStatus;
+  votes: number;
+  tags: string[];
+  createdAt: string;
+}
+
+export interface CreateAgentRequestInput {
+  title: string;
+  description: string;
+  team: string;
+  tags: string[];
+}
+
+export interface UserActivitySummary {
+  user: UserProfile;
+  authoredAgents: AgentItem[];
+  triedAgents: AgentItem[];
+  likedAgents: AgentItem[];
+  forkedAgents: AgentItem[];
+  requests: AgentRequest[];
 }
 
 export interface RunArtifact {

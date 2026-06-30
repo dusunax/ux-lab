@@ -1,5 +1,6 @@
-import { agents, categoryLabels, commentsByAgent, findAgent, findUser, teamRanks, personRanks } from '@/data/mock';
-import type { AgentCategory, RunAgentResult } from '@/types';
+import { categoryLabels, teamRanks, personRanks } from '@/data/mock';
+import { getRepository } from '@/server/repository';
+import type { AgentCategory, AgentInteractionKind, CreateAgentInput, CreateAgentRequestInput, RunAgentResult } from '@/types';
 
 export type AgentSort = 'popular' | 'recent' | 'tried';
 
@@ -12,6 +13,7 @@ export function listAgents({
   query?: string;
   sort?: AgentSort;
 }) {
+  const agents = getRepository().listAgents();
   const normalized = query?.trim().toLowerCase() ?? '';
   const filtered = agents.filter((agent) => {
     const matchesCategory = !category || agent.category === category;
@@ -29,12 +31,13 @@ export function listAgents({
 }
 
 export function getAgentDetail(id: string) {
-  const agent = findAgent(id);
+  const repository = getRepository();
+  const agent = repository.getAgent(id);
   if (!agent) return null;
   return {
     agent,
-    creator: findUser(agent.creatorId),
-    comments: commentsByAgent[id] ?? [],
+    creator: repository.getUserActivity(agent.creatorId)?.user ?? repository.getCurrentUser(),
+    comments: repository.getComments(id),
   };
 }
 
@@ -46,7 +49,7 @@ export function getRankings() {
 }
 
 export function runAgent({ agentId, input }: { agentId: string; input: string }): RunAgentResult | null {
-  const agent = findAgent(agentId);
+  const agent = getRepository().getAgent(agentId);
   if (!agent) return null;
 
   const normalizedInput = input.trim().replace(/\s+/g, ' ');
@@ -74,4 +77,36 @@ export function runAgent({ agentId, input }: { agentId: string; input: string })
     copyText,
     createdAt: new Date().toISOString(),
   };
+}
+
+export function getCurrentUser() {
+  return getRepository().getCurrentUser();
+}
+
+export function createAgent(input: CreateAgentInput) {
+  return getRepository().createAgent(input, getCurrentUser().id);
+}
+
+export function addComment(agentId: string, content: string) {
+  return getRepository().addComment(agentId, content, getCurrentUser().id);
+}
+
+export function setInteraction(agentId: string, kind: AgentInteractionKind, active: boolean) {
+  return getRepository().setInteraction(agentId, getCurrentUser().id, kind, active);
+}
+
+export function listRequests() {
+  return getRepository().listRequests();
+}
+
+export function createRequest(input: CreateAgentRequestInput) {
+  return getRepository().createRequest(input, getCurrentUser().id);
+}
+
+export function voteRequest(requestId: string) {
+  return getRepository().voteRequest(requestId);
+}
+
+export function getUserActivity(userId: string) {
+  return getRepository().getUserActivity(userId);
 }

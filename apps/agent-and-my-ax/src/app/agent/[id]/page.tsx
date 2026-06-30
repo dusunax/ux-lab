@@ -1,20 +1,18 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import AgentDetailClient from '@/components/AgentDetailClient';
-import { agents, findAgent } from '@/data/mock';
+import { getAgentDetail } from '@/server/agentService';
 
 interface AgentDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export function generateStaticParams() {
-  return agents.map((agent) => ({ id: agent.id }));
-}
+export const dynamic = 'force-dynamic';
 
 export default async function AgentDetailPage({ params }: AgentDetailPageProps) {
   const { id } = await params;
-  const agent = findAgent(id);
-  if (!agent) notFound();
+  const detail = getAgentDetail(id);
+  if (!detail) notFound();
 
   return (
     <div>
@@ -23,9 +21,9 @@ export default async function AgentDetailPage({ params }: AgentDetailPageProps) 
           Home Feed
         </Link>
         <span>/</span>
-        <span className="text-slate-600">{agent.title}</span>
+        <span className="text-slate-600">{detail.agent.title}</span>
       </div>
-      <AgentDetailClient agent={agent} />
+      <AgentDetailClient agent={detail.agent} initialComments={detail.comments} />
     </div>
   );
 }

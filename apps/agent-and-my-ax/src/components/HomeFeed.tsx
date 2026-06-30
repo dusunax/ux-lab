@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Plus, Search } from 'lucide-react';
 import AgentCard from '@/components/AgentCard';
 import { agents, categoryLabels } from '@/data/mock';
-import type { AgentCategory } from '@/types';
+import type { AgentCategory, AgentItem } from '@/types';
 
 const categoryOptions: Array<'all' | AgentCategory> = [
   'all',
@@ -20,12 +21,13 @@ export default function HomeFeed() {
   const [category, setCategory] = useState<'all' | AgentCategory>('all');
   const [sort, setSort] = useState<'popular' | 'recent' | 'tried'>('popular');
   const [likedIds, setLikedIds] = useState<string[]>([]);
+  const [agentList, setAgentList] = useState<AgentItem[]>(agents);
 
   const filteredAgents = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    const selected = agents.filter((agent) => {
+    const selected = agentList.filter((agent) => {
       const matchesCategory = category === 'all' || agent.category === category;
-      const haystack = [agent.title, agent.description, ...agent.tags].join(' ').toLowerCase();
+      const haystack = [agent.title, agent.description, agent.platform, agent.visibility, ...agent.tags].join(' ').toLowerCase();
       return matchesCategory && (!normalized || haystack.includes(normalized));
     });
 
@@ -34,6 +36,21 @@ export default function HomeFeed() {
       if (sort === 'tried') return b.triedCount - a.triedCount;
       return b.likes - a.likes;
     });
+  }, [agentList, category, query, sort]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (category !== 'all') params.set('category', category);
+    if (query.trim()) params.set('q', query.trim());
+    params.set('sort', sort);
+    fetch(`/api/agents?${params.toString()}`)
+      .then((response) => response.json())
+      .then((payload: { agents?: AgentItem[] }) => {
+        if (payload.agents) setAgentList(payload.agents);
+      })
+      .catch(() => {
+        setAgentList(agents);
+      });
   }, [category, query, sort]);
 
   const toggleLike = (id: string) => {
@@ -48,7 +65,7 @@ export default function HomeFeed() {
           {categoryOptions.map((option) => {
             const active = category === option;
             const label = option === 'all' ? '전체' : categoryLabels[option];
-            const count = option === 'all' ? agents.length : agents.filter((agent) => agent.category === option).length;
+            const count = option === 'all' ? agentList.length : agentList.filter((agent) => agent.category === option).length;
             return (
               <button
                 key={option}
@@ -87,7 +104,7 @@ export default function HomeFeed() {
                   category === option ? 'bg-ink text-white' : 'bg-slate-100 text-slate-600'
                 }`}
               >
-                {option === 'all' ? `전체 ${agents.length}` : categoryLabels[option]}
+                {option === 'all' ? `전체 ${agentList.length}` : categoryLabels[option]}
               </button>
             ))}
           </div>
@@ -132,6 +149,13 @@ export default function HomeFeed() {
             <div className="p-10 text-center">
               <p className="text-sm font-bold text-ink">검색 결과가 없습니다</p>
               <p className="mt-1 text-sm text-slate-500">다른 키워드나 카테고리로 다시 찾아보세요.</p>
+              <Link
+                href="/agent/new"
+                className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-ink px-4 text-sm font-extrabold text-white transition hover:bg-slate-800 focus-ring"
+              >
+                <Plus size={16} />
+                새 Agent 등록
+              </Link>
             </div>
           )}
         </div>

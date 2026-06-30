@@ -3,38 +3,59 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, GitFork, MessageCircle, Play, ThumbsUp } from 'lucide-react';
-import { categoryColors, categoryLabels, commentsByAgent, findUser, visibilityLabels } from '@/data/mock';
-import type { AgentComment, AgentItem } from '@/types';
+import { categoryColors, categoryLabels, findUser, visibilityLabels } from '@/data/mock';
+import type { AgentComment, AgentInteractionKind, AgentItem } from '@/types';
 import AgentDownloadButtons from './AgentDownloadButtons';
 
 interface AgentDetailClientProps {
   agent: AgentItem;
+  initialComments: AgentComment[];
 }
 
-export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
+export default function AgentDetailClient({ agent, initialComments }: AgentDetailClientProps) {
   const creator = findUser(agent.creatorId);
   const [liked, setLiked] = useState(false);
   const [forked, setForked] = useState(false);
   const [tried, setTried] = useState(false);
+  const [metrics, setMetrics] = useState({
+    likes: agent.likes,
+    triedCount: agent.triedCount,
+    forkCount: agent.forkCount,
+  });
   const [commentText, setCommentText] = useState('');
-  const [comments, setComments] = useState<AgentComment[]>(commentsByAgent[agent.id] ?? []);
+  const [comments, setComments] = useState<AgentComment[]>(initialComments);
   const categoryColor = categoryColors[agent.category];
 
-  const addComment = (event: React.FormEvent) => {
+  const addComment = async (event: React.FormEvent) => {
     event.preventDefault();
     const content = commentText.trim();
     if (!content) return;
-    setComments((current) => [
-      {
-        id: `local-${Date.now()}`,
-        author: '김두선',
-        team: 'R&D / Frontend',
-        content,
-        createdAt: '방금 전',
-      },
-      ...current,
-    ]);
-    setCommentText('');
+    const response = await fetch(`/api/agents/${agent.id}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
+    const payload = (await response.json()) as { comment?: AgentComment };
+    if (response.ok && payload.comment) {
+      setComments((current) => [payload.comment!, ...current]);
+      setCommentText('');
+    }
+  };
+
+  const updateInteraction = async (kind: AgentInteractionKind, active: boolean) => {
+    const response = await fetch(`/api/agents/${agent.id}/interactions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, active }),
+    });
+    const payload = (await response.json()) as { agent?: AgentItem };
+    if (response.ok && payload.agent) {
+      setMetrics({
+        likes: payload.agent.likes,
+        triedCount: payload.agent.triedCount,
+        forkCount: payload.agent.forkCount,
+      });
+    }
   };
 
   return (
@@ -170,9 +191,36 @@ export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
             실행하기
           </Link>
           <div className="grid grid-cols-3 gap-2">
-            <ActionButton active={liked} onClick={() => setLiked((value) => !value)} icon={<ThumbsUp size={15} />} label={String(agent.likes + (liked ? 1 : 0))} />
-            <ActionButton active={tried} onClick={() => setTried((value) => !value)} icon={<CheckCircle2 size={15} />} label={String(agent.triedCount + (tried ? 1 : 0))} />
-            <ActionButton active={forked} onClick={() => setForked((value) => !value)} icon={<GitFork size={15} />} label={String(agent.forkCount + (forked ? 1 : 0))} />
+            <ActionButton
+              active={liked}
+              onClick={() => {
+                const active = !liked;
+                setLiked(active);
+                void updateInteraction('likes', active);
+              }}
+              icon={<ThumbsUp size={15} />}
+              label={String(metrics.likes)}
+            />
+            <ActionButton
+              active={tried}
+              onClick={() => {
+                const active = !tried;
+                setTried(active);
+                void updateInteraction('tried', active);
+              }}
+              icon={<CheckCircle2 size={15} />}
+              label={String(metrics.triedCount)}
+            />
+            <ActionButton
+              active={forked}
+              onClick={() => {
+                const active = !forked;
+                setForked(active);
+                void updateInteraction('forks', active);
+              }}
+              icon={<GitFork size={15} />}
+              label={String(metrics.forkCount)}
+            />
           </div>
         </div>
 
@@ -181,8 +229,8 @@ export default function AgentDetailClient({ agent }: AgentDetailClientProps) {
           <Metric icon={<Play size={15} />} label="Platform" value={agent.platform} />
           <Metric icon={<CheckCircle2 size={15} />} label="공개 범위" value={visibilityLabels[agent.visibility]} />
           <Metric icon={<MessageCircle size={15} />} label="댓글" value={String(comments.length)} />
-          <Metric icon={<CheckCircle2 size={15} />} label="써봤어요" value={String(agent.triedCount + (tried ? 1 : 0))} />
-          <Metric icon={<GitFork size={15} />} label="Fork" value={String(agent.forkCount + (forked ? 1 : 0))} />
+          <Metric icon={<CheckCircle2 size={15} />} label="써봤어요" value={String(metrics.triedCount)} />
+          <Metric icon={<GitFork size={15} />} label="Fork" value={String(metrics.forkCount)} />
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-hairline">

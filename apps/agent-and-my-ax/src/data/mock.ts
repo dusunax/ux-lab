@@ -1,5 +1,5 @@
 import { createDownloads, createResultPreset } from './agentArtifacts';
-import type { AgentCategory, AgentComment, AgentItem, PersonRank, TeamRank, UserProfile } from '@/types';
+import type { AgentCategory, AgentComment, AgentItem, AgentRequest, PersonRank, TeamRank, UserProfile } from '@/types';
 
 export const categoryLabels: Record<AgentCategory, string> = {
   productivity: '생산성',
@@ -247,6 +247,70 @@ export const commentsByAgent: Record<string, AgentComment[]> = {
       content: 'Jira 라벨 추천까지 붙으면 더 자주 쓸 것 같아요.',
       createdAt: '어제',
     },
+  ],
+};
+
+export const requestSeeds: AgentRequest[] = [
+  {
+    id: 'req-onboarding-guide',
+    title: '신규 입사자 온보딩 체크리스트 Agent',
+    description: '팀별 온보딩 문서와 체크리스트를 합쳐 신규 입사자에게 필요한 다음 행동을 알려주는 Agent가 필요합니다.',
+    requesterId: 'seoyeon',
+    team: 'People',
+    status: 'planned',
+    votes: 34,
+    tags: ['Onboarding', 'Checklist', 'People'],
+    createdAt: '2026-06-28',
+  },
+  {
+    id: 'req-release-note',
+    title: '릴리즈 노트 초안 Agent',
+    description: 'PR 목록과 Jira 완료 항목을 넣으면 고객용 릴리즈 노트와 내부 공유 문안을 분리해서 써주는 Agent를 요청합니다.',
+    requesterId: 'dusun',
+    team: 'R&D',
+    status: 'in-progress',
+    votes: 28,
+    tags: ['Release', 'Jira', 'PR'],
+    createdAt: '2026-06-27',
+  },
+  {
+    id: 'req-customer-reply',
+    title: '고객 답변 톤 리뷰 Agent',
+    description: 'CS 답변 초안이 너무 딱딱하거나 모호하지 않은지 검토하고 개선 문장을 제안하면 좋겠습니다.',
+    requesterId: 'haneul',
+    team: 'CX',
+    status: 'open',
+    votes: 19,
+    tags: ['CS', 'Tone', 'Review'],
+    createdAt: '2026-06-26',
+  },
+  {
+    id: 'req-dashboard-query',
+    title: 'Looker 대시보드 쿼리 설명 Agent',
+    description: '운영팀도 이해할 수 있게 대시보드 지표 정의와 쿼리 의미를 한 번에 설명하는 Agent가 필요합니다.',
+    requesterId: 'minjun',
+    team: 'Data',
+    status: 'open',
+    votes: 15,
+    tags: ['Dashboard', 'SQL', 'Metric'],
+    createdAt: '2026-06-25',
+  },
+];
+
+export const interactionSeeds = {
+  likes: [
+    { userId: 'dusun', agentId: 'prd-reviewer' },
+    { userId: 'dusun', agentId: 'sql-explain' },
+    { userId: 'seoyeon', agentId: 'meeting-to-jira' },
+  ],
+  tried: [
+    { userId: 'dusun', agentId: 'meeting-to-jira' },
+    { userId: 'dusun', agentId: 'chat-summary' },
+    { userId: 'seoyeon', agentId: 'prd-reviewer' },
+  ],
+  forks: [
+    { userId: 'dusun', agentId: 'prd-reviewer' },
+    { userId: 'minjun', agentId: 'sql-explain' },
   ],
 };
 

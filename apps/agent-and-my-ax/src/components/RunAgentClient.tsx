@@ -28,6 +28,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
   const [running, setRunning] = useState(false);
   const [error, setError] = useState('');
   const [tried, setTried] = useState(false);
+  const [triedCount, setTriedCount] = useState(agent.triedCount);
   const [copied, setCopied] = useState(false);
 
   const runAgent = async () => {
@@ -57,6 +58,19 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
     await navigator.clipboard.writeText(result.copyText);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1400);
+  };
+
+  const updateTried = async (active: boolean) => {
+    setTried(active);
+    const response = await fetch(`/api/agents/${agent.id}/interactions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind: 'tried', active }),
+    });
+    const payload = (await response.json()) as { agent?: AgentItem };
+    if (response.ok && payload.agent) {
+      setTriedCount(payload.agent.triedCount);
+    }
   };
 
   return (
@@ -164,13 +178,13 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
               steps={result.steps}
               artifacts={result.artifacts}
               tried={tried}
-              triedCount={agent.triedCount + (tried ? 1 : 0)}
+              triedCount={triedCount}
               onCopy={copyResult}
               onReset={() => {
                 setHasRun(false);
                 setResult(null);
               }}
-              onTried={() => setTried((value) => !value)}
+              onTried={() => void updateTried(!tried)}
             />
           ) : (
             <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
