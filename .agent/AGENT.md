@@ -20,11 +20,12 @@
 | 순서 | 파일 | 내용 |
 |------|------|------|
 | 1 | [rules/security.md](rules/security.md) | 보안 규칙, 비밀값, 입력 검증 |
-| 2 | [rules/performance.md](rules/performance.md) | React/Next.js 성능, 이미지, 데이터 패칭, 번들 |
-| 3 | [rules/coding-style.md](rules/coding-style.md) | 코딩 스타일, 파일/함수 크기, 구조 규칙 |
-| 4 | [rules/conflict-resolution.md](rules/conflict-resolution.md) | 충돌 발생 시 설명, 계획, 검증 절차 |
-| 5 | [rules/agent-scope.md](rules/agent-scope.md) | 에이전트별 파일 소유권과 작업 범위 |
-| 6 | [rules/agent-creation.md](rules/agent-creation.md) | 새 에이전트 생성 규칙 |
+| 2 | [rules/git.md](rules/git.md) | git 사용 규칙 — 허용/금지, 브랜치 전략, 커밋 형식 |
+| 3 | [rules/performance.md](rules/performance.md) | React/Next.js 성능, 이미지, 데이터 패칭, 번들 |
+| 4 | [rules/coding-style.md](rules/coding-style.md) | 코딩 스타일, 파일/함수 크기, 구조 규칙 |
+| 5 | [rules/conflict-resolution.md](rules/conflict-resolution.md) | 충돌 발생 시 설명, 계획, 검증 절차 |
+| 6 | [rules/agent-scope.md](rules/agent-scope.md) | 에이전트별 파일 소유권과 작업 범위 |
+| 7 | [rules/agent-creation.md](rules/agent-creation.md) | 새 에이전트 생성 규칙 |
 
 규칙 충돌 시 `security` > `performance` > `coding-style` > `skills` 순서로 적용합니다.
 
@@ -98,6 +99,12 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | [commands/sprint/eval-fix.md](commands/sprint/eval-fix.md) | eval 지적 사항 처리 결과 PR 댓글 등록 |
 | [commands/sprint/report.md](commands/sprint/report.md) | 회의록 기반 HTML 보고서 생성 |
 | [commands/sprint/merge.md](commands/sprint/merge.md) | 머지 마무리 — 충돌 해결·이미지 URL 교체·메모리 커밋 |
+| [commands/git/branch.md](commands/git/branch.md) | 최신 main에서 새 브랜치 생성 — 브랜치명 추론·사용자 확인 |
+| [commands/git/commit.md](commands/git/commit.md) | 범용 커밋 — 브랜치 분기·메시지 제안·사용자 확인 |
+| [commands/git/pr.md](commands/git/pr.md) | 범용 PR 생성 — push·본문 구성·라벨 |
+| [commands/git/merge.md](commands/git/merge.md) | 범용 merge — PR merge·post-merge 처리 |
+| [commands/git/up.md](commands/git/up.md) | ⭐ branch→commit→PR. "새 브랜치에 올려줘·브랜치 만들고 PR" 자연어 트리거 |
+| [commands/git/ship.md](commands/git/ship.md) | ⭐ commit→PR. 이미 브랜치에 있을 때. "ship·올려줘·PR 올려줘" 자연어 트리거 |
 | [commands/figma-harness.md](commands/figma-harness.md) | Figma 단일 노드 구현 |
 | [commands/figma-harness-all.md](commands/figma-harness-all.md) | Figma 페이지 전체 구현 |
 | [commands/figma-harness-snapshots.md](commands/figma-harness-snapshots.md) | Figma 스냅샷 형식 구현 |
@@ -151,6 +158,12 @@ python3 .agent/scripts/export-hermes.py
 생성 결과:
 - 단일 bundle: `.agent/hermes/generated/manifest.json`
 - 분할 JSON: `.agent/hermes/generated/{agents,commands,skills,rules,memory}/`
+
+---
+
+## 스프린트 프로세스
+
+스프린트 전체 절차(역할별 주체·커맨드·입출력)는 [docs/sprint-process.md](docs/sprint-process.md)를 참조한다.
 
 ---
 
