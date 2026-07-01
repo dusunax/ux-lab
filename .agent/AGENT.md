@@ -99,10 +99,12 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | [commands/sprint/eval-fix.md](commands/sprint/eval-fix.md) | eval 지적 사항 처리 결과 PR 댓글 등록 |
 | [commands/sprint/report.md](commands/sprint/report.md) | 회의록 기반 HTML 보고서 생성 |
 | [commands/sprint/merge.md](commands/sprint/merge.md) | 머지 마무리 — 충돌 해결·이미지 URL 교체·메모리 커밋 |
+| [commands/git/branch.md](commands/git/branch.md) | 최신 main에서 새 브랜치 생성 — 브랜치명 추론·사용자 확인 |
 | [commands/git/commit.md](commands/git/commit.md) | 범용 커밋 — 브랜치 분기·메시지 제안·사용자 확인 |
 | [commands/git/pr.md](commands/git/pr.md) | 범용 PR 생성 — push·본문 구성·라벨 |
 | [commands/git/merge.md](commands/git/merge.md) | 범용 merge — PR merge·post-merge 처리 |
-| [commands/git/ship.md](commands/git/ship.md) | ⭐ umbrella — commit→pr→merge 순차 실행. "ship·올려줘·PR 올려줘" 자연어 트리거 |
+| [commands/git/up.md](commands/git/up.md) | ⭐ branch→commit→PR. "새 브랜치에 올려줘·브랜치 만들고 PR" 자연어 트리거 |
+| [commands/git/ship.md](commands/git/ship.md) | ⭐ commit→PR→merge 순차 실행. "ship·올려줘·PR 올려줘" 자연어 트리거 |
 | [commands/figma-harness.md](commands/figma-harness.md) | Figma 단일 노드 구현 |
 | [commands/figma-harness-all.md](commands/figma-harness-all.md) | Figma 페이지 전체 구현 |
 | [commands/figma-harness-snapshots.md](commands/figma-harness-snapshots.md) | Figma 스냅샷 형식 구현 |
