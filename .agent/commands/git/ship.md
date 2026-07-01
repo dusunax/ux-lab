@@ -1,5 +1,5 @@
 ---
-description: 상위 umbrella 커맨드. commit → PR 생성 → merge까지 순차 실행한다. "ship", "올려줘", "PR 올려줘", "커밋하고 올려줘" 자연어로 트리거된다.
+description: 이미 브랜치에 있을 때 commit → PR 생성까지 실행한다. "ship", "올려줘", "PR 올려줘", "커밋하고 올려줘" 자연어로 트리거.
 ---
 
 # /git:ship 하네스
@@ -8,10 +8,9 @@ description: 상위 umbrella 커맨드. commit → PR 생성 → merge까지 순
 
 | 패턴 | 동작 |
 |------|------|
-| (없음) | commit → pr → merge 전체 실행 |
+| (없음) | commit → PR 실행 |
 | `--commit-only` | 커밋까지만 실행 |
-| `--pr-only` | PR 생성까지만 실행 (커밋은 이미 완료 가정) |
-| `--no-merge` | 커밋 + PR 생성만 (merge 제외) |
+| `--pr-only` | PR 생성만 (커밋 완료 가정) |
 | `--draft` | Draft PR로 생성 |
 | `--base BRANCH` | PR 대상 브랜치 (기본: `main`) |
 | `--type TYPE` | 커밋 type 강제 지정 |
@@ -19,8 +18,13 @@ description: 상위 umbrella 커맨드. commit → PR 생성 → merge까지 순
 
 **자연어 트리거:**
 
-> "ship", "올려줘", "PR 올려줘", "커밋하고 올려줘", "PR 만들어줘", "머지까지 해줘"
+> "ship", "올려줘", "PR 올려줘", "커밋하고 올려줘", "PR 만들어줘"
 > → `/git:ship` 실행
+
+> **다른 커맨드와의 관계:**
+> - `git:up` = 새 브랜치 생성 + 커밋 + PR (main에서 새로 시작)
+> - `git:ship` = 커밋 + PR (이미 브랜치에 있을 때)
+> - `git:merge` = PR merge (별도 실행)
 
 **실행 전 필독:** `.agent/rules/git.md`
 
@@ -31,14 +35,10 @@ description: 상위 umbrella 커맨드. commit → PR 생성 → merge까지 순
 ```
 변경점 확인
      ↓
-[git:commit] 브랜치 분기 → 커밋 메시지 → 사용자 확인 → 커밋
+[git:commit] 브랜치 분기 판단 → 커밋 메시지 → 사용자 확인 → 커밋
      ↓
 [git:pr]     push → PR 본문 구성 → 사용자 확인 → PR 생성
-     ↓
-[git:merge]  merge 실행 → post-merge 처리
 ```
-
-각 단계는 독립 커맨드(`.agent/commands/git/commit.md`, `pr.md`, `merge.md`)의 절차를 그대로 따른다.
 
 ---
 
@@ -47,8 +47,7 @@ description: 상위 umbrella 커맨드. commit → PR 생성 → merge까지 순
 ```
 --commit-only  → Phase 1만
 --pr-only      → Phase 2만 (Phase 1 건너뜀)
---no-merge     → Phase 1 + Phase 2
-(없음)         → Phase 1 + Phase 2 + Phase 3
+(없음)         → Phase 1 + Phase 2
 ```
 
 ---
@@ -72,20 +71,6 @@ description: 상위 umbrella 커맨드. commit → PR 생성 → merge까지 순
 
 ---
 
-## Phase 3 — Merge (`git:merge` 절차 실행)
-
-`.agent/commands/git/merge.md`를 읽고 절차를 따른다.
-
-merge 전 사용자에게 확인을 받는다:
-
-```
-PR #{NUMBER}을 merge할까요?
-  ✅ 예 → merge 진행
-  ⏸️  아니오 → 여기서 중단 (PR은 생성된 상태 유지)
-```
-
----
-
 ## 완료 보고
 
 ```
@@ -93,9 +78,8 @@ PR #{NUMBER}을 merge할까요?
 
 Phase 1 커밋:  {SHA} — {제목}
 Phase 2 PR:    {URL}
-Phase 3 Merge: {merge SHA} → main
 
-총 소요:  {N}단계 완료
+merge 준비되면:  /git:merge --pr {NUMBER}
 ```
 
 단계별 건너뜀이 있으면 명시한다.
@@ -105,5 +89,6 @@ Phase 3 Merge: {merge SHA} → main
 ## 주의사항
 
 - 각 Phase 사이에 사용자 확인 게이트가 있다. 임의로 건너뛰지 않는다.
-- 스프린트 작업은 이 커맨드 대신 `/sprint:review` → `/sprint:merge`를 사용한다.
+- 현재 브랜치가 `main`이면 먼저 `/git:branch`로 분기하거나 `/git:up`을 사용한다.
+- 스프린트 작업은 `/sprint:review` → `/sprint:merge`를 사용한다.
 - `--pr-only` 사용 시 현재 브랜치에 커밋이 하나 이상 있어야 한다.

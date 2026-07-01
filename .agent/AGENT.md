@@ -104,7 +104,7 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | [commands/git/pr.md](commands/git/pr.md) | 범용 PR 생성 — push·본문 구성·라벨 |
 | [commands/git/merge.md](commands/git/merge.md) | 범용 merge — PR merge·post-merge 처리 |
 | [commands/git/up.md](commands/git/up.md) | ⭐ branch→commit→PR. "새 브랜치에 올려줘·브랜치 만들고 PR" 자연어 트리거 |
-| [commands/git/ship.md](commands/git/ship.md) | ⭐ commit→PR→merge 순차 실행. "ship·올려줘·PR 올려줘" 자연어 트리거 |
+| [commands/git/ship.md](commands/git/ship.md) | ⭐ commit→PR. 이미 브랜치에 있을 때. "ship·올려줘·PR 올려줘" 자연어 트리거 |
 | [commands/figma-harness.md](commands/figma-harness.md) | Figma 단일 노드 구현 |
 | [commands/figma-harness-all.md](commands/figma-harness-all.md) | Figma 페이지 전체 구현 |
 | [commands/figma-harness-snapshots.md](commands/figma-harness-snapshots.md) | Figma 스냅샷 형식 구현 |
