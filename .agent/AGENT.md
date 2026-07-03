@@ -163,7 +163,7 @@ python3 .agent/scripts/export-hermes.py
 
 ## 스프린트 프로세스
 
-스프린트 전체 절차(역할별 주체·커맨드·입출력)는 [docs/sprint-process.md](docs/sprint-process.md)를 참조한다.
+스프린트 전체 절차(역할별 주체·커맨드·입출력)는 [docs/SPRINT-PROCESS.md](docs/SPRINT-PROCESS.md)를 참조한다.
 
 ---
 
