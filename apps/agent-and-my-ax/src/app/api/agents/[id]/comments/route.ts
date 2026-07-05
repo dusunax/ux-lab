@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import { addComment } from '@/server/agentService';
+import { getUserFromRequest, unauthorized } from '@/server/auth';
 
 interface CommentApiContext {
   params: Promise<{ id: string }>;
 }
 
 export async function POST(request: Request, { params }: CommentApiContext) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return unauthorized();
+  }
+
   const { id } = await params;
   let body: unknown;
 
@@ -19,7 +25,7 @@ export async function POST(request: Request, { params }: CommentApiContext) {
     return NextResponse.json({ error: 'content must be a non-empty string up to 2000 chars' }, { status: 400 });
   }
 
-  const comment = addComment(id, body.content);
+  const comment = addComment(id, body.content, user.id);
   if (!comment) {
     return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
   }

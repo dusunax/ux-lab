@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BarChart3, ClipboardList, Plus, Search } from 'lucide-react';
+import AuthNav from '@/components/AuthNav';
+import { getAuthenticatedUser } from '@/server/auth';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,7 +13,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getAuthenticatedUser();
+
   return (
     <html lang="ko">
       <body>
@@ -48,15 +52,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span className="hidden sm:inline">랭킹</span>
               </Link>
               <Link
-                href="/agent/new"
+                href={user ? '/agent/new' : '/login?next=/agent/new'}
                 className="inline-flex h-9 items-center gap-2 rounded-xl bg-ink px-3 text-sm font-bold text-white shadow-[0_2px_8px_rgba(15,23,42,.22)] transition hover:bg-slate-800 focus-ring"
               >
                 <Plus size={16} />
                 <span className="hidden sm:inline">새 Agent</span>
               </Link>
-              <Link href="/profile/dusun" className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[#E7E9FD] text-sm font-extrabold text-[#4F46E5] focus-ring">
-                김
-              </Link>
+              <AuthNav user={user} />
             </nav>
           </div>
         </header>

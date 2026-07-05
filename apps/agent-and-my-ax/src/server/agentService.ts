@@ -83,24 +83,24 @@ export function getCurrentUser() {
   return getRepository().getCurrentUser();
 }
 
-export function createAgent(input: CreateAgentInput) {
-  return getRepository().createAgent(input, getCurrentUser().id);
+export function createAgent(input: CreateAgentInput, creatorId = getCurrentUser().id) {
+  return getRepository().createAgent(input, creatorId);
 }
 
-export function addComment(agentId: string, content: string) {
-  return getRepository().addComment(agentId, content, getCurrentUser().id);
+export function addComment(agentId: string, content: string, authorId = getCurrentUser().id) {
+  return getRepository().addComment(agentId, content, authorId);
 }
 
-export function setInteraction(agentId: string, kind: AgentInteractionKind, active: boolean) {
-  return getRepository().setInteraction(agentId, getCurrentUser().id, kind, active);
+export function setInteraction(agentId: string, kind: AgentInteractionKind, active: boolean, userId = getCurrentUser().id) {
+  return getRepository().setInteraction(agentId, userId, kind, active);
 }
 
 export function listRequests() {
   return getRepository().listRequests();
 }
 
-export function createRequest(input: CreateAgentRequestInput) {
-  return getRepository().createRequest(input, getCurrentUser().id);
+export function createRequest(input: CreateAgentRequestInput, requesterId = getCurrentUser().id) {
+  return getRepository().createRequest(input, requesterId);
 }
 
 export function voteRequest(requestId: string) {

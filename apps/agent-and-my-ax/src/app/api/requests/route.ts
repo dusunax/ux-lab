@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createRequest, listRequests } from '@/server/agentService';
+import { getUserFromRequest, unauthorized } from '@/server/auth';
 import type { CreateAgentRequestInput } from '@/types';
 
 export function GET() {
@@ -7,6 +8,11 @@ export function GET() {
 }
 
 export async function POST(request: Request) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return unauthorized();
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -19,7 +25,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
-  return NextResponse.json({ request: createRequest(validation.input) }, { status: 201 });
+  return NextResponse.json({ request: createRequest(validation.input, user.id) }, { status: 201 });
 }
 
 function validateRequest(value: unknown): { ok: true; input: CreateAgentRequestInput } | { ok: false; error: string } {

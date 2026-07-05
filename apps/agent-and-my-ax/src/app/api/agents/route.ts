@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAgent, listAgents } from '@/server/agentService';
+import { getUserFromRequest, unauthorized } from '@/server/auth';
 import type { AgentCategory, AgentPlatform, AgentVisibility, CreateAgentInput } from '@/types';
 
 const categories: AgentCategory[] = ['productivity', 'development', 'planning', 'analytics', 'communication'];
@@ -24,6 +25,11 @@ export function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return unauthorized();
+  }
+
   let body: unknown;
 
   try {
@@ -37,7 +43,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
-  return NextResponse.json({ agent: createAgent(validation.input) }, { status: 201 });
+  return NextResponse.json({ agent: createAgent(validation.input, user.id) }, { status: 201 });
 }
 
 function validateCreateAgent(value: unknown): { ok: true; input: CreateAgentInput } | { ok: false; error: string } {

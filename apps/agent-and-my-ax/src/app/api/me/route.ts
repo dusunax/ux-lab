@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/server/agentService';
+import { getAuthPayload, getUserFromRequest } from '@/server/auth';
 
-export function GET() {
+export function GET(request: Request) {
+  const user = getUserFromRequest(request);
   return NextResponse.json({
-    user: getCurrentUser(),
-    auth: {
-      provider: 'Google Workspace SSO',
-      mode: 'mock-shell',
-      loginRequired: false,
-    },
+    user,
+    auth: getAuthPayload(user),
   });
 }

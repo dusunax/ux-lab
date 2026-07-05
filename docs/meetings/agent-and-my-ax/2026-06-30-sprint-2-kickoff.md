@@ -55,7 +55,7 @@ Sprint 1 수용 기준과 액션 아이템 기준 완료율은 40/40개, 100%다
 | 9 | Profile 라우트 구현: `/profile/[userId]` 또는 `/me`에서 작성/활동 요약 표시 | ☑ | FE Avery |
 | 10 | Request Board 라우트 구현: `/requests` 목록, 요청 생성, 투표, 상태 badge | ☑ | FE Avery |
 | 11 | comments/likes/tried/fork 상태를 repository action 경유로 정리 | ☑ | BE Blake |
-| 12 | 빈 상태, 검색 결과 없음, API validation 실패, 로그인 필요 상태 UX 구현 | ☐ | QA Quinn |
+| 12 | 빈 상태, 검색 결과 없음, API validation 실패, 로그인 필요 상태 UX 구현 | ☑ | QA Quinn |
 | 13 | 핵심 플로우 QA: Create → Feed → Detail → Run → Tried → Profile → Requests | ☑ | QA Morgan |
 | 14 | 모바일 390px와 데스크톱 1280px에서 Create/Profile/Requests overflow 확인 | ☑ | QA Morgan |
 
@@ -94,7 +94,7 @@ Sprint 1 수용 기준과 액션 아이템 기준 완료율은 40/40개, 100%다
 - [x] Auth shell이 로그인 필요 상태와 현재 사용자 정보를 일관되게 제공한다
 - [x] Firestore 전환 문서에 컬렉션 구조, document shape, index 후보, 보안 규칙 초안이 포함된다
 - [x] comments, likes, tried, fork 동작이 직접 local state가 아니라 repository action을 경유한다
-- [ ] 빈 상태, 검색 결과 없음, validation 실패, 로그인 필요 상태가 UI로 확인된다
+- [x] 빈 상태, 검색 결과 없음, validation 실패, 로그인 필요 상태가 UI로 확인된다
 - [x] 모바일 390px에서 Create/Profile/Requests 주요 텍스트와 버튼이 겹치거나 넘치지 않는다
 - [x] `pnpm --filter @ux-lab/agent-and-my-ax run build`가 통과한다
 

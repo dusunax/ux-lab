@@ -19,7 +19,7 @@ const statusStyles: Record<RequestStatus, string> = {
   shipped: 'bg-[#FEF3C7] text-[#B45309]',
 };
 
-export default function RequestBoardClient() {
+export default function RequestBoardClient({ isAuthenticated }: { isAuthenticated: boolean }) {
   const [requests, setRequests] = useState<AgentRequest[]>([]);
   const [title, setTitle] = useState('고객 미팅 후속 메일 Agent');
   const [description, setDescription] = useState('미팅 메모와 액션 아이템을 넣으면 고객에게 보낼 후속 메일 초안을 작성해주는 Agent가 필요합니다.');
@@ -40,6 +40,10 @@ export default function RequestBoardClient() {
 
   const create = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!isAuthenticated) {
+      setError('요청을 등록하려면 로그인이 필요합니다.');
+      return;
+    }
     setError('');
     const tags = tagText.split(',').map((tag) => tag.trim()).filter(Boolean);
     const response = await fetch('/api/requests', {
@@ -60,8 +64,11 @@ export default function RequestBoardClient() {
 
   const vote = async (id: string) => {
     const response = await fetch(`/api/requests/${id}/vote`, { method: 'POST' });
-    const payload = await response.json() as { request?: AgentRequest };
-    if (!payload.request) return;
+    const payload = await response.json() as { request?: AgentRequest; error?: string };
+    if (!response.ok || !payload.request) {
+      setError(payload.error ?? '투표에 실패했습니다.');
+      return;
+    }
     setRequests((current) => current.map((request) => (request.id === id ? payload.request! : request)));
   };
 
@@ -130,24 +137,38 @@ export default function RequestBoardClient() {
             <Plus size={16} className="text-mint" />
             새 요청
           </div>
-          <form onSubmit={create} className="space-y-3">
-            <Field label="요청 제목" value={title} onChange={setTitle} />
-            <Field label="팀" value={team} onChange={setTeam} />
-            <Field label="태그" value={tagText} onChange={setTagText} />
-            <label className="grid gap-2">
-              <span className="text-xs font-extrabold text-ink">설명</span>
-              <textarea
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                rows={5}
-                className="resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm leading-6 text-ink focus:outline-none focus:ring-2 focus:ring-mint"
-              />
-            </label>
-            {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-600">{error}</p>}
-            <button type="submit" className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-mint text-sm font-extrabold text-white transition hover:bg-[#0DAE7D] focus-ring">
-              요청 등록
-            </button>
-          </form>
+          {isAuthenticated ? (
+            <form onSubmit={create} className="space-y-3">
+              <Field label="요청 제목" value={title} onChange={setTitle} />
+              <Field label="팀" value={team} onChange={setTeam} />
+              <Field label="태그" value={tagText} onChange={setTagText} />
+              <label className="grid gap-2">
+                <span className="text-xs font-extrabold text-ink">설명</span>
+                <textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  rows={5}
+                  className="resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm leading-6 text-ink focus:outline-none focus:ring-2 focus:ring-mint"
+                />
+              </label>
+              {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-xs font-bold text-red-600">{error}</p>}
+              <button type="submit" className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-mint text-sm font-extrabold text-white transition hover:bg-[#0DAE7D] focus-ring">
+                요청 등록
+              </button>
+            </form>
+          ) : (
+            <div className="rounded-xl border border-[#BDEBDA] bg-[#E6F8F1] p-4">
+              <p className="text-sm font-extrabold text-ink">로그인이 필요합니다</p>
+              <p className="mt-2 text-xs leading-5 text-[#0C7A59]">요청 등록과 투표는 사내 계정으로 로그인한 사용자만 사용할 수 있습니다.</p>
+              {error && <p className="mt-3 rounded-lg bg-white px-3 py-2 text-xs font-bold text-red-600">{error}</p>}
+              <Link
+                href="/login?next=/requests"
+                className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-xl bg-ink text-sm font-extrabold text-white transition hover:bg-slate-800 focus-ring"
+              >
+                로그인하고 요청하기
+              </Link>
+            </div>
+          )}
         </aside>
       </div>
     </div>

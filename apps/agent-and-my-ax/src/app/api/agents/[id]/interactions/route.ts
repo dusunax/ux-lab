@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { setInteraction } from '@/server/agentService';
+import { getUserFromRequest, unauthorized } from '@/server/auth';
 import type { AgentInteractionKind } from '@/types';
 
 const kinds: AgentInteractionKind[] = ['likes', 'tried', 'forks'];
@@ -9,6 +10,11 @@ interface InteractionApiContext {
 }
 
 export async function POST(request: Request, { params }: InteractionApiContext) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return unauthorized();
+  }
+
   const { id } = await params;
   let body: unknown;
 
@@ -22,7 +28,7 @@ export async function POST(request: Request, { params }: InteractionApiContext) 
     return NextResponse.json({ error: 'kind and active are required' }, { status: 400 });
   }
 
-  const agent = setInteraction(id, body.kind, body.active);
+  const agent = setInteraction(id, body.kind, body.active, user.id);
   if (!agent) {
     return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
   }

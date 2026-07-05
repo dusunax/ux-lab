@@ -29,6 +29,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
   const [error, setError] = useState('');
   const [tried, setTried] = useState(false);
   const [triedCount, setTriedCount] = useState(agent.triedCount);
+  const [triedError, setTriedError] = useState('');
   const [copied, setCopied] = useState(false);
 
   const runAgent = async () => {
@@ -61,16 +62,20 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
   };
 
   const updateTried = async (active: boolean) => {
+    setTriedError('');
     setTried(active);
     const response = await fetch(`/api/agents/${agent.id}/interactions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ kind: 'tried', active }),
     });
-    const payload = (await response.json()) as { agent?: AgentItem };
+    const payload = (await response.json()) as { agent?: AgentItem; error?: string };
     if (response.ok && payload.agent) {
       setTriedCount(payload.agent.triedCount);
+      return;
     }
+    setTried(!active);
+    setTriedError(payload.error ?? '써봤어요를 저장하지 못했습니다.');
   };
 
   return (
@@ -178,6 +183,7 @@ export default function RunAgentClient({ agent }: RunAgentClientProps) {
               steps={result.steps}
               artifacts={result.artifacts}
               tried={tried}
+              triedError={triedError}
               triedCount={triedCount}
               onCopy={copyResult}
               onReset={() => {
@@ -213,6 +219,7 @@ function ResultPanel({
   steps,
   artifacts,
   tried,
+  triedError,
   triedCount,
   onCopy,
   onReset,
@@ -227,6 +234,7 @@ function ResultPanel({
   steps: RunAgentResult['steps'];
   artifacts: RunArtifact[];
   tried: boolean;
+  triedError: string;
   triedCount: number;
   onCopy: () => void;
   onReset: () => void;
@@ -323,6 +331,7 @@ function ResultPanel({
             다시 실행
           </button>
         </div>
+        {triedError && <p className="mt-3 rounded-xl bg-white px-3 py-2 text-xs font-bold text-red-600">{triedError}</p>}
       </div>
 
       <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-hairline">
