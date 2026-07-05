@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint agent-and-my-ax/2 보고 — 2026-07-05</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f0f7f3;
+      border: 1px solid #b6d4c2;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    .flow-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+    .flow-num {
+      display: inline-flex;
+      width: 26px;
+      height: 26px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #217346;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .flow-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+    .flow-desc {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #667085;
+    }
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+    .decision-card {
+      border: 1px solid #e5e7eb;
+      border-left: 4px solid #217346;
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    .decision-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #217346;
+      font-size: 12px;
+    }
+    .decision-card span {
+      display: block;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #374151;
+    }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    .screenshot-tile {
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+    }
+    .screenshot-tile img {
+      display: block;
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .screenshot-tile-title {
+      padding: 8px 10px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
+      background: #f9fafb;
+    }
+    .screenshot-frame {
+      width: 100%;
+      margin-top: 8px;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+    .screenshot-frame img {
+      display: block;
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .screenshot-caption {
+      padding: 9px 12px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #667085;
+      background: #f9fafb;
+    }
+    .compact-table td,
+    .compact-table th {
+      font-size: 12px;
+      line-height: 1.35;
+      padding: 7px 9px;
+    }
+    .body-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4b5563;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">수산시장 · Agent를 부탁해</div>
+        <h1 class="cover-title">Sprint 2</h1>
+        <p class="cover-sub">작성자 등록 · 요청 보드 · 프로필 · mock SSO 확장</p>
+        <p class="cover-meta">2026-06-30 킥오프 · 2026-07-05 리뷰</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 2 목표와 완료율</h2>
+      <blockquote class="goal-quote">
+        <strong>Agent를 부탁해</strong>를 mock 탐색 앱에서 작성자 등록·요청·프로필까지 이어지는 운영 가능한 Agent Hub로 확장한다.
+      </blockquote>
+      <div class="metric-row">
+        <div class="metric-card"><div class="metric-value">27/28</div><div class="metric-label">체크리스트 완료<br>96% 완료율</div></div>
+        <div class="metric-card"><div class="metric-value">3</div><div class="metric-label">신규 운영 화면<br>Create · Profile · Requests</div></div>
+        <div class="metric-card"><div class="metric-value">6</div><div class="metric-label">API 확장<br>agents · requests · auth · interactions</div></div>
+        <div class="metric-card"><div class="metric-value">5</div><div class="metric-label">OQ 결정<br>Firebase · resultPreset · 공개 범위</div></div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">제품 확장</div>
+      <h2 class="slide-title">탐색 앱에서 운영 가능한 Agent Hub로 확장</h2>
+      <div class="flow-grid">
+        <div class="flow-card"><div class="flow-num">1</div><div class="flow-title">Create Agent</div><div class="flow-desc">Platform, Usage Guide, Visibility, resultPreset, downloads까지 작성자가 등록한다.</div></div>
+        <div class="flow-card"><div class="flow-num">2</div><div class="flow-title">Profile</div><div class="flow-desc">작성 Agent, 써봤어요, 좋아요, Fork, 요청 활동을 실명 기반으로 확인한다.</div></div>
+        <div class="flow-card"><div class="flow-num">3</div><div class="flow-title">Request Board</div><div class="flow-desc">필요한 Agent를 요청하고 투표와 상태 badge로 수요를 모은다.</div></div>
+      </div>
+      <div class="callout" style="margin-top:22px;">
+        Sprint 2의 핵심은 Agent 소비 화면이 아니라 <strong>작성자와 사내 운영자 모두가 쓸 수 있는 순환 구조</strong>다. 등록, 요청, 활동 데이터가 repository action을 경유하도록 정리했다.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">주요 결정</div>
+      <h2 class="slide-title">Sprint 2 결정 사항</h2>
+      <div class="decision-grid">
+        <div class="decision-card"><strong>D-2 / D-9</strong><span>Firebase production 연결 전 repository interface와 mock adapter를 먼저 완성한다.</span></div>
+        <div class="decision-card"><strong>D-4</strong><span>Google Workspace SSO는 mock shell과 current user provider까지만 구현한다.</span></div>
+        <div class="decision-card"><strong>D-5 / D-10</strong><span>Agent 등록 폼은 resultPreset과 다운로드 산출물까지 P0 필드로 포함한다.</span></div>
+        <div class="decision-card"><strong>D-6 / D-11</strong><span>Request Board는 전체 공개 요청만 허용하고 투표/상태 기반 운영 채널로 둔다.</span></div>
+        <div class="decision-card"><strong>D-7 / D-12</strong><span>Profile 기본 진입점은 `/me`, 공유 URL은 `/profile/[userId]`로 둔다.</span></div>
+        <div class="decision-card"><strong>D-13</strong><span>Fork 생성은 Sprint 2 P1로 유지하고 필수 Create 플로우에서 제외한다.</span></div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">화면 캡처</div>
+      <h2 class="slide-title">작성자 등록과 운영 화면</h2>
+      <p class="body-text">Create, Profile, Requests를 desktop 1280px 기준으로 확인했다. 주 CTA와 보조 정보가 분리되어 데스크톱에서 찌그러지지 않는다.</p>
+      <div class="screenshot-grid">
+        <div class="screenshot-tile">
+          <img src="./sprint-agent-and-my-ax-2/create-agent.png" alt="Create Agent 화면">
+          <div class="screenshot-tile-title">Create Agent — 작성 폼 + 미리보기</div>
+        </div>
+        <div class="screenshot-tile">
+          <img src="./sprint-agent-and-my-ax-2/profile.png" alt="Profile 화면">
+          <div class="screenshot-tile-title">Profile — 작성/활동 요약</div>
+        </div>
+        <div class="screenshot-tile">
+          <img src="./sprint-agent-and-my-ax-2/request-board.png" alt="Request Board 화면">
+          <div class="screenshot-tile-title">Request Board — 요청 + 투표</div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결과 페이지</div>
+      <h2 class="slide-title">Run 결과 페이지는 공통 출력 형태를 유지</h2>
+      <div class="screenshot-frame">
+        <img src="./sprint-agent-and-my-ax-2/run-result.png" alt="Run result 화면">
+        <div class="screenshot-caption">입력 요약, 처리 단계, 결과 카드, 후속 CTA가 하나의 공통 결과 페이지로 노출된다.</div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">다운로드 UX</div>
+      <h2 class="slide-title">여러 Agent가 공유 가능한 산출물 형태</h2>
+      <div class="two-col">
+        <div>
+          <ul class="check-list">
+            <li class="done">Cursor, Claude, Codex, Prompt 형식 다운로드 제공</li>
+            <li class="done">다운로드 가이드는 기본 닫힘 상태의 단일 아코디언</li>
+            <li class="done">각 파일의 넣는 곳과 사용법을 얇은 행 단위로 안내</li>
+            <li class="done">Detail과 Run에서 같은 컴포넌트를 재사용</li>
+          </ul>
+          <div class="callout" style="margin-top:18px;">
+            작성자가 만든 Agent 결과를 현재 UI대로 보여주기 위해 `resultPreset`과 `downloads`를 Agent 데이터 필드로 고정했다.
+          </div>
+        </div>
+        <div class="screenshot-frame" style="margin-top:0;">
+          <img src="./sprint-agent-and-my-ax-2/detail-download-guide.png" alt="다운로드 가이드 아코디언">
+          <div class="screenshot-caption">Detail 화면의 다운로드 가이드 아코디언</div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Auth / 상태 UX</div>
+      <h2 class="slide-title">로그인 필요 상태와 오류 문구 검토</h2>
+      <div class="two-col">
+        <div class="screenshot-frame" style="margin-top:0;">
+          <img src="./sprint-agent-and-my-ax-2/login-required.png" alt="로그인 필요 화면">
+          <div class="screenshot-caption">로그인 필요 상태: 제한 기능과 SSO mock 진입점을 명확히 안내</div>
+        </div>
+        <div>
+          <ul class="check-list">
+            <li class="done">새 Agent, 요청 등록, 댓글, 좋아요, 써봤어요는 로그인 필요 상태를 일관되게 표시</li>
+            <li class="done">API write route는 logged-out 상태에서 401과 사용자 문구를 반환</li>
+            <li class="done">빈 상태는 다음 행동을 제시하고, validation 실패는 빨간 오류 영역으로 분리</li>
+            <li class="done">SSO shell은 실제 OAuth 전환 전 current user provider 계약을 고정</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">체크리스트</div>
+      <h2 class="slide-title">완료와 이월</h2>
+      <div class="two-col">
+        <div>
+          <div class="col-head">완료</div>
+          <ul class="check-list">
+            <li class="done">Acceptance Criteria 14/14 완료</li>
+            <li class="done">FE 4/4 완료</li>
+            <li class="done">BE 4/4 완료</li>
+            <li class="done">UX 3/3 완료</li>
+            <li class="done">QA 2/3 완료</li>
+          </ul>
+        </div>
+        <div>
+          <div class="col-head">이월</div>
+          <ul class="check-list">
+            <li>validation 실패와 빈 상태 테스트 케이스 작성</li>
+            <li>실제 Firebase Auth 배포 연결</li>
+            <li>Firestore production write와 보안 규칙 검증</li>
+            <li>Fork 생성 폼, Request to Agent draft CTA</li>
+            <li>관리자 승인 플로우와 외부 채팅 연동</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:20px;">
+        최종 완료율은 <strong>27/28개, 96%</strong>다. 남은 1개는 기능 미구현이 아니라 validation/empty 상태 테스트 케이스 문서화 항목이다.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&A</div>
+      <p class="qa-title">Agent Hub Sprint 2 리뷰</p>
+      <div class="qa-links">
+        <span>PR #46</span>
+        <span>docs/presentations/sprint-agent-and-my-ax-2-report-260705.html</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>

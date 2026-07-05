@@ -115,9 +115,9 @@ Sprint 1 수용 기준과 액션 아이템 기준 완료율은 40/40개, 100%다
 - [x] Firestore 전환 문서와 보안 규칙 초안 작성
 
 **UX (Riley)**
-- [ ] Create/Profile/Requests 화면의 정보 밀도와 CTA 우선순위 검토
-- [ ] validation 실패, empty state, 로그인 필요 상태 문구 검토
-- [ ] 다운로드/resultPreset 입력 UI가 작성자에게 이해 가능한지 리뷰
+- [x] Create/Profile/Requests 화면의 정보 밀도와 CTA 우선순위 검토
+- [x] validation 실패, empty state, 로그인 필요 상태 문구 검토
+- [x] 다운로드/resultPreset 입력 UI가 작성자에게 이해 가능한지 리뷰
 
 **QA (Morgan / Quinn)**
 - [x] Create → Feed → Detail → Run → Tried → Profile → Requests 플로우 테스트
@@ -146,6 +146,15 @@ Sprint 1 수용 기준과 액션 아이템 기준 완료율은 40/40개, 100%다
 - Create Agent 입력 필드가 많아지면 작성자 진입 장벽이 높아질 수 있다.
 - Request Board, Profile, Create를 동시에 구현하면 화면 수가 늘어 QA 범위가 커진다.
 - 기존 mock seed와 생성 데이터의 일관성을 유지하지 않으면 Feed/Ranking/Profile 간 카운터 불일치가 생길 수 있다.
+
+### Sprint 2 리뷰 결과
+
+- 체크리스트 완료율은 UX 검토 3개 항목을 완료 처리해 27/28개, 96%다.
+- Create 화면은 입력 폼과 미리보기를 2컬럼으로 분리해 작성 중 결과 노출을 유지하고, primary CTA는 `Agent 등록` 하나로 제한한다.
+- Profile 화면은 상단에 작성/사용/좋아요/Fork 지표를 먼저 배치하고, 작성 Agent와 활동 목록을 분리해 반복 방문 시 스캔하기 쉽다.
+- Request Board는 요청 목록을 주 영역, 등록 폼을 우측 보조 영역으로 배치해 탐색과 생성의 우선순위를 구분한다.
+- validation 실패, empty state, 로그인 필요 문구는 각각 빨간 오류 영역, 빈 상태 안내, SSO mock 로그인 안내로 구분되어 사용자가 다음 행동을 알 수 있다.
+- 다운로드 가이드는 하나의 얇은 아코디언으로 접어두고, Cursor/Claude/Codex/Prompt별 넣는 곳과 사용법을 열람 시 한 번에 확인하게 한다.
 
 ### 제외 범위
 
