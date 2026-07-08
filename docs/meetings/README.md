@@ -7,6 +7,7 @@
 | 파일 | 스프린트 | 날짜 | 주요 결정 |
 |------|----------|------|-----------|
 | [agent-and-my-ax/2026-06-29-sprint-1-kickoff.md](./agent-and-my-ax/2026-06-29-sprint-1-kickoff.md) | Sprint agent-and-my-ax/1 킥오프 | 2026-06-29 | Agent를 부탁해 핵심 탐색-상세-실행-랭킹 흐름을 Next.js mock 앱으로 구현 |
+| [agent-and-my-ax/2026-06-30-sprint-2-kickoff.md](./agent-and-my-ax/2026-06-30-sprint-2-kickoff.md) | Sprint agent-and-my-ax/2 킥오프 | 2026-06-30 | Create Agent, Profile, Request Board와 persistence-ready repository로 Agent Hub 운영 흐름 확장 |
 
 ### ai-empathy-diary
 
