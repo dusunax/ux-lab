@@ -29,6 +29,7 @@ description: |-
   A new screen layout warrants a full UX review — use the ux-design-reviewer agent to analyze button placement, visual hierarchy, and user flow.
   </commentary>
   </example>
+tools: Glob, Grep, ListMcpResourcesTool, Read, ReadMcpResourceTool, TaskStop, WebFetch, WebSearch
 model: inherit
 color: orange
 memory: project

@@ -1,0 +1,37 @@
+{
+  "argumentsVariable": "$ARGUMENTS",
+  "description": [
+    "이미 브랜치에 있을 때 commit → PR 생성까지 실행한다. \"ship\"",
+    "\"올려줘\"",
+    "\"PR 올려줘\"",
+    "\"커밋하고 올려줘\" 자연어로 트리거."
+  ],
+  "detectedToolMentions": [],
+  "flags": [
+    "--base",
+    "--commit-only",
+    "--draft",
+    "--label",
+    "--message",
+    "--pr-only",
+    "--type"
+  ],
+  "id": "git/ship",
+  "instructions": "# /git:ship 하네스\n\n**인수:** $ARGUMENTS\n\n| 패턴 | 동작 |\n|------|------|\n| (없음) | commit → PR 실행 |\n| `--commit-only` | 커밋까지만 실행 |\n| `--pr-only` | PR 생성만 (커밋 완료 가정) |\n| `--draft` | Draft PR로 생성 |\n| `--base BRANCH` | PR 대상 브랜치 (기본: `main`) |\n| `--type TYPE` | 커밋 type 강제 지정 |\n| `--message \"msg\"` | 커밋 메시지 직접 지정 |\n\n**자연어 트리거:**\n\n> \"ship\", \"올려줘\", \"PR 올려줘\", \"커밋하고 올려줘\", \"PR 만들어줘\"\n> → `/git:ship` 실행\n\n> **다른 커맨드와의 관계:**\n> - `git:up` = 새 브랜치 생성 + 커밋 + PR (main에서 새로 시작)\n> - `git:ship` = 커밋 + PR (이미 브랜치에 있을 때)\n> - `git:merge` = PR merge (별도 실행)\n\n**실행 전 필독:** `.agent/rules/git.md`\n\n---\n\n## 전체 흐름\n\n```\n변경점 확인\n     ↓\n[git:commit] 브랜치 분기 판단 → 커밋 메시지 → 사용자 확인 → 커밋\n     ↓\n[git:pr]     push → PR 본문 구성 → 사용자 확인 → PR 생성\n```\n\n---\n\n## Step 1 — 인수 파싱 및 실행 범위 결정\n\n```\n--commit-only  → Phase 1만\n--pr-only      → Phase 2만 (Phase 1 건너뜀)\n(없음)         → Phase 1 + Phase 2\n```\n\n---\n\n## Phase 1 — 커밋 (`git:commit` 절차 실행)\n\n`.agent/commands/git/commit.md`를 읽고 절차를 따른다.\n\n- `--type`, `--message` 인수를 그대로 전달한다.\n- **커밋 메시지를 사용자에게 확인받은 뒤 커밋한다.**\n- 변경점이 없으면 Phase 2로 건너뛴다.\n\n---\n\n## Phase 2 — PR 생성 (`git:pr` 절차 실행)\n\n`.agent/commands/git/pr.md`를 읽고 절차를 따른다.\n\n- `--draft`, `--base`, `--label` 인수를 그대로 전달한다.\n- **PR 본문을 사용자에게 확인받은 뒤 생성한다.**\n\n---\n\n## 완료 보고\n\n```\n🚢 Ship 완료\n\nPhase 1 커밋:  {SHA} — {제목}\nPhase 2 PR:    {URL}\n\nmerge 준비되면:  /git:merge --pr {NUMBER}\n```\n\n단계별 건너뜀이 있으면 명시한다.\n\n---\n\n## 주의사항\n\n- 각 Phase 사이에 사용자 확인 게이트가 있다. 임의로 건너뛰지 않는다.\n- 현재 브랜치가 `main`이면 먼저 `/git:branch`로 분기하거나 `/git:up`을 사용한다.\n- 스프린트 작업은 `/sprint:review` → `/sprint:merge`를 사용한다.\n- `--pr-only` 사용 시 현재 브랜치에 커밋이 하나 이상 있어야 한다.\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/ship"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/git/ship.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

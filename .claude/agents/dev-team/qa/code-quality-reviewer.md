@@ -29,7 +29,7 @@ description: |-
   Refactored code should be reviewed for regressions and improvement opportunities, so use the Agent tool to launch the code-quality-reviewer agent.
   </commentary>
   </example>
-tools: ListMcpResourcesTool, Read, ReadMcpResourceTool, TaskStop, WebFetch, WebSearch
+tools: Bash, Glob, Grep, ListMcpResourcesTool, Read, ReadMcpResourceTool, TaskStop, WebFetch, WebSearch
 model: sonnet
 color: blue
 memory: project

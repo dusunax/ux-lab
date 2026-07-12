@@ -1,6 +1,6 @@
 {
   "data": {
-    "_comment": "SSOT: 이 파일이 단일 진실 공급원. scope-enforcer.py 훅이 읽고, gen-scope-doc.py 훅이 agent-scope.md를 자동 재생성한다. agent-scope.md를 직접 수정하지 말 것.",
+    "_comment": "SSOT: 이 파일이 단일 진실 공급원. scope-enforcer.py 훅이 읽고, gen-scope-doc.py 훅이 agent-scope.md를 자동 재생성한다. agent-scope.md를 직접 수정하지 말 것. memory 필드는 해당 역할의 자기 메모리 디렉터리 — deny/readonly보다 우선해 항상 쓰기 허용된다.",
     "boundary": {
       "apps/**/app/api/**/route.ts": "BE",
       "apps/**/app/layout.tsx": "FE",
@@ -29,7 +29,10 @@
           ".cursor/**"
         ],
         "description": "LLM 통합, 프롬프트, AI 파이프라인",
-        "layer": "AI"
+        "layer": "AI",
+        "memory": [
+          ".agent/agent-memory/eng-AI-openrouter-llm-specialist/**"
+        ]
       },
       "BE": {
         "agent": "Blake",
@@ -47,7 +50,18 @@
           ".cursor/**"
         ],
         "description": "서버 로직, DB, 외부 서비스 연동",
-        "layer": "API"
+        "layer": "API",
+        "memory": [
+          ".agent/agent-memory/eng-BE-backend-architect/**"
+        ]
+      },
+      "EV": {
+        "agent": "Nolan",
+        "allow": [],
+        "deny": [],
+        "description": "스프린트 PR 평가 — 결과는 PR 코멘트로만, 파일 수정 없음",
+        "layer": "읽기 전용",
+        "readonly": true
       },
       "FE": {
         "agent": "Avery",
@@ -68,7 +82,10 @@
           ".cursor/**"
         ],
         "description": "렌더링, 컴포넌트, 스타일",
-        "layer": "UI"
+        "layer": "UI",
+        "memory": [
+          ".agent/agent-memory/eng-FE-frontend-dev/**"
+        ]
       },
       "OC": {
         "agent": "Sam",
@@ -110,7 +127,10 @@
           ".cursor/**"
         ],
         "description": "성능 최적화, 번들 분석, 빌드 설정 (Core Web Vitals · 렌더링 병목 전담)",
-        "layer": "성능"
+        "layer": "성능",
+        "memory": [
+          ".agent/agent-memory/eng-PERF-perf-optimizer/**"
+        ]
       },
       "PM": {
         "agent": "Jordan",
@@ -128,14 +148,21 @@
           ".cursor/**"
         ],
         "description": "스프린트 기록, 의사결정 문서",
-        "layer": "문서"
+        "layer": "문서",
+        "memory": [
+          ".agent/agent-memory/product-PM-prd-product-manager/**"
+        ]
       },
       "QA": {
         "agent": "Morgan, Quinn",
         "allow": [],
         "deny": [],
-        "description": "검증, 피드백 — 파일 수정 없음",
+        "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
         "layer": "읽기 전용",
+        "memory": [
+          ".agent/agent-memory/qa-QA-code-quality-reviewer/**",
+          ".agent/agent-memory/qa-QA-qa-engineer/**"
+        ],
         "readonly": true
       },
       "TS": {
@@ -159,8 +186,11 @@
         "agent": "Riley",
         "allow": [],
         "deny": [],
-        "description": "검증, 피드백 — 파일 수정 없음",
+        "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
         "layer": "읽기 전용",
+        "memory": [
+          ".agent/agent-memory/design-UX-ux-design-reviewer/**"
+        ],
         "readonly": true
       }
     }
