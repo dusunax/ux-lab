@@ -46,11 +46,43 @@ Sam의 응답에서 다음을 추출한다:
 
 ## Step 3 — 전문 에이전트 소환
 
+### 3-1. `.active-role` 기록 (CRITICAL — 소환 직전 필수)
+
+scope-enforcer 훅이 파일 쓰기 범위를 검사하려면 활성 역할이 기록되어 있어야 한다.
+**이 스텝은 메인 세션이 수행한다** (Sam은 텍스트 응답만 반환하므로 수행 주체가 아니다).
+
+```bash
+echo '[역할 약자]' > .claude/.active-role
+```
+
+`subagent_type` → 역할 약자 매핑:
+
+| subagent_type | 약자 |
+|---------------|------|
+| `eng/FE/frontend-dev` | FE |
+| `eng/BE/backend-architect` | BE |
+| `eng/PERF/perf-optimizer` | PERF |
+| `eng/AI/openrouter-llm-specialist` | AI |
+| `product/PM/prd-product-manager` | PM |
+| `product/TS/secretary` | TS |
+| `design/UX/ux-design-reviewer` | UX |
+| `qa/QA/code-quality-reviewer`, `qa/QA/qa-engineer` | QA |
+
+### 3-2. 소환
+
 Step 1에서 결정된 `subagent_type`의 에이전트를 소환한다.
 
 소환 시 전달하는 프롬프트:
 - 원본 태스크
 - Sam이 작성한 컨텍스트 브리프
+
+### 3-3. `.active-role` 정리 (소환 완료 직후 필수)
+
+```bash
+rm -f .claude/.active-role
+```
+
+에이전트가 실패·중단으로 끝나도 반드시 실행한다. (SubagentStop 훅이 이중 안전망으로 같은 파일을 정리한다.)
 
 ---
 

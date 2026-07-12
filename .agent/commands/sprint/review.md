@@ -17,7 +17,8 @@ description: 스프린트 완료 후 PR을 생성하고 결과를 요약한다. 
 
 | 패턴 | 동작 |
 |------|------|
-| (없음) | 현재 브랜치 또는 최신 kickoff 파일에서 N 자동 추론 |
+| (없음) | 현재 브랜치 또는 최신 kickoff 파일에서 APP·N 자동 추론 |
+| `--app APP` | 지정 앱 사용 |
 | `--sprint N` | 지정 N 사용 |
 | `--type TYPE` | PR 제목 prefix 타입 지정 (기본: `feat` / 워크플로우 PR: `chore`) |
 | `--report-url URL` | 보고서 공개 URL 첨부 |
@@ -26,25 +27,17 @@ description: 스프린트 완료 후 PR을 생성하고 결과를 요약한다. 
 
 ---
 
-## Step 1 — 스프린트 N 탐지
+## Step 1 — 스프린트 APP·N 탐지
 
-```bash
-git branch --show-current
-```
+`.agent/skills/SPRINT-CONTEXT.md`를 읽고 그 절차를 따라 **APP·N**을 확정한다.
+(브랜치 `sprint/{app}/{N}` 파싱 → 실패 시 `docs/meetings/{app}/` 최신 킥오프 추론 → 모호하면 질문)
 
-- 현재 브랜치가 `sprint/N` 패턴이면 N 추출.
-- 아니면 `docs/meetings/`에서 가장 최신 `*-sprint-N-kickoff.md` 파일로 N 추론.
-
-```bash
-ls docs/meetings/ | sort | grep -E 'sprint-[0-9]+-kickoff' | tail -1
-```
-
-N을 확정하지 못하면:
+APP·N을 확정하지 못하면:
 
 ```
-⛔ 스프린트 번호를 확인할 수 없습니다.
+⛔ 스프린트를 확인할 수 없습니다.
    현재 브랜치: [브랜치명]
-   --sprint N 인수를 사용하거나, sprint/N 브랜치로 전환 후 재실행하세요.
+   --app APP --sprint N 인수를 사용하거나, sprint/{app}/{N} 브랜치로 전환 후 재실행하세요.
 ```
 
 **여기서 커맨드를 종료한다.**
@@ -53,10 +46,10 @@ N을 확정하지 못하면:
 
 ## Step 2 — 킥오프 파일 읽기
 
-아래 우선순위로 파일을 찾는다:
+SPRINT-CONTEXT.md Step C4에 따라 아래 우선순위로 파일을 찾는다:
 
-1. `docs/meetings/*-sprint-N-kickoff.md`
-2. `docs/meetings/*-sprint-N.md` (레거시)
+1. `docs/meetings/{APP}/*-sprint-N-kickoff.md`
+2. `docs/meetings/{APP}/*-sprint-N.md` (레거시)
 
 파일에서 추출:
 
@@ -87,10 +80,10 @@ N을 확정하지 못하면:
 **우선순위 2·3 — 로컬 경로 → GitHub Pages URL 변환:**
 
 ```bash
-ls -t docs/presentations/sprint-N-report-*.html 2>/dev/null | head -1
+ls -t docs/presentations/sprint-{APP}-{N}-report-*.html 2>/dev/null | head -1
 ```
 
-탐지된 로컬 경로(`docs/presentations/sprint-N-report-yymmdd.html`)를 아래 규칙으로 GitHub Pages URL로 변환한다:
+탐지된 로컬 경로(`docs/presentations/sprint-{APP}-{N}-report-yymmdd.html`)를 아래 규칙으로 GitHub Pages URL로 변환한다:
 
 ```
 docs/presentations/{파일명} → https://dusunax.github.io/ux-lab/presentations/{파일명}
@@ -99,7 +92,7 @@ docs/presentations/{파일명} → https://dusunax.github.io/ux-lab/presentation
 `{{REPORT_LINK}}`에는 변환된 URL을 **반드시 마크다운 클릭 가능 링크** 형식으로 채운다:
 
 ```
-[📊 Sprint N 보고서](https://dusunax.github.io/ux-lab/presentations/sprint-N-report-yymmdd.html)
+[📊 Sprint {APP}/{N} 보고서](https://dusunax.github.io/ux-lab/presentations/sprint-{APP}-{N}-report-yymmdd.html)
 ```
 
 > ⚠️ **금지**: 로컬 경로를 backtick(`` ` ``)으로 감싸거나 plain text로 출력하지 않는다.
@@ -119,16 +112,16 @@ docs/presentations/{파일명} → https://dusunax.github.io/ux-lab/presentation
 
 ```bash
 git remote get-url origin
-git ls-remote --heads origin sprint/N
+git ls-remote --heads origin sprint/{APP}/{N}
 ```
 
-- 원격에 `sprint/N`이 없으면:
+- 원격에 `sprint/{APP}/{N}`이 없으면:
 
 ```
-⚠️ sprint/N 브랜치가 원격에 없습니다.
+⚠️ sprint/{APP}/{N} 브랜치가 원격에 없습니다.
    아래 명령으로 먼저 push하세요:
 
-   git push -u origin sprint/N
+   git push -u origin sprint/{APP}/{N}
 
    push 완료 후 /sprint:review를 다시 실행하세요.
 ```
@@ -153,7 +146,7 @@ git ls-remote --heads origin sprint/N
 
 | 플레이스홀더 | 채울 값 |
 |-------------|---------|
-| `{{N}}` | Step 1에서 탐지한 스프린트 번호 |
+| `{{N}}` | Step 1에서 탐지한 `{APP}/{N}` (예: `one-moon-date/1`) |
 | `{{GOAL_ONE_LINE}}` | `## Sprint N 목표`의 첫 줄 (`>` 제거) |
 | `{{GOAL_FULL}}` | `## Sprint N 목표` 전체 내용 |
 | `{{DONE_COUNT}}` / `{{TOTAL_COUNT}}` | `[x]` 수 / 전체 체크박스 수 |
@@ -166,8 +159,8 @@ git ls-remote --heads origin sprint/N
 PR 제목: 템플릿 `PR 제목` 섹션에서 플레이스홀더를 채워 사용.
 
 - `{{TYPE}}`: `--type` 인수 값. 없으면 스프린트 번호가 있을 때 `feat`, 없을 때 `chore`
-- `{{N}}`: Step 1에서 탐지한 스프린트 번호. 없으면 `workflow`
-- 결과 예: `feat(sprint/6): 피드백 수집 인프라 완성` / `chore(workflow): 브랜치 전략 정비`
+- `{{N}}`: Step 1에서 탐지한 `{APP}/{N}`. 없으면 `workflow`
+- 결과 예: `feat(sprint/one-moon-date/1): Play 비공개 테스트 안정화` / `chore(workflow): 브랜치 전략 정비`
 
 `mcp__github__create_pull_request`를 호출한다.
 
@@ -175,9 +168,9 @@ PR 제목: 템플릿 `PR 제목` 섹션에서 플레이스홀더를 채워 사�
 
 | 파라미터 | 값 |
 |----------|----|
-| `head` | `sprint/N` |
+| `head` | `sprint/{APP}/{N}` |
 | `base` | `main` |
-| `title` | `Sprint N — [목표]` |
+| `title` | `Sprint {APP}/{N} — [목표]` |
 | `body` | 위 본문 |
 | `draft` | `--draft` 플래그 여부 |
 | `assignees` | 현재 인증된 GitHub 사용자 (`gh api /user --jq '.login'`로 취득) |
@@ -214,10 +207,10 @@ PR 생성 완료 후 아래 라벨을 부착한다.
 
 ## Step 5.7 — 메모리 커밋 (선택)
 
-리포지토리 내 서브에이전트 메모리 파일(`.claude/agent-memory/`)에 변경·추가된 파일이 있으면 함께 커밋한다.
+리포지토리 내 서브에이전트 메모리 파일(`.agent/agent-memory/`)에 변경·추가된 파일이 있으면 함께 커밋한다.
 
 ```bash
-git add .claude/agent-memory/
+git add .agent/agent-memory/
 git diff --cached --quiet || git commit -m "chore(agent-memory): 스프린트 마무리 메모리 업데이트"
 ```
 
@@ -229,10 +222,10 @@ git diff --cached --quiet || git commit -m "chore(agent-memory): 스프린트 �
 ## Step 6 — 완료 보고
 
 ```
-🔀 Sprint N PR 생성 완료
+🔀 Sprint {APP}/{N} PR 생성 완료
 
 PR:         [URL]
-브랜치:     sprint/N → main
+브랜치:     sprint/{APP}/{N} → main
 완료율:     M/T개 ([완료율]%)
 보고서:     [URL 또는 로컬 경로]
 담당자:     [GitHub 사용자명]
@@ -266,7 +259,7 @@ gh api /repos/dusunax/ux-lab/pulls/{PR_NUMBER} --jq '.merged'
 ### 7-2. PR 번호 탐지
 
 ```bash
-gh pr list --head sprint/{N} --repo dusunax/ux-lab --json number --jq '.[0].number'
+gh pr list --head sprint/{APP}/{N} --repo dusunax/ux-lab --json number --jq '.[0].number'
 ```
 
 ### 7-3. 현재 PR 본문 읽기

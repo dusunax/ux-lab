@@ -6,6 +6,18 @@ description: Figma 페이지 URL을 받아 해당 페이지의 모든 최상위 
 
 **인수:** $ARGUMENTS
 
+> **먼저 `.agent/skills/FIGMA_HARNESS_CORE.md`(이하 코어)를 정독한다.** 공통 절차는 전부 코어를 따르고, 아래는 이 커맨드의 고유 사항만 기술한다.
+
+## 모드 요약
+
+| 항목 | 값 |
+|---|---|
+| 대상 | 페이지의 모든 최상위 노드 (필터링 후) |
+| 검증 횟수 | 3회 (전체 구현 완료 후 일괄) |
+| 허용 오차 | 일반 (코어 §7.4 테이블의 "일반" 열) |
+| 쇼케이스 등록 | 없음 |
+| 검증 대상 페이지 | `/preview` (코어 §7.2 — 구현한 컴포넌트 전부를 나열 마운트) |
+
 ## Step 0 — 인수 파싱
 
 `$ARGUMENTS`에서 추출:
@@ -16,131 +28,27 @@ description: Figma 페이지 URL을 받아 해당 페이지의 모든 최상위 
 - `/figma-harness-all https://www.figma.com/design/...?node-id=0-40222`
 - `/figma-harness-all https://www.figma.com/design/...?node-id=0-40222 --json`
 
-## Step 1 — URL 파싱
+## 절차
 
-주어진 URL에서 추출:
-- `fileKey`: `/design/:fileKey/` 부분
-- `pageNodeId`: `node-id=` 값에서 `-`를 `:`으로 변환 (없으면 첫 번째 페이지 사용)
-
-Figma MCP가 인증되지 않은 경우 `mcp__plugin_figma_figma__authenticate`를 먼저 호출하여 OAuth 인증을 진행한다.
-
-## Step 2 — 페이지 메타데이터로 노드 목록 수집
-
-`mcp__plugin_figma_figma__get_metadata` 호출:
-- `fileKey`: 추출한 파일 키
-- `nodeId`: 파싱한 페이지 노드 ID (있는 경우)
-
-응답에서 최상위 자식 노드(children)를 추출한다.
-- 타입이 `FRAME`, `COMPONENT`, `COMPONENT_SET`, `GROUP`인 노드만 대상
-- 타입이 `RECTANGLE`, `TEXT`, `VECTOR` 등 단순 원소는 건너뜀
-
-수집된 노드 목록을 사용자에게 먼저 보여주고 계속 진행할지 확인한다.
-
-## Step 3 — 노드별 순차 구현
-
-각 노드에 대해 아래를 반복한다.
-
-### 3-1. 디자인 컨텍스트 가져오기
-
-`mcp__plugin_figma_figma__get_design_context` 호출:
-- `nodeId`: 해당 노드 ID
-- `fileKey`: 파일 키
-- `clientFrameworks`: `"react,next.js"`
-- `clientLanguages`: `"typescript"`
-
-응답에 포함된 **스크린샷 이미지**를 해당 노드의 레퍼런스로 보관한다.
-
-### 3-2. 컴포넌트 파일 생성
-
-#### 버저닝 규칙 (CRITICAL)
-
-`apps/figma-harness/app/components/` 디렉토리에서 동일한 이름의 파일이 이미 존재하는지 `Glob`으로 확인한다.
-
-- **동일 파일이 없으면**: `{ComponentName}.tsx` 생성
-- **동일 파일이 이미 존재하면**: 기존 파일을 절대 덮어쓰지 않고 `{ComponentName}V2.tsx` 생성
-  - V2도 이미 존재하면 V3, V3도 존재하면 V4… 순서로 올린다.
-
-`apps/figma-harness/app/components/{ComponentName}.tsx` (또는 버전 접미사 포함) 생성.
-
-**규칙:**
-- Figma의 `data-node-id` 어트리뷰트 제거
-- `absolute contents` 같은 Figma 아티팩트 제거, 정리된 마크업으로 변환
-- `font-nunito` 클래스 사용
-- Props: `label?`, `onClick?`, `className?` 기본 포함
-
-**아이콘 처리 (CRITICAL):**
-
-이모지, 플레이스홀더 SVG, 텍스트 대체는 절대 금지. 반드시 실제 에셋을 사용한다.
-
-```bash
-mkdir -p apps/figma-harness/public/assets
-curl -L "https://www.figma.com/api/mcp/asset/..." \
-  -o apps/figma-harness/public/assets/{icon-name}.svg
-```
-
-- 파일명은 Figma 레이어 이름 기준으로 kebab-case 변환
-- 여러 컴포넌트가 동일한 에셋을 공유하는 경우, 중복 다운로드하지 않고 재사용
-
-모든 노드 반복이 끝나면 Step 4로 진행한다.
-
-## Step 4 — 타입 체크
-
-```bash
-cd apps/figma-harness && npx tsc --noEmit
-```
-
-에러가 있으면 해당 파일만 수정 후 재확인한다.
-
-## Step 5 — 정합성 검증 (3회 반복)
-
-정합성 검증은 픽셀 대조뿐 아니라 **상태·색상·속성** 전반을 포함한다.
-
-### 준비
-
-```bash
-pnpm --filter figma-harness dev &
-sleep 3
-npx --yes playwright@latest screenshot --full-page http://localhost:3000 /tmp/harness-render.png
-```
-
-### 회차별 절차
-
-**① 이미지 열람** — 각 노드의 Figma 원본(Step 3-1 보관) vs `/tmp/harness-render.png`
-
-**② 차이 항목 도출 — 컴포넌트별**
-
-**[픽셀 대조]** 크기 / 색상 / 타이포그래피 / 간격 / border-radius / box-shadow / 정렬 / 투명도
-
-**[상태 체크]** Default / Hover / Active / Disabled / Focus — 각각 Figma 정의 여부 및 CSS 구현 일치 확인
-
-**[색상 속성]** 배경색 / 텍스트 색상 / 테두리 색상 / 아이콘 색상 — 정확한 hex 값 비교
-
-**[속성]** font-family / font-weight / letter-spacing / border-radius / box-shadow / 에셋 동일성
-
-우선순위: 색상 → 크기 → 간격 → 타이포그래피 → 상태 → 속성
-
-**③ 수정** → 파일에 반영 후 `npx tsc --noEmit`
-
-**④ 재캡처** → `npx --yes playwright@latest screenshot --full-page http://localhost:3000 /tmp/harness-render.png`
-
-### 회차 종료 조건
-
-3회 반복 후 또는: 픽셀 오차 ≤ 2px, 색상 완전 일치, 상태 모두 구현/미정의 확인, 속성 완전 일치
-
-### 회차별 보고
-
-```
-[회차 N/3] {ComponentName}
-- [픽셀] {항목}: Figma={값} / 현재={값}
-- [상태] {항목}: Figma={정의/미정의} / 현재={구현/미구현}
-- [색상] {항목}: Figma={hex} / 현재={hex}
-- [속성] {항목}: Figma={값} / 현재={값}
-수정: (파일명:줄번호) {전} → {후}
-```
+1. **인증 확인** — 코어 §1
+2. **URL 파싱** — 코어 §2 (`fileKey`, `pageNodeId` — 없으면 첫 번째 페이지)
+3. **노드 목록 수집 (이 커맨드 고유)** — `mcp__plugin_figma_figma__get_metadata` 호출 (`fileKey`, `nodeId`=pageNodeId):
+   - 최상위 자식 노드(children) 중 타입이 `FRAME`, `COMPONENT`, `COMPONENT_SET`, `GROUP`인 것만 대상
+   - `RECTANGLE`, `TEXT`, `VECTOR` 등 단순 원소는 건너뜀
+   - **수집된 노드 목록을 사용자에게 먼저 보여주고 계속 진행할지 확인한다**
+4. **노드별 순차 구현** — 각 노드에 대해 반복:
+   - 디자인 컨텍스트 수집 (코어 §3, 노드별 스크린샷 보관)
+   - 에셋 다운로드 (코어 §4 — 공유 에셋은 중복 다운로드 금지)
+   - 컴포넌트 생성: `apps/figma-harness/app/components/{ComponentName}.tsx` (코어 §5)
+5. **타입 체크** — 코어 §6 (에러 시 해당 파일만 수정)
+6. **정합성 검증 3회** — 코어 §7. 이 커맨드 고유:
+   - `app/preview/page.tsx`에 **구현한 컴포넌트 전부를 세로 나열**로 마운트하고, 각 래퍼에 `data-verify="{ComponentName}"` 부여 (§7.2)
+   - element 캡처(§7.3)는 컴포넌트별로 수행하고, 회차 보고(§7.5)도 컴포넌트별로 작성
+   - 종료 시 dev 서버 정리 (§7.6)
 
 ## 완료 보고
 
-`--json` 없으면 텍스트, 있으면 JSON.
+코어 §8의 규칙을 따른다.
 
 ### 텍스트
 
@@ -158,14 +66,7 @@ npx --yes playwright@latest screenshot --full-page http://localhost:3000 /tmp/ha
 | 0:YYYYY  | ...           | ...               | ❌   | —     |
 (✅ 신규생성 / 🔄 업데이트 / ❌ 실패)
 
-### 정합성 체크리스트
-[픽셀] 크기 {✅|❌}  색상 {✅|❌}  타이포그래피 {✅|❌}  간격 {✅|❌}  border-radius {✅|❌}  box-shadow {✅|❌}
-[상태] Default {✅|❌}  Hover {✅|❌|미정의}  Active {✅|❌|미정의}  Disabled {✅|❌|미정의}  Focus {✅|❌|미정의}
-[색상] 배경 {✅|❌}  텍스트 {✅|❌}  테두리 {✅|❌}  아이콘 {✅|❌}
-[속성] font-weight {✅|❌}  letter-spacing {✅|❌}  border-radius {✅|❌}  box-shadow {✅|❌}  에셋 {✅|❌}
-
-### 잔여 차이
-없음 | - {항목}: Figma={값} / 현재={값}
+(정합성 체크리스트·잔여 차이는 코어 §8 골격)
 ```
 
 ### JSON (`--json`)
@@ -194,4 +95,4 @@ npx --yes playwright@latest screenshot --full-page http://localhost:3000 /tmp/ha
 }
 ```
 
-`fail` 값: `{ "status": "fail", "figma": "{값}", "current": "{값}" }` 객체로 상세 기록.
+실패 시: 코어 §8 실패 스키마에 `"command": "figma-harness-all"`.
