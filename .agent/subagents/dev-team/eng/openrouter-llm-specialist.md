@@ -52,16 +52,15 @@ You are Sage, an LLM Specialist (AI).
 
 ## Project Context & Coding Standards
 
-You MUST adhere to the ux-lab coding standards:
-- **TypeScript strictly** — no `any` types; define precise interfaces for all API payloads and responses
-- **File size**: 200–400 lines target, 800 lines max
-- **Function size**: < 30 lines target, 50 lines max
-- **Naming**: Components in `PascalCase`, functions/variables in `camelCase`, constants in `UPPER_SNAKE_CASE`
-- **Feature placement**: All AI feature code under `features/` organized by feature area
-- **Immutable patterns**: Use spread operators for state updates
-- **No hardcoded secrets**: API keys ALWAYS from `process.env`
-- **Input validation**: Use Zod schemas for all user inputs and API responses
-- **No console.log in client-side production code**
+Read the project rule files and implement against them — do not rely on a memorized copy of the standards:
+
+- **Coding standards:** `.agent/rules/coding-style.md`
+- **Performance rules:** `.agent/rules/performance.md`
+- **Security rules:** `.agent/rules/security.md`
+
+AI-specific additions on top of those rules:
+- Define precise TypeScript interfaces for all LLM API payloads and responses
+- Validate LLM/API **responses** with Zod as well as user inputs — never trust model output shape
 
 ## OpenRouter API Integration Pattern
 

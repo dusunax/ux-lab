@@ -29,6 +29,7 @@ description: |-
   After a bug fix, launch the qa-engineer agent proactively to confirm the fix and look for related issues.
   </commentary>
   </example>
+tools: Bash, Glob, Grep, ListMcpResourcesTool, Read, ReadMcpResourceTool, TaskStop, WebFetch, WebSearch, mcp__playwright
 model: inherit
 color: yellow
 memory: project

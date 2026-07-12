@@ -1,0 +1,27 @@
+{
+  "argumentsVariable": "$ARGUMENTS",
+  "description": "최신 main을 기준으로 규칙에 맞는 새 브랜치를 생성한다. 항상 main을 pull한 뒤 분기한다.",
+  "detectedToolMentions": [],
+  "flags": [
+    "--base",
+    "--type"
+  ],
+  "id": "git/branch",
+  "instructions": "# /git:branch 하네스\n\n**인수:** $ARGUMENTS\n\n| 패턴 | 동작 |\n|------|------|\n| (없음) | 변경점·컨텍스트에서 브랜치명 추론 후 제안 |\n| `NAME` | 브랜치명 직접 지정 (type prefix 없으면 자동 추론) |\n| `--type TYPE` | type 강제 지정 (`feat`/`fix`/`chore`/`refactor`/`docs`/`design`) |\n| `--base BRANCH` | 분기 기준 브랜치 (기본: `main`) |\n\n**실행 전 필독:** `.agent/rules/git.md`\n\n---\n\n## Step 1 — main 최신화\n\n```bash\ngit fetch origin main\ngit checkout main\ngit pull origin main\n```\n\npull 실패(미커밋 변경 등)시 사용자에게 알리고 중단한다.\n\n---\n\n## Step 2 — 브랜치명 결정\n\n### 2-1. 형식 규칙\n\n```\n{type}/{kebab-case-description}\n```\n\n| type | 사용 상황 |\n|------|-----------|\n| `feat` | 새 기능 |\n| `fix` | 버그 수정 |\n| `chore` | 설정·도구·하네스·문서 외 잡무 |\n| `refactor` | 동작 변경 없는 구조 개선 |\n| `docs` | 문서만 변경 |\n| `design` | UI·스타일 변경 |\n| `sprint` | 스프린트 작업 (`sprint/{app}/{N}` 형식) |\n\n### 2-2. 브랜치명 추론\n\n인수가 없으면 현재 작업 컨텍스트(변경 파일·사용자 요청)에서 type과 설명을 추론해 제안한다.\n\n인수로 NAME만 주어지고 `/`가 없으면 type을 추론해 `{type}/{NAME}` 형식으로 변환한다.\n\n### 2-3. 사용자 확인\n\n**제안된 브랜치명을 사용자에게 보여주고 확인받는다.** 확인 전 브랜치를 생성하지 않는다.\n\n```\n제안 브랜치명: feat/user-profile-card\n생성할까요?\n```\n\n---\n\n## Step 3 — 브랜치 생성\n\n```bash\ngit checkout -b {브랜치명}\n```\n\n이미 존재하는 브랜치명이면 사용자에게 알리고 다른 이름을 제안한다.\n\n---\n\n## Step 4 — 완료 보고\n\n```\n🌿 브랜치 생성 완료\n\n브랜치:  {브랜치명}\n기준:    main ({latest commit SHA})\n\n다음 단계:\n  커밋:      /git:commit\n  커밋+PR:   /git:up\n```\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/branch"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/git/branch.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

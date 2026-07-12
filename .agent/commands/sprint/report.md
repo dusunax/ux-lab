@@ -12,7 +12,8 @@ description: 회의록 기반 상위 보고용 HTML 프레젠테이션 자동 �
 
 | 패턴 | 동작 |
 |------|------|
-| (없음) | 가장 최근 회의록 자동 탐지 |
+| (없음) | 현재 브랜치 또는 최신 kickoff에서 APP·N 자동 추론 |
+| `--app APP` | 지정 앱 사용 |
 | `--sprint N` | Sprint N 회의록 사용 |
 | `--file path` | 특정 회의록 파일 사용 |
 | `--title "제목"` | 슬라이드 제목 오버라이드 |
@@ -21,11 +22,9 @@ description: 회의록 기반 상위 보고용 HTML 프레젠테이션 자동 �
 
 ## Step 1 — 회의록 탐지 및 읽기
 
-인수가 없으면 `docs/meetings/` 디렉터리에서 가장 최근 파일을 탐지한다.
-
-```bash
-ls -t docs/meetings/*.md | head -5
-```
+`--file`이 없으면 `.agent/skills/SPRINT-CONTEXT.md`를 읽고 그 절차를 따라 **APP·N**을 확정하고,
+킥오프 파일(`docs/meetings/{APP}/*sprint-{N}-kickoff.md`)을 탐지한다.
+(브랜치 `sprint/{app}/{N}` 파싱 → 실패 시 `docs/meetings/{app}/` 최신 킥오프 추론 → 모호하면 질문)
 
 파일을 읽어 다음 정보를 추출한다:
 - 스프린트 목표
@@ -43,7 +42,7 @@ ls -t docs/meetings/*.md | head -5
 HTML을 생성하기 전에 반드시 기존 sprint HTML 파일을 읽어 클래스 구조를 파악한다.
 
 ```bash
-ls -t docs/presentations/sprint-*.html | head -1
+ls -t docs/presentations/sprint-*-report-*.html | head -1
 ```
 
 파일이 존재하면 Read 도구로 전체를 읽는다.
@@ -148,11 +147,12 @@ ls -t docs/presentations/sprint-*.html | head -1
 ## Step 4 — HTML 프레젠테이션 생성 (worktree 격리)
 
 > HTML 파일을 직접 Write하지 않는다. **`product/PM/prd-product-manager` 에이전트를 `isolation: "worktree"` 옵션으로 소환**해 아래 데이터를 전달하고 파일 생성을 위임한다.
+> 소환 직전 `echo 'PM' > .claude/.active-role`로 활성 역할을 기록하고, 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다.
 
 Step 1–3에서 수집한 내용을 Jordan에게 전달할 프롬프트로 구성한다:
 
 ```
-다음 정보를 바탕으로 Sprint {N} HTML 프레젠테이션을 생성해줘.
+다음 정보를 바탕으로 Sprint {APP}/{N} HTML 프레젠테이션을 생성해줘.
 
 [회의록 내용: 스프린트 목표 / 완료 항목 / 결정 사항 / Open Questions / 비고]
 [슬라이드 구조 설계: Step 3에서 결정한 슬라이드 매핑]
@@ -180,12 +180,12 @@ Step 1–3에서 수집한 내용을 Jordan에게 전달할 프롬프트로 구�
 ⚠️ 클래스 발명 금지: 레퍼런스에 없는 클래스는 <style> 블록에 추가 정의할 것. ppt-theme.css 수정 금지.
 
 --- 파일 저장 경로 ---
-docs/presentations/sprint-{N}-report-{yymmdd}.html
+docs/presentations/sprint-{APP}-{N}-report-{yymmdd}.html
 
 규칙:
 - HTML은 필수 헤드 태그 사용 (Google Fonts + ppt-theme.css).
 - ppt-theme.css가 이미 존재하면 덮어쓰지 않는다.
-- 스크린샷은 ./sprint-{N}/shot-{desc}.png 상대경로 참조 (base64 임베드 금지).
+- 스크린샷은 ./sprint-{APP}-{N}/shot-{desc}.png 상대경로 참조 (base64 임베드 금지).
 - 디렉터리가 없으면 생성한다.
 - 생성 후 모든 슬라이드에서 이미지 때문에 세로 화면을 벗어나는 요소가 없는지 검증하고, 문제가 있으면 HTML/CSS를 수정한 뒤 다시 검증한다.
 ```
@@ -204,7 +204,7 @@ git worktree list
 git log --oneline <jordan-worktree-branch> ^HEAD
 
 # 3. 현재 브랜치로 병합
-git merge <jordan-worktree-branch> --no-ff -m "docs(sprint-{N}): Jordan worktree 병합 — 보고서 HTML 생성"
+git merge <jordan-worktree-branch> --no-ff -m "docs({APP}): Sprint {N} Jordan worktree 병합 — 보고서 HTML 생성"
 
 # 4. worktree 정리 (자동 정리되지 않은 경우)
 git worktree remove <jordan-worktree-path> --force
@@ -213,7 +213,7 @@ git branch -d <jordan-worktree-branch>
 
 생성 확인:
 ```bash
-ls docs/presentations/sprint-{N}-report-*.html
+ls docs/presentations/sprint-{APP}-{N}-report-*.html
 ```
 
 ---
@@ -273,7 +273,7 @@ Array.from(document.querySelectorAll('.slide')).map(function(slide, index) {
 1. **state 파일 저장** — 생성된 HTML 경로를 `docs/presentations/.last-report`에 한 줄로 저장한다.
 
    ```
-   docs/presentations/sprint-{N}-report-{yymmdd}.html
+   docs/presentations/sprint-{APP}-{N}-report-{yymmdd}.html
    ```
 
    이 파일은 `/sprint:review`가 `--report-url` 없이도 보고서 경로를 자동으로 읽는 데 사용된다.
@@ -282,12 +282,12 @@ Array.from(document.querySelectorAll('.slide')).map(function(slide, index) {
 
 ```
 프레젠테이션 생성 완료
-파일:     docs/presentations/sprint-{N}-report-{yymmdd}.html
+파일:     docs/presentations/sprint-{APP}-{N}-report-{yymmdd}.html
 슬라이드: {N}장
 조작:     ← → 키 또는 클릭으로 전환
 
 브라우저에서 열기:
-open docs/presentations/sprint-{N}-report-{yymmdd}.html
+open docs/presentations/sprint-{APP}-{N}-report-{yymmdd}.html
 
 다음 단계: /sprint:review 실행 시 보고서가 자동으로 첨부됩니다.
 ```

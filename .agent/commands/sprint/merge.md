@@ -101,16 +101,16 @@ gh api --method PATCH /repos/dusunax/ux-lab/pulls/{PR_NUMBER} \
 
 ## Step 4 — 메모리 정리 커밋 (선택)
 
-리포지토리 내 `.claude/agent-memory/`에 변경된 파일이 있으면 커밋한다.
+리포지토리 내 `.agent/agent-memory/`에 변경된 파일이 있으면 커밋한다.
 
 ```bash
-git status --short .claude/agent-memory/
+git status --short .agent/agent-memory/
 ```
 
 변경 파일이 있으면:
 
 ```bash
-git add .claude/agent-memory/
+git add .agent/agent-memory/
 git commit -m "chore(agent-memory): 스프린트 마무리 메모리 정리"
 ```
 
@@ -159,10 +159,10 @@ git branch -d {branch_name}
 ## Step 5 — 완료 보고
 
 ```
-✅ Sprint N 머지 완료
+✅ Sprint {APP}/{N} 머지 완료
 
 PR:           https://github.com/dusunax/ux-lab/pull/{NUMBER}
-브랜치:       sprint/N → main (삭제됨)
+브랜치:       sprint/{APP}/{N} → main (삭제됨)
 충돌 해결:   [해결 파일 수] 개 / 없음
 이미지 URL:  main으로 교체 완료 / 교체 대상 없음
 메모리:      커밋 완료 / 변경 없음

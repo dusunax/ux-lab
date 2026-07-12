@@ -19,18 +19,18 @@ description: eval 지적 사항 처리 결과를 PR에 댓글로 등록한다. S
 
 ## Step 1 — PR 번호 탐지
 
-인수 없으면:
+인수 없으면 `.agent/skills/SPRINT-CONTEXT.md`를 읽고 그 절차를 따라 **APP·N**을 확정한 뒤 PR을 탐색한다:
 
 ```bash
-git branch --show-current  # sprint/N 패턴에서 N 추출
-gh pr list --repo [REPO] --head sprint/N --json number --jq '.[0].number'
+git branch --show-current  # sprint/{app}/{N} 패턴에서 APP·N 추출
+gh pr list --repo [REPO] --head sprint/{APP}/{N} --json number --jq '.[0].number'
 ```
 
 PR 번호를 확정하지 못하면:
 
 ```
 ⛔ PR 번호를 확인할 수 없습니다.
-   --pr NUMBER 인수를 사용하거나 sprint/N 브랜치로 전환 후 재실행하세요.
+   --pr NUMBER 인수를 사용하거나 sprint/{app}/{N} 브랜치로 전환 후 재실행하세요.
 ```
 
 ---
@@ -41,7 +41,7 @@ PR 번호를 확정하지 못하면:
 gh pr view [NUMBER] --repo [REPO] --comments --json comments
 ```
 
-eval 댓글(`🏁 Sprint N 평가 — Nolan (EV)`)을 찾아 **Review Findings 테이블**을 추출한다.
+eval 댓글(`🏁 Sprint {APP}/{N} 평가 — Nolan (EV)`, 구형 `🏁 Sprint N 평가 — Nolan (EV)` 제목도 허용)을 찾아 **Review Findings 테이블**을 추출한다.
 
 각 항목의 등급(🔴 Blocker / 🟡 Major / 🟢 Minor)과 항목명을 목록화한다.
 

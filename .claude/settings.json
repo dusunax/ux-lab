@@ -21,6 +21,16 @@
           }
         ]
       }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rm -f /Users/du/repository/ux-lab/.claude/.active-role"
+          }
+        ]
+      }
     ]
   }
 }
