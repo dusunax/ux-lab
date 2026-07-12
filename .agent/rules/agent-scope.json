@@ -1,5 +1,5 @@
 {
-  "_comment": "SSOT: 이 파일이 단일 진실 공급원. scope-enforcer.py 훅이 읽고, gen-scope-doc.py 훅이 agent-scope.md를 자동 재생성한다. agent-scope.md를 직접 수정하지 말 것.",
+  "_comment": "SSOT: 이 파일이 단일 진실 공급원. scope-enforcer.py 훅이 읽고, gen-scope-doc.py 훅이 agent-scope.md를 자동 재생성한다. agent-scope.md를 직접 수정하지 말 것. memory 필드는 해당 역할의 자기 메모리 디렉터리 — deny/readonly보다 우선해 항상 쓰기 허용된다.",
   "roles": {
     "FE": {
       "agent": "Avery",
@@ -20,6 +20,9 @@
         ".agent/**",
         ".claude/**",
         ".cursor/**"
+      ],
+      "memory": [
+        ".agent/agent-memory/eng-FE-frontend-dev/**"
       ]
     },
     "BE": {
@@ -38,6 +41,9 @@
         ".agent/**",
         ".claude/**",
         ".cursor/**"
+      ],
+      "memory": [
+        ".agent/agent-memory/eng-BE-backend-architect/**"
       ]
     },
     "PERF": {
@@ -63,6 +69,9 @@
         ".agent/**",
         ".claude/**",
         ".cursor/**"
+      ],
+      "memory": [
+        ".agent/agent-memory/eng-PERF-perf-optimizer/**"
       ]
     },
     "AI": {
@@ -76,6 +85,9 @@
         ".agent/**",
         ".claude/**",
         ".cursor/**"
+      ],
+      "memory": [
+        ".agent/agent-memory/eng-AI-openrouter-llm-specialist/**"
       ]
     },
     "PM": {
@@ -94,6 +106,9 @@
         ".agent/scripts/**",
         ".claude/**",
         ".cursor/**"
+      ],
+      "memory": [
+        ".agent/agent-memory/product-PM-prd-product-manager/**"
       ]
     },
     "TS": {
@@ -133,15 +148,30 @@
     "UX": {
       "agent": "Riley",
       "layer": "읽기 전용",
-      "description": "검증, 피드백 — 파일 수정 없음",
+      "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
       "allow": [],
       "deny": [],
-      "readonly": true
+      "readonly": true,
+      "memory": [
+        ".agent/agent-memory/design-UX-ux-design-reviewer/**"
+      ]
     },
     "QA": {
       "agent": "Morgan, Quinn",
       "layer": "읽기 전용",
-      "description": "검증, 피드백 — 파일 수정 없음",
+      "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
+      "allow": [],
+      "deny": [],
+      "readonly": true,
+      "memory": [
+        ".agent/agent-memory/qa-QA-code-quality-reviewer/**",
+        ".agent/agent-memory/qa-QA-qa-engineer/**"
+      ]
+    },
+    "EV": {
+      "agent": "Nolan",
+      "layer": "읽기 전용",
+      "description": "스프린트 PR 평가 — 결과는 PR 코멘트로만, 파일 수정 없음",
       "allow": [],
       "deny": [],
       "readonly": true

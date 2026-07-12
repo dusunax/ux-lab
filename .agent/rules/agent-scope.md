@@ -8,17 +8,18 @@
 
 ## 파일 소유권 테이블
 
-| 역할 | 에이전트 | 쓰기 허용 경로 | 읽기 |
-|------|---------|--------------|------|
-| **FE** | Avery | `apps/**/components/**`, `apps/**/styles/**`, `apps/**/public/**`, `apps/**/app/**`, `apps/**/src/**`, `apps/**/pages/**` | 전체 |
-| **BE** | Blake | `apps/**/api/**`, `apps/**/app/api/**`, `apps/**/lib/**`, `apps/puppeteer-api/**` | 전체 |
-| **PERF** | Chase | `*.config.js`, `*.config.ts`, `vercel.json`, `vercel.ts`, `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.env*`, `Dockerfile`, `**/Dockerfile`, `**/package.json`, `**/*.config.js`, `**/*.config.ts` | 전체 |
-| **AI** | Sage | `apps/openrouter-proxy/**` | 전체 |
-| **PM** | Jordan | `docs/**`, `.agent/agent-memory/**` | 전체 |
-| **TS** | Alex | `docs/meetings/**`, `docs/**` | 전체 |
-| **UX** | Riley | 읽기 전용 (피드백은 텍스트 출력만) | 전체 |
-| **QA** | Morgan, Quinn | 읽기 전용 (결과는 텍스트 출력만) | 전체 |
-| **OC** | Sam | `.agent/subagents/**`, `.agent/commands/**`, `.agent/rules/**`, `.agent/scripts/**`, `.claude/**`, `.cursor/**` | 전체 |
+| 역할 | 에이전트 | 쓰기 허용 경로 | 메모리 쓰기 | 읽기 |
+|------|---------|--------------|------------|------|
+| **FE** | Avery | `apps/**/components/**`, `apps/**/styles/**`, `apps/**/public/**`, `apps/**/app/**`, `apps/**/src/**`, `apps/**/pages/**` | `.agent/agent-memory/eng-FE-frontend-dev/**` | 전체 |
+| **BE** | Blake | `apps/**/api/**`, `apps/**/app/api/**`, `apps/**/lib/**`, `apps/puppeteer-api/**` | `.agent/agent-memory/eng-BE-backend-architect/**` | 전체 |
+| **PERF** | Chase | `*.config.js`, `*.config.ts`, `vercel.json`, `vercel.ts`, `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.env*`, `Dockerfile`, `**/Dockerfile`, `**/package.json`, `**/*.config.js`, `**/*.config.ts` | `.agent/agent-memory/eng-PERF-perf-optimizer/**` | 전체 |
+| **AI** | Sage | `apps/openrouter-proxy/**` | `.agent/agent-memory/eng-AI-openrouter-llm-specialist/**` | 전체 |
+| **PM** | Jordan | `docs/**`, `.agent/agent-memory/**` | `.agent/agent-memory/product-PM-prd-product-manager/**` | 전체 |
+| **TS** | Alex | `docs/meetings/**`, `docs/**` | — | 전체 |
+| **UX** | Riley | 읽기 전용 (피드백은 텍스트 출력만) | `.agent/agent-memory/design-UX-ux-design-reviewer/**` | 전체 |
+| **QA** | Morgan, Quinn | 읽기 전용 (결과는 텍스트 출력만) | `.agent/agent-memory/qa-QA-code-quality-reviewer/**`, `.agent/agent-memory/qa-QA-qa-engineer/**` | 전체 |
+| **EV** | Nolan | 읽기 전용 (결과는 텍스트 출력만) | — | 전체 |
+| **OC** | Sam | `.agent/subagents/**`, `.agent/commands/**`, `.agent/rules/**`, `.agent/scripts/**`, `.claude/**`, `.cursor/**` | — | 전체 |
 
 ---
 
@@ -38,11 +39,19 @@
 
 ---
 
-## 위반 처리 방침 (OQ-1 결정)
+## 위반 처리 방침 (2026-07-12 현행화 — 구 OQ-1 대체)
 
-파일 영역 제약 위반이 감지되면 **경고 출력 후 계속 진행**한다. 작업을 거부하지 않는다.
+`scope-enforcer.py` 훅(Claude Code `PreToolUse`)이 `.claude/.active-role`이 설정된 동안 아래를 강제한다:
 
-**이유:** 프롬프트 레벨 제약은 기술적 강제 수단이 없으므로, 경고를 통해 사용자가 판단할 기회를 주는 것이 더 실용적이다.
+| 상황 | 처리 |
+|------|------|
+| `deny` 패턴 매치, `readonly` 역할의 쓰기 | **하드 차단** (exit 2) — 작업 거부, OC 재위임 안내 |
+| 자기 `memory` 경로 쓰기 | 항상 허용 (readonly 역할 포함) |
+| `allow` 외 경로 쓰기 | 소프트 경고 후 진행 |
+| Bash 쓰기 패턴이 deny 경로를 향함 | 소프트 경고 후 진행 |
+
+`.active-role`이 없으면(메인 세션) 검사하지 않는다.
+**이 강제는 Claude Code 전용이다.** Cursor/Codex에서는 프롬프트 제약(브리핑 삽입)만 적용된다.
 
 Sam의 브리핑에 다음 형식으로 경고를 삽입한다:
 

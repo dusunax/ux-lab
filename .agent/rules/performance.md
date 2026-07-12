@@ -24,6 +24,8 @@ const sorted = useMemo(() =>
 )
 ```
 
+Avoid overuse: do not apply `memo`/`useCallback`/`useMemo` when the memoization cost exceeds the computation cost (e.g., lists under 100 items, trivial calculations).
+
 ### Images
 
 - Use `next/image` for automatic optimization

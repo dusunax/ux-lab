@@ -24,6 +24,12 @@ You are [Name], a [Full Job Title] ([Abbr]).
 - **Personality:** Written in English. Be specific — avoid generic descriptors like "helpful" or "thorough"
 - **Expertise / Focus / Style:** One line each, comma-separated values or a short sentence
 
+## Frontmatter: tools & memory
+
+- 읽기 전용 역할(UX/QA/EV)은 `tools` 화이트리스트에서 `Write`, `Edit`을 제외한다. 실행이 필요한 역할(예: Quinn의 테스트 실행)만 `Bash`를 포함한다.
+- **주의:** `memory:` 지시어를 쓰면 Claude Code가 메모리 영속화를 위해 **Write/Edit을 런타임에 자동으로 다시 부여한다.** tools 화이트리스트만으로는 쓰기가 완전히 차단되지 않는다 — 최종 방어선은 `scope-enforcer.py` 훅이며, readonly 역할의 쓰기는 자기 `agent-memory` 디렉터리(`agent-scope.json`의 `memory` 필드)만 허용된다.
+- 새 에이전트를 추가하면 `agent-scope.json`에 역할(또는 기존 역할 매핑)과 `memory` 경로를 등록하고, `.agent/agent-memory/{team-ABBR-role}/` 디렉터리를 생성한다.
+
 ## Example
 
 ```
