@@ -1,7 +1,18 @@
 {
   "argumentsVariable": "$ARGUMENTS",
   "description": "Figma URL의 컴포넌트를 스냅샷 형식으로 구현하고, 지정한 횟수만큼 Figma 원본과 픽셀 대조를 반복하여 퀄리티를 높인다. 사용법: /figma-harness-snapshots 횟수 URL (쇼케이스 등록은 /figma-harness-showcase --snapshot 사용)",
-  "detectedToolMentions": [],
+  "detectedToolMentions": [
+    "mcp__figma__get_design_context",
+    "mcp__figma__get_metadata",
+    "mcp__figma__get_screenshot",
+    "mcp__playwright__browser_navigate",
+    "mcp__playwright__browser_snapshot",
+    "mcp__playwright__browser_take_screenshot",
+    "mcp__plugin_figma_figma__authenticate",
+    "mcp__plugin_figma_figma__get_design_context",
+    "mcp__plugin_figma_figma__get_metadata",
+    "mcp__plugin_figma_figma__get_screenshot"
+  ],
   "flags": [
     "--json"
   ],

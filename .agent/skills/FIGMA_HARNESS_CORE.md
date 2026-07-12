@@ -13,13 +13,35 @@ description: figma-harness 계열 커맨드 4종(단일/전체/스냅샷/쇼케�
 
 ---
 
-## §1 — 인증 전제 (모든 커맨드의 Step 0)
+## §1 — Figma MCP 연결 전제 (모든 커맨드의 Step 0)
 
-Figma MCP(`mcp__plugin_figma_figma__*`)가 인증되지 않은 상태면 `mcp__plugin_figma_figma__authenticate`를 먼저 호출하여 OAuth 인증을 진행한다.
+하네스는 Figma 공식 MCP의 아래 기능이 필요하다.
+
+- `authenticate` 또는 OAuth login
+- `get_metadata`
+- `get_design_context`
+- `get_screenshot`
+
+에이전트 런타임마다 MCP 서버 이름이 다르므로, 커맨드 본문에서는 아래 표에 맞는 실제 툴명을 사용한다.
+
+| Runtime | 권장 MCP 연결 | 예상 툴 접두사 | 상태 확인 |
+|---|---|---|---|
+| Codex | `codex mcp add figma --url https://mcp.figma.com/mcp --oauth-resource https://mcp.figma.com/mcp` 후 `codex mcp login figma` | `mcp__figma__*` | `codex mcp list`, `codex mcp get figma` |
+| Claude Code | Figma 공식 플러그인 `figma@claude-plugins-official` | `mcp__plugin_figma_figma__*` | `claude mcp get plugin:figma:figma` |
+| Cursor | Figma 공식 MCP가 동일 기능을 노출해야 함. 기존 `TalkToFigma`류 서버는 기능명이 다를 수 있어 어댑터 없이는 이 하네스의 대체물이 아니다. | Cursor가 노출한 서버명 기반 | Cursor MCP 설정/툴 목록 |
+
+대표 툴명:
+
+- Codex: `mcp__figma__get_metadata`, `mcp__figma__get_design_context`, `mcp__figma__get_screenshot`
+- Claude Code: `mcp__plugin_figma_figma__get_metadata`, `mcp__plugin_figma_figma__get_design_context`, `mcp__plugin_figma_figma__get_screenshot`
+
+현재 세션에 Figma MCP 툴이 노출되지 않았다면, 설정을 추가한 뒤 에이전트 세션을 재시작한다. MCP 툴 목록은 세션 시작 시점에 고정될 수 있다.
+
+Figma MCP가 인증되지 않은 상태면 현재 런타임의 인증 방식을 사용하여 OAuth 인증을 진행한다. 예: Claude Code는 `mcp__plugin_figma_figma__authenticate`, Codex는 `codex mcp login figma`.
 
 **비인터랙티브 세션(서브에이전트, headless 실행 등)에서는 OAuth 인증이 불가능하다.** 이 경우:
 
-1. 사용자에게 "인터랙티브 세션에서 `/mcp` 또는 Figma MCP 최초 호출로 선행 인증이 필요하다"고 안내한다.
+1. 사용자에게 "인터랙티브 세션에서 Figma MCP OAuth 선행 인증이 필요하다"고 안내한다.
 2. 즉시 중단한다. `--json` 모드면 §8의 실패 JSON(`stage: "auth"`)을 출력한다.
 
 인증 없이 구현 단계로 진행하는 것을 금지한다 — 레퍼런스 스크린샷 없이는 검증 루프가 성립하지 않는다.
@@ -36,7 +58,7 @@ Figma MCP(`mcp__plugin_figma_figma__*`)가 인증되지 않은 상태면 `mcp__p
 
 ## §3 — 디자인 컨텍스트 수집
 
-`mcp__plugin_figma_figma__get_design_context` 호출 규약:
+현재 런타임의 Figma MCP `get_design_context` 호출 규약:
 
 - `nodeId`: §2에서 변환한 노드 ID
 - `fileKey`: §2에서 추출한 파일 키
@@ -176,7 +198,7 @@ export default function PreviewPage() {
 
 1. `mcp__playwright__browser_navigate` → `http://localhost:3900/preview`
 2. `mcp__playwright__browser_snapshot`으로 페이지 스냅샷을 얻어 대상 요소의 ref 확인
-3. `mcp__playwright__browser_take_screenshot`의 element 옵션(`element` + `ref`)으로 컴포넌트 요소만 캡처
+3. `mcp__playwright__browser_take_screenshot`에 `target=<ref>`, `element=<사람이 읽을 설명>`을 넘겨 컴포넌트 요소만 캡처
 
 저장 경로: `/tmp` 금지. **세션 scratchpad 디렉토리** 또는 `apps/figma-harness/.verify/`(gitignore 대상)를 사용한다.
 

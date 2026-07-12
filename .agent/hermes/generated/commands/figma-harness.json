@@ -1,7 +1,18 @@
 {
   "argumentsVariable": "$ARGUMENTS",
   "description": "Figma URL 하나의 노드를 컴포넌트로 구현한다. 구현 후 Figma 원본과 정합성 검증을 3회 반복하여 퀄리티를 높인다. (쇼케이스 등록은 /figma-harness-showcase 사용)",
-  "detectedToolMentions": [],
+  "detectedToolMentions": [
+    "mcp__figma__get_design_context",
+    "mcp__figma__get_metadata",
+    "mcp__figma__get_screenshot",
+    "mcp__playwright__browser_navigate",
+    "mcp__playwright__browser_snapshot",
+    "mcp__playwright__browser_take_screenshot",
+    "mcp__plugin_figma_figma__authenticate",
+    "mcp__plugin_figma_figma__get_design_context",
+    "mcp__plugin_figma_figma__get_metadata",
+    "mcp__plugin_figma_figma__get_screenshot"
+  ],
   "flags": [
     "--json"
   ],

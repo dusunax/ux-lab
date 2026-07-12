@@ -44,7 +44,7 @@ description: |-
 2. **URL 파싱** — 코어 §2 (단일: `nodeId` / `--all`: `pageNodeId`, 없으면 첫 번째 페이지)
 3. **노드 목록 결정 (이 커맨드 고유)**
    - 단일 모드: 해당 노드 1개
-   - `--all` 모드: `mcp__plugin_figma_figma__get_metadata`로 최상위 자식 수집:
+   - `--all` 모드: 현재 런타임의 Figma MCP `get_metadata`로 최상위 자식 수집:
      - `FRAME`, `COMPONENT`, `COMPONENT_SET`, `GROUP`만, 단순 원소(`RECTANGLE`, `TEXT`, `VECTOR` 등) 건너뜀
      - **`apps/figma-harness/app/page.tsx`의 `COMPONENTS` 배열에 이미 등록된 `figmaNode`는 건너뜀(⏭ skipped)**
      - 수집된 노드 목록을 사용자에게 보여주고 계속 진행할지 확인

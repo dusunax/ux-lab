@@ -32,7 +32,7 @@ description: Figma 페이지 URL을 받아 해당 페이지의 모든 최상위 
 
 1. **인증 확인** — 코어 §1
 2. **URL 파싱** — 코어 §2 (`fileKey`, `pageNodeId` — 없으면 첫 번째 페이지)
-3. **노드 목록 수집 (이 커맨드 고유)** — `mcp__plugin_figma_figma__get_metadata` 호출 (`fileKey`, `nodeId`=pageNodeId):
+3. **노드 목록 수집 (이 커맨드 고유)** — 현재 런타임의 Figma MCP `get_metadata` 호출 (`fileKey`, `nodeId`=pageNodeId):
    - 최상위 자식 노드(children) 중 타입이 `FRAME`, `COMPONENT`, `COMPONENT_SET`, `GROUP`인 것만 대상
    - `RECTANGLE`, `TEXT`, `VECTOR` 등 단순 원소는 건너뜀
    - **수집된 노드 목록을 사용자에게 먼저 보여주고 계속 진행할지 확인한다**
