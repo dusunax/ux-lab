@@ -38,7 +38,7 @@ const LIST_ENTITIES_QUERY = gql`
  */
 const GET_RELATIONSHIPS_QUERY = gql`
   query GetRelationships($entityId: ID!) {
-    getRelationships(entityId: $entityId, limit: 20) {
+    getRelationships(entityId: $entityId, limit: 50) {
       source {
         id
         name
@@ -70,8 +70,9 @@ interface GraphQLEntity {
  * GraphDemo 컴포넌트
  */
 export const GraphDemo: React.FC = () => {
+  // 고정 sessionId (hydration 오류 방지)
   const sessionId = 'neo4j-bloom-session';
-  const [nodeCount, setNodeCount] = useState(100);
+  const [nodeCount, setNodeCount] = useState(20);
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null);
   const [isBenchmarking, setIsBenchmarking] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<string>('');
@@ -91,24 +92,42 @@ export const GraphDemo: React.FC = () => {
   const loadEntitiesFromNeo4j = useCallback(async (count: number) => {
     setIsLoading(true);
     try {
-      const result = await listEntities({ variables: { limit: count } });
+      // Zeus를 포함하기 위해 최대 70개까지 로드
+      const result = await listEntities({ variables: { limit: 70 } });
 
       if (result.data?.listEntities?.edges) {
-        const gqlEntities: GraphQLEntity[] = result.data.listEntities.edges;
+        // GraphQL 배열을 수정 가능한 새 배열로 복사
+        let gqlEntities: GraphQLEntity[] = [...result.data.listEntities.edges];
+
+        // Zeus를 찾아서 앞으로 옮기기
+        const zeusIndex = gqlEntities.findIndex((e) => e.name?.toLowerCase() === 'zeus');
+        if (zeusIndex >= 0) {
+          const zeus = gqlEntities.splice(zeusIndex, 1)[0];
+          gqlEntities.unshift(zeus);
+        }
+
+        // 요청한 개수로 제한 (Zeus는 첫 번째에 있으므로 반드시 포함됨)
+        gqlEntities = gqlEntities.slice(0, count);
+
+        // 노드 크기는 고정, 텍스트 크기만 조정 (일반 글자 크기)
+        const fixedNodeSize = { width: 90, height: 50 };
 
         // 엔티티를 GraphNode로 변환
         const nodes: GraphNode[] = gqlEntities.map((entity) => ({
-          id: `entity_${entity.id}`,
+          id: entity.id,
           data: {
             label: entity.name,
             type: entity.type.toLowerCase(),
             description: entity.description,
           },
+          width: fixedNodeSize.width,
+          height: fixedNodeSize.height,
         }));
 
         // 관계 로드 (모든 엔티티의 관계 수집)
         const relatedEdges: GraphEdge[] = [];
-        const entitiesToCheck = nodes.slice(0, Math.min(50, nodes.length));
+        // 모든 entity에 대해 관계 로드 (최대 70개)
+        const entitiesToCheck = nodes.slice(0, Math.min(70, nodes.length));
 
         for (const node of entitiesToCheck) {
           try {
@@ -139,13 +158,9 @@ export const GraphDemo: React.FC = () => {
               }
             }
           } catch (error) {
-            console.warn(`Failed to load relationships for ${node.id}:`, error);
+            // 관계 로딩 실패는 무시 (선택적)
           }
         }
-
-        console.log(
-          `Loaded ${nodes.length} entities and ${relatedEdges.length} relationships from Neo4j`
-        );
 
         setGraphData({ nodes, edges: relatedEdges });
       }

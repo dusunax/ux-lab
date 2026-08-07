@@ -20,17 +20,19 @@ enum EntityType {
 
 enum RelationshipTypeEnum {
   """Parent-child divine relationship"""
-  PARENT_OF
+  PARENT
   """Spousal relationship"""
-  SPOUSE_OF
+  SPOUSE
+  """Sibling relationship"""
+  SIBLING
   """Romantic or love-based relationship"""
   LOVED_BY
   """Hostile or conflict relationship"""
-  ENEMY_OF
+  ENEMY
   """Alliance or friendship relationship"""
   ALLY_OF
   """Divine patronage or blessing"""
-  PATRON_OF
+  PROTECTOR
   """Mortal lineage or descent"""
   DESCENDED_FROM
   """Slayer or defeated relationship"""

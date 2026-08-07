@@ -17,19 +17,21 @@ import ReactFlow, {
   Edge,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Background,
   Controls,
   MiniMap,
   Connection,
   addEdge,
   NodeTypes,
+  ReactFlowProvider,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { layoutService, type GraphNode, type GraphEdge } from '@/app/services/layoutService';
 import { EntityNode } from './nodes/EntityNode';
 
-// 커스텀 노드 타입
-const nodeTypes: NodeTypes = {
+// 커스텀 노드 타입 (컴포넌트 외부에서 정의)
+const NODE_TYPES: NodeTypes = {
   entity: EntityNode,
 };
 
@@ -47,20 +49,20 @@ export interface MythGraphProps {
  * MythGraph 컴포넌트
  * React Flow + Dagre를 사용한 세션 고정 레이아웃
  */
-export const MythGraph = React.memo(
-  ({
-    entities,
-    relationships,
-    sessionId,
-    onNodeClick,
-    onEdgeClick,
-    loading = false,
-    useBloomLayout = false,
-  }: MythGraphProps) => {
-    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const [isLayouting, setIsLayouting] = useState(false);
-    const layoutTimeoutRef = useRef<NodeJS.Timeout>();
+const GraphViewWrapper = ({
+  entities,
+  relationships,
+  sessionId,
+  onNodeClick,
+  onEdgeClick,
+  loading = false,
+  useBloomLayout = false,
+}: MythGraphProps) => {
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [isLayouting, setIsLayouting] = useState(false);
+  const layoutTimeoutRef = useRef<NodeJS.Timeout>();
+  const { fitView } = useReactFlow();
 
     /**
      * 레이아웃 적용
@@ -98,30 +100,52 @@ export const MythGraph = React.memo(
           };
         });
 
-        const positionedEdges: Edge[] = graphEdges.map((edge) => ({
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          animated: false,
-          style: {
-            stroke: '#D7B26D',
-            strokeWidth: 1.5,
-            opacity: 0.6,
-          },
-        }));
+        const positionedEdges: Edge[] = graphEdges.map((edge) => {
+          // GraphQL에서 받은 label이 있으면 사용, 없으면 edge 정보 사용
+          const label = relationships.find(
+            (r) => r.source === edge.source && r.target === edge.target
+          )?.label || '';
+
+          return {
+            id: edge.id,
+            source: edge.source,
+            target: edge.target,
+            label: label,
+            labelStyle: {
+              fill: '#D7B26D',
+              fontSize: '11px',
+              fontWeight: '600',
+              backgroundColor: 'rgba(10, 13, 17, 0.8)',
+              padding: '2px 6px',
+              borderRadius: '4px',
+            },
+            animated: false,
+            style: {
+              stroke: '#D7B26D',
+              strokeWidth: 1.5,
+              opacity: 0.6,
+            },
+            markerEnd: {
+              type: 'arrowclosed',
+              color: '#D7B26D',
+            },
+            type: 'default',
+          };
+        });
 
         setNodes(positionedNodes);
         setEdges(positionedEdges);
 
-        // 레이아웃 통계 로깅
-        const stats = layoutService.getStats();
-        console.log('[MythGraph] Layout applied:', stats);
+        // 전체 노드가 화면에 보이도록 fitView 호출
+        setTimeout(() => {
+          fitView({ padding: 0.15, minZoom: 0.1, maxZoom: 1.5 });
+        }, 100);
       } catch (error) {
         console.error('[MythGraph] Failed to apply layout:', error);
       } finally {
         setIsLayouting(false);
       }
-    }, [entities, relationships, sessionId, useBloomLayout, setNodes, setEdges]);
+    }, [entities, relationships, sessionId, useBloomLayout, setNodes, setEdges, fitView]);
 
     /**
      * 초기 로드 및 의존성 변경 시 레이아웃 적용
@@ -147,6 +171,54 @@ export const MythGraph = React.memo(
         layoutService.clearSession(sessionId);
       };
     }, [sessionId]);
+
+    /**
+     * 물리 효과: 노드 드래그 시 연결된 노드를 부드럽게 당김 (Spring Physics)
+     */
+    const handleNodesChangeWithPhysics = useCallback(
+      (changes: any) => {
+        // 드래그 중인 노드 찾기
+        const draggingNode = nodes.find((n) => {
+          const change = changes.find((c: any) => c.id === n.id);
+          return change && change.dragging === true;
+        });
+
+        if (draggingNode && draggingNode.position) {
+          // 드래그되는 노드와 연결된 모든 노드 찾기
+          const connectedNodeIds = edges
+            .filter((e) => e.source === draggingNode.id || e.target === draggingNode.id)
+            .map((e) => (e.source === draggingNode.id ? e.target : e.source));
+
+          // 연결된 노드들을 끌어당기기
+          const newChanges = changes.map((change: any) => {
+            if (connectedNodeIds.includes(change.id) && change.position) {
+              const dx = draggingNode.position.x - change.position.x;
+              const dy = draggingNode.position.y - change.position.y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+
+              if (distance > 0) {
+                // 거리 기반 끌림 강도
+                const pullStrength = Math.min(0.15, 50 / distance);
+
+                return {
+                  ...change,
+                  position: {
+                    x: change.position.x + dx * pullStrength,
+                    y: change.position.y + dy * pullStrength,
+                  },
+                };
+              }
+            }
+            return change;
+          });
+
+          onNodesChange(newChanges);
+        } else {
+          onNodesChange(changes);
+        }
+      },
+      [nodes, edges, onNodesChange]
+    );
 
     /**
      * 노드 클릭 핸들러
@@ -219,13 +291,12 @@ export const MythGraph = React.memo(
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
+          onNodesChange={handleNodesChangeWithPhysics}
           onEdgesChange={onEdgesChange}
           onConnect={handleConnect}
           onNodeClick={handleNodeClick}
           onEdgeClick={handleEdgeClick}
-          nodeTypes={nodeTypes}
-          fitView
+          nodeTypes={NODE_TYPES}
         >
           {/* 배경 패턴 */}
           <Background
@@ -261,7 +332,17 @@ export const MythGraph = React.memo(
         </ReactFlow>
       </div>
     );
-  }
+};
+
+const MemoizedGraphViewWrapper = React.memo(GraphViewWrapper);
+
+// ReactFlow useReactFlow 훅을 사용하기 위해 ReactFlowProvider로 감싸야 함
+export const MythGraph = React.memo(
+  (props: MythGraphProps) => (
+    <ReactFlowProvider>
+      <MemoizedGraphViewWrapper {...props} />
+    </ReactFlowProvider>
+  )
 );
 
 MythGraph.displayName = 'MythGraph';

@@ -94,19 +94,12 @@ export class LayoutService {
         g.setEdge(edge.source, edge.target);
       } catch (e) {
         // 존재하지 않는 노드 참조 무시
-        console.warn(`[Layout] Invalid edge: ${edge.source} -> ${edge.target}`);
       }
     });
 
     // Dagre 레이아웃 계산
     try {
-      const layoutStartTime = performance.now();
       Dagre.layout(g);
-      const layoutTime = performance.now() - layoutStartTime;
-
-      console.log(
-        `[Layout] Dagre layout (${useOptimizedConfig ? 'optimized' : 'quality'}) computed in ${layoutTime.toFixed(2)}ms`
-      );
     } catch (e) {
       console.error('[Layout] Dagre layout failed:', e);
       // 폴백: 기본 그리드 배치
@@ -127,11 +120,6 @@ export class LayoutService {
         });
       }
     });
-
-    const elapsed = performance.now() - start;
-    console.log(
-      `[Layout] Total: ${elapsed.toFixed(2)}ms (${nodeCount} nodes, ${edges.length} edges)`
-    );
 
     return layoutMap;
   }
@@ -172,7 +160,6 @@ export class LayoutService {
     // 메모리 캐시 확인
     const cached = this.sessionCache.get(sessionId);
     if (cached) {
-      console.log('[Layout] Returned from memory cache');
       return cached;
     }
 
@@ -184,7 +171,6 @@ export class LayoutService {
         const entries = JSON.parse(stored) as Array<[string, LayoutNode]>;
         const layoutMap = new Map(entries);
         this.sessionCache.set(sessionId, layoutMap);
-        console.log('[Layout] Loaded from session storage');
         return layoutMap;
       }
     } catch (e) {
@@ -207,13 +193,8 @@ export class LayoutService {
       const key = `${this.SESSION_STORAGE_KEY}:${sessionId}`;
       const entries = Array.from(layout.entries());
       sessionStorage.setItem(key, JSON.stringify(entries));
-      console.log('[Layout] Saved to session storage');
     } catch (e) {
       console.error('[Layout] Failed to save to session:', e);
-      // 세션 스토리지 용량 초과 시 메모리 캐시만 유지
-      if (e instanceof Error && e.message.includes('QuotaExceededError')) {
-        console.warn('[Layout] Session storage quota exceeded, using memory cache only');
-      }
     }
   }
 
@@ -232,7 +213,6 @@ export class LayoutService {
     // 1. 세션 캐시 확인 (노드 개수가 같으면 재사용)
     const cached = this.loadFromSession(sessionId);
     if (cached && cached.size === nodes.length) {
-      console.log('[Layout] Using cached layout');
       return cached;
     }
 
@@ -269,7 +249,7 @@ export class LayoutService {
   }
 
   /**
-   * Bloom (Radial) 레이아웃 - Zeus를 중심으로 방사형 배치
+   * Bloom (Radial) 레이아웃 - Zeus를 중심으로 방사형 배치 (개선)
    * @param nodes 그래프 노드 배열
    * @returns 레이아웃 정보 Map
    */
@@ -278,7 +258,7 @@ export class LayoutService {
 
     // Zeus 찾기 (중심 노드)
     const centerNode = nodes.find(
-      (n) => n.data?.label?.toLowerCase().includes('zeus') || n.id.includes('zeus')
+      (n) => n.data?.label?.toLowerCase() === 'zeus' || n.id.toLowerCase().includes('zeus')
     );
 
     const layoutMap = new Map<string, LayoutNode>();
@@ -286,12 +266,10 @@ export class LayoutService {
     const centerY = 0;
 
     if (!centerNode) {
-      // Zeus를 찾지 못하면 첫 노드를 중심으로 사용
-      console.warn('[Layout] Zeus node not found, using first node as center');
       return this.computeFallbackBloomLayout(nodes);
     }
 
-    // 중심 노드 배치
+    // 중심 노드 (Zeus) 배치
     layoutMap.set(centerNode.id, {
       id: centerNode.id,
       x: centerX,
@@ -300,34 +278,45 @@ export class LayoutService {
       height: this.NODE_HEIGHT,
     });
 
-    // 주변 노드들을 동심원으로 배치
+    // 주변 노드들을 동심원으로 배치 (더 큰 거리)
     const otherNodes = nodes.filter((n) => n.id !== centerNode.id);
-    const nodesPerRing = Math.ceil(Math.sqrt(otherNodes.length));
-    const ringDistance = 200; // 반지름
+    const totalNodes = otherNodes.length;
 
-    otherNodes.forEach((node, idx) => {
-      const ring = Math.floor(idx / nodesPerRing);
-      const posInRing = idx % nodesPerRing;
-      const anglePerNode = (2 * Math.PI) / nodesPerRing;
-      const angle = posInRing * anglePerNode + (ring * Math.PI) / nodesPerRing;
-      const distance = ringDistance * (ring + 1) * 0.8;
+    // 더 큰 반지름으로 노드 배치
+    const baseDistance = 350; // 첫 링의 거리 증가
+    const ringDistanceIncrement = 250; // 각 링 사이 거리 증가
 
-      const x = centerX + distance * Math.cos(angle);
-      const y = centerY + distance * Math.sin(angle);
+    // 단순한 원형 배치 (각 링당 8-12개)
+    let nodeIndex = 0;
+    let ringIdx = 0;
 
-      layoutMap.set(node.id, {
-        id: node.id,
-        x,
-        y,
-        width: this.NODE_WIDTH,
-        height: this.NODE_HEIGHT,
-      });
-    });
+    while (nodeIndex < totalNodes) {
+      const distance = baseDistance + ringIdx * ringDistanceIncrement;
+      const nodesInThisRing = Math.min(8 + ringIdx * 4, totalNodes - nodeIndex);
 
-    const elapsed = performance.now() - start;
-    console.log(
-      `[Layout] Bloom computed in ${elapsed.toFixed(2)}ms (${nodes.length} nodes)`
-    );
+      for (let posInRing = 0; posInRing < nodesInThisRing; posInRing++) {
+        const node = otherNodes[nodeIndex];
+        if (!node) break;
+
+        const anglePerNode = (2 * Math.PI) / nodesInThisRing;
+        const angle = posInRing * anglePerNode;
+
+        const x = centerX + distance * Math.cos(angle);
+        const y = centerY + distance * Math.sin(angle);
+
+        layoutMap.set(node.id, {
+          id: node.id,
+          x,
+          y,
+          width: this.NODE_WIDTH,
+          height: this.NODE_HEIGHT,
+        });
+
+        nodeIndex++;
+      }
+
+      ringIdx++;
+    }
 
     return layoutMap;
   }
@@ -369,7 +358,6 @@ export class LayoutService {
     // 1. 세션 캐시 확인
     const cached = this.loadFromSession(sessionId);
     if (cached && cached.size === nodes.length) {
-      console.log('[Layout] Using cached bloom layout');
       return cached;
     }
 
