@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MythGraph Sprint 1 — 2026-08-07</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 18px;
+    }
+    .metric-card {
+      background: #f0f7f3;
+      border: 1px solid #b6d4c2;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #217346;
+      line-height: 1.1;
+    }
+    .metric-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #667085;
+      line-height: 1.45;
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    .flow-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+    .flow-num {
+      display: inline-flex;
+      width: 26px;
+      height: 26px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #217346;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .flow-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+    .flow-desc {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #667085;
+    }
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+    }
+    .decision-card {
+      border: 1px solid #e5e7eb;
+      border-left: 4px solid #217346;
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    .decision-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #217346;
+      font-size: 12px;
+    }
+    .decision-card span {
+      display: block;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #374151;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      width: 100%;
+      margin-top: 12px;
+    }
+    .stat-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px;
+      background: #f9fafb;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #217346;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #667085;
+      line-height: 1.4;
+    }
+    .body-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4b5563;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1. 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="cover-eyebrow">Knowledge Graph Foundation</div>
+        <h1 class="cover-title">MythGraph</h1>
+        <p class="cover-sub">Sprint 1 - Foundation Build</p>
+        <p class="cover-meta">2026-08-07 리뷰</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 2. 목표 & 성과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">목표</div>
+      <h2 class="slide-title">Sprint 1 목표와 완료율</h2>
+      <blockquote class="goal-quote">
+        그리스·로마 신화 지식그래프 Foundation 구축 — GraphQL API 6개 Resolver, Neo4j 데이터베이스 70 entities 이상 구축
+      </blockquote>
+      <div class="metric-row">
+        <div class="metric-card"><div class="metric-value">6/6</div><div class="metric-label">P0 완료<br>100% 달성</div></div>
+        <div class="metric-card"><div class="metric-value">4/5</div><div class="metric-label">P1 완료<br>80% 달성</div></div>
+        <div class="metric-card"><div class="metric-value">70+</div><div class="metric-label">Entity 노드<br>구축 완료</div></div>
+        <div class="metric-card"><div class="metric-value">14</div><div class="metric-label">Myth 데이터<br>매핑 완료</div></div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 3. 기술 성과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">기술 성과</div>
+      <h2 class="slide-title">GraphQL API 완성 & 데이터베이스 구축</h2>
+      <div class="flow-grid">
+        <div class="flow-card"><div class="flow-num">1</div><div class="flow-title">GraphQL Schema</div><div class="flow-desc">Deity, Human, Monster, Place, Myth, Event 타입 정의 및 6개 Query Resolver 구현</div></div>
+        <div class="flow-card"><div class="flow-num">2</div><div class="flow-title">Neo4j Database</div><div class="flow-desc">Aura Free + Docker 로컬 개발 환경 구축. 70개 entity, 14개 myth, 42개 event 로드</div></div>
+        <div class="flow-card"><div class="flow-num">3</div><div class="flow-title">Full-text Search</div><div class="flow-desc">Neo4j Full-text Index 및 Uniqueness Constraints 구성. GraphQL Playground 정상 작동</div></div>
+      </div>
+      <div class="callout" style="margin-top:22px;">
+        Sprint 1의 핵심은 <strong>그리스 신화 지식 구조를 데이터로 정규화</strong>하고 <strong>GraphQL API를 통해 쿼리 가능한 상태로 만드는 것</strong>이었다.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 4. 데이터 통계 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">데이터 통계</div>
+      <h2 class="slide-title">Seed 데이터 구성 현황</h2>
+      <p class="body-text">Homer, Ovid, Hesiod, Apollodorus, Pausanias 5개 고전 문헌을 기반으로 수집한 신화 정보</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">27</div>
+          <div class="stat-label">Deity<br>신</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">26</div>
+          <div class="stat-label">Human<br>반신·영웅</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Monster<br>괴물</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">11</div>
+          <div class="stat-label">Place<br>지역</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Sources<br>문헌</div>
+        </div>
+      </div>
+      <table class="data-table" style="margin-top: 20px;">
+        <thead>
+          <tr>
+            <th>타입</th>
+            <th>개수</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Entity</strong></td>
+            <td>70개</td>
+            <td>Deity, Human, Monster, Place 노드 총합</td>
+          </tr>
+          <tr>
+            <td><strong>Myth</strong></td>
+            <td>14개</td>
+            <td>Titanomachy, Trojan War, 등 주요 신화 사건</td>
+          </tr>
+          <tr>
+            <td><strong>Event</strong></td>
+            <td>42개</td>
+            <td>각 Myth에 포함된 개별 사건·전투</td>
+          </tr>
+          <tr>
+            <td><strong>Relationship</strong></td>
+            <td>200+</td>
+            <td>parent-of, participates-in, related-to 등</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 5. 기술 스택 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">기술 스택</div>
+      <h2 class="slide-title">Frontend · Backend · Database</h2>
+      <div class="two-col">
+        <div>
+          <div class="col-head">Frontend</div>
+          <ul class="check-list">
+            <li class="done">Next.js 14 + React 19</li>
+            <li class="done">GraphQL Client (Apollo Client)</li>
+            <li class="done">TypeScript 5.x</li>
+            <li class="done">Tailwind CSS</li>
+          </ul>
+        </div>
+        <div>
+          <div class="col-head">Backend & Database</div>
+          <ul class="check-list">
+            <li class="done">GraphQL Yoga + Node.js</li>
+            <li class="done">Neo4j Driver 5.x</li>
+            <li class="done">Neo4j Aura Free (Cloud)</li>
+            <li class="done">Docker (로컬 개발)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:22px;">
+        <strong>배포 전략:</strong> Neo4j는 production Aura Free 1개 + 로컬 개발 환경 Docker로 분리. Frontend/Backend는 Vercel 예정.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 6. 완료 항목 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현 완료</div>
+      <h2 class="slide-title">Sprint 1 완료 체크리스트</h2>
+      <div class="two-col">
+        <div>
+          <div class="col-head">P0 완료 (6/6)</div>
+          <ul class="check-list">
+            <li class="done">Next.js + GraphQL Yoga 통합</li>
+            <li class="done">Neo4j 드라이버 & 보안 설정</li>
+            <li class="done">GraphQL Schema 설계</li>
+            <li class="done">Entity 검색 & 조회 Resolver</li>
+            <li class="done">Full-text Index & Constraints</li>
+            <li class="done">Seed 데이터 수집 및 로드</li>
+          </ul>
+        </div>
+        <div>
+          <div class="col-head">P1 완료 (4/5)</div>
+          <ul class="check-list">
+            <li class="done">Relationship 쿼리 (parent-of, participates-in)</li>
+            <li class="done">GraphQL Playground 문서화</li>
+            <li class="done">Error Handling & Logging</li>
+            <li class="done">환경 변수 관리 (production/dev)</li>
+            <li>Dashboard 시각화 (이월)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:20px;">
+        최종 완료율 <strong>P0 100%, P1 80%</strong>. Dashboard 시각화는 UI/UX 검토 후 Sprint 2로 이월.
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 7. 다음 스프린트 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">향후 계획</div>
+      <h2 class="slide-title">Sprint 2+ 로드맵</h2>
+      <div class="two-col">
+        <div>
+          <div class="col-head">Sprint 2 (이월·진행 중)</div>
+          <ul class="bullet-list">
+            <li>React Flow UI 구현 (신화 네트워크 시각화)</li>
+            <li>E2E 테스트 (Playwright)</li>
+            <li>Vercel 배포</li>
+            <li>성능 최적화 (Query caching)</li>
+          </ul>
+        </div>
+        <div>
+          <div class="col-head">Sprint 3+ (백로그)</div>
+          <ul class="bullet-list">
+            <li>벡터 임베딩 (LLM 기반 신화 요약)</li>
+            <li>Advanced 쿼리 (Cypher DSL)</li>
+            <li>사용자 주석·토론 기능</li>
+            <li>모바일 최적화</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 8. 주요 결정 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">주요 결정</div>
+      <h2 class="slide-title">Architecture & Scope 결정</h2>
+      <div class="decision-grid">
+        <div class="decision-card"><strong>D-1</strong><span>Entity 라벨: Deity, Human, Monster, Place로 고정. 고전 분류 기준 따름.</span></div>
+        <div class="decision-card"><strong>D-2</strong><span>Myth/Event 노드 포함: YES. 신화 내러티브 계층 구조 필요.</span></div>
+        <div class="decision-card"><strong>D-3</strong><span>벡터 임베딩: Sprint 3+로 이연. 먼저 정확한 구조적 그래프 완성.</span></div>
+        <div class="decision-card"><strong>D-4</strong><span>Neo4j 분리: Production은 Aura Free, 개발은 Docker. 로컬 테스트 신속화.</span></div>
+        <div class="decision-card"><strong>D-5</strong><span>GraphQL-first: REST API 불필요. 모든 쿼리는 GraphQL 통합 제공.</span></div>
+        <div class="decision-card"><strong>D-6</strong><span>Source 추적: 각 정보마다 참고 문헌 기록. 학술적 신뢰도 확보.</span></div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- 9. Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&A</div>
+      <p class="qa-title">MythGraph Sprint 1 Review</p>
+      <div class="qa-links">
+        <span>docs/presentations/sprint-mythgraph-1-report-260807.html</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var slides = document.querySelectorAll('.slide');
+  var counters = document.querySelectorAll('.slide-counter');
+  var current = 0;
+  var total = slides.length;
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    counters.forEach(function(c) { c.textContent = (current + 1) + ' / ' + total; });
+  }
+
+  slides[0].classList.add('active');
+  counters.forEach(function(c) { c.textContent = '1 / ' + total; });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') show(current - 1);
+  });
+
+  document.querySelector('.deck').addEventListener('click', function(e) {
+    if (e.target.closest('a, button, code')) return;
+    show(current + 1);
+  });
+})();
+</script>
+</body>
+</html>
