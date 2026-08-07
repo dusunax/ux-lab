@@ -66,24 +66,24 @@ interface Source {
 /**
  * Converts a Neo4j Entity node to GraphQL Entity type
  */
-function nodeToEntity(record: any): Entity {
-  const node = record.get(0) || record;
+function nodeToEntity(node: any): Entity {
+  const props = node.properties || node;
   return {
-    id: node.properties.id,
-    name: node.properties.name,
-    aliases: node.properties.aliases || [],
-    description: node.properties.description,
-    type: node.properties.type,
-    romanName: node.properties.romanName,
-    domain: node.properties.domain,
-    symbols: node.properties.symbols,
-    sacredAnimals: node.properties.sacredAnimals,
-    heroType: node.properties.heroType,
-    origin: node.properties.origin,
-    monsterType: node.properties.monsterType,
-    abilities: node.properties.abilities,
-    region: node.properties.region,
-    locationType: node.properties.locationType,
+    id: props.id,
+    name: props.name,
+    aliases: props.aliases || [],
+    description: props.description,
+    type: props.type,
+    romanName: props.romanName,
+    domain: props.domain,
+    symbols: props.symbols,
+    sacredAnimals: props.sacredAnimals,
+    heroType: props.heroType,
+    origin: props.origin,
+    monsterType: props.monsterType,
+    abilities: props.abilities,
+    region: props.region,
+    locationType: props.locationType,
   };
 }
 
@@ -151,10 +151,13 @@ export async function searchEntities(
 
     const result = await session.run(cypherQuery, params);
 
-    return result.records.map((record) => ({
-      entity: nodeToEntity(record.get('node')),
-      matchScore: record.get('score'),
-    }));
+    return result.records.map((record) => {
+      const score = record.get('score');
+      return {
+        entity: nodeToEntity(record.get('node')),
+        matchScore: typeof score === 'number' ? score : parseFloat(score),
+      };
+    });
   } finally {
     await session.close();
   }

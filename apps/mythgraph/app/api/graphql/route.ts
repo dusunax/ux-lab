@@ -8,6 +8,7 @@
 import { createYoga } from 'graphql-yoga';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { resolvers } from '@/src/server/graphql/resolvers';
 import { testConnection } from '@/src/server/neo4j';
 
@@ -15,12 +16,15 @@ import { testConnection } from '@/src/server/neo4j';
 const schemaPath = join(process.cwd(), 'src/server/graphql/schema.graphql');
 const typeDefs = readFileSync(schemaPath, 'utf-8');
 
+// Build executable schema
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});
+
 // Create the Yoga instance
 const yoga = createYoga({
-  schema: {
-    typeDefs,
-    resolvers,
-  },
+  schema,
   // GraphQL Playground enabled for development
   graphiql: true,
   // Logging

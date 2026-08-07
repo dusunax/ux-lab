@@ -10,7 +10,7 @@
  * - NEO4J_PASSWORD: Database password
  */
 
-import neo4j, { type Driver, type Session } from 'neo4j';
+import neo4j, { type Driver, type Session } from 'neo4j-driver';
 
 /**
  * Singleton driver instance
