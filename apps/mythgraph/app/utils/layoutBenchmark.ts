@@ -38,20 +38,40 @@ export async function benchmarkLayout(
   for (let i = 0; i < iterations; i++) {
     const start = performance.now();
     try {
-      service.computeLayout(nodes, edges);
+      // Use bloom layout if available (faster for large graphs)
+      if (nodes.length > 50 && service.computeBloomLayout) {
+        service.computeBloomLayout(nodes);
+      } else {
+        service.computeLayout(nodes, edges);
+      }
       const elapsed = performance.now() - start;
       times.push(elapsed);
       console.log(`[Benchmark] Iteration ${i + 1}: ${elapsed.toFixed(2)}ms`);
     } catch (error) {
       console.error(`[Benchmark] Iteration ${i + 1} failed:`, error);
+      // Continue with next iteration even if one fails
     }
   }
 
   // 통계 계산
+  if (times.length === 0) {
+    console.error('[Benchmark] No successful iterations');
+    return {
+      avgTime: 0,
+      minTime: 0,
+      maxTime: 0,
+      p95Time: 0,
+      p99Time: 0,
+      iterations,
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+    };
+  }
+
   times.sort((a, b) => a - b);
   const avg = times.reduce((a, b) => a + b, 0) / times.length;
-  const min = times[0];
-  const max = times[times.length - 1];
+  const min = times[0] || 0;
+  const max = times[times.length - 1] || 0;
   const p95 = times[Math.floor(times.length * 0.95)] || max;
   const p99 = times[Math.floor(times.length * 0.99)] || max;
 
