@@ -297,9 +297,6 @@ const GraphViewWrapper = ({
           onNodeClick={handleNodeClick}
           onEdgeClick={handleEdgeClick}
           nodeTypes={NODE_TYPES}
-          minZoom={0.5}
-          maxZoom={1}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
         >
           {/* 배경 패턴 */}
           <Background
