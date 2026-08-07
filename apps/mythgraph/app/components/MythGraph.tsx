@@ -161,7 +161,7 @@ const GraphViewWrapper = ({
           clearTimeout(layoutTimeoutRef.current);
         }
       };
-    }, [applyLayout, sessionId]);
+    }, [applyLayout, sessionId, entities.length]);
 
     /**
      * 언마운트 시 메모리 정리
