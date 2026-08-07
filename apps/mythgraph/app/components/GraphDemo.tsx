@@ -205,22 +205,22 @@ export const GraphDemo: React.FC = () => {
   }, [graphData]);
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="w-full min-h-screen bg-gradient-to-br from-myth-abyss via-myth-night to-myth-slate p-6">
       <div className="max-w-7xl mx-auto">
         {/* 헤더 */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">🏛️ MythGraph Demo</h1>
-          <p className="text-gray-300">
+          <h1 className="text-4xl font-bold text-myth-primary mb-2">🏛️ MythGraph Demo</h1>
+          <p className="text-myth-secondary">
             Neo4j에서 로드된 실제 신화 엔티티. React Flow + Dagre 레이아웃으로 시각화
           </p>
         </div>
 
         {/* 컨트롤 패널 */}
-        <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-6 mb-6">
+        <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* 노드 개수 조절 */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-myth-secondary mb-2">
                 노드 개수: {nodeCount}
               </label>
               <input
@@ -240,7 +240,7 @@ export const GraphDemo: React.FC = () => {
               <button
                 onClick={runBenchmark}
                 disabled={isBenchmarking || graphData.nodes.length === 0}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition"
+                className="w-full bg-myth-gold hover:bg-myth-amber disabled:bg-myth-muted text-myth-abyss font-semibold py-2 px-4 rounded-lg transition"
               >
                 {isBenchmarking ? '실행 중...' : '📊 벤치마크 실행'}
               </button>
@@ -249,37 +249,37 @@ export const GraphDemo: React.FC = () => {
             {/* 선택된 노드 정보 */}
             <div>
               {selectedEntity ? (
-                <div className="bg-blue-600/20 border border-blue-400 rounded p-3">
-                  <p className="text-sm text-gray-300 mb-1">선택된 노드:</p>
-                  <p className="text-white font-semibold">{selectedEntity.label}</p>
+                <div className="bg-myth-gold/10 border border-myth-gold/30 rounded p-3">
+                  <p className="text-sm text-myth-muted mb-1">선택된 노드:</p>
+                  <p className="text-myth-primary font-semibold">{selectedEntity.label}</p>
                 </div>
               ) : (
-                <div className="text-gray-400 text-sm">노드를 클릭하여 선택하세요</div>
+                <div className="text-myth-muted text-sm">노드를 클릭하여 선택하세요</div>
               )}
             </div>
           </div>
 
           {/* 벤치마크 결과 */}
           {benchmarkResult && (
-            <div className="mt-4 p-3 bg-green-600/20 border border-green-400 rounded">
-              <p className="text-green-300 text-sm">{benchmarkResult}</p>
+            <div className="mt-4 p-3 bg-myth-gold/10 border border-myth-gold/30 rounded">
+              <p className="text-myth-gold text-sm">{benchmarkResult}</p>
             </div>
           )}
         </div>
 
         {/* 그래프 */}
         {isLoading || entitiesLoading ? (
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-8 text-center">
-            <p className="text-gray-300">Neo4j에서 엔티티를 로드 중...</p>
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-8 text-center">
+            <p className="text-myth-secondary">Neo4j에서 엔티티를 로드 중...</p>
           </div>
         ) : graphData.nodes.length === 0 ? (
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-8 text-center">
-            <p className="text-gray-400">
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-8 text-center">
+            <p className="text-myth-muted">
               데이터 로드 실패. Neo4j 연결 상태를 확인하세요.
             </p>
           </div>
         ) : (
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg overflow-hidden">
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg overflow-hidden">
             <MythGraph
               entities={graphData.nodes}
               relationships={graphData.edges}
@@ -291,25 +291,25 @@ export const GraphDemo: React.FC = () => {
 
         {/* 통계 */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
-            <div className="text-2xl font-bold text-blue-400">{graphData.nodes.length}</div>
-            <div className="text-gray-400 text-sm mt-1">노드 (Neo4j)</div>
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-4">
+            <div className="text-2xl font-bold text-myth-gold">{graphData.nodes.length}</div>
+            <div className="text-myth-muted text-sm mt-1">노드 (Neo4j)</div>
           </div>
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
-            <div className="text-2xl font-bold text-green-400">{graphData.edges.length}</div>
-            <div className="text-gray-400 text-sm mt-1">엣지 (Neo4j)</div>
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-4">
+            <div className="text-2xl font-bold text-myth-deity">{graphData.edges.length}</div>
+            <div className="text-myth-muted text-sm mt-1">엣지 (Neo4j)</div>
           </div>
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
-            <div className="text-2xl font-bold text-purple-400">
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-4">
+            <div className="text-2xl font-bold text-myth-amber">
               {graphData.nodes.length > 0
                 ? (graphData.edges.length / graphData.nodes.length).toFixed(1)
                 : '0'}
             </div>
-            <div className="text-gray-400 text-sm mt-1">평균 차수</div>
+            <div className="text-myth-muted text-sm mt-1">평균 차수</div>
           </div>
-          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
-            <div className="text-2xl font-bold text-amber-400">{sessionId}</div>
-            <div className="text-gray-400 text-sm mt-1">세션 ID</div>
+          <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-4">
+            <div className="text-2xl font-bold text-myth-bronze">{sessionId}</div>
+            <div className="text-myth-muted text-sm mt-1">세션 ID</div>
           </div>
         </div>
       </div>

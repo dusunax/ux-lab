@@ -26,35 +26,41 @@ type EntityNodeProps = NodeProps<EntityNodeData>;
 export const EntityNode = React.memo(({ data, selected }: EntityNodeProps) => {
   // 타입별 색상 및 아이콘
   const getNodeStyle = (type?: string) => {
-    const typeStyles: Record<string, { bg: string; border: string; icon: string }> = {
+    const typeStyles: Record<string, { bg: string; bgHex: string; border: string; icon: string }> = {
       deity: {
-        bg: 'from-amber-600 to-amber-700',
-        border: 'border-amber-400',
+        bg: 'from-[#D7B26D] to-[#A67C52]',
+        bgHex: '#D7B26D',
+        border: 'border-[#D7B26D]',
         icon: '⚡',
       },
-      hero: {
-        bg: 'from-blue-600 to-blue-700',
-        border: 'border-blue-400',
+      human: {
+        bg: 'from-[#9BA1A8] to-[#7A8089]',
+        bgHex: '#9BA1A8',
+        border: 'border-[#9BA1A8]',
         icon: '🏹',
       },
       monster: {
-        bg: 'from-red-600 to-red-700',
-        border: 'border-red-400',
+        bg: 'from-[#8B3A3A] to-[#6B2A2A]',
+        bgHex: '#8B3A3A',
+        border: 'border-[#8B3A3A]',
         icon: '🐉',
       },
       place: {
-        bg: 'from-green-600 to-green-700',
-        border: 'border-green-400',
+        bg: 'from-[#5B8DBE] to-[#456A8F]',
+        bgHex: '#5B8DBE',
+        border: 'border-[#5B8DBE]',
         icon: '🏛️',
       },
       event: {
-        bg: 'from-purple-600 to-purple-700',
-        border: 'border-purple-400',
+        bg: 'from-[#D39A39] to-[#A67C52]',
+        bgHex: '#D39A39',
+        border: 'border-[#D39A39]',
         icon: '📜',
       },
       default: {
-        bg: 'from-slate-600 to-slate-700',
-        border: 'border-slate-400',
+        bg: 'from-[#6D727A] to-[#5A5F67]',
+        bgHex: '#6D727A',
+        border: 'border-[#6D727A]',
         icon: '◯',
       },
     };
@@ -85,8 +91,8 @@ export const EntityNode = React.memo(({ data, selected }: EntityNodeProps) => {
         type="target"
         position={Position.Top}
         style={{
-          background: 'rgba(255, 255, 255, 0.3)',
-          border: '2px solid white',
+          background: style.bgHex,
+          border: `2px solid ${style.bgHex}`,
         }}
       />
 
@@ -101,8 +107,8 @@ export const EntityNode = React.memo(({ data, selected }: EntityNodeProps) => {
         type="source"
         position={Position.Bottom}
         style={{
-          background: 'rgba(255, 255, 255, 0.3)',
-          border: '2px solid white',
+          background: style.bgHex,
+          border: `2px solid ${style.bgHex}`,
         }}
       />
     </div>
