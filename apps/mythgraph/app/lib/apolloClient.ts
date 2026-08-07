@@ -49,6 +49,7 @@ export const apolloClient = new ApolloClient({
   ssrMode: typeof window === 'undefined',
   link: errorLink.concat(httpLink),
   cache,
+  connectToDevTools: false,
 });
 
 export { cache };

@@ -11,7 +11,7 @@
  * - 로딩 상태 표시
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -63,6 +63,7 @@ const GraphViewWrapper = ({
   const [isLayouting, setIsLayouting] = useState(false);
   const layoutTimeoutRef = useRef<NodeJS.Timeout>();
   const { fitView } = useReactFlow();
+  const memoizedNodeTypes = useMemo(() => NODE_TYPES, []);
 
     /**
      * 레이아웃 적용
@@ -296,7 +297,7 @@ const GraphViewWrapper = ({
           onConnect={handleConnect}
           onNodeClick={handleNodeClick}
           onEdgeClick={handleEdgeClick}
-          nodeTypes={NODE_TYPES}
+          nodeTypes={memoizedNodeTypes}
         >
           {/* 배경 패턴 */}
           <Background
