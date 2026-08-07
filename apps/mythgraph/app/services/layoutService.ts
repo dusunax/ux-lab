@@ -50,13 +50,34 @@ export class LayoutService {
    */
   computeLayout(nodes: GraphNode[], edges: GraphEdge[]): Map<string, LayoutNode> {
     const start = performance.now();
+    const nodeCount = nodes.length;
+
+    // 노드 수에 따라 Dagre 설정 최적화
+    // 큰 그래프는 더 빠른 알고리즘 사용
+    const useOptimizedConfig = nodeCount > 50;
 
     // Dagre 그래프 생성
     const g = new Dagre.graphlib.Graph({
       rankdir: 'TB',
-      compound: true,
+      compound: false, // 큰 그래프에서는 compound 비활성화
+      marginx: useOptimizedConfig ? 5 : 0,
+      marginy: useOptimizedConfig ? 5 : 0,
     });
+
     g.setDefaultEdgeLabel(() => ({}));
+
+    // Dagre 설정 (그래프 크기별 최적화)
+    if (useOptimizedConfig) {
+      // 큰 그래프: rank separation 줄여서 속도 향상
+      g.graph().rankSep = 30;
+      g.graph().nodeSep = 30;
+      g.graph().ranker = 'tight-tree'; // 더 빠른 ranker 알고리즘
+    } else {
+      // 작은 그래프: 시각적 품질 우선
+      g.graph().rankSep = 50;
+      g.graph().nodeSep = 50;
+      g.graph().ranker = 'longest-path'; // 더 좋은 레이아웃 품질
+    }
 
     // 노드 추가
     nodes.forEach((node) => {
@@ -79,7 +100,13 @@ export class LayoutService {
 
     // Dagre 레이아웃 계산
     try {
+      const layoutStartTime = performance.now();
       Dagre.layout(g);
+      const layoutTime = performance.now() - layoutStartTime;
+
+      console.log(
+        `[Layout] Dagre layout (${useOptimizedConfig ? 'optimized' : 'quality'}) computed in ${layoutTime.toFixed(2)}ms`
+      );
     } catch (e) {
       console.error('[Layout] Dagre layout failed:', e);
       // 폴백: 기본 그리드 배치
@@ -103,7 +130,7 @@ export class LayoutService {
 
     const elapsed = performance.now() - start;
     console.log(
-      `[Layout] Computed in ${elapsed.toFixed(2)}ms for ${nodes.length} nodes, ${edges.length} edges`
+      `[Layout] Total: ${elapsed.toFixed(2)}ms (${nodeCount} nodes, ${edges.length} edges)`
     );
 
     return layoutMap;
