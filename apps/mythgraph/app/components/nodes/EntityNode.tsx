@@ -24,8 +24,8 @@ type EntityNodeProps = NodeProps<EntityNodeData>;
  * 엔티티 노드 - React Flow 커스텀 노드
  */
 export const EntityNode = React.memo(({ data, selected }: EntityNodeProps) => {
-  // 노드 크기 고정, 텍스트 크기 일정함 (읽을 수 있는 크기)
-  const fontSize = 'text-base';
+  // 노드 크기 고정, 텍스트는 고정 픽셀 크기 (줌 영향 없음)
+  const fontSize = '[14px]';
 
   // 타입별 색상 및 아이콘
   const getNodeStyle = (type?: string) => {
@@ -89,10 +89,11 @@ export const EntityNode = React.memo(({ data, selected }: EntityNodeProps) => {
         border-2 ${style.border}
         transition-all duration-200
         ${selected ? 'ring-2 ring-white scale-110' : 'hover:scale-105'}
-        text-white ${fontSize} font-semibold text-center
+        text-white font-semibold text-center
         whitespace-nowrap
         cursor-pointer
       `}
+      style={{ fontSize: '14px' }}
       title={data?.description || label}
     >
       {/* 인풋 핸들 */}
