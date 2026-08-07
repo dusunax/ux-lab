@@ -335,7 +335,7 @@ export async function getRelationships(
 
     const params: any = {
       entityId: args.entityId,
-      limit: limit,
+      limit: neo4j.int(limit),
     };
 
     if (args.relationshipType) {
