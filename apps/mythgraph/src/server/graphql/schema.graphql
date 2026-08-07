@@ -246,6 +246,24 @@ type Query {
   ): [SearchResult!]!
 
   """
+  Hybrid search combining keyword matching (50%) and semantic similarity (50%).
+  Uses both full-text search and vector embeddings for best results.
+
+  Example: "god of war" matches both "Ares" (keyword match) and semantically related entities.
+  Performance: ~300-400ms (first query), <100ms (cached).
+  """
+  hybridSearchEntities(
+    """Search query string"""
+    query: String!
+    """Maximum number of results to return (default: 20, max: 100)"""
+    limit: Int = 20
+    """Weight distribution: 0.0 = pure keyword, 1.0 = pure vector (default: 0.5)"""
+    vectorWeight: Float = 0.5
+    """Optional filters"""
+    filters: EntityFilterInput
+  ): [SearchResult!]!
+
+  """
   Get a single entity by its unique identifier.
   Returns null if the entity does not exist.
   """
