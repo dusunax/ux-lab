@@ -1,0 +1,162 @@
+[
+  {
+    "id": "myth_creation_001",
+    "name": "Creation of the World",
+    "slug": "creation",
+    "description": "The divine origin story of the cosmos: Chaos, the Titans, and the rise of the Olympian gods under Zeus's rule.",
+    "participantIds": ["entity_kronos_001", "entity_zeus_001", "entity_hesiod-theogony"],
+    "sourceIds": ["src:hesiod-theogony"],
+    "eventIds": ["event_chaos_001", "event_titans_rise_001", "event_olympians_rise_001"],
+    "eraYear": -1000
+  },
+  {
+    "id": "myth_trojan_war_001",
+    "name": "The Trojan War",
+    "slug": "trojan_war",
+    "description": "Ten-year siege of Troy sparked by Paris's abduction of Helen, involving Achilles, Hector, and the divine will of the gods.",
+    "participantIds": ["entity_achilles_001", "entity_hector_001", "entity_helen_001", "entity_paris_001", "entity_odysseus_001", "entity_athena_001", "entity_apollo_001"],
+    "sourceIds": ["src:homer-iliad"],
+    "eventIds": ["event_judgement_paris_001", "event_helen_abduction_001", "event_achilles_hector_001", "event_trojan_horse_001", "event_troy_falls_001"],
+    "eraYear": -1184
+  },
+  {
+    "id": "myth_odyssey_001",
+    "name": "The Odyssey",
+    "slug": "odyssey",
+    "description": "Ten-year journey of Odysseus returning to Ithaca after the Trojan War, facing monsters, gods, and trials.",
+    "participantIds": ["entity_odysseus_001", "entity_poseidon_001", "entity_athena_001", "entity_cyclops_polyphemus_001"],
+    "sourceIds": ["src:homer-odyssey"],
+    "eventIds": ["event_odysseus_leaves_troy_001", "event_cyclops_encounter_001", "event_poseidon_wrath_001", "event_odysseus_return_001"],
+    "eraYear": -1174
+  },
+  {
+    "id": "myth_heracles_labors_001",
+    "name": "The Twelve Labors of Heracles",
+    "slug": "heracles_labors",
+    "description": "Twelve nearly-impossible tasks assigned to Heracles by Eurystheus as punishment for madness-induced murders.",
+    "participantIds": ["entity_heracles_001", "entity_athena_001", "entity_hydra_001", "entity_cerberus_001"],
+    "sourceIds": ["src:apollodorus-library"],
+    "eventIds": ["event_nemean_lion_001", "event_lernaean_hydra_001", "event_cerberus_capture_001", "event_labors_complete_001"],
+    "eraYear": -1225
+  },
+  {
+    "id": "myth_perseus_quest_001",
+    "name": "The Quest of Perseus",
+    "slug": "perseus_quest",
+    "description": "Perseus's journey to slay Medusa and save Andromeda from a sea monster, with divine aid from Athena and Hermes.",
+    "participantIds": ["entity_perseus_001", "entity_medusa_001", "entity_athena_001", "entity_hermes_001"],
+    "sourceIds": ["src:ovid-metamorphoses", "src:apollodorus-library"],
+    "eventIds": ["event_perseus_birth_001", "event_medusa_slaying_001", "event_andromeda_rescue_001"],
+    "eraYear": -1407
+  },
+  {
+    "id": "myth_theseus_adventures_001",
+    "name": "The Adventures of Theseus",
+    "slug": "theseus_adventures",
+    "description": "Theseus's heroic journey including slaying the Minotaur in the Labyrinth and becoming king of Athens.",
+    "participantIds": ["entity_theseus_001", "entity_minotaur_001", "entity_ariadne_001", "entity_poseidon_001"],
+    "sourceIds": ["src:apollodorus-library"],
+    "eventIds": ["event_labyrinth_quest_001", "event_minotaur_slaying_001", "event_athens_rule_001"],
+    "eraYear": -1258
+  },
+  {
+    "id": "myth_jason_argonauts_001",
+    "name": "Jason and the Argonauts",
+    "slug": "jason_argonauts",
+    "description": "Jason's quest to find the Golden Fleece, sailing with the greatest heroes aboard the ship Argo.",
+    "participantIds": ["entity_jason_001", "entity_heracles_001", "entity_orpheus_001", "entity_medea_001"],
+    "sourceIds": ["src:apollodorus-library"],
+    "eventIds": ["event_argonaut_gathering_001", "event_golden_fleece_quest_001", "event_medea_help_001"],
+    "eraYear": -1263
+  },
+  {
+    "id": "myth_persephone_abduction_001",
+    "name": "The Abduction of Persephone",
+    "slug": "persephone_abduction",
+    "description": "Hades abducts Persephone, causing Demeter's grief and the division of the year into seasons.",
+    "participantIds": ["entity_persephone_001", "entity_demeter_001", "entity_hades_001", "entity_hermes_001"],
+    "sourceIds": ["src:homer-iliad", "src:ovid-metamorphoses"],
+    "eventIds": ["event_persephone_abduction_001", "event_demeter_mourning_001", "event_seasons_bargain_001"],
+    "eraYear": -1000
+  },
+  {
+    "id": "myth_prometheus_fire_001",
+    "name": "Prometheus and the Fire",
+    "slug": "prometheus_fire",
+    "description": "Prometheus steals fire from the gods and gives it to humanity, resulting in eternal punishment by Zeus.",
+    "participantIds": ["entity_prometheus_001", "entity_zeus_001", "entity_heracles_001"],
+    "sourceIds": ["src:hesiod-theogony"],
+    "eventIds": ["event_fire_theft_001", "event_prometheus_punishment_001", "event_heracles_rescue_001"],
+    "eraYear": -1000
+  },
+  {
+    "id": "myth_pandora_box_001",
+    "name": "Pandora's Box",
+    "slug": "pandora_box",
+    "description": "Pandora, created by Zeus as punishment for Prometheus, opens a forbidden box releasing evils upon humanity.",
+    "participantIds": ["entity_pandora_001", "entity_prometheus_001", "entity_zeus_001", "entity_hephaestus_001"],
+    "sourceIds": ["src:hesiod-theogony"],
+    "eventIds": ["event_pandora_creation_001", "event_box_opened_001", "event_evils_released_001"],
+    "eraYear": -1000
+  },
+  {
+    "id": "myth_aphrodite_ares_001",
+    "name": "Aphrodite and Ares",
+    "slug": "aphrodite_ares",
+    "description": "Divine romance between love goddess Aphrodite and war god Ares, exposed by jealous Hephaestus.",
+    "participantIds": ["entity_aphrodite_001", "entity_ares_001", "entity_hephaestus_001", "entity_hermes_001"],
+    "sourceIds": ["src:homer-iliad"],
+    "eventIds": ["event_divine_love_001", "event_hephaestus_trap_001", "event_gods_laughter_001"],
+    "eraYear": -1000
+  },
+  {
+    "id": "myth_judgment_paris_001",
+    "name": "The Judgment of Paris",
+    "slug": "judgment_paris",
+    "description": "Paris judges which goddess is most beautiful, setting in motion the events leading to the Trojan War.",
+    "participantIds": ["entity_paris_001", "entity_hera_001", "entity_athena_001", "entity_aphrodite_001", "entity_helen_001"],
+    "sourceIds": ["src:homer-iliad"],
+    "eventIds": ["event_golden_apple_001", "event_judgment_001", "event_aphrodite_reward_001"],
+    "eraYear": -1184
+  },
+  {
+    "id": "myth_king_midas_001",
+    "name": "King Midas and the Golden Touch",
+    "slug": "king_midas",
+    "description": "King Midas is granted the power to turn everything he touches into gold, learning a lesson about greed.",
+    "participantIds": ["entity_king_midas_001", "entity_dionysus_001", "entity_apollo_001"],
+    "sourceIds": ["src:ovid-metamorphoses"],
+    "eventIds": ["event_midas_wish_001", "event_gold_touch_001", "event_midas_regret_001"],
+    "eraYear": -1200
+  },
+  {
+    "id": "myth_narcissus_echo_001",
+    "name": "Narcissus and Echo",
+    "slug": "narcissus_echo",
+    "description": "Narcissus, beautiful but vain, falls in love with his own reflection while Echo pines for him unrequited.",
+    "participantIds": ["entity_narcissus_001", "entity_echo_001", "entity_aphrodite_001"],
+    "sourceIds": ["src:ovid-metamorphoses"],
+    "eventIds": ["event_echo_pursuit_001", "event_pool_reflection_001", "event_flower_birth_001"],
+    "eraYear": -1000
+  },
+  {
+    "id": "myth_danaids_001",
+    "name": "The Fifty Danaids",
+    "slug": "danaids",
+    "description": "The fifty daughters of Danaus, who kill their husbands on their wedding night and are eternally punished.",
+    "participantIds": ["entity_danaus_001", "entity_hypermnestra_001"],
+    "sourceIds": ["src:apollodorus-library"],
+    "eventIds": ["event_marriage_night_001", "event_husbands_slain_001", "event_eternal_punishment_001"],
+    "eraYear": -1450
+  },
+  {
+    "id": "myth_amazons_001",
+    "name": "The Amazons and Heracles",
+    "slug": "amazons",
+    "description": "Heracles's ninth labor: capturing the girdle of Hippolyta, queen of the Amazons, warrior women.",
+    "participantIds": ["entity_heracles_001", "entity_hippolyta_001", "entity_theseus_001"],
+    "sourceIds": ["src:apollodorus-library"],
+    "eventIds": ["event_amazon_quest_001", "event_hippolyta_battle_001", "event_girdle_obtained_001"],
+    "eraYear": -1225
+  }
+]

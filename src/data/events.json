@@ -1,0 +1,410 @@
+[
+  {
+    "id": "event_chaos_001",
+    "name": "Chaos Emerges",
+    "mythId": "myth_creation_001",
+    "timestamp": 0,
+    "description": "At the beginning of all things, Chaos - the primal void - exists before any ordered universe.",
+    "participantIds": []
+  },
+  {
+    "id": "event_titans_rise_001",
+    "name": "The Rise of the Titans",
+    "mythId": "myth_creation_001",
+    "timestamp": 1,
+    "description": "From Chaos emerge the Titans, including Kronos and Rhea, who establish cosmic order.",
+    "participantIds": ["entity_kronos_001", "entity_rhea_001"]
+  },
+  {
+    "id": "event_olympians_rise_001",
+    "name": "The Rise of the Olympians",
+    "mythId": "myth_creation_001",
+    "timestamp": 2,
+    "description": "Zeus leads the Olympian gods in revolt against the Titans, establishing a new divine order.",
+    "participantIds": ["entity_zeus_001", "entity_kronos_001"]
+  },
+  {
+    "id": "event_golden_apple_001",
+    "name": "The Golden Apple of Discord",
+    "mythId": "myth_judgment_paris_001",
+    "timestamp": 0,
+    "description": "Eris, goddess of discord, throws a golden apple inscribed 'For the Fairest' among the gods.",
+    "participantIds": []
+  },
+  {
+    "id": "event_judgment_001",
+    "name": "Paris's Judgment",
+    "mythId": "myth_judgment_paris_001",
+    "timestamp": 1,
+    "description": "Paris judges among Hera, Athena, and Aphrodite. Aphrodite wins by promising him the most beautiful woman.",
+    "participantIds": ["entity_paris_001", "entity_hera_001", "entity_athena_001", "entity_aphrodite_001"]
+  },
+  {
+    "id": "event_aphrodite_reward_001",
+    "name": "Aphrodite's Reward",
+    "mythId": "myth_judgment_paris_001",
+    "timestamp": 2,
+    "description": "Aphrodite grants Paris Helen as his lover, setting destiny in motion.",
+    "participantIds": ["entity_aphrodite_001", "entity_paris_001", "entity_helen_001"]
+  },
+  {
+    "id": "event_helen_abduction_001",
+    "name": "Helen's Abduction",
+    "mythId": "myth_trojan_war_001",
+    "timestamp": 0,
+    "description": "Paris abducts Helen from Sparta, taking her to Troy across the Aegean Sea.",
+    "participantIds": ["entity_paris_001", "entity_helen_001"]
+  },
+  {
+    "id": "event_achilles_hector_001",
+    "name": "Achilles Slays Hector",
+    "mythId": "myth_trojan_war_001",
+    "timestamp": 1,
+    "description": "Greatest warrior of Greeks faces Troy's strongest defender. Achilles kills Hector in single combat.",
+    "participantIds": ["entity_achilles_001", "entity_hector_001", "entity_athena_001"]
+  },
+  {
+    "id": "event_trojan_horse_001",
+    "name": "The Trojan Horse",
+    "mythId": "myth_trojan_war_001",
+    "timestamp": 2,
+    "description": "Greeks construct a massive wooden horse, filled with soldiers, tricking the Trojans into taking it inside their walls.",
+    "participantIds": ["entity_odysseus_001", "entity_achilles_001"]
+  },
+  {
+    "id": "event_troy_falls_001",
+    "name": "Troy's Fall",
+    "mythId": "myth_trojan_war_001",
+    "timestamp": 3,
+    "description": "Greek soldiers emerge from the horse, slaughtering the Trojans and ending the ten-year war.",
+    "participantIds": []
+  },
+  {
+    "id": "event_odysseus_leaves_troy_001",
+    "name": "Odysseus Departs Troy",
+    "mythId": "myth_odyssey_001",
+    "timestamp": 0,
+    "description": "After Troy's fall, Odysseus sets sail for home with his men, beginning a ten-year journey.",
+    "participantIds": ["entity_odysseus_001"]
+  },
+  {
+    "id": "event_cyclops_encounter_001",
+    "name": "The Cyclops Encounter",
+    "mythId": "myth_odyssey_001",
+    "timestamp": 1,
+    "description": "Odysseus and his men are trapped in Polyphemus's cave. Odysseus blinds the Cyclops to escape.",
+    "participantIds": ["entity_odysseus_001", "entity_cyclops_polyphemus_001"]
+  },
+  {
+    "id": "event_poseidon_wrath_001",
+    "name": "Poseidon's Wrath",
+    "mythId": "myth_odyssey_001",
+    "timestamp": 2,
+    "description": "Poseidon, enraged over his son's blinding, curses Odysseus to wander the seas for years.",
+    "participantIds": ["entity_poseidon_001", "entity_odysseus_001"]
+  },
+  {
+    "id": "event_odysseus_return_001",
+    "name": "Odysseus Returns to Ithaca",
+    "mythId": "myth_odyssey_001",
+    "timestamp": 3,
+    "description": "After years of trials, Odysseus finally returns home to Ithaca and his faithful wife Penelope.",
+    "participantIds": ["entity_odysseus_001"]
+  },
+  {
+    "id": "event_nemean_lion_001",
+    "name": "The Nemean Lion",
+    "mythId": "myth_heracles_labors_001",
+    "timestamp": 0,
+    "description": "Heracles's first labor: slay the invulnerable Nemean Lion. He discovers strangulation works where weapons fail.",
+    "participantIds": ["entity_heracles_001"]
+  },
+  {
+    "id": "event_lernaean_hydra_001",
+    "name": "The Lernaean Hydra",
+    "mythId": "myth_heracles_labors_001",
+    "timestamp": 1,
+    "description": "Heracles's second labor: defeat the multi-headed Hydra. Each head regrows when cut, defeated by cauterization.",
+    "participantIds": ["entity_heracles_001", "entity_hydra_001", "entity_athena_001"]
+  },
+  {
+    "id": "event_cerberus_capture_001",
+    "name": "Cerberus Captured",
+    "mythId": "myth_heracles_labors_001",
+    "timestamp": 2,
+    "description": "Heracles's twelfth and final labor: capture Cerberus from the Underworld without weapons.",
+    "participantIds": ["entity_heracles_001", "entity_cerberus_001", "entity_hades_001"]
+  },
+  {
+    "id": "event_labors_complete_001",
+    "name": "Labors Complete",
+    "mythId": "myth_heracles_labors_001",
+    "timestamp": 3,
+    "description": "After twelve near-impossible tasks, Heracles is freed from servitude and earns immortal glory.",
+    "participantIds": ["entity_heracles_001"]
+  },
+  {
+    "id": "event_perseus_birth_001",
+    "name": "Perseus's Divine Birth",
+    "mythId": "myth_perseus_quest_001",
+    "timestamp": 0,
+    "description": "Zeus disguises himself as Danae's husband to conceive Perseus, an illegitimate demigod.",
+    "participantIds": ["entity_zeus_001", "entity_perseus_001"]
+  },
+  {
+    "id": "event_medusa_slaying_001",
+    "name": "Medusa's Slaying",
+    "mythId": "myth_perseus_quest_001",
+    "timestamp": 1,
+    "description": "Armed with Hermes's winged sandals and Athena's shield, Perseus slays Medusa without meeting her gaze.",
+    "participantIds": ["entity_perseus_001", "entity_medusa_001", "entity_athena_001", "entity_hermes_001"]
+  },
+  {
+    "id": "event_andromeda_rescue_001",
+    "name": "Andromeda's Rescue",
+    "mythId": "myth_perseus_quest_001",
+    "timestamp": 2,
+    "description": "Perseus rescues Andromeda from a sea monster, marrying her and founding the dynasty of Mycenae.",
+    "participantIds": ["entity_perseus_001"]
+  },
+  {
+    "id": "event_labyrinth_quest_001",
+    "name": "The Labyrinth Quest",
+    "mythId": "myth_theseus_adventures_001",
+    "timestamp": 0,
+    "description": "Theseus volunteers as a sacrifice, entering the Labyrinth with Ariadne's help (a ball of string to mark his path).",
+    "participantIds": ["entity_theseus_001", "entity_ariadne_001"]
+  },
+  {
+    "id": "event_minotaur_slaying_001",
+    "name": "The Minotaur's Slaying",
+    "mythId": "myth_theseus_adventures_001",
+    "timestamp": 1,
+    "description": "Theseus navigates the Labyrinth and defeats the Minotaur in combat, freeing Athens from tribute.",
+    "participantIds": ["entity_theseus_001", "entity_minotaur_001"]
+  },
+  {
+    "id": "event_athens_rule_001",
+    "name": "Theseus Becomes King",
+    "mythId": "myth_theseus_adventures_001",
+    "timestamp": 2,
+    "description": "Theseus becomes king of Athens, uniting the city-states and establishing a more democratic rule.",
+    "participantIds": ["entity_theseus_001"]
+  },
+  {
+    "id": "event_argonaut_gathering_001",
+    "name": "The Argonauts Gather",
+    "mythId": "myth_jason_argonauts_001",
+    "timestamp": 0,
+    "description": "Jason assembles the greatest heroes of Greece aboard the ship Argo for the quest of the Golden Fleece.",
+    "participantIds": ["entity_jason_001", "entity_heracles_001"]
+  },
+  {
+    "id": "event_golden_fleece_quest_001",
+    "name": "Quest for the Golden Fleece",
+    "mythId": "myth_jason_argonauts_001",
+    "timestamp": 1,
+    "description": "The Argonauts face numerous trials: dangerous straits, island giants, and mythical beasts.",
+    "participantIds": ["entity_jason_001"]
+  },
+  {
+    "id": "event_medea_help_001",
+    "name": "Medea's Assistance",
+    "mythId": "myth_jason_argonauts_001",
+    "timestamp": 2,
+    "description": "Medea, daughter of the Colchian king, uses magic to help Jason obtain the Golden Fleece and escape.",
+    "participantIds": ["entity_jason_001"]
+  },
+  {
+    "id": "event_persephone_abduction_001",
+    "name": "Hades Abducts Persephone",
+    "mythId": "myth_persephone_abduction_001",
+    "timestamp": 0,
+    "description": "Hades erupts from the earth in a dark chariot, seizing Persephone and taking her to the Underworld.",
+    "participantIds": ["entity_hades_001", "entity_persephone_001"]
+  },
+  {
+    "id": "event_demeter_mourning_001",
+    "name": "Demeter's Grief",
+    "mythId": "myth_persephone_abduction_001",
+    "timestamp": 1,
+    "description": "Demeter, inconsolable, causes the earth to wither and crops to fail, bringing famine to humanity.",
+    "participantIds": ["entity_demeter_001"]
+  },
+  {
+    "id": "event_seasons_bargain_001",
+    "name": "The Seasonal Bargain",
+    "mythId": "myth_persephone_abduction_001",
+    "timestamp": 2,
+    "description": "Zeus negotiates: Persephone spends part of the year with Hades, creating seasons as Demeter mourns her absence.",
+    "participantIds": ["entity_zeus_001", "entity_demeter_001", "entity_persephone_001", "entity_hades_001"]
+  },
+  {
+    "id": "event_fire_theft_001",
+    "name": "Prometheus Steals Fire",
+    "mythId": "myth_prometheus_fire_001",
+    "timestamp": 0,
+    "description": "Prometheus, defying Zeus, steals fire from Mount Olympus and brings it to humanity.",
+    "participantIds": ["entity_prometheus_001", "entity_zeus_001"]
+  },
+  {
+    "id": "event_prometheus_punishment_001",
+    "name": "Prometheus's Eternal Punishment",
+    "mythId": "myth_prometheus_fire_001",
+    "timestamp": 1,
+    "description": "Zeus punishes Prometheus by chaining him to a rock, where an eagle eats his liver daily, which regenerates.",
+    "participantIds": ["entity_prometheus_001", "entity_zeus_001"]
+  },
+  {
+    "id": "event_heracles_rescue_001",
+    "name": "Heracles Frees Prometheus",
+    "mythId": "myth_prometheus_fire_001",
+    "timestamp": 2,
+    "description": "Centuries later, Heracles slays the eagle and frees Prometheus from his eternal torment.",
+    "participantIds": ["entity_heracles_001", "entity_prometheus_001"]
+  },
+  {
+    "id": "event_pandora_creation_001",
+    "name": "Pandora Is Created",
+    "mythId": "myth_pandora_box_001",
+    "timestamp": 0,
+    "description": "As punishment for Prometheus's theft, Zeus has Hephaestus create Pandora, the first woman, with hidden gifts.",
+    "participantIds": ["entity_zeus_001", "entity_hephaestus_001", "entity_pandora_001"]
+  },
+  {
+    "id": "event_box_opened_001",
+    "name": "Pandora Opens the Box",
+    "mythId": "myth_pandora_box_001",
+    "timestamp": 1,
+    "description": "Despite warnings, Pandora opens a sealed jar (often called a box), curious about its contents.",
+    "participantIds": ["entity_pandora_001"]
+  },
+  {
+    "id": "event_evils_released_001",
+    "name": "Evils Released Upon Humanity",
+    "mythId": "myth_pandora_box_001",
+    "timestamp": 2,
+    "description": "Sickness, death, suffering, and countless evils escape into the world. Only hope remains at the bottom.",
+    "participantIds": []
+  },
+  {
+    "id": "event_divine_love_001",
+    "name": "Aphrodite and Ares Fall in Love",
+    "mythId": "myth_aphrodite_ares_001",
+    "timestamp": 0,
+    "description": "The love goddess and war god begin a secret romance, though Aphrodite is married to Hephaestus.",
+    "participantIds": ["entity_aphrodite_001", "entity_ares_001", "entity_hephaestus_001"]
+  },
+  {
+    "id": "event_hephaestus_trap_001",
+    "name": "Hephaestus's Trap",
+    "mythId": "myth_aphrodite_ares_001",
+    "timestamp": 1,
+    "description": "Hephaestus, learning of the affair, forges an invisible net to catch the lovers in the act.",
+    "participantIds": ["entity_hephaestus_001", "entity_aphrodite_001", "entity_ares_001"]
+  },
+  {
+    "id": "event_gods_laughter_001",
+    "name": "The Gods' Laughter",
+    "mythId": "myth_aphrodite_ares_001",
+    "timestamp": 2,
+    "description": "The trapped lovers are exposed to all the gods on Mount Olympus, causing divine amusement and scandal.",
+    "participantIds": ["entity_hermes_001", "entity_zeus_001"]
+  },
+  {
+    "id": "event_midas_wish_001",
+    "name": "Midas Wishes for Gold",
+    "mythId": "myth_king_midas_001",
+    "timestamp": 0,
+    "description": "King Midas finds the drunken god Dionysus and, helping him, is granted one wish.",
+    "participantIds": ["entity_king_midas_001", "entity_dionysus_001"]
+  },
+  {
+    "id": "event_gold_touch_001",
+    "name": "The Golden Touch Curse",
+    "mythId": "myth_king_midas_001",
+    "timestamp": 1,
+    "description": "Midas wishes that everything he touches turns to gold, but soon realizes this includes his food and loved ones.",
+    "participantIds": ["entity_king_midas_001"]
+  },
+  {
+    "id": "event_midas_regret_001",
+    "name": "Midas's Regret",
+    "mythId": "myth_king_midas_001",
+    "timestamp": 2,
+    "description": "Midas begs Dionysus to undo the wish. The god agrees, and Midas bathes in a river to wash away the curse.",
+    "participantIds": ["entity_king_midas_001", "entity_dionysus_001"]
+  },
+  {
+    "id": "event_echo_pursuit_001",
+    "name": "Echo's Unrequited Love",
+    "mythId": "myth_narcissus_echo_001",
+    "timestamp": 0,
+    "description": "Echo, a nymph cursed to only repeat others' words, falls hopelessly in love with the vain Narcissus.",
+    "participantIds": ["entity_echo_001", "entity_narcissus_001"]
+  },
+  {
+    "id": "event_pool_reflection_001",
+    "name": "Narcissus Sees His Reflection",
+    "mythId": "myth_narcissus_echo_001",
+    "timestamp": 1,
+    "description": "Narcissus encounters his own reflection in a pool and falls in love with it, not realizing it is himself.",
+    "participantIds": ["entity_narcissus_001", "entity_aphrodite_001"]
+  },
+  {
+    "id": "event_flower_birth_001",
+    "name": "The Narcissus Flower",
+    "mythId": "myth_narcissus_echo_001",
+    "timestamp": 2,
+    "description": "Unable to leave his reflection, Narcissus withers and dies, transformed into the narcissus flower.",
+    "participantIds": ["entity_narcissus_001"]
+  },
+  {
+    "id": "event_marriage_night_001",
+    "name": "The Wedding Night",
+    "mythId": "myth_danaids_001",
+    "timestamp": 0,
+    "description": "The fifty daughters of Danaus marry the fifty sons of Aegyptus. All agrees to the marriage contract.",
+    "participantIds": ["entity_danaus_001"]
+  },
+  {
+    "id": "event_husbands_slain_001",
+    "name": "The Husbands Slain",
+    "mythId": "myth_danaids_001",
+    "timestamp": 1,
+    "description": "On the wedding night, all but one of the Danaids murder their husbands in obedience to their father.",
+    "participantIds": ["entity_hypermnestra_001"]
+  },
+  {
+    "id": "event_eternal_punishment_001",
+    "name": "Eternal Punishment",
+    "mythId": "myth_danaids_001",
+    "timestamp": 2,
+    "description": "The Danaids are punished in the Underworld, eternally trying to fill a leaky jar with water.",
+    "participantIds": []
+  },
+  {
+    "id": "event_amazon_quest_001",
+    "name": "Heracles Seeks the Girdle",
+    "mythId": "myth_amazons_001",
+    "timestamp": 0,
+    "description": "Heracles's ninth labor: obtain the golden girdle of Hippolyta, queen of the warrior Amazons.",
+    "participantIds": ["entity_heracles_001"]
+  },
+  {
+    "id": "event_hippolyta_battle_001",
+    "name": "Battle with Hippolyta",
+    "mythId": "myth_amazons_001",
+    "timestamp": 1,
+    "description": "Heracles and Theseus fight the Amazons. Heracles defeats Hippolyta in single combat.",
+    "participantIds": ["entity_heracles_001", "entity_hippolyta_001", "entity_theseus_001"]
+  },
+  {
+    "id": "event_girdle_obtained_001",
+    "name": "The Girdle Obtained",
+    "mythId": "myth_amazons_001",
+    "timestamp": 2,
+    "description": "Heracles claims Hippolyta's girdle as proof of his labor's completion.",
+    "participantIds": ["entity_heracles_001", "entity_hippolyta_001"]
+  }
+]

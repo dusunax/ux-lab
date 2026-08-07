@@ -1,0 +1,283 @@
+"""
+MythGraph GraphQL Schema
+Entity-centric knowledge graph for Greek & Roman mythology
+"""
+
+# ============================================================================
+# Enums
+# ============================================================================
+
+enum EntityType {
+  """Type identifier for deity entities"""
+  DEITY
+  """Type identifier for mortal human entities"""
+  HUMAN
+  """Type identifier for mythological monster entities"""
+  MONSTER
+  """Type identifier for geographic/location entities"""
+  PLACE
+}
+
+enum RelationshipTypeEnum {
+  """Parent-child divine relationship"""
+  PARENT_OF
+  """Spousal relationship"""
+  SPOUSE_OF
+  """Romantic or love-based relationship"""
+  LOVED_BY
+  """Hostile or conflict relationship"""
+  ENEMY_OF
+  """Alliance or friendship relationship"""
+  ALLY_OF
+  """Divine patronage or blessing"""
+  PATRON_OF
+  """Mortal lineage or descent"""
+  DESCENDED_FROM
+  """Slayer or defeated relationship"""
+  SLAIN_BY
+  """Participant in a shared event"""
+  PARTICIPATED_IN
+  """Association with a location"""
+  RESIDES_AT
+  """Creation or transformation relationship"""
+  CREATED_BY
+  """Curse or affliction relationship"""
+  CURSED_BY
+}
+
+# ============================================================================
+# Interfaces
+# ============================================================================
+
+interface Entity {
+  """Unique identifier: lowercase, hyphen-separated (e.g., 'zeus', 'achilles-mortal')"""
+  id: ID!
+  """Primary name of the entity"""
+  name: String!
+  """Alternative names or epithets"""
+  aliases: [String!]!
+  """Detailed description"""
+  description: String!
+  """Entity classification"""
+  type: EntityType!
+}
+
+# ============================================================================
+# Object Types - Entities
+# ============================================================================
+
+type Deity implements Entity {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  description: String!
+  type: EntityType!
+  """Roman name if different from Greek"""
+  romanName: String
+  """Primary domain or sphere of influence"""
+  domain: String
+  """Symbols or attributes associated with the deity"""
+  symbols: [String!]!
+  """Sacred animals"""
+  sacredAnimals: [String!]!
+}
+
+type Human implements Entity {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  description: String!
+  type: EntityType!
+  """Hero classification (hero, mortal, demigod, etc.)"""
+  heroType: String
+  """Associated city or region of origin"""
+  origin: String
+}
+
+type Monster implements Entity {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  description: String!
+  type: EntityType!
+  """Type of monster (creature, hybrid, etc.)"""
+  monsterType: String
+  """Notable abilities or powers"""
+  abilities: [String!]!
+}
+
+type Place implements Entity {
+  id: ID!
+  name: String!
+  aliases: [String!]!
+  description: String!
+  type: EntityType!
+  """Geographic region (Greece, Underworld, Olympus, etc.)"""
+  region: String
+  """Type of location (city, island, sacred site, etc.)"""
+  locationType: String
+}
+
+# ============================================================================
+# Relationship & Connection Types
+# ============================================================================
+
+type Relationship {
+  """Source entity of the relationship"""
+  source: Entity!
+  """Target entity of the relationship"""
+  target: Entity!
+  """Type of relationship"""
+  type: RelationshipTypeEnum!
+  """Human-readable label for the relationship"""
+  label: String!
+  """Additional context about the relationship"""
+  description: String
+}
+
+type SearchResult {
+  """The matched entity"""
+  entity: Entity!
+  """Relevance score (0.0 to 1.0)"""
+  matchScore: Float!
+}
+
+# ============================================================================
+# Supporting Types
+# ============================================================================
+
+type Myth {
+  """Unique identifier for the myth"""
+  id: ID!
+  """Title or name of the myth"""
+  title: String!
+  """Brief summary of the myth"""
+  summary: String!
+  """Entities involved in this myth"""
+  entities: [Entity!]!
+  """Related primary sources"""
+  relatedSources: [Source!]!
+}
+
+type Event {
+  """Unique identifier for the event"""
+  id: ID!
+  """Event name or title"""
+  name: String!
+  """Temporal context (e.g., 'Bronze Age', 'during the Trojan War')"""
+  dateContext: String
+  """Entities involved in the event"""
+  entitiesInvolved: [Entity!]!
+  """Primary location of the event"""
+  location: Place
+}
+
+type Source {
+  """Unique identifier for the source"""
+  id: ID!
+  """Title of the work"""
+  title: String!
+  """Author of the work"""
+  author: String
+  """Date or time period of the work"""
+  workDate: String
+  """URI to the source (canonical URL or citation)"""
+  uri: String
+}
+
+# ============================================================================
+# Connection Types (for pagination)
+# ============================================================================
+
+type EntityConnection {
+  """List of entities in this page"""
+  edges: [Entity!]!
+  """Total count of matching entities (before pagination)"""
+  totalCount: Int!
+  """Whether there are more results available"""
+  hasNextPage: Boolean!
+}
+
+# ============================================================================
+# Input Types
+# ============================================================================
+
+input EntityFilterInput {
+  """Filter by entity types"""
+  types: [EntityType!]
+  """Only return entities with relationships (true/false/null for any)"""
+  hasRelationships: Boolean
+}
+
+# ============================================================================
+# Query Root
+# ============================================================================
+
+type Query {
+  """
+  Search entities by name, aliases, or description.
+  Returns results sorted by match score (highest first).
+  Limited to 20 results by default.
+  """
+  searchEntities(
+    """The search query string"""
+    query: String!
+    """Optional filters"""
+    filters: EntityFilterInput
+    """Maximum number of results to return (default: 20, max: 100)"""
+    limit: Int = 20
+  ): [SearchResult!]!
+
+  """
+  Get a single entity by its unique identifier.
+  Returns null if the entity does not exist.
+  """
+  getEntity(
+    """The entity ID (e.g., 'zeus', 'achilles-mortal')"""
+    id: ID!
+  ): Entity
+
+  """
+  Get relationships for an entity.
+  Optionally filtered by relationship type.
+  Returns up to 50 relationships by default.
+  """
+  getRelationships(
+    """The source entity ID"""
+    entityId: ID!
+    """Optional: filter by specific relationship type"""
+    relationshipType: RelationshipTypeEnum
+    """Maximum number of relationships to return (default: 50)"""
+    limit: Int = 50
+  ): [Relationship!]!
+
+  """
+  Get a myth by its unique identifier.
+  Returns null if the myth does not exist.
+  """
+  getMythById(
+    """The myth ID"""
+    id: ID!
+  ): Myth
+
+  """
+  Find the shortest path between two entities.
+  Useful for exploring relationships and degrees of separation.
+  Limited to a maximum of 5 hops by default.
+  Returns an empty list if no path exists within the hop limit.
+  """
+  getNearestPath(
+    """The starting entity ID"""
+    fromId: ID!
+    """The destination entity ID"""
+    toId: ID!
+    """Maximum hops/steps to traverse (default: 5, max: 10)"""
+    maxHops: Int = 5
+  ): [[Relationship!]!]!
+
+  """
+  Get all available entity types.
+  Useful for building filter UIs.
+  """
+  listEntityTypes: [EntityType!]!
+}
