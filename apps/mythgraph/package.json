@@ -1,0 +1,28 @@
+{
+  "name": "@ux-lab/mythgraph",
+  "version": "1.0.0",
+  "description": "MythGraph - Neo4j Knowledge Graph of Greek & Roman Mythology",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3003",
+    "build": "next build",
+    "start": "next start -p 3003",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "graphql": "^16.0.0",
+    "graphql-yoga": "^5.0.0",
+    "neo4j-driver": "^5.0.0",
+    "@graphql-tools/schema": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}

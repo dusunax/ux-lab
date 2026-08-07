@@ -1,0 +1,6 @@
+id,name,work,period,language,type,coverage,description
+src:homer-iliad,,,Archaic period,Ancient Greek,primary,"Trojan War, Olympian Gods, Heroes, Epic Poetry","Epic poem depicting the Trojan War, featuring gods and heroes"
+src:homer-odyssey,,,Archaic period,Ancient Greek,primary,"Odysseus, Heroes, Monsters, Adventure",Epic poem following Odysseus's journey home after the Trojan War
+src:hesiod-theogony,,,Archaic period,Ancient Greek,primary,"Gods genealogy, Creation myth, Titans, Olympians",Account of the origin of the gods and their genealogies
+src:ovid-metamorphoses,,,Imperial Roman period,Latin,primary,"Entity transformations, Myths, Gods, Humans, Monsters",Collection of mythological transformation tales from Creation to Roman times
+src:apollodorus-library,,,Hellenistic period,Ancient Greek,secondary,"Comprehensive mythology, Gods, Heroes, Genealogy",Systematic compilation of Greek myths with genealogical focus
