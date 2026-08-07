@@ -269,6 +269,120 @@ export class LayoutService {
   }
 
   /**
+   * Bloom (Radial) 레이아웃 - Zeus를 중심으로 방사형 배치
+   * @param nodes 그래프 노드 배열
+   * @returns 레이아웃 정보 Map
+   */
+  computeBloomLayout(nodes: GraphNode[]): Map<string, LayoutNode> {
+    const start = performance.now();
+
+    // Zeus 찾기 (중심 노드)
+    const centerNode = nodes.find(
+      (n) => n.data?.label?.toLowerCase().includes('zeus') || n.id.includes('zeus')
+    );
+
+    const layoutMap = new Map<string, LayoutNode>();
+    const centerX = 0;
+    const centerY = 0;
+
+    if (!centerNode) {
+      // Zeus를 찾지 못하면 첫 노드를 중심으로 사용
+      console.warn('[Layout] Zeus node not found, using first node as center');
+      return this.computeFallbackBloomLayout(nodes);
+    }
+
+    // 중심 노드 배치
+    layoutMap.set(centerNode.id, {
+      id: centerNode.id,
+      x: centerX,
+      y: centerY,
+      width: this.NODE_WIDTH,
+      height: this.NODE_HEIGHT,
+    });
+
+    // 주변 노드들을 동심원으로 배치
+    const otherNodes = nodes.filter((n) => n.id !== centerNode.id);
+    const nodesPerRing = Math.ceil(Math.sqrt(otherNodes.length));
+    const ringDistance = 200; // 반지름
+
+    otherNodes.forEach((node, idx) => {
+      const ring = Math.floor(idx / nodesPerRing);
+      const posInRing = idx % nodesPerRing;
+      const anglePerNode = (2 * Math.PI) / nodesPerRing;
+      const angle = posInRing * anglePerNode + (ring * Math.PI) / nodesPerRing;
+      const distance = ringDistance * (ring + 1) * 0.8;
+
+      const x = centerX + distance * Math.cos(angle);
+      const y = centerY + distance * Math.sin(angle);
+
+      layoutMap.set(node.id, {
+        id: node.id,
+        x,
+        y,
+        width: this.NODE_WIDTH,
+        height: this.NODE_HEIGHT,
+      });
+    });
+
+    const elapsed = performance.now() - start;
+    console.log(
+      `[Layout] Bloom computed in ${elapsed.toFixed(2)}ms (${nodes.length} nodes)`
+    );
+
+    return layoutMap;
+  }
+
+  /**
+   * Bloom 레이아웃 실패 시 폴백
+   */
+  private computeFallbackBloomLayout(nodes: GraphNode[]): Map<string, LayoutNode> {
+    const layoutMap = new Map<string, LayoutNode>();
+    const centerX = 0;
+    const centerY = 0;
+    const radius = 150;
+    const angleStep = (2 * Math.PI) / nodes.length;
+
+    nodes.forEach((node, idx) => {
+      const angle = idx * angleStep;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      layoutMap.set(node.id, {
+        id: node.id,
+        x,
+        y,
+        width: this.NODE_WIDTH,
+        height: this.NODE_HEIGHT,
+      });
+    });
+
+    return layoutMap;
+  }
+
+  /**
+   * Bloom 레이아웃 가져오기 (캐시 → 계산)
+   */
+  async getBloomLayout(
+    sessionId: string,
+    nodes: GraphNode[]
+  ): Promise<Map<string, LayoutNode>> {
+    // 1. 세션 캐시 확인
+    const cached = this.loadFromSession(sessionId);
+    if (cached && cached.size === nodes.length) {
+      console.log('[Layout] Using cached bloom layout');
+      return cached;
+    }
+
+    // 2. 새 Bloom 레이아웃 계산
+    const layout = this.computeBloomLayout(nodes);
+
+    // 3. 세션 저장
+    this.saveToSession(sessionId, layout);
+
+    return layout;
+  }
+
+  /**
    * 메모리 정리 (세션 종료 시)
    * @param sessionId 세션 ID
    */

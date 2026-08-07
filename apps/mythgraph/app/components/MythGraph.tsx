@@ -40,6 +40,7 @@ export interface MythGraphProps {
   onNodeClick?: (nodeId: string, entity: GraphNode) => void;
   onEdgeClick?: (edgeId: string) => void;
   loading?: boolean;
+  useBloomLayout?: boolean;
 }
 
 /**
@@ -54,6 +55,7 @@ export const MythGraph = React.memo(
     onNodeClick,
     onEdgeClick,
     loading = false,
+    useBloomLayout = false,
   }: MythGraphProps) => {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -74,7 +76,9 @@ export const MythGraph = React.memo(
         }));
 
         // LayoutService에서 세션 레이아웃 가져오기
-        const layout = await layoutService.getLayout(sessionId, entities, graphEdges);
+        const layout = useBloomLayout
+          ? await layoutService.getBloomLayout(sessionId, entities)
+          : await layoutService.getLayout(sessionId, entities, graphEdges);
 
         // 노드에 계산된 위치 적용
         const positionedNodes: Node[] = entities.map((entity) => {
@@ -112,7 +116,7 @@ export const MythGraph = React.memo(
       } finally {
         setIsLayouting(false);
       }
-    }, [entities, relationships, sessionId, setNodes, setEdges]);
+    }, [entities, relationships, sessionId, useBloomLayout, setNodes, setEdges]);
 
     /**
      * 초기 로드 및 의존성 변경 시 레이아웃 적용

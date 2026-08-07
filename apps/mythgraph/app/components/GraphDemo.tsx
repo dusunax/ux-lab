@@ -70,8 +70,8 @@ interface GraphQLEntity {
  * GraphDemo 컴포넌트
  */
 export const GraphDemo: React.FC = () => {
-  const sessionId = 'neo4j-demo-session';
-  const [nodeCount, setNodeCount] = useState(20);
+  const sessionId = 'neo4j-bloom-session';
+  const [nodeCount, setNodeCount] = useState(100);
   const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null);
   const [isBenchmarking, setIsBenchmarking] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<string>('');
@@ -225,8 +225,9 @@ export const GraphDemo: React.FC = () => {
               </label>
               <input
                 type="range"
-                min="5"
+                min="10"
                 max="100"
+                step="10"
                 value={nodeCount}
                 onChange={handleNodeCountChange}
                 disabled={isLoading}
@@ -285,6 +286,7 @@ export const GraphDemo: React.FC = () => {
               relationships={graphData.edges}
               sessionId={sessionId}
               onNodeClick={handleNodeClick}
+              useBloomLayout={true}
             />
           </div>
         )}
