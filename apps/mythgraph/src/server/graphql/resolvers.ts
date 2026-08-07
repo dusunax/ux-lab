@@ -208,24 +208,49 @@ export async function getRelationships(
   const limit = Math.min(args.limit || 50, 100);
 
   try {
-    // For now, return empty relationships as we haven't created relationship nodes yet
-    // This will be enhanced when relationship nodes are fully integrated
-
     let cypherQuery = `
-      MATCH (source:Entity {id: $entityId})
-      RETURN source
+      MATCH (source:Entity {id: $entityId})-[rel]->(target:Entity)
+      WHERE source IS NOT NULL AND target IS NOT NULL
     `;
 
-    const result = await session.run(cypherQuery, {
+    if (args.relationshipType) {
+      cypherQuery += ` AND type(rel) = $relationshipType`;
+    }
+
+    cypherQuery += `
+      RETURN source, rel, target
+      ORDER BY type(rel) ASC
+      LIMIT $limit
+    `;
+
+    const params: any = {
       entityId: args.entityId,
-    });
+      limit: limit,
+    };
+
+    if (args.relationshipType) {
+      params.relationshipType = args.relationshipType;
+    }
+
+    const result = await session.run(cypherQuery, params);
 
     if (result.records.length === 0) {
       return [];
     }
 
-    // Return empty array for now (relationships will be added in next phase)
-    return [];
+    return result.records.map((record) => {
+      const sourceNode = record.get('source');
+      const targetNode = record.get('target');
+      const rel = record.get('rel');
+
+      return {
+        source: nodeToEntity(sourceNode),
+        target: nodeToEntity(targetNode),
+        type: rel.type,
+        label: rel.properties.label || rel.type,
+        description: rel.properties.description,
+      };
+    });
   } finally {
     await session.close();
   }
@@ -291,19 +316,39 @@ export async function getNearestPath(
       MATCH (source:Entity {id: $fromId})
       MATCH (target:Entity {id: $toId})
       MATCH p = shortestPath((source)-[*1..${maxHops}]-(target))
-      RETURN p
+      RETURN [node IN nodes(p) | node {.*}] as nodeList,
+             [rel IN relationships(p) | {type: type(rel), properties: rel}] as relList
       LIMIT 1
       `,
       { fromId: args.fromId, toId: args.toId }
     );
 
     if (result.records.length === 0) {
-      return [];
+      return [[]];
     }
 
-    // For now, return empty relationships as we haven't created full relationship structure
-    // This will be enhanced when relationship nodes are fully integrated
-    return [];
+    const record = result.records[0];
+    const nodeList = record.get('nodeList') || [];
+    const relList = record.get('relList') || [];
+
+    if (nodeList.length < 2 || relList.length === 0) {
+      return [[]];
+    }
+
+    const pathRelationships: Relationship[] = relList.map((rel: any, idx: number) => {
+      const sourceNode = nodeList[idx];
+      const targetNode = nodeList[idx + 1];
+
+      return {
+        source: nodeToEntity(sourceNode),
+        target: nodeToEntity(targetNode),
+        type: rel.type,
+        label: rel.properties.label || rel.type,
+        description: rel.properties.description,
+      };
+    });
+
+    return [pathRelationships];
   } finally {
     await session.close();
   }

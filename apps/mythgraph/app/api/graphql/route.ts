@@ -11,6 +11,7 @@ import { join } from 'path';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { resolvers } from '@/src/server/graphql/resolvers';
 import { testConnection } from '@/src/server/neo4j';
+import { visit, parse } from 'graphql';
 
 // Load the GraphQL schema from file
 const schemaPath = join(process.cwd(), 'src/server/graphql/schema.graphql');
@@ -22,18 +23,56 @@ const schema = makeExecutableSchema({
   resolvers,
 });
 
-// Create the Yoga instance
+// Calculate query depth to prevent deeply nested attacks
+function getQueryDepth(ast: any): number {
+  let maxDepth = 0;
+
+  visit(ast, {
+    SelectionSet(node: any, _key, _parent, _path, ancestors) {
+      const depth = ancestors.filter((a: any) => a.kind === 'SelectionSet').length;
+      maxDepth = Math.max(maxDepth, depth);
+    },
+  });
+
+  return maxDepth;
+}
+
+// Create the Yoga instance with depth limit plugin
 const yoga = createYoga({
   schema,
-  // GraphQL Playground enabled for development
   graphiql: true,
-  // Logging
   logging: {
     debug: (...args: any[]) => console.debug('[GraphQL]', ...args),
     info: (...args: any[]) => console.info('[GraphQL]', ...args),
     warn: (...args: any[]) => console.warn('[GraphQL]', ...args),
     error: (...args: any[]) => console.error('[GraphQL]', ...args),
   },
+  plugins: [
+    {
+      onRequestParse({ request, serverContext: { query } }) {
+        const MAX_DEPTH = 10;
+
+        try {
+          if (query) {
+            const ast = parse(query);
+            const depth = getQueryDepth(ast);
+
+            if (depth > MAX_DEPTH) {
+              console.warn(
+                `[GraphQL] Query depth limit exceeded: ${depth} > ${MAX_DEPTH}`
+              );
+              throw new Error(
+                `Query depth (${depth}) exceeds maximum allowed depth (${MAX_DEPTH})`
+              );
+            }
+          }
+        } catch (error) {
+          console.error('[GraphQL] Query validation error:', error);
+          throw error;
+        }
+      },
+    },
+  ],
 });
 
 // Middleware to test Neo4j connection before processing requests
