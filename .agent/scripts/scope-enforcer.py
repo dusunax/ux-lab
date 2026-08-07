@@ -5,10 +5,12 @@ scope-enforcer.py — Claude Code pre-tool-use hook
 
 동작:
   1. .claude/.active-role 파일이 없으면 메인 세션으로 간주 → 통과
-  2. deny 패턴 매치 → exit 2 (하드 차단, stdout 메시지가 Claude에게 보임)
-  3. readonly 역할이 쓰기 시도 → exit 2 (하드 차단)
-  4. allow 패턴 외 파일 → exit 0 (소프트 경고, stderr)
-  5. 그 외 → exit 0 (통과)
+  2. 자기 memory 경로 쓰기 → 항상 허용 (readonly/deny보다 우선)
+  3. deny 패턴 매치 → exit 2 (하드 차단, stdout 메시지가 Claude에게 보임)
+  4. readonly 역할이 쓰기 시도 → exit 2 (하드 차단)
+  5. allow 패턴 외 파일 → exit 0 (소프트 경고, stderr)
+  6. Bash 쓰기 패턴이 deny/readonly 범위를 향함 → exit 0 (소프트 경고, stderr)
+  7. 그 외 → exit 0 (통과)
 
 참조 파일:
   .agent/rules/agent-scope.json  — 역할별 allow/deny/readonly 규칙
@@ -16,9 +18,13 @@ scope-enforcer.py — Claude Code pre-tool-use hook
 """
 
 import json
+import re
 import sys
 import os
 import fnmatch
+
+# Bash 명령에서 파일 쓰기 의도를 나타내는 패턴 (소프트 경고용 휴리스틱)
+BASH_WRITE_RE = re.compile(r"(>>?|\btee\b|\bsed\s+(-[a-zA-Z]*\s+)*-i\b|\brm\b|\bmv\b|\bcp\b|\btruncate\b)")
 
 
 def get_repo_root():
@@ -46,6 +52,30 @@ def get_owner(scope: dict, path: str) -> str:
         if not rules.get("readonly") and match_any(path, rules.get("allow", [])):
             return role
     return "미지정"
+
+
+def load_role_and_rules(repo_root: str):
+    """(.active-role 역할, 해당 규칙, 전체 scope)를 반환. 미설정/미정의면 (role, None, scope)."""
+    role_file = os.path.join(repo_root, ".claude", ".active-role")
+    if not os.path.exists(role_file):
+        return "", None, None
+    try:
+        with open(role_file) as f:
+            role = f.read().strip().upper()
+    except OSError:
+        return "", None, None
+    if not role:
+        return "", None, None
+
+    scope_file = os.path.join(repo_root, ".agent", "rules", "agent-scope.json")
+    if not os.path.exists(scope_file):
+        return role, None, None
+    try:
+        with open(scope_file) as f:
+            scope = json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return role, None, None
+    return role, scope.get("roles", {}).get(role), scope
 
 
 def main():
@@ -81,6 +111,35 @@ def main():
                 )
         sys.exit(0)  # Agent 소환은 차단하지 않음, 경고만
 
+    # ── Bash 쓰기 패턴 소프트 경고 (OQ-A 결정: 하드 차단하지 않음) ────
+    if tool_name == "Bash":
+        role, rules, scope = load_role_and_rules(repo_root)
+        if not rules:
+            sys.exit(0)
+        command = tool_input.get("command", "")
+        if not command or not BASH_WRITE_RE.search(command):
+            sys.exit(0)
+        # 명령 토큰 중 경로처럼 보이는 것을 deny/readonly 범위와 대조
+        deny_patterns = rules.get("deny", [])
+        memory_patterns = rules.get("memory", [])
+        suspicious = []
+        for token in re.split(r"[\s;|&()'\"]+", command):
+            if "/" not in token or token.startswith(("-", "http://", "https://")):
+                continue
+            rel = to_relative(token, repo_root)
+            if match_any(rel, memory_patterns):
+                continue
+            if rules.get("readonly") or match_any(rel, deny_patterns):
+                suspicious.append(rel)
+        if suspicious:
+            print(
+                f"⚠️  Bash 쓰기 주의 [{role}]\n"
+                f"   이 명령은 쓰기 범위 밖 경로를 건드릴 수 있습니다: {', '.join(sorted(set(suspicious))[:5])}\n"
+                f"   파일 수정은 Edit/Write 툴을 사용하고, 범위 밖 파일은 오케스트레이터(OC)에게 보고하세요.",
+                file=sys.stderr,
+            )
+        sys.exit(0)
+
     # 파일 쓰기 툴만 검사
     if tool_name not in ("Edit", "Write", "NotebookEdit"):
         sys.exit(0)
@@ -96,48 +155,31 @@ def main():
 
     rel = to_relative(file_path, repo_root)
 
-    # .active-role 확인 — 없으면 메인 세션, 제한 없음
-    role_file = os.path.join(repo_root, ".claude", ".active-role")
-    if not os.path.exists(role_file):
-        sys.exit(0)
-
-    try:
-        with open(role_file) as f:
-            role = f.read().strip().upper()
-    except OSError:
-        sys.exit(0)
-
+    # .active-role + 스코프 규칙 로드 — 미설정이면 메인 세션, 제한 없음
+    role, rules, scope = load_role_and_rules(repo_root)
     if not role:
         sys.exit(0)
-
-    # 스코프 규칙 로드
-    scope_file = os.path.join(repo_root, ".agent", "rules", "agent-scope.json")
-    if not os.path.exists(scope_file):
-        sys.exit(0)  # 규칙 파일 없으면 통과
-
-    try:
-        with open(scope_file) as f:
-            scope = json.load(f)
-    except (json.JSONDecodeError, OSError):
+    if rules is None:
+        if scope is not None:
+            # 알 수 없는 역할 → 소프트 경고만
+            print(
+                f"⚠️  알 수 없는 역할 [{role}] — 파일 범위 검증을 건너뜁니다.",
+                file=sys.stderr,
+            )
         sys.exit(0)
 
-    rules = scope.get("roles", {}).get(role)
-    if not rules:
-        # 알 수 없는 역할 → 소프트 경고만
-        print(
-            f"⚠️  알 수 없는 역할 [{role}] — 파일 범위 검증을 건너뜁니다.",
-            file=sys.stderr,
-        )
+    # ── 자기 메모리 경로 → 항상 허용 (readonly/deny보다 우선) ────────
+    if match_any(rel, rules.get("memory", [])):
         sys.exit(0)
 
-    # ── 읽기 전용 역할 (UX, QA) ──────────────────────────────────────
+    # ── 읽기 전용 역할 (UX, QA, EV) ──────────────────────────────────
     if rules.get("readonly"):
         print(
             f"⛔ 파일 수정 차단\n"
             f"   역할:  [{role}] (읽기 전용)\n"
             f"   파일:  {rel}\n"
             f"\n"
-            f"   [{role}] 역할은 어떤 파일도 직접 수정할 수 없습니다.\n"
+            f"   [{role}] 역할은 자기 agent-memory 외 파일을 수정할 수 없습니다.\n"
             f"   결과를 텍스트로 출력하고 오케스트레이터(OC)에게 보고하세요."
         )
         sys.exit(2)

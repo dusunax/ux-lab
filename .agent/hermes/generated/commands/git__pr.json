@@ -1,0 +1,29 @@
+{
+  "argumentsVariable": "$ARGUMENTS",
+  "description": "현재 브랜치를 push하고 GitHub PR을 생성한다. 라벨 자동 부착. 스프린트와 무관한 범용 PR 생성에 사용한다.",
+  "detectedToolMentions": [],
+  "flags": [
+    "--base",
+    "--draft",
+    "--label",
+    "--title"
+  ],
+  "id": "git/pr",
+  "instructions": "# /git:pr 하네스\n\n**인수:** $ARGUMENTS\n\n| 패턴 | 동작 |\n|------|------|\n| (없음) | 현재 브랜치 기준 자동 생성 |\n| `--base BRANCH` | PR 대상 브랜치 지정 (기본: `main`) |\n| `--title \"제목\"` | PR 제목 직접 지정 |\n| `--draft` | Draft PR로 생성 |\n| `--label LABEL` | 추가 라벨 지정 |\n\n**실행 전 필독:** `.agent/rules/git.md`\n\n---\n\n## Step 1 — 전제 조건 확인\n\n```bash\ngit rev-parse --abbrev-ref HEAD\ngit status --short\n```\n\n- 현재 브랜치가 `main`/`master`면 중단:\n  ```\n  ⛔ main 브랜치에서 PR을 생성할 수 없습니다. 피처 브랜치로 전환하세요.\n  ```\n- 미커밋 변경이 있으면 먼저 `/git:commit` 실행을 안내한다.\n\n---\n\n## Step 2 — push\n\n```bash\ngit push -u origin {현재 브랜치}\n```\n\n이미 원격에 있으면:\n```bash\ngit push origin {현재 브랜치}\n```\n\n---\n\n## Step 3 — PR 본문 구성\n\n`git log main..HEAD --oneline`과 `git diff main...HEAD --stat`을 읽어 PR 본문을 작성한다.\n\n```markdown\n## 개요\n\n{변경 목적 — 1~3줄}\n\n## 변경 내용\n\n{주요 변경 항목 bullet}\n\n## 테스트\n\n- [ ] 로컬 실행 확인\n- [ ] 주요 흐름 테스트\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n```\n\n`--title`이 없으면 커밋 이력에서 PR 제목을 추론한다.\n\n**PR 본문을 사용자에게 보여주고 확인받는다.** (대화형 모드)\n\n---\n\n## Step 4 — PR 생성\n\n```bash\ngh pr create \\\n  --base {base 브랜치} \\\n  --title \"{제목}\" \\\n  --body \"{본문}\" \\\n  --assignee @me\n```\n\n`--draft` 플래그가 있으면 `--draft` 추가.\n\n---\n\n## Step 5 — 라벨 부착\n\nPR 번호 확인 후 라벨 부착:\n\n```bash\ngh pr edit {NUMBER} --add-label \"{라벨}\" --repo dusunax/ux-lab\n```\n\n| 조건 | 라벨 |\n|------|------|\n| 항상 | `status: review-needed` |\n| `--draft` 사용 시 | `status: wip` |\n| `--label` 인수 있음 | 해당 라벨 추가 |\n\n---\n\n## Step 6 — 완료 보고\n\n```\n🔀 PR 생성 완료\n\nPR:      {URL}\n브랜치:  {HEAD} → {base}\n제목:    {제목}\n라벨:    {라벨 목록}\n\n다음 단계:\n  merge:  /git:merge --pr {NUMBER}\n```\n",
+  "invocation": {
+    "aliasOf": null,
+    "aliases": [],
+    "name": "/pr"
+  },
+  "kind": "command",
+  "requiresWorktreeIsolation": false,
+  "schema": "ux-lab.hermes.agent-system.v1",
+  "shortFlags": [],
+  "source": {
+    "path": ".agent/commands/git/pr.md"
+  },
+  "team": {
+    "id": "susan-market",
+    "name": "수산시장"
+  }
+}

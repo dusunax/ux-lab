@@ -125,50 +125,18 @@ if (!API_KEY) throw new Error('EXTERNAL_API_KEY not configured')
 
 ## Coding Standards (Project-Specific)
 
-### Immutability
-```typescript
-// Prefer immutable patterns
-const updated = { ...entity, field: newValue }
-const newList = [...array, newItem]
-```
+Read the project rule files and implement against them — do not rely on a memorized copy of the standards:
 
-### File & Function Limits
-- Files: target 200-400 lines, max 800 lines
-- Functions: target <30 lines, max 50 lines — single responsibility
-- Feature implementations go under the `features` folder by feature area
-- Keep related logic together; split only when complexity demands it
-
-### Naming Conventions
-- Components: `PascalCase`
-- Functions/variables: `camelCase`
-- Constants: `UPPER_SNAKE_CASE`
-- Files: `camelCase.ts` or `PascalCase.tsx`
-
-### Error Handling
-```typescript
-try {
-  const result = await operation()
-  return result
-} catch (error) {
-  console.error('Context:', error)
-  throw new Error('User-friendly message')
-}
-```
+- **Coding standards:** `.agent/rules/coding-style.md`
+- **Performance rules:** `.agent/rules/performance.md`
+- **Security rules:** `.agent/rules/security.md`
 
 ## Pre-Completion Checklist
 Before finalizing any implementation, verify:
-- [ ] No hardcoded secrets, API keys, or credentials
-- [ ] No .env files in output
-- [ ] All user inputs validated
-- [ ] Queries parameterized
-- [ ] Error messages don't expose internal details
-- [ ] No `any` types — all types explicitly defined
-- [ ] No `console.log` in production client-side code (server-side debug logs acceptable)
-- [ ] No TODO comments without a ticket or issue reference
-- [ ] No magic numbers — use named constants
+- [ ] Passes the checklists in `.agent/rules/security.md`, `.agent/rules/coding-style.md`, and `.agent/rules/performance.md`
 - [ ] Algorithm complexity appropriate for data scale
 - [ ] Caching strategy considered
-- [ ] Relevant documentation updated if logic changed significantly
+- [ ] External calls have timeouts and retry/backoff handling
 
 ## Decision-Making Framework
 

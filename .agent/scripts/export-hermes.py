@@ -128,7 +128,7 @@ def extract_memory_path(body: str) -> str | None:
 
 def extract_tool_mentions(text: str) -> list[str]:
     patterns = [
-        r"\bmcp__[A-Za-z0-9_]+",
+        r"\bmcp__[A-Za-z0-9_]+__[A-Za-z0-9_]+",
         r"\b[A-Za-z]+Mcp[A-Za-z]+Tool\b",
         r"\bWebFetch\b",
         r"\bWebSearch\b",
@@ -216,6 +216,10 @@ def export_commands() -> list[dict[str, Any]]:
         flags = sorted(set(re.findall(r"`(--[A-Za-z0-9-]+)(?:\s+[^`]*)?`", body)))
         short_flags = sorted(set(re.findall(r"`(-[A-Za-z])(?:\s+[^`]*)?`", body)))
         needs_worktree = 'isolation: "worktree"' in body or "worktree 격리" in body
+        tool_scan_text = body
+        if "FIGMA_HARNESS_CORE.md" in body:
+            _, figma_core_body = split_frontmatter(AGENT_ROOT / "skills" / "FIGMA_HARNESS_CORE.md")
+            tool_scan_text += "\n" + figma_core_body
 
         commands.append(
             {
@@ -230,7 +234,7 @@ def export_commands() -> list[dict[str, Any]]:
                 "flags": flags,
                 "shortFlags": short_flags,
                 "requiresWorktreeIsolation": needs_worktree,
-                "detectedToolMentions": extract_tool_mentions(body),
+                "detectedToolMentions": extract_tool_mentions(tool_scan_text),
                 "instructions": body,
             }
         )

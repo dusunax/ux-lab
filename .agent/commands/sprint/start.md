@@ -4,35 +4,44 @@ description: 스프린트 시작 의식. 이전 스프린트 완료 여부를 �
 
 # /sprint:start 하네스
 
-인수 없음. 모든 컨텍스트는 `docs/meetings/`와 git에서 자동 수집한다.
+인수 없음. 모든 컨텍스트는 `docs/meetings/{app}/`과 git에서 자동 수집한다.
 
 ---
 
 ## Step 0 — 컨텍스트 자동 수집
 
-### 0-1. 스프린트 번호 추론
+### 0-0. 대상 앱(APP) 확정
+
+`.agent/skills/SPRINT-CONTEXT.md`를 읽고 그 절차를 따라 **APP**을 확정한다.
+
+- 현재 브랜치가 `sprint/{app}/{N}`이면 그 앱을 사용한다.
+- 아니면 `docs/meetings/{app}/`의 최신 킥오프로 추론하되, **어느 앱의 스프린트를 시작하는지 모호하면 사용자에게 질문**한다.
+
+### 0-1. 스프린트 번호 추론 (앱별 독립)
+
+스프린트 번호는 **앱별로 독립적**이다. 반드시 해당 앱 디렉터리 안에서만 계산한다.
 
 ```bash
-ls docs/meetings/ | sort
+ls docs/meetings/[APP]/ | sort
 ```
 
 **스프린트 파일 판별 규칙:**
 - 포함: `YYYY-MM-DD-sprint-N.md`, `YYYY-MM-DD-sprint-N-kickoff.md`, `YYYY-MM-DD-sprint-N-pre.md`
-- 제외: `-pre` 단독, `sprint-workflow`, 숫자 N이 없는 파일 (예: `sprint-workflow.md`)
+- 제외: `-pre` 단독, 숫자 N이 없는 파일 (예: `README.md`)
 
 유효한 파일에서 가장 큰 N을 `PREV_SPRINT`로 확정한다.
 `NEXT_SPRINT = PREV_SPRINT + 1`.
 
-파일이 하나도 없으면 **즉시 중단**한다:
+`docs/meetings/[APP]/`에 파일이 하나도 없으면 (신규 앱의 첫 스프린트) **즉시 중단**한다:
 
 ```
-⛔ docs/meetings/에 이전 스프린트 기록이 없습니다.
-첫 스프린트는 수동으로 킥오프 파일을 작성해 주세요.
+⛔ docs/meetings/[APP]/에 이전 스프린트 기록이 없습니다.
+해당 앱의 첫 스프린트는 수동으로 킥오프 파일을 작성해 주세요.
 ```
 
 ### 0-2. 검사 대상 파일 결정
 
-`PREV_SPRINT`에 해당하는 파일을 아래 우선순위로 찾는다:
+`docs/meetings/[APP]/`에서 `PREV_SPRINT`에 해당하는 파일을 아래 우선순위로 찾는다:
 
 1. `*-sprint-[PREV_SPRINT]-kickoff.md` → **현대 포맷** (수용 기준 + 액션 아이템 검사)
 2. `*-sprint-[PREV_SPRINT].md` (`-pre` `-kickoff` 없는 것) → **레거시 포맷** (액션 아이템만 검사)
@@ -125,23 +134,23 @@ Sprint [NEXT_SPRINT] 킥오프에 이월 항목을 포함합니다.
 
 ## Step 1.5 — 스프린트 브랜치 생성
 
-게이트 통과 후, `sprint/[NEXT_SPRINT]` 브랜치를 생성하고 체크아웃한다.
+게이트 통과 후, `sprint/[APP]/[NEXT_SPRINT]` 브랜치를 생성하고 체크아웃한다.
 
 ```bash
-git branch --list sprint/[NEXT_SPRINT]
+git branch --list sprint/[APP]/[NEXT_SPRINT]
 ```
 
-- 브랜치가 **없으면**: `git checkout -b sprint/[NEXT_SPRINT]`
-- 브랜치가 **이미 있으면**: `git checkout sprint/[NEXT_SPRINT]` 후 아래 경고 출력
+- 브랜치가 **없으면**: `git checkout -b sprint/[APP]/[NEXT_SPRINT]`
+- 브랜치가 **이미 있으면**: `git checkout sprint/[APP]/[NEXT_SPRINT]` 후 아래 경고 출력
 
 ```
-⚠️ sprint/[NEXT_SPRINT] 브랜치가 이미 존재합니다. 해당 브랜치로 전환합니다.
+⚠️ sprint/[APP]/[NEXT_SPRINT] 브랜치가 이미 존재합니다. 해당 브랜치로 전환합니다.
 ```
 
 정상 생성 시 출력:
 
 ```
-🌿 브랜치 생성: sprint/[NEXT_SPRINT]
+🌿 브랜치 생성: sprint/[APP]/[NEXT_SPRINT]
    이후 모든 커밋은 이 브랜치에서 진행합니다.
 ```
 
@@ -168,7 +177,14 @@ date +"%Y-%m-%d"
 
 ## Step 3 — Jordan(PM) 소환: 스프린트 플랜 작성
 
+소환 직전 활성 역할을 기록한다 (scope-enforcer 훅 전제):
+
+```bash
+echo 'PM' > .claude/.active-role
+```
+
 `product/PM/prd-product-manager` 에이전트를 소환한다.
+소환 완료 직후 `rm -f .claude/.active-role`로 정리한다.
 
 Jordan에게 전달할 프롬프트:
 
@@ -220,6 +236,8 @@ Jordan의 결과물을 저장한다.
 
 ## Step 4 — Alex(TS) 소환: 킥오프 MD 생성 (worktree 격리)
 
+소환 직전 `echo 'TS' > .claude/.active-role`로 활성 역할을 기록하고, 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다.
+
 `product/TS/secretary` 에이전트를 **`isolation: "worktree"`** 옵션으로 소환한다.
 
 > Alex는 `docs/meetings/` 아래 파일을 생성하므로 메인 워크트리와 충돌을 방지하기 위해 격리된 worktree에서 실행한다.
@@ -227,13 +245,13 @@ Jordan의 결과물을 저장한다.
 Alex에게 전달할 프롬프트:
 
 ```
-Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘.
+Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘. (앱: [APP])
 
-파일 경로: docs/meetings/[오늘날짜]-sprint-[NEXT_SPRINT]-kickoff.md
+파일 경로: docs/meetings/[APP]/[오늘날짜]-sprint-[NEXT_SPRINT]-kickoff.md
 오늘 날짜: [Step 2에서 수집한 날짜]
 
 아래 템플릿에 Jordan의 스프린트 플랜을 채워서 작성해줘.
-기존 회의록 형식(2026-05-21-sprint-6-kickoff.md)을 그대로 따를 것.
+같은 앱 디렉터리(docs/meetings/[APP]/)의 최신 킥오프 회의록 형식을 그대로 따를 것.
 
 ---
 # Sprint [NEXT_SPRINT] 킥오프 회의록
@@ -287,25 +305,26 @@ Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘.
 *회의록 작성: TS Alex | 다음 회의: Sprint [NEXT_SPRINT] 리뷰*
 ---
 
-파일 생성 후 docs/meetings/README.md 인덱스 테이블에도 한 줄 추가해줘:
-| [파일명] | Sprint [NEXT_SPRINT] 킥오프 | [오늘날짜] | [목표 한 줄 요약] |
+파일 생성 후 docs/meetings/README.md의 [APP] 섹션 인덱스 테이블에도 한 줄 추가해줘
+(섹션이 없으면 앱 이름으로 새 섹션을 만들 것):
+| [[APP]/[파일명]](./[APP]/[파일명]) | Sprint [APP]/[NEXT_SPRINT] 킥오프 | [오늘날짜] | [목표 한 줄 요약] |
 ```
 
 ---
 
 ## Step 4.5 — worktree 병합 및 정리
 
-Alex의 worktree 작업이 완료되면 변경사항을 `sprint/[NEXT_SPRINT]` 브랜치로 병합한다.
+Alex의 worktree 작업이 완료되면 변경사항을 `sprint/[APP]/[NEXT_SPRINT]` 브랜치로 병합한다.
 
 ```bash
 # 1. 현재 worktree 목록 확인
 git worktree list
 
 # 2. Alex worktree의 브랜치 이름 확인 후 커밋 목록 조회
-git log --oneline <alex-worktree-branch> ^sprint/[NEXT_SPRINT]
+git log --oneline <alex-worktree-branch> ^sprint/[APP]/[NEXT_SPRINT]
 
-# 3. 변경사항을 sprint/[NEXT_SPRINT]로 가져오기
-git merge <alex-worktree-branch> --no-ff -m "docs(sprint-[NEXT_SPRINT]): Alex worktree 병합 — 킥오프 MD 생성"
+# 3. 변경사항을 sprint/[APP]/[NEXT_SPRINT]로 가져오기
+git merge <alex-worktree-branch> --no-ff -m "docs([APP]): Sprint [NEXT_SPRINT] Alex worktree 병합 — 킥오프 MD 생성"
 
 # 4. worktree 정리 (자동 정리되지 않은 경우)
 git worktree remove <alex-worktree-path> --force
@@ -315,7 +334,7 @@ git branch -d <alex-worktree-branch>
 병합 확인:
 ```bash
 git log --oneline -3
-ls docs/meetings/ | grep sprint-[NEXT_SPRINT]
+ls docs/meetings/[APP]/ | grep sprint-[NEXT_SPRINT]
 ```
 
 ---
@@ -323,12 +342,12 @@ ls docs/meetings/ | grep sprint-[NEXT_SPRINT]
 ## Step 5 — 완료 보고
 
 ```
-🚀 Sprint [NEXT_SPRINT] 시작
+🚀 Sprint [APP]/[NEXT_SPRINT] 시작
 
-✅ Sprint [PREV_SPRINT] 완료 검증 통과
-🌿 브랜치:  sprint/[NEXT_SPRINT]
+✅ Sprint [APP]/[PREV_SPRINT] 완료 검증 통과
+🌿 브랜치:  sprint/[APP]/[NEXT_SPRINT]
 Jordan(PM): 스프린트 플랜 작성 완료
-Alex(TS):   docs/meetings/[파일명] 생성 완료
+Alex(TS):   docs/meetings/[APP]/[파일명] 생성 완료
             README.md 인덱스 업데이트 완료
 
 목표: [Jordan의 한 줄 목표]

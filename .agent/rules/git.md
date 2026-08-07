@@ -71,7 +71,7 @@ git checkout -b feat/my-feature
 
 {변경 이유 — 선택}
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 | type | 사용 상황 |

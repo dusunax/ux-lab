@@ -27,7 +27,10 @@
 | 6 | [rules/agent-scope.md](rules/agent-scope.md) | 에이전트별 파일 소유권과 작업 범위 |
 | 7 | [rules/agent-creation.md](rules/agent-creation.md) | 새 에이전트 생성 규칙 |
 
-규칙 충돌 시 `security` > `performance` > `coding-style` > `skills` 순서로 적용합니다.
+규칙 충돌 시 `security` > `git` > `agent-scope` > `conflict-resolution` > `performance` > `coding-style` > `skills` 순서로 적용합니다.
+
+> **하드 게이트 범위:** `agent-scope`의 deny/readonly 강제(scope-enforcer 훅)는 **Claude Code 전용**입니다.
+> Cursor·Codex에서는 훅이 실행되지 않으므로 이 규칙들은 프롬프트 제약(오케스트레이터 브리핑 삽입)으로만 적용됩니다.
 
 ---
 
@@ -135,6 +138,8 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | Skill | 설명 | 진입점 |
 |-------|------|--------|
 | frontend-design | 프론트엔드 경험, 레이아웃, 시각 품질 지침 | [skills/FRONTEND_DESIGN.md](skills/FRONTEND_DESIGN.md) |
+| sprint-context | sprint 커맨드 공통 컨텍스트 수집 — APP·N 추론, 킥오프·보고서 탐색 | [skills/SPRINT-CONTEXT.md](skills/SPRINT-CONTEXT.md) |
+| figma-harness-core | figma-harness 커맨드 4종의 공통 절차 — 인증, 에셋, 버저닝, 검증 루프, 보고 | [skills/FIGMA_HARNESS_CORE.md](skills/FIGMA_HARNESS_CORE.md) |
 
 ---
 
@@ -164,6 +169,10 @@ python3 .agent/scripts/export-hermes.py
 ## 스프린트 프로세스
 
 스프린트 전체 절차(역할별 주체·커맨드·입출력)는 [docs/SPRINT-PROCESS.md](docs/SPRINT-PROCESS.md)를 참조한다.
+
+## 개선 계획
+
+`.agent` 점검(2026-07-12) 결과에 따른 개선 계획은 [docs/IMPROVEMENT-PLAN.md](docs/IMPROVEMENT-PLAN.md)를 참조한다.
 
 ---
 

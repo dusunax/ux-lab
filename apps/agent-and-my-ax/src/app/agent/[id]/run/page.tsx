@@ -1,19 +1,17 @@
 import { notFound } from 'next/navigation';
 import RunAgentClient from '@/components/RunAgentClient';
-import { agents, findAgent } from '@/data/mock';
+import { getAgentDetail } from '@/server/agentService';
 
 interface RunAgentPageProps {
   params: Promise<{ id: string }>;
 }
 
-export function generateStaticParams() {
-  return agents.map((agent) => ({ id: agent.id }));
-}
+export const dynamic = 'force-dynamic';
 
 export default async function RunAgentPage({ params }: RunAgentPageProps) {
   const { id } = await params;
-  const agent = findAgent(id);
-  if (!agent) notFound();
+  const detail = getAgentDetail(id);
+  if (!detail) notFound();
 
-  return <RunAgentClient agent={agent} />;
+  return <RunAgentClient agent={detail.agent} />;
 }

@@ -1,5 +1,5 @@
 ---
-description: 변경점 분석 → 브랜치 분기 판단 → 커밋 메시지 제안 → 사용자 확인 → 커밋.
+description: 현재 변경점을 분석해 브랜치 분기 여부를 판단하고, 커밋 메시지를 제안한 뒤 사용자 확인 후 커밋한다.
 ---
 
 > Thin wrapper - 실제 정의는 `.agent/commands/git/commit.md`를 읽으세요.

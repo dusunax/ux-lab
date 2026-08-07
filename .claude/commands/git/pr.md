@@ -1,5 +1,5 @@
 ---
-description: 현재 브랜치를 push하고 GitHub PR을 생성한다. 라벨 자동 부착.
+description: 현재 브랜치를 push하고 GitHub PR을 생성한다. 라벨 자동 부착. 스프린트와 무관한 범용 PR 생성에 사용한다.
 ---
 
 > Thin wrapper - 실제 정의는 `.agent/commands/git/pr.md`를 읽으세요.

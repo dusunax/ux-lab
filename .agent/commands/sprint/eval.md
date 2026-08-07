@@ -15,7 +15,8 @@ description: 스프린트 평가. Nolan(EV)이 운영/마케팅/비즈니스 관
 
 | 패턴 | 동작 |
 |------|------|
-| (없음) | 현재 브랜치 또는 최신 kickoff에서 N 추론 |
+| (없음) | 현재 브랜치 또는 최신 kickoff에서 APP·N 추론 |
+| `--app APP` | 지정 앱 사용 |
 | `--sprint N` | 지정 N 사용 |
 | `--pr NUMBER` | 지정 PR 번호 사용 |
 | `--focus ops\|marketing\|business\|all` | 평가 관점 한정 (기본: all) |
@@ -24,14 +25,16 @@ description: 스프린트 평가. Nolan(EV)이 운영/마케팅/비즈니스 관
 
 ## Step 1 — 컨텍스트 수집
 
+`.agent/skills/SPRINT-CONTEXT.md`를 읽고 그 절차를 따라 **APP·N**과 킥오프 파일(`docs/meetings/{APP}/`)을 확정한다.
+
 ```bash
-git diff main...sprint/N --stat
-git log --oneline sprint/N ^main
+git diff main...sprint/{APP}/{N} --stat
+git log --oneline sprint/{APP}/{N} ^main
 ```
 
 수집 항목:
 - 변경 파일 목록 및 diff 요약
-- 스프린트 번호 / 목표 (kickoff 파일, 있으면)
+- 앱 / 스프린트 번호 / 목표 (kickoff 파일, 있으면)
 - 완료 항목 / 이월 항목 (kickoff 파일, 있으면)
 - 주요 결정 사항 (kickoff 파일, 있으면)
 - GA4 / 피드백 데이터 (미연결 시 "데이터 미수집"으로 명시)
@@ -42,11 +45,13 @@ git log --oneline sprint/N ^main
 
 ## Step 2 — Nolan(EV) 소환
 
+소환 직전 `echo 'EV' > .claude/.active-role`로 활성 역할을 기록하고, 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다. (EV는 읽기 전용 — 평가 결과는 PR 코멘트로만 남긴다.)
+
 `product/EV/sprint-evaluator` 에이전트를 소환한다.
 
 전달 프롬프트:
 ```
-Sprint [N] PR을 평가해줘.
+Sprint [APP]/[N] PR을 평가해줘.
 
 [컨텍스트: PR diff 요약]
 [컨텍스트: 완료/이월 항목, 있으면]
@@ -139,7 +144,7 @@ PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
 ## Step 4 — 완료 보고
 
 ```
-📊 Sprint N 평가 완료
+📊 Sprint {APP}/{N} 평가 완료
 
 평가자:   Nolan (EV)
 PR:       [URL]

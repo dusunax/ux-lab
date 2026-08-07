@@ -133,7 +133,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | 에이전트 |
+| **주체** | Jordan (PM) |
 | **커맨드** | `/sprint:merge` |
 | **입력** | PR 번호 |
 | **출력** | merged PR, main URL로 교체된 PR 본문 |
@@ -143,7 +143,7 @@ sprint:merge
 2. push
 3. `gh pr merge --merge --delete-branch`
 4. PR 본문 이미지 URL: sprint 브랜치 raw → main raw 교체
-5. `.claude/agent-memory/` 변경 시 커밋 (선택)
+5. `.agent/agent-memory/` 변경 시 커밋 (선택)
 6. `git worktree prune` + 조건 충족 worktree 정리
 
 ---
@@ -152,13 +152,16 @@ sprint:merge
 
 | 역할 | 에이전트 | subagent_type | 담당 커맨드 |
 |------|---------|---------------|------------|
-| PM | Jordan | `product/PM/prd-product-manager` | `sprint:start`, `sprint:report`, `sprint:review` |
+| PM | Jordan | `product/PM/prd-product-manager` | `sprint:start`, `sprint:report`, `sprint:review`, `sprint:merge` |
 | TS | Alex | `product/TS/secretary` | 킥오프 MD 작성 |
 | EV | Nolan | `product/EV/sprint-evaluator` | `sprint:eval` |
+| OC | Sam | `product/OC/orchestrator` | 태스크 라우팅 (`/oc`) |
 | FE | Avery | `eng/FE/frontend-dev` | 화면 구현, `eval-fix` |
 | BE | Blake | `eng/BE/backend-architect` | API·DB 구현, `eval-fix` |
 | AI | Sage | `eng/AI/openrouter-llm-specialist` | LLM 통합 |
-| QA | Morgan | `qa/QA/qa-engineer` | 기능 검증 |
+| UX | Riley | `design/UX/ux-design-reviewer` | UX 리뷰 |
+| QA | Morgan | `qa/QA/code-quality-reviewer` | 코드 리뷰 |
+| QA | Quinn | `qa/QA/qa-engineer` | 기능 검증 |
 
 ---
 
@@ -171,6 +174,7 @@ main               — 항상 배포 가능, 직접 push 금지
 
 ## 관련 문서
 
+- 스프린트 컨텍스트 수집 절차 (APP·N·킥오프·보고서 탐지): `.agent/skills/SPRINT-CONTEXT.md`
 - git 사용 규칙: `.agent/rules/git.md`
 - PR 템플릿: `docs/workflow/pr-template.md`
 - git 워크플로우: `docs/workflow/sprint-git-workflow.md`

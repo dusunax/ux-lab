@@ -2,7 +2,6 @@
   "argumentsVariable": "$ARGUMENTS",
   "description": "오늘자 노션 기록 페이지 생성/업데이트. 현재 작업 기록 또는 고민 사항 로그.",
   "detectedToolMentions": [
-    "mcp__notion__",
     "mcp__notion__notion"
   ],
   "flags": [

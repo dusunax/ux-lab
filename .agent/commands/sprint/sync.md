@@ -12,7 +12,8 @@ description: 스프린트 현재 상태를 docs(PPT·MD)·git·PR에 한 번에 
 
 | 패턴 | 동작 |
 |------|------|
-| (없음) | 현재 브랜치에서 N 자동 추론, 미확정 변경 모두 커밋 |
+| (없음) | 현재 브랜치에서 APP·N 자동 추론, 미확정 변경 모두 커밋 |
+| `--app APP` | 지정 앱 사용 |
 | `--sprint N` | 지정 N 사용 |
 | `--pr NUMBER` | PR 번호 직접 지정 (자동 탐지 생략) |
 | `--message "msg"` | 커밋 메시지 오버라이드 |
@@ -20,20 +21,16 @@ description: 스프린트 현재 상태를 docs(PPT·MD)·git·PR에 한 번에 
 
 ---
 
-## Step 1 — 스프린트 N 탐지
+## Step 1 — 스프린트 APP·N 탐지
 
-```bash
-git branch --show-current
-```
+`.agent/skills/SPRINT-CONTEXT.md`를 읽고 그 절차를 따라 **APP·N**을 확정한다.
+(브랜치 `sprint/{app}/{N}` 파싱 → 실패 시 `docs/meetings/{app}/` 최신 킥오프 추론 → 모호하면 질문)
 
-브랜치가 `sprint/N` 패턴이면 N 추출.
-아니면 `docs/meetings/`에서 가장 최신 `*-sprint-N-kickoff.md`로 N 추론.
-
-N 확정 실패 시:
+APP·N 확정 실패 시:
 
 ```
-⛔ 스프린트 번호를 확인할 수 없습니다.
-   --sprint N 인수를 사용하거나 sprint/N 브랜치에서 재실행하세요.
+⛔ 스프린트를 확인할 수 없습니다.
+   --app APP --sprint N 인수를 사용하거나 sprint/{app}/{N} 브랜치에서 재실행하세요.
 ```
 
 **커맨드를 종료한다.**
@@ -55,8 +52,10 @@ git status --short
 
 ## Step 3 — 킥오프 파일 읽기
 
+SPRINT-CONTEXT.md Step C4에 따라 킥오프 파일을 찾는다:
+
 ```bash
-ls docs/meetings/ | sort | grep -E "sprint-N" | tail -1
+ls docs/meetings/{APP}/ | sort | grep -E "sprint-{N}" | tail -1
 ```
 
 추출 항목:
@@ -74,7 +73,7 @@ ls docs/meetings/ | sort | grep -E "sprint-N" | tail -1
 기본 커밋 메시지:
 
 ```
-docs(sprint/N): 스프린트 문서 동기화 — PPT·QA·결정 사항 반영
+docs({APP}): Sprint {N} 문서 동기화 — PPT·QA·결정 사항 반영
 ```
 
 `--message`가 있으면 해당 메시지 사용.
@@ -83,7 +82,7 @@ docs(sprint/N): 스프린트 문서 동기화 — PPT·QA·결정 사항 반영
 git add docs/
 git commit -m "<메시지>
 
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 `--dry-run`이면 커밋하지 않고 메시지·대상 파일만 출력한다.
@@ -93,12 +92,12 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 ## Step 5 — Push
 
 ```bash
-git push origin sprint/N
+git push origin sprint/{APP}/{N}
 # 원격 브랜치가 없으면:
-git push -u origin sprint/N
+git push -u origin sprint/{APP}/{N}
 ```
 
-`--dry-run`이면 `git push --dry-run origin sprint/N` 으로 대체한다.
+`--dry-run`이면 `git push --dry-run origin sprint/{APP}/{N}` 으로 대체한다.
 
 ---
 
@@ -110,13 +109,13 @@ git push -u origin sprint/N
 없으면:
 
 ```bash
-gh pr list --head sprint/N --json number,title,url,state
+gh pr list --head sprint/{APP}/{N} --json number,title,url,state
 ```
 
 PR이 없으면:
 
 ```
-⚠️ sprint/N PR이 존재하지 않습니다. /sprint:review 를 먼저 실행해 PR을 생성하세요.
+⚠️ sprint/{APP}/{N} PR이 존재하지 않습니다. /sprint:review 를 먼저 실행해 PR을 생성하세요.
 ```
 
 Step 7로 이동한다.
@@ -126,7 +125,7 @@ Step 7로 이동한다.
 Step 3 데이터로 PR 본문을 재구성한다.
 
 ```markdown
-## Sprint N — {목표 한 줄}
+## Sprint {APP}/{N} — {목표 한 줄}
 
 > **{목표 전문}**
 
@@ -140,7 +139,7 @@ Step 3 데이터로 PR 본문을 재구성한다.
 
 ### 📊 보고서
 
-{docs/presentations/sprint-N-report-*.html 경로 — 없으면 "보고서 미생성"}
+{docs/presentations/sprint-{APP}-{N}-report-*.html 경로 — 없으면 "보고서 미생성"}
 
 ---
 
@@ -184,10 +183,10 @@ gh api \
 ## Step 7 — 완료 보고
 
 ```
-🔄 Sprint N 동기화 완료
+🔄 Sprint {APP}/{N} 동기화 완료
 
 커밋:     {해시} — {메시지}  (변경 없으면 "커밋 없음")
-Push:     origin/sprint/N
+Push:     origin/sprint/{APP}/{N}
 PR:       #{NUMBER} 본문 갱신 — 완료율 {완료율}%
 보고서:   {HTML 경로 또는 "미생성"}
 
