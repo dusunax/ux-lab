@@ -4,6 +4,10 @@
  * Landing page for the Neo4j knowledge graph of Greek & Roman mythology.
  */
 
+'use client';
+
+import { GraphDemo } from './components/GraphDemo';
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
@@ -20,6 +24,11 @@ export default function Home() {
             Explore the interconnected world of gods, heroes, monsters, and places
             through an interactive knowledge graph powered by Neo4j.
           </p>
+        </div>
+
+        {/* Interactive Graph Demo */}
+        <div className="mb-12">
+          <GraphDemo />
         </div>
 
         {/* Status Cards */}

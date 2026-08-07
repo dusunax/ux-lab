@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* React Flow 커스텀 스타일 */
+.react-flow {
+  @apply w-full h-full;
+}
+
+.react-flow__node {
+  @apply rounded-lg;
+}
+
+.react-flow__edge {
+  @apply stroke-gray-400;
+}
+
+.react-flow__controls {
+  @apply bottom-4 left-4;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

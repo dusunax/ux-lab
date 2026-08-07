@@ -7,6 +7,8 @@
  */
 
 import { getSession } from '../neo4j';
+import { getEmbeddingService } from '../services/embeddingService';
+import neo4j from 'neo4j-driver';
 
 // ============================================================================
 // Type Definitions
@@ -105,6 +107,114 @@ function nodeToSource(node: any): Source {
 // ============================================================================
 
 /**
+ * Search entities by semantic similarity using vector embeddings.
+ *
+ * Uses OpenAI's text-embedding-3-small model to embed the query and entity descriptions,
+ * then calculates cosine similarity to find semantically similar entities.
+ *
+ * This enables searching for concepts and meanings rather than just keyword matching.
+ * Example: "king of gods" → finds Zeus/Jupiter
+ *
+ * Performance target: <200ms single query
+ */
+export async function searchEntitiesByVector(
+  _parent: any,
+  args: {
+    query: string;
+    limit?: number;
+    threshold?: number; // Cosine similarity threshold (0-1), default: 0.5
+  }
+): Promise<SearchResult[]> {
+  const session = getSession();
+  const limit = Math.min(Math.floor(args.limit || 20), 100);
+  const threshold = Math.max(0, Math.min(1, args.threshold || 0.5)); // Clamp to [0, 1]
+  const startTime = Date.now();
+
+  try {
+    const embeddingService = getEmbeddingService();
+
+    // 1. Embed the query
+    const queryEmbedding = await embeddingService.embedText(args.query);
+    console.log(
+      `[searchEntitiesByVector] Query embedded in ${queryEmbedding.computeTime}ms (cached: ${queryEmbedding.cached})`
+    );
+
+    // 2. Fetch all entities with descriptions
+    const result = await session.run(
+      `MATCH (e:Entity)
+       WHERE e.description IS NOT NULL
+       RETURN e.id as id, e.name as name, e.description as description, e.type as type,
+              e.aliases as aliases, e.romanName as romanName, e.domain as domain,
+              e.symbols as symbols, e.sacredAnimals as sacredAnimals, e.heroType as heroType,
+              e.origin as origin, e.monsterType as monsterType, e.abilities as abilities,
+              e.region as region, e.locationType as locationType`
+    );
+
+    console.log(`[searchEntitiesByVector] Fetched ${result.records.length} entities from Neo4j`);
+
+    // 3. Embed entity descriptions and calculate similarity
+    const entityTexts = result.records.map((r) => r.get('description'));
+    const batchResult = await embeddingService.embedBatch(entityTexts);
+
+    console.log(
+      `[searchEntitiesByVector] Batch embeddings completed: ${batchResult.totalTime}ms, cache hit rate: ${(batchResult.cacheHitRate * 100).toFixed(1)}%`
+    );
+
+    // 4. Calculate similarities and filter
+    const similarities = result.records.map((record, index) => {
+      const entityEmbedding = batchResult.embeddings[index].embedding;
+      const similarity = embeddingService.cosineSimilarity(
+        queryEmbedding.embedding,
+        entityEmbedding
+      );
+
+      return {
+        entity: {
+          id: record.get('id'),
+          name: record.get('name'),
+          aliases: record.get('aliases') || [],
+          description: record.get('description'),
+          type: record.get('type'),
+          romanName: record.get('romanName'),
+          domain: record.get('domain'),
+          symbols: record.get('symbols'),
+          sacredAnimals: record.get('sacredAnimals'),
+          heroType: record.get('heroType'),
+          origin: record.get('origin'),
+          monsterType: record.get('monsterType'),
+          abilities: record.get('abilities'),
+          region: record.get('region'),
+          locationType: record.get('locationType'),
+        } as Entity,
+        similarity: similarity.similarity,
+      };
+    });
+
+    // 5. Filter by threshold, sort, and limit
+    const filtered = similarities
+      .filter((s) => s.similarity >= threshold)
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, limit);
+
+    const totalTime = Date.now() - startTime;
+    console.log(
+      `[searchEntitiesByVector] Complete: ${filtered.length} results in ${totalTime}ms (query: "${args.query}")`
+    );
+
+    return filtered.map((s) => ({
+      entity: s.entity,
+      matchScore: s.similarity,
+    }));
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[searchEntitiesByVector] Error: ${errorMessage}`);
+    throw new Error(`Vector search failed: ${errorMessage}`);
+  } finally {
+    await session.close();
+  }
+}
+
+/**
  * Search entities by name, aliases, or description using full-text search.
  *
  * Uses Neo4j's FULLTEXT INDEX for efficient searching.
@@ -119,7 +229,7 @@ export async function searchEntities(
   }
 ): Promise<SearchResult[]> {
   const session = getSession();
-  const limit = Math.min(args.limit || 20, 100);
+  const limit = Math.min(Math.floor(args.limit || 20), 100);
 
   try {
     // Build Cypher query with full-text search
@@ -205,7 +315,7 @@ export async function getRelationships(
   }
 ): Promise<Relationship[]> {
   const session = getSession();
-  const limit = Math.min(args.limit || 50, 100);
+  const limit = Math.min(Math.floor(args.limit || 50), 100);
 
   try {
     let cypherQuery = `
@@ -308,7 +418,7 @@ export async function getNearestPath(
   args: { fromId: string; toId: string; maxHops?: number }
 ): Promise<Relationship[][]> {
   const session = getSession();
-  const maxHops = Math.min(args.maxHops || 5, 10);
+  const maxHops = Math.min(Math.floor(args.maxHops || 5), 10);
 
   try {
     const result = await session.run(
@@ -363,6 +473,97 @@ export async function listEntityTypes(): Promise<string[]> {
   return ['DEITY', 'HUMAN', 'MONSTER', 'PLACE'];
 }
 
+/**
+ * List all entities with optional filtering.
+ *
+ * Returns paginated results sorted by name.
+ * Useful for loading all entities into the graph display.
+ */
+export async function listEntities(
+  _parent: any,
+  args: {
+    filters?: { types?: string[]; hasRelationships?: boolean };
+    limit?: number;
+  }
+): Promise<{ edges: Entity[]; totalCount: number; hasNextPage: boolean }> {
+  const session = getSession();
+  const limit = Math.min(Math.floor(args.limit || 100), 1000);
+
+  try {
+    // Build Cypher query
+    let countQuery = 'MATCH (e:Entity)';
+    let fetchQuery = 'MATCH (e:Entity)';
+    const params: any = { limit };
+
+    // Apply filters
+    if (args.filters?.types && args.filters.types.length > 0) {
+      countQuery += ' WHERE e.type IN $types';
+      fetchQuery += ' WHERE e.type IN $types';
+      params.types = args.filters.types;
+    }
+
+    if (args.filters?.hasRelationships === true) {
+      countQuery += ' WHERE EXISTS((e)-[]-())';
+      fetchQuery += ' WHERE EXISTS((e)-[]-())';
+    }
+
+    // Count total matching entities
+    const countResult = await session.run(`${countQuery} RETURN count(e) as total`, params);
+    const totalCountRaw = countResult.records[0].get('total');
+    const totalCount = typeof totalCountRaw === 'object' && totalCountRaw.toNumber
+      ? totalCountRaw.toNumber()
+      : totalCountRaw;
+
+    // Fetch entities (fetch one extra to check if there are more)
+    const fetchParams = {
+      ...params,
+      limitPlusOne: neo4j.int(limit + 1),
+    };
+
+    fetchQuery += `
+      RETURN e.id as id, e.name as name, e.description as description, e.type as type,
+             e.aliases as aliases, e.romanName as romanName, e.domain as domain,
+             e.symbols as symbols, e.sacredAnimals as sacredAnimals, e.heroType as heroType,
+             e.origin as origin, e.monsterType as monsterType, e.abilities as abilities,
+             e.region as region, e.locationType as locationType
+      ORDER BY e.name ASC
+      LIMIT $limitPlusOne
+    `;
+
+    const result = await session.run(fetchQuery, fetchParams);
+
+    // Check if there are more results
+    const hasNextPage = result.records.length > limit;
+    const records = hasNextPage ? result.records.slice(0, limit) : result.records;
+
+    const entities: Entity[] = records.map((record) => ({
+      id: record.get('id'),
+      name: record.get('name'),
+      aliases: record.get('aliases') || [],
+      description: record.get('description'),
+      type: record.get('type'),
+      romanName: record.get('romanName'),
+      domain: record.get('domain'),
+      symbols: record.get('symbols'),
+      sacredAnimals: record.get('sacredAnimals'),
+      heroType: record.get('heroType'),
+      origin: record.get('origin'),
+      monsterType: record.get('monsterType'),
+      abilities: record.get('abilities'),
+      region: record.get('region'),
+      locationType: record.get('locationType'),
+    }));
+
+    return {
+      edges: entities,
+      totalCount,
+      hasNextPage,
+    };
+  } finally {
+    await session.close();
+  }
+}
+
 // ============================================================================
 // Resolver Map
 // ============================================================================
@@ -370,11 +571,13 @@ export async function listEntityTypes(): Promise<string[]> {
 export const resolvers = {
   Query: {
     searchEntities,
+    searchEntitiesByVector,
     getEntity,
     getRelationships,
     getMythById,
     getNearestPath,
     listEntityTypes,
+    listEntities,
   },
   Entity: {
     __resolveType: (obj: any) => {

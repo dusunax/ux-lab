@@ -1,0 +1,160 @@
+source_id,source_name,relationship_type,target_id,target_name,direction,label,description
+deity_zeus_001,Zeus,PARENT,deity_athena_001,Athena,→,Father of,Zeus fathered Athena who sprang from his head
+deity_zeus_001,Zeus,PARENT,deity_apollo_001,Apollo,→,Father of,Zeus fathered Apollo with Titan Leto
+deity_zeus_001,Zeus,PARENT,deity_artemis_001,Artemis,→,Father of,Zeus fathered Artemis with Titan Leto
+deity_zeus_001,Zeus,PARENT,deity_ares_001,Ares,→,Father of,Zeus fathered Ares with Hera
+deity_zeus_001,Zeus,PARENT,deity_hephaestus_001,Hephaestus,→,Father of,Zeus fathered Hephaestus with Hera
+deity_zeus_001,Zeus,PARENT,deity_hermes_001,Hermes,→,Father of,Zeus fathered Hermes with Maia
+deity_zeus_001,Zeus,PARENT,deity_dionysus_001,Dionysus,→,Father of,Zeus fathered Dionysus with mortal Semele
+deity_zeus_001,Zeus,PARENT,deity_hebe_001,Hebe,→,Father of,Zeus fathered Hebe with Hera
+deity_zeus_001,Zeus,PARENT,human_heracles_001,Heracles,→,Father of,Zeus fathered greatest hero Heracles
+deity_zeus_001,Zeus,PARENT,human_perseus_001,Perseus,→,Father of,Zeus fathered hero Perseus
+deity_zeus_001,Zeus,PARENT,human_helen_001,Helen of Troy,→,Father of,Zeus fathered Helen of Troy (most beautiful woman)
+deity_zeus_001,Zeus,SPOUSE,deity_hera_001,Hera,↔,Married to,Zeus married Hera Queen of Gods
+deity_hera_001,Hera,CHILD,deity_ares_001,Ares,←,Mother of,Hera bore Ares god of war
+deity_hera_001,Hera,CHILD,deity_hephaestus_001,Hephaestus,←,Mother of,Hera bore Hephaestus (or Hera alone)
+deity_hera_001,Hera,CHILD,deity_hebe_001,Hebe,←,Mother of,Hera bore Hebe goddess of youth
+deity_poseidon_001,Poseidon,PARENT,deity_triton_001,Triton,→,Father of,Poseidon fathered Triton with Amphitrite
+deity_poseidon_001,Poseidon,PARENT,monster_pegasus_001,Pegasus,→,Father of,Poseidon fathered winged horse Pegasus
+deity_poseidon_001,Poseidon,SIBLING,deity_zeus_001,Zeus,↔,Brother of,Poseidon brother of Zeus and Hades
+deity_poseidon_001,Poseidon,SPOUSE,deity_amphitrite_001,Amphitrite,↔,Married to,Poseidon married Amphitrite Queen of the Sea
+deity_demeter_001,Demeter,CHILD,deity_persephone_001,Persephone,←,Mother of,Demeter bore Persephone to Zeus
+deity_demeter_001,Demeter,SIBLING,deity_zeus_001,Zeus,↔,Sister of,Demeter sister of Zeus
+deity_aphrodite_001,Aphrodite,CHILD,deity_eros_001,Eros,←,Mother of,Aphrodite bore Eros god of love
+deity_aphrodite_001,Aphrodite,SPOUSE,deity_hephaestus_001,Hephaestus,↔,Married to,Aphrodite married to Hephaestus but lover of Ares
+deity_aphrodite_001,Aphrodite,LOVER,deity_ares_001,Ares,↔,Lover of,Aphrodite lover of Ares despite marriage to Hephaestus
+deity_hermes_001,Hermes,CHILD,deity_pan_001,Pan,←,Father of,Hermes fathered Pan with Dryad
+deity_persephone_001,Persephone,SPOUSE,deity_hades_001,Hades,↔,Married to,Persephone married to Hades but spends half year with mother
+deity_kronos_001,Kronos,PARENT,deity_zeus_001,Zeus,→,Father of,Kronos fathered Zeus before being overthrown
+deity_kronos_001,Kronos,PARENT,deity_hera_001,Hera,→,Father of,Kronos fathered Hera
+deity_kronos_001,Kronos,PARENT,deity_poseidon_001,Poseidon,→,Father of,Kronos fathered Poseidon
+deity_kronos_001,Kronos,PARENT,deity_demeter_001,Demeter,→,Father of,Kronos fathered Demeter
+deity_kronos_001,Kronos,PARENT,deity_hestia_001,Hestia,→,Father of,Kronos fathered Hestia
+deity_kronos_001,Kronos,PARENT,deity_hades_001,Hades,→,Father of,Kronos fathered Hades
+deity_kronos_001,Kronos,ENEMY,deity_zeus_001,Zeus,←→,Enemy of,Kronos overthrown by son Zeus
+deity_kronos_001,Kronos,SPOUSE,deity_rhea_001,Rhea,↔,Married to,Kronos married to Rhea Titaness
+deity_rhea_001,Rhea,CHILD,deity_zeus_001,Zeus,←,Mother of,Rhea bore Zeus to Kronos
+deity_rhea_001,Rhea,CHILD,deity_hera_001,Hera,←,Mother of,Rhea bore Hera to Kronos
+deity_rhea_001,Rhea,CHILD,deity_poseidon_001,Poseidon,←,Mother of,Rhea bore Poseidon to Kronos
+deity_rhea_001,Rhea,CHILD,deity_demeter_001,Demeter,←,Mother of,Rhea bore Demeter to Kronos
+deity_rhea_001,Rhea,CHILD,deity_hestia_001,Hestia,←,Mother of,Rhea bore Hestia to Kronos
+deity_rhea_001,Rhea,CHILD,deity_hades_001,Hades,←,Mother of,Rhea bore Hades to Kronos
+deity_ouranos_001,Ouranos,PARENT,deity_kronos_001,Kronos,→,Father of,Ouranos fathered Kronos and Titans
+deity_ouranos_001,Ouranos,PARENT,deity_rhea_001,Rhea,→,Father of,Ouranos fathered Rhea
+deity_gaia_001,Gaia,PARENT,deity_ouranos_001,Ouranos,→,Mother of,Gaia bore Ouranos from herself
+deity_gaia_001,Gaia,PARENT,deity_kronos_001,Kronos,→,Mother of,Gaia bore Kronos
+deity_gaia_001,Gaia,PARENT,deity_titans_001,Titans,→,Mother of,Gaia bore all the Titans
+deity_gaia_001,Gaia,PARENT,deity_erinyes_001,Erinyes,→,Mother of,Gaia bore Furies from blood of Ouranos
+deity_hermes_001,Hermes,ROLE,human_heracles_001,Heracles,→,Divine guide,Hermes guided Heracles on his labors
+deity_hermes_001,Hermes,GUIDE,human_odysseus_001,Odysseus,←→,Divine guide,Hermes provided guidance to Odysseus
+deity_apollo_001,Apollo,TUTOR,human_asclepius_001,Asclepius,→,Divine parent,Apollo fathered and taught Asclepius medicine
+deity_athena_001,Athena,PROTECTOR,human_odysseus_001,Odysseus,→,Patron goddess,Athena protected and guided Odysseus
+deity_athena_001,Athena,PROTECTOR,place_athens_001,Athens,→,Patron goddess,Athena patron goddess of Athens
+deity_athena_001,Athena,ENEMY,monster_medusa_001,Medusa,←→,Cursed enemy,Athena cursed Medusa into monstrous form
+deity_poseidon_001,Poseidon,ENEMY,human_odysseus_001,Odysseus,←→,Pursuer,Poseidon punished Odysseus for blinding his son Polyphemus
+deity_aphrodite_001,Aphrodite,PROTECTOR,human_helen_001,Helen of Troy,→,Favor giver,Aphrodite gave Helen to Paris causing Trojan War
+deity_aphrodite_001,Aphrodite,PROTECTOR,human_aeneas_001,Aeneas,→,Divine mother,Aphrodite protected son Aeneas at Troy
+deity_ares_001,Ares,ENEMY,human_diomedes_001,Diomedes,←→,Opponent,Diomedes wounded Ares in battle at Troy
+deity_hecate_001,Hecate,ASSOCIATE,deity_persephone_001,Persephone,↔,Companion,Hecate companion to Persephone in Underworld
+deity_hades_001,Hades,RULE,place_underworld_001,Underworld,→,Ruler of,Hades rules the Underworld and the dead
+deity_styx_001,Styx,OATH_POWER,deity_zeus_001,Zeus,←→,Oath keeper,Even Zeus binds by oaths sworn to River Styx
+monster_cerberus_001,Cerberus,GUARD,place_underworld_001,Underworld,→,Guardian of,Cerberus guards the gates of Underworld
+monster_cerberus_001,Cerberus,MASTER,deity_hades_001,Hades,←,Servant of,Cerberus serves Hades as guard dog
+human_heracles_001,Heracles,CONQUER,monster_cerberus_001,Cerberus,←,Labor completed,Heracles captured Cerberus as his 12th labor
+human_heracles_001,Heracles,CONQUER,monster_hydra_001,Hydra,←,Labor completed,Heracles defeated Hydra as his second labor
+human_heracles_001,Heracles,ANCESTOR,human_theseus_001,Theseus,←,Legendary ancestor,Heracles was ancestor and inspiration to Theseus
+human_perseus_001,Perseus,CONQUER,monster_medusa_001,Medusa,←,Vanquished,Perseus slew Medusa using her reflection
+human_perseus_001,Perseus,RESCUE,human_andromeda_001,Andromeda,→,Rescued,Perseus rescued Andromeda from sea monster
+human_perseus_001,Perseus,MARRY,human_andromeda_001,Andromeda,↔,Married to,Perseus married rescued Andromeda
+human_theseus_001,Theseus,CONQUER,monster_minotaur_001,Minotaur,←,Vanquished,Theseus slew Minotaur in Labyrinth
+human_theseus_001,Theseus,GUIDE,human_ariadne_001,Ariadne,←,Helped by,Ariadne gave Theseus ball of string to navigate Labyrinth
+human_theseus_001,Theseus,ALLY,human_heracles_001,Heracles,↔,Legendary peers,Theseus and Heracles both great heroes
+human_theseus_001,Theseus,RULE,place_athens_001,Athens,→,King of,Theseus became king of Athens
+human_jason_001,Jason,LEAD,human_heracles_001,Heracles,←,Ally,Heracles sailed with Jason on Argo as Argonaut
+human_ariadne_001,Ariadne,GUIDE,human_theseus_001,Theseus,→,Helper,Ariadne helped Theseus escape Labyrinth with string
+human_ariadne_001,Ariadne,MARRY,deity_dionysus_001,Dionysus,↔,Married to,Ariadne married Dionysus after Theseus abandoned her
+human_achilles_001,Achilles,COMPANION,human_patroclus_001,Patroclus,↔,Closest companion,Achilles' companion and close friend
+human_achilles_001,Achilles,ENEMY,human_hector_001,Hector,←→,Mortal enemy,Achilles and Hector greatest warriors at Troy
+human_hector_001,Hector,DEFEND,place_troy_001,Troy,→,Defender of,Hector defended Troy against Greek siege
+human_agamemnon_001,Agamemnon,LEAD,human_achilles_001,Achilles,←,Commander,Agamemnon commanded Greek forces at Troy
+human_agamemnon_001,Agamemnon,CONFLICT,human_achilles_001,Achilles,←→,Quarreled with,Agamemnon and Achilles had famous quarrel over war prizes
+human_agamemnon_001,Agamemnon,RELATION,human_menelaus_001,Menelaus,↔,Brother,Agamemnon brother of Menelaus
+human_menelaus_001,Menelaus,RELATION,human_helen_001,Helen of Troy,↔,Husband of,Menelaus husband of Helen whose loss caused war
+human_helen_001,Helen,RELATION,human_paris_001,Paris,←→,Elopement,Helen eloped with Paris starting Trojan War
+human_paris_001,Paris,DEFENSE,place_troy_001,Troy,→,Prince of,Paris was prince of Troy and son of Priam
+human_odysseus_001,Odysseus,JOURNEY,place_troy_001,Troy,←,Survivor of,Odysseus fought at Troy and survived
+human_odysseus_001,Odysseus,JOURNEY,place_ithaca_001,Ithaca,←,Return to,Odysseus spent 10 years returning to Ithaca
+human_odysseus_001,Odysseus,ALLY,human_ajax_001,Ajax,↔,Greek peer,Both great Greek warriors at Troy
+human_medusa_001,Medusa,CURSE,deity_athena_001,Athena,←,Cursed by,Athena cursed Medusa into gorgon form
+human_medusa_001,Medusa,OFFSPRING,monster_pegasus_001,Pegasus,←,Born from,Pegasus born from Medusa's neck after death
+human_cassandra_001,Cassandra,PROPHECY,place_troy_001,Troy,←→,Oracle of,Cassandra prophesied Troy's fall
+human_cassandra_001,Cassandra,CURSE,deity_apollo_001,Apollo,←,Cursed by,Apollo cursed Cassandra's prophecies to never be believed
+human_medea_001,Medea,HELP,human_jason_001,Jason,→,Assisted,Medea helped Jason obtain Golden Fleece
+human_medea_001,Medea,BETRAY,human_jason_001,Jason,←→,Betrayer,Medea later betrayed and killed for Jason's infidelity
+human_hippolytus_001,Hippolytus,CURSE,deity_aphrodite_001,Aphrodite,←,Cursed by,Aphrodite cursed Hippolytus for rejecting love
+human_hippolytus_001,Hippolytus,RELATION,human_theseus_001,Theseus,↔,Son of,Hippolytus son of Theseus and Amazon queen
+human_ariadne_001,Ariadne,RELATION,human_medusa_001,Medusa,←,Sibling in curse,Both dealt with divine curses and transformations
+human_helen_001,Helen,RELATION,human_cassandra_001,Cassandra,↔,Trojan royalty,Both connected to Trojan War
+human_orestes_001,Orestes,RELATION,human_electra_001,Electra,↔,Sibling,Orestes and Electra together avenged father
+human_orestes_001,Orestes,REVENGE,human_agamemnon_001,Agamemnon,←,Avenged,Orestes avenged father Agamemnon's murder
+human_electra_001,Electra,RELATION,human_orestes_001,Orestes,↔,Brother,Electra devoted to helping brother Orestes
+human_electra_001,Electra,DEVOTION,human_agamemnon_001,Agamemnon,←,Devoted to,Electra devoted to avenging father
+human_atalanta_001,Atalanta,COMPETITION,human_heracles_001,Heracles,↔,Peer adventurer,Both participated in Argonaut expedition
+human_atalanta_001,Atalanta,FOLLOW,deity_artemis_001,Artemis,→,Follower of,Atalanta devoted follower of Artemis
+place_troy_001,Troy,SIEGE,place_athens_001,Athens,←→,Adversary,Greeks from Athens among Trojan War besiegers
+place_troy_001,Troy,SIEGE,place_sparta_001,Sparta,←→,Conflict center,Spartans led by Menelaus at Troy
+place_athens_001,Athens,PROTECTION,deity_athena_001,Athena,←,Patronized by,Athena patron and protector of Athens
+place_sparta_001,Sparta,PROTECTION,deity_ares_001,Ares,←,Favored by,Ares favored martial Sparta
+place_ithaca_001,Ithaca,HOME,human_odysseus_001,Odysseus,←,Home of,Ithaca homeland of Odysseus
+place_crete_001,Crete,RULE,human_minos_001,Minos,←,Ruled by,Crete ruled by King Minos
+place_crete_001,Crete,CONTAIN,place_labyrinth_001,Labyrinth,←,Contains,Crete contained the Labyrinth
+place_labyrinth_001,Labyrinth,CONTAIN,monster_minotaur_001,Minotaur,←,Prison of,Labyrinth imprisoned the Minotaur
+place_underworld_001,Underworld,CONTAIN,place_tartarus_001,Tartarus,←,Contains,Underworld contains Tartarus prison
+place_underworld_001,Underworld,CONTAIN,place_elysium_001,Elysium,←,Contains,Underworld contains Elysium paradise
+place_delphi_001,Delphi,ORACLE,deity_apollo_001,Apollo,←,Oracle of,Apollo's oracle at Delphi center of Greek world
+deity_iapetus_001,Iapetus,PARENT,deity_prometheus_001,Prometheus,→,Father of,Iapetus fathered Prometheus
+deity_themis_001,Themis,PARENT,deity_moirai_001,Moirai,→,Mother of,Themis bore the Fates
+deity_themis_001,Themis,PARENT,deity_horai_001,Horai,→,Mother of,Themis bore the Hours/Seasons
+deity_mnemosyne_001,Mnemosyne,PARENT,deity_muses_001,Muses,→,Mother of,Mnemosyne bore the nine Muses
+deity_hyperion_001,Hyperion,PARENT,deity_helios_001,Helios,→,Father of,Hyperion fathered sun god Helios
+deity_hyperion_001,Hyperion,PARENT,deity_selene_001,Selene,→,Father of,Hyperion fathered moon goddess Selene
+deity_hyperion_001,Hyperion,PARENT,deity_eos_001,Eos,→,Father of,Hyperion fathered dawn goddess Eos
+deity_helios_001,Helios,LOVER,human_clytie_001,Clytie,←→,Love interest,Helios lover of nymph Clytie
+deity_eos_001,Eos,LOVER,human_tithonus_001,Tithonus,←→,Love interest,Eos lover of mortal Tithonus
+deity_selene_001,Selene,LOVER,human_endymion_001,Endymion,←→,Love interest,Selene lover of shepherd Endymion
+deity_nike_001,Nike,ASSOCIATION,deity_athena_001,Athena,↔,Companion,Nike attended Athena in victory
+deity_tyche_001,Tyche,BLESS,place_athens_001,Athens,←,Blesses,Tyche goddess of fortune blessed cities
+deity_iris_001,Iris,MESSENGER,deity_hera_001,Hera,←,Servant of,Iris served as messenger of Hera
+deity_hebe_001,Hebe,GRACE,human_heracles_001,Heracles,→,Divine gift,Hebe granted Heracles immortal youth
+deity_eris_001,Eris,CAUSED,place_troy_001,Troy,←→,Catalyst,Eris threw apple causing Trojan War
+deity_nemesis_001,Nemesis,PUNISH,human_arachne_001,Arachne,→,Divine justice,Nemesis punished Arachne's pride
+deity_nyx_001,Nyx,PARENT,deity_eris_001,Eris,→,Mother of,Nyx bore Eris goddess of discord
+deity_nyx_001,Nyx,PARENT,deity_nemesis_001,Nemesis,→,Mother of,Nyx bore Nemesis goddess of retribution
+deity_hypnos_001,Hypnos,PARENT,deity_morpheus_001,Morpheus,→,Father of,Hypnos fathered Morpheus god of dreams
+deity_hypnos_001,Hypnos,SIBLING,deity_thanatos_001,Thanatos,↔,Twin brother of,Hypnos twin of Death
+deity_nereus_001,Nereus,PARENT,deity_nereid_001,Nereids,→,Father of,Nereus fathered fifty Nereids
+deity_nereus_001,Nereus,MENTOR,human_heracles_001,Heracles,→,Advisor to,Nereus gave advice to Heracles
+deity_amphitrite_001,Amphitrite,PARENT,deity_triton_001,Triton,→,Mother of,Amphitrite bore Triton to Poseidon
+deity_amphitrite_001,Amphitrite,QUEEN,place_underworld_001,Underworld,←,Queen of sea,Amphitrite rules seas alongside Poseidon
+deity_hecate_001,Hecate,MAGIC,human_medea_001,Medea,←,Sorceress of,Medea follower of Hecate magic
+deity_asclepius_001,Asclepius,PARENT,human_hygieia_001,Hygieia,←,Father of,Asclepius fathered goddess of health
+human_andromache_001,Andromache,RELATION,human_hector_001,Hector,↔,Wife of,Andromache wife of Hector
+human_hecuba_001,Hecuba,RELATION,human_hector_001,Hector,↔,Mother of,Hecuba mother of Hector and Paris
+human_hecuba_001,Hecuba,RELATION,human_paris_001,Paris,↔,Mother of,Hecuba mother of Paris prince of Troy
+human_priam_001,Priam,RULE,place_troy_001,Troy,→,King of,Priam king of Troy during Greek siege
+human_priam_001,Priam,PARENT,human_hector_001,Hector,→,Father of,Priam fathered greatest Trojan warrior
+human_priam_001,Priam,PARENT,human_paris_001,Paris,→,Father of,Priam fathered Paris whose actions caused war
+human_aeneas_001,Aeneas,ESCAPE,place_troy_001,Troy,←,Survivor of,Aeneas escaped burning Troy with father
+human_aeneas_001,Aeneas,FOUNDER,place_rome_001,Rome,→,Founder of,Aeneas legend founder of Rome
+human_ajax_001,Ajax,ALLY,human_achilles_001,Achilles,↔,Greek champion,Second greatest warrior after Achilles
+human_ajax_001,Ajax,DUEL,human_hector_001,Hector,←→,Combat,Ajax dueled Hector during Trojan War
+human_diomedes_001,Diomedes,ALLY,human_odysseus_001,Odysseus,↔,Greek warrior,Diomedes fought at Troy with Odysseus
+human_diomedes_001,Diomedes,WOUND,deity_ares_001,Ares,←,Injured,Diomedes wounded Ares in battle
+human_patroclus_001,Patroclus,DEATH,human_achilles_001,Achilles,←,Avenged,Patroclus death drove Achilles to fury
+deity_pan_001,Pan,FEAR,human_heracles_001,Heracles,→,Instilled,Pan caused panic (panic from Pan's name)
+deity_dionysus_001,Dionysus,LOVER,human_ariadne_001,Ariadne,←→,Married to,Dionysus married abandoned Ariadne
+deity_poseidon_001,Poseidon,VENGEANCE,human_odysseus_001,Odysseus,←→,Punished,Poseidon punished Odysseus for 10 years
+deity_poseidon_001,Poseidon,FATHER,monster_minotaur_001,Minotaur,←,Sired,Poseidon impregnated Pasiphae with Minotaur
+human_asclepius_001,Asclepius,BROTHER,deity_apollo_001,Apollo,←,Son of,Asclepius son of Apollo the sun god
+monster_python_001,Python,KILLED,deity_apollo_001,Apollo,←,Slain by,Apollo slew Python at Delphi
+deity_apollo_001,Apollo,ESTABLISH,place_delphi_001,Delphi,→,Founded oracle,Apollo established oracle at Delphi after slaying Python

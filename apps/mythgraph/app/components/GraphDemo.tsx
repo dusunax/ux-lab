@@ -3,85 +3,173 @@
 /**
  * GraphDemo - MythGraph 데모 컴포넌트
  *
- * 테스트 데이터를 사용하여 MythGraph를 시연합니다.
+ * Neo4j에서 실제 신화 엔티티를 쿼리하여 그래프를 시연합니다.
  * 성능 측정 및 상호작용 테스트가 가능합니다.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useLazyQuery } from '@apollo/client';
+import { gql } from '@apollo/client';
 import { MythGraph } from './MythGraph';
 import type { GraphNode, GraphEdge } from '@/app/services/layoutService';
 import { benchmarkLayout, logBenchmarkResult } from '@/app/utils/layoutBenchmark';
 
 /**
- * 테스트용 신화 그래프 데이터 생성
+ * GraphQL 쿼리: 모든 엔티티 목록 조회
  */
-function generateMythologyGraph(nodeCount: number = 10): {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-} {
-  const deities = ['Zeus', 'Hera', 'Poseidon', 'Athena', 'Apollo', 'Artemis'];
-  const heroes = ['Heracles', 'Perseus', 'Achilles', 'Theseus', 'Jason'];
-  const places = ['Mount Olympus', 'Hades', 'Troy', 'Tartarus'];
-
-  const entities = [...deities, ...heroes, ...places];
-  const selectedEntities = entities.slice(0, Math.min(nodeCount, entities.length));
-
-  const nodes: GraphNode[] = selectedEntities.map((name) => ({
-    id: `entity_${name.toLowerCase().replace(' ', '_')}`,
-    data: {
-      label: name,
-      type: deities.includes(name)
-        ? 'deity'
-        : heroes.includes(name)
-          ? 'hero'
-          : 'place',
-    },
-  }));
-
-  // 관계 생성 (전체 노드의 70% 정도를 연결)
-  const edges: GraphEdge[] = [];
-  for (let i = 0; i < nodes.length - 1; i++) {
-    if (Math.random() < 0.7) {
-      edges.push({
-        id: `edge_${i}_${i + 1}`,
-        source: nodes[i].id,
-        target: nodes[(i + 1) % nodes.length].id,
-      });
+const LIST_ENTITIES_QUERY = gql`
+  query ListEntities($limit: Int!) {
+    listEntities(limit: $limit) {
+      edges {
+        id
+        name
+        type
+        description
+        aliases
+      }
+      totalCount
+      hasNextPage
     }
   }
+`;
 
-  return { nodes, edges };
-}
+/**
+ * GraphQL 쿼리: 엔티티의 관계 조회
+ */
+const GET_RELATIONSHIPS_QUERY = gql`
+  query GetRelationships($entityId: ID!) {
+    getRelationships(entityId: $entityId, limit: 20) {
+      source {
+        id
+        name
+      }
+      target {
+        id
+        name
+      }
+      type
+      label
+    }
+  }
+`;
 
 interface SelectedEntity {
   id: string;
   label: string;
 }
 
+interface GraphQLEntity {
+  id: string;
+  name: string;
+  type: 'DEITY' | 'HUMAN' | 'MONSTER' | 'PLACE';
+  description: string;
+  aliases: string[];
+}
+
 /**
  * GraphDemo 컴포넌트
  */
 export const GraphDemo: React.FC = () => {
-  const sessionId = 'demo-session';
-  const [nodeCount, setNodeCount] = useState(10);
-  const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(
-    null
-  );
+  const sessionId = 'neo4j-demo-session';
+  const [nodeCount, setNodeCount] = useState(20);
+  const [selectedEntity, setSelectedEntity] = useState<SelectedEntity | null>(null);
   const [isBenchmarking, setIsBenchmarking] = useState(false);
   const [benchmarkResult, setBenchmarkResult] = useState<string>('');
-  const [graphData, setGraphData] = useState(() =>
-    generateMythologyGraph(nodeCount)
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [graphData, setGraphData] = useState<{ nodes: GraphNode[]; edges: GraphEdge[] }>({
+    nodes: [],
+    edges: [],
+  });
+
+  // GraphQL query hooks
+  const [listEntities, { loading: entitiesLoading }] = useLazyQuery(LIST_ENTITIES_QUERY);
+  const [getRelationships] = useLazyQuery(GET_RELATIONSHIPS_QUERY);
 
   /**
-   * 노드 개수 변경 시 새 그래프 생성
+   * Neo4j에서 실제 엔티티를 로드
+   */
+  const loadEntitiesFromNeo4j = useCallback(async (count: number) => {
+    setIsLoading(true);
+    try {
+      const result = await listEntities({ variables: { limit: count } });
+
+      if (result.data?.listEntities?.edges) {
+        const gqlEntities: GraphQLEntity[] = result.data.listEntities.edges;
+
+        // 엔티티를 GraphNode로 변환
+        const nodes: GraphNode[] = gqlEntities.map((entity) => ({
+          id: `entity_${entity.id}`,
+          data: {
+            label: entity.name,
+            type: entity.type.toLowerCase(),
+            description: entity.description,
+          },
+        }));
+
+        // 관계 로드 (처음 N개 엔티티만)
+        const relatedEdges: GraphEdge[] = [];
+        const entitiesToCheck = nodes.slice(0, Math.min(10, nodes.length));
+
+        for (const node of entitiesToCheck) {
+          try {
+            const relResult = await getRelationships({
+              variables: { entityId: node.id.replace('entity_', '') },
+            });
+
+            if (relResult.data?.getRelationships) {
+              const relationships = relResult.data.getRelationships;
+              for (const rel of relationships) {
+                const sourceNodeId = `entity_${rel.source.id}`;
+                const targetNodeId = `entity_${rel.target.id}`;
+
+                // 두 노드가 모두 존재하면 엣지 추가
+                if (
+                  nodes.some((n) => n.id === sourceNodeId) &&
+                  nodes.some((n) => n.id === targetNodeId)
+                ) {
+                  relatedEdges.push({
+                    id: `edge_${rel.source.id}_${rel.target.id}_${rel.type}`,
+                    source: sourceNodeId,
+                    target: targetNodeId,
+                    label: rel.label,
+                  });
+                }
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to load relationships for ${node.id}:`, error);
+          }
+        }
+
+        console.log(
+          `Loaded ${nodes.length} entities and ${relatedEdges.length} relationships from Neo4j`
+        );
+
+        setGraphData({ nodes, edges: relatedEdges });
+      }
+    } catch (error) {
+      console.error('Failed to load entities from Neo4j:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [listEntities, getRelationships]);
+
+  /**
+   * 초기 로드
+   */
+  useEffect(() => {
+    loadEntitiesFromNeo4j(nodeCount);
+  }, []);
+
+  /**
+   * 노드 개수 변경 시 다시 로드
    */
   const handleNodeCountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const count = parseInt(e.target.value, 10);
     setNodeCount(count);
-    setGraphData(generateMythologyGraph(count));
+    loadEntitiesFromNeo4j(count);
     setSelectedEntity(null);
-  }, []);
+  }, [loadEntitiesFromNeo4j]);
 
   /**
    * 노드 클릭 핸들러
@@ -123,7 +211,7 @@ export const GraphDemo: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">🏛️ MythGraph Demo</h1>
           <p className="text-gray-300">
-            React Flow + Dagre 레이아웃 시연. 세션 고정 레이아웃으로 일관된 노드 위치 유지
+            Neo4j에서 로드된 실제 신화 엔티티. React Flow + Dagre 레이아웃으로 시각화
           </p>
         </div>
 
@@ -138,18 +226,20 @@ export const GraphDemo: React.FC = () => {
               <input
                 type="range"
                 min="5"
-                max="50"
+                max="100"
                 value={nodeCount}
                 onChange={handleNodeCountChange}
+                disabled={isLoading}
                 className="w-full"
               />
+              {isLoading && <p className="text-xs text-gray-400 mt-1">로딩 중...</p>}
             </div>
 
             {/* 벤치마크 버튼 */}
             <div>
               <button
                 onClick={runBenchmark}
-                disabled={isBenchmarking}
+                disabled={isBenchmarking || graphData.nodes.length === 0}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition"
               >
                 {isBenchmarking ? '실행 중...' : '📊 벤치마크 실행'}
@@ -178,28 +268,42 @@ export const GraphDemo: React.FC = () => {
         </div>
 
         {/* 그래프 */}
-        <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg overflow-hidden">
-          <MythGraph
-            entities={graphData.nodes}
-            relationships={graphData.edges}
-            sessionId={sessionId}
-            onNodeClick={handleNodeClick}
-          />
-        </div>
+        {isLoading || entitiesLoading ? (
+          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-8 text-center">
+            <p className="text-gray-300">Neo4j에서 엔티티를 로드 중...</p>
+          </div>
+        ) : graphData.nodes.length === 0 ? (
+          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-8 text-center">
+            <p className="text-gray-400">
+              데이터 로드 실패. Neo4j 연결 상태를 확인하세요.
+            </p>
+          </div>
+        ) : (
+          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg overflow-hidden">
+            <MythGraph
+              entities={graphData.nodes}
+              relationships={graphData.edges}
+              sessionId={sessionId}
+              onNodeClick={handleNodeClick}
+            />
+          </div>
+        )}
 
         {/* 통계 */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
             <div className="text-2xl font-bold text-blue-400">{graphData.nodes.length}</div>
-            <div className="text-gray-400 text-sm mt-1">노드</div>
+            <div className="text-gray-400 text-sm mt-1">노드 (Neo4j)</div>
           </div>
           <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
             <div className="text-2xl font-bold text-green-400">{graphData.edges.length}</div>
-            <div className="text-gray-400 text-sm mt-1">엣지</div>
+            <div className="text-gray-400 text-sm mt-1">엣지 (Neo4j)</div>
           </div>
           <div className="bg-white/5 backdrop-blur border border-white/20 rounded-lg p-4">
             <div className="text-2xl font-bold text-purple-400">
-              {(graphData.edges.length / graphData.nodes.length).toFixed(1)}
+              {graphData.nodes.length > 0
+                ? (graphData.edges.length / graphData.nodes.length).toFixed(1)
+                : '0'}
             </div>
             <div className="text-gray-400 text-sm mt-1">평균 차수</div>
           </div>
