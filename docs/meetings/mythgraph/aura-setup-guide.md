@@ -1,17 +1,41 @@
 # Neo4j Aura DB 생성 가이드
 
-**목표:** MythGraph용 Dev/Prod 2개 독립 인스턴스 생성  
-**예상 소요:** 15-20분  
+**목표:** MythGraph용 Cloud Staging 인스턴스 1개 생성  
+**예상 소요:** 10분  
 **필수 준비:** 이메일 주소, 웹 브라우저
 
 ---
 
-## 📋 개요: 생성할 인스턴스
+## 📋 개요: 3단계 환경 전략
 
-| 이름 | 용도 | 환경 | 자격증명 |
+| 환경 | 용도 | 구성 | 자격증명 |
 |------|------|------|---------|
-| **MythGraph-Dev** | 개발·테스트 | Aura Free | dev_password |
-| **MythGraph-Prod** | 미래 스테이징/운영 | Aura Free | prod_password |
+| **Local** | 로컬 개발 | Docker Neo4j (localhost:7687) | 제약 없음 |
+| **Aura Cloud** | Staging/Preview | Aura Free (1개) | cloud_password |
+| **Prod** | 운영 (나중) | Aura Professional (추후 추가) | - |
+
+**현재 단계:** Aura Free 1개만 생성 (비용·관리 효율성)
+
+---
+
+## 💡 왜 1개 인스턴스만 필요한가?
+
+```
+현재 단계 (Sprint 1-2):
+├─ Local: Docker Neo4j (localhost:7687)
+│  └─ 개발/테스트 용도 (제약 없음, 빠름)
+│
+└─ Cloud: Aura Free 1개
+   └─ Staging/Preview 배포용 (Vercel preview)
+
+향후 필요 시:
+└─ 두 번째 인스턴스 추가 (Aura Professional)
+   └─ 운영 환경 분리 (Spring 3+)
+
+비용 절감:
+└─ 현재: $0 (Free tier만)
+└─ 추후: $65.70/월 (Professional 추가 시)
+```
 
 ---
 
@@ -68,41 +92,41 @@ Password:       [password]
 
 ---
 
-### **4단계: 첫 번째 인스턴스 생성 (Dev)**
+### **4단계: Aura Cloud 인스턴스 생성 (1개)**
 
 #### 4-1. 인스턴스 생성 시작
 
 **"+ Create instance"** (또는 **"New instance"**) 버튼 클릭
 
 ```
-┌─────────────────────────────────┐
-│ Create instance                 │
-├─────────────────────────────────┤
-│                                 │
-│ Instance name: [MythGraph-Dev]  │
-│                                 │
-│ Type: ⊙ Free (selected)         │
-│       ⊙ Professional            │
-│       ⊙ Enterprise              │
-│                                 │
-│ Region: [Asia Pacific (Tokyo)]  │
-│         (최근접 지역 선택)       │
-│                                 │
-│ Password: [auto-generated]      │
-│           (또는 수동 입력)       │
-│                                 │
-│ [Create]  [Cancel]              │
-└─────────────────────────────────┘
+┌──────────────────────────────────┐
+│ Create instance                  │
+├──────────────────────────────────┤
+│                                  │
+│ Instance name: [MythGraph-Cloud] │
+│                                  │
+│ Type: ⊙ Free (selected)          │
+│       ⊙ Professional             │
+│       ⊙ Enterprise               │
+│                                  │
+│ Region: [Asia Pacific (Tokyo)]   │
+│         (최근접 지역 선택)        │
+│                                  │
+│ Password: [auto-generated]       │
+│           (또는 수동 입력)        │
+│                                  │
+│ [Create]  [Cancel]               │
+└──────────────────────────────────┘
 ```
 
 #### 4-2. 설정값
 
 **필수 입력:**
-- **Instance name:** `MythGraph-Dev`
+- **Instance name:** `MythGraph-Cloud` (또는 `MythGraph-Staging`)
 - **Type:** `Free` (선택됨)
 - **Region:** `Asia Pacific - Tokyo` (아시아 권장)
 - **Password:** 자동 생성 또는 수동 설정
-  - 예: `MythGraph@Dev2026!`
+  - 예: `MythGraph@Cloud2026!`
   - ⚠️ 안전한 곳에 저장할 것!
 
 #### 4-3. 생성 확인
@@ -110,29 +134,29 @@ Password:       [password]
 **[Create] 클릭** → 처리 중 (2-3분)
 
 ```
-┌──────────────────────────────────┐
-│ Creating MythGraph-Dev...        │
-│                                  │
-│ █████████░░░░░░░░░░░  50%       │
-│ (Provisioning instance)          │
-│                                  │
-│ Please wait...                   │
-└──────────────────────────────────┘
+┌────────────────────────────────────┐
+│ Creating MythGraph-Cloud...        │
+│                                    │
+│ █████████░░░░░░░░░░░  50%         │
+│ (Provisioning instance)            │
+│                                    │
+│ Please wait...                     │
+└────────────────────────────────────┘
 ```
 
 **완료 후:**
 ```
-┌────────────────────────────────────────┐
-│ ✅ MythGraph-Dev                       │
-├────────────────────────────────────────┤
-│ Status:      ✓ Running                 │
-│ URI:         neo4j+s://abc123.db...    │
-│ User:        neo4j                     │
-│ Password:    ••••••••                  │
-│ Created:     2026-08-07                │
-│                                        │
-│ [Connect] [Download] [Manage] [Delete] │
-└────────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│ ✅ MythGraph-Cloud                       │
+├──────────────────────────────────────────┤
+│ Status:      ✓ Running                   │
+│ URI:         neo4j+s://abc123.db...      │
+│ User:        neo4j                       │
+│ Password:    ••••••••                    │
+│ Created:     2026-08-07                  │
+│                                          │
+│ [Connect] [Download] [Manage] [Delete]   │
+└──────────────────────────────────────────┘
 ```
 
 #### 4-4. 자격증명 저장
@@ -141,7 +165,7 @@ Password:       [password]
 
 ```
 Connection Details:
-─────────────────────────────────────
+────────────────────────────────────
 
 Connection URI:
 neo4j+s://abc12345xyz.databases.neo4j.io
@@ -161,10 +185,10 @@ Port:
 
 **저장 방법:**
 ```
-📝 메모장 또는 1Password에 저장:
+📝 1Password 또는 안전한 위치에 저장:
 
-Dev Instance:
-  Name: MythGraph-Dev
+Cloud Instance:
+  Name: MythGraph-Cloud
   URI: neo4j+s://abc12345xyz.databases.neo4j.io
   User: neo4j
   Password: [자동생성된 비밀번호]
@@ -172,71 +196,37 @@ Dev Instance:
 
 ---
 
-### **5단계: 두 번째 인스턴스 생성 (Prod)**
+### **5단계: 로컬 개발 환경 준비 (Docker)**
 
-#### 5-1. 두 번째 인스턴스 생성
+**로컬에서는 Docker Neo4j 사용:**
 
-**다시 "Create instance"** (또는 **[+ Create]** 버튼)
-
-```
-┌─────────────────────────────────┐
-│ Create instance                 │
-├─────────────────────────────────┤
-│                                 │
-│ Instance name: [MythGraph-Prod] │
-│                                 │
-│ Type: ⊙ Free (selected)         │
-│                                 │
-│ Region: [Asia Pacific (Tokyo)]  │
-│         (Dev와 동일)             │
-│                                 │
-│ Password: [auto-generated]      │
-│           (Dev와 다른 비밀번호)  │
-│                                 │
-│ [Create]  [Cancel]              │
-└─────────────────────────────────┘
+```bash
+# Docker 설치 후
+docker run \
+  --name mythgraph-local \
+  -p 7687:7687 \
+  -p 7474:7474 \
+  -e NEO4J_AUTH=neo4j/dev_password_123 \
+  neo4j:latest
 ```
 
-#### 5-2. 설정값
-
-**필수 입력:**
-- **Instance name:** `MythGraph-Prod`
-- **Type:** `Free`
-- **Region:** `Asia Pacific - Tokyo` (Dev와 동일)
-- **Password:** 자동 생성 (Dev와 다르게!)
-  - 예: `MythGraph@Prod2026!`
-  - ⚠️ **Dev와 다른 비밀번호 필수**
-
-#### 5-3. 생성 완료
-
-2-3분 대기 후 완료
-
+**3가지 환경 요약:**
 ```
-✅ Instances 목록:
+Local (Docker):
+  URI:      neo4j://localhost:7687
+  User:     neo4j
+  Password: dev_password_123
+  용도:     개발/테스트 (제약 없음)
 
-┌────────────────────────────────────────┐
-│ MythGraph-Dev                          │
-│ Status: ✓ Running                      │
-│ URI: neo4j+s://abc123...io             │
-└────────────────────────────────────────┘
+Cloud (Aura Free):
+  URI:      neo4j+s://abc12345xyz.databases.neo4j.io
+  User:     neo4j
+  Password: [cloud_password]
+  용도:     Preview 배포 (Vercel preview)
 
-┌────────────────────────────────────────┐
-│ MythGraph-Prod                         │
-│ Status: ✓ Running                      │
-│ URI: neo4j+s://def456...io             │
-└────────────────────────────────────────┘
-```
-
-#### 5-4. 자격증명 저장
-
-**Prod 정보도 저장:**
-
-```
-Prod Instance:
-  Name: MythGraph-Prod
-  URI: neo4j+s://def456xyz.databases.neo4j.io
-  User: neo4j
-  Password: [자동생성된 비밀번호]
+Prod (나중):
+  추가 예정 (Sprint 3+)
+  비용:     $65.70/월 (Professional)
 ```
 
 ---
@@ -246,22 +236,31 @@ Prod Instance:
 **아래 정보를 안전한 위치에 저장 (1Password, Vault, 등):**
 
 ```
-=== MythGraph Aura DB Credentials ===
+=== MythGraph Neo4j Environments ===
 
-Dev Instance:
-  Name:     MythGraph-Dev
+Local (Docker):
+  URI:      neo4j://localhost:7687
+  User:     neo4j
+  Password: dev_password_123
+  상태:     개발 시 docker run으로 시작
+  용도:     로컬 개발/테스트
+
+Cloud (Aura Free):
+  Name:     MythGraph-Cloud
   URI:      neo4j+s://abc12345xyz.databases.neo4j.io
   User:     neo4j
-  Password: [Dev 비밀번호]
+  Password: [Cloud 비밀번호]
+  상태:     ✅ Running
+  용도:     Vercel preview 배포
 
-Prod Instance:
-  Name:     MythGraph-Prod
-  URI:      neo4j+s://def456abc.databases.neo4j.io
-  User:     neo4j
-  Password: [Prod 비밀번호]
+Prod (추가 예정):
+  타입:     Aura Professional
+  시점:     Sprint 3+ (필요 시)
+  비용:     $65.70/월
+  용도:     운영 환경
 
 생성일: 2026-08-07
-상태: ✅ 2개 인스턴스 모두 Running
+현재 비용: $0 (Free tier만)
 ```
 
 ---
@@ -357,20 +356,21 @@ vercel secrets add NEO4J_PROD_PASSWORD [prod_password]
 ## ✨ 생성 완료 체크리스트
 
 ```
-☑️ 2개 Aura DB Free tier 인스턴스 생성 완료
-☑️ Dev 인스턴스 (MythGraph-Dev)
-  ├─ URI: neo4j+s://[dev-uri].databases.neo4j.io
+☑️ Aura DB Free tier 인스턴스 1개 생성 완료
+☑️ Cloud 인스턴스 (MythGraph-Cloud)
+  ├─ URI: neo4j+s://[cloud-uri].databases.neo4j.io
   ├─ User: neo4j
   └─ Password: [저장됨]
 
-☑️ Prod 인스턴스 (MythGraph-Prod)
-  ├─ URI: neo4j+s://[prod-uri].databases.neo4j.io
-  ├─ User: neo4j
-  └─ Password: [저장됨]
-
-☑️ 자격증명 안전한 위치에 저장
+☑️ 자격증명 안전한 위치에 저장 (1Password)
 ☑️ 연결 테스트 완료 (선택)
 ☑️ 팀원에게 안전하게 공유
+
+☑️ Docker Neo4j 설치 (로컬 개발용)
+  └─ docker run ... neo4j:latest
+
+현재 비용: $0 (Free tier)
+향후 확장: Sprint 3+에서 필요 시 Professional 추가
 ```
 
 ---
@@ -379,10 +379,15 @@ vercel secrets add NEO4J_PROD_PASSWORD [prod_password]
 
 1. **.env 파일 생성** (Step 1 Phase 1-3)
    ```bash
-   # .env.local (로컬)
-   NEO4J_URI=neo4j+s://[dev-uri].databases.neo4j.io
+   # .env.local (로컬 개발)
+   NEO4J_URI=neo4j://localhost:7687
    NEO4J_USER=neo4j
-   NEO4J_PASSWORD=[dev_password]
+   NEO4J_PASSWORD=dev_password_123
+   
+   # .env.development (Vercel preview)
+   NEO4J_URI=neo4j+s://[cloud-uri].databases.neo4j.io
+   NEO4J_USER=neo4j
+   NEO4J_PASSWORD=${AURA_CLOUD_PASSWORD}
    ```
 
 2. **GraphQL Yoga + Neo4j Driver 연동** (Step 2)
@@ -398,8 +403,11 @@ vercel secrets add NEO4J_PROD_PASSWORD [prod_password]
 
 3. **Vercel에 Secrets 등록** (Step 2)
    ```bash
-   vercel secrets add NEO4J_DEV_URI [dev-uri]
-   vercel secrets add AURA_DEV_PASSWORD [dev_password]
+   # Preview 배포용 (Cloud)
+   vercel secrets add AURA_CLOUD_URI [cloud-uri]
+   vercel secrets add AURA_CLOUD_PASSWORD [cloud_password]
+   
+   # Prod은 나중에 (Sprint 3+)
    ```
 
 ---
@@ -415,12 +423,18 @@ vercel secrets add NEO4J_PROD_PASSWORD [prod_password]
 ### Q. "인스턴스 생성이 실패했다"
 → 다른 Region 시도, 또는 Contact Support
 
-### Q. "2개를 동시에 만들 수 없나?"
-→ 하나씩 생성 (2개 동시 생성 불가, 순차 생성 필수)
+### Q. "나중에 운영용 인스턴스를 추가하려면?"
+→ 필요할 때 Aura Professional 인스턴스 추가 ($65.70/월)
+→ 현재는 Free tier 1개만 유지하면 충분
 
 ---
 
-**🎉 Aura DB 2개 인스턴스 생성 완료!**
+**🎉 Aura DB 생성 완료! (1개 Free tier + 로컬 Docker)**
+
+현재 구성:
+- ✅ Local: Docker Neo4j (localhost:7687)
+- ✅ Cloud: Aura Free 1개 (Preview/Staging용)
+- 📅 Prod: 필요 시 추가 (Sprint 3+)
 
 이제 `.env` 파일 설정으로 Step 1을 마무리합니다.
 
