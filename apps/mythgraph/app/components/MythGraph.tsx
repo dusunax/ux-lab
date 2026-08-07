@@ -103,6 +103,11 @@ export const MythGraph = React.memo(
           source: edge.source,
           target: edge.target,
           animated: false,
+          style: {
+            stroke: '#D7B26D',
+            strokeWidth: 1.5,
+            opacity: 0.6,
+          },
         }));
 
         setNodes(positionedNodes);

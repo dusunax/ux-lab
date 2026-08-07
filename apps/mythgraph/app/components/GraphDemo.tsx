@@ -106,9 +106,9 @@ export const GraphDemo: React.FC = () => {
           },
         }));
 
-        // 관계 로드 (처음 N개 엔티티만)
+        // 관계 로드 (모든 엔티티의 관계 수집)
         const relatedEdges: GraphEdge[] = [];
-        const entitiesToCheck = nodes.slice(0, Math.min(10, nodes.length));
+        const entitiesToCheck = nodes.slice(0, Math.min(50, nodes.length));
 
         for (const node of entitiesToCheck) {
           try {
