@@ -112,15 +112,17 @@ export const GraphDemo: React.FC = () => {
 
         for (const node of entitiesToCheck) {
           try {
+            // Pass full entity ID (e.g., "entity_zeus_001")
             const relResult = await getRelationships({
-              variables: { entityId: node.id.replace('entity_', '') },
+              variables: { entityId: node.id },
             });
 
             if (relResult.data?.getRelationships) {
               const relationships = relResult.data.getRelationships;
               for (const rel of relationships) {
-                const sourceNodeId = `entity_${rel.source.id}`;
-                const targetNodeId = `entity_${rel.target.id}`;
+                // Source and target already include full IDs
+                const sourceNodeId = rel.source.id;
+                const targetNodeId = rel.target.id;
 
                 // 두 노드가 모두 존재하면 엣지 추가
                 if (
