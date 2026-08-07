@@ -39,6 +39,12 @@ export const EntityNode = React.memo(({ data, selected }: EntityNodeProps) => {
         border: 'border-[#9BA1A8]',
         icon: '🏹',
       },
+      hero: {
+        bg: 'from-[#9BA1A8] to-[#7A8089]',
+        bgHex: '#9BA1A8',
+        border: 'border-[#9BA1A8]',
+        icon: '🏹',
+      },
       monster: {
         bg: 'from-[#8B3A3A] to-[#6B2A2A]',
         bgHex: '#8B3A3A',

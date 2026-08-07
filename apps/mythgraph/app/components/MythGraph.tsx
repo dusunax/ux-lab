@@ -180,7 +180,7 @@ export const MythGraph = React.memo(
         style={{
           height: '600px',
           position: 'relative',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          background: 'linear-gradient(135deg, #0A0D11 0%, #12161D 50%, #1B212A 100%)',
         }}
       >
         {/* 로딩 오버레이 */}
@@ -188,18 +188,18 @@ export const MythGraph = React.memo(
           <div
             className="absolute inset-0 flex items-center justify-center z-50"
             style={{
-              background: 'rgba(0, 0, 0, 0.5)',
+              background: 'rgba(10, 13, 17, 0.7)',
               backdropFilter: 'blur(4px)',
             }}
           >
             <div
-              className="bg-white/10 backdrop-blur border border-white/20 rounded-lg p-6"
+              className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-6"
               role="status"
               aria-live="polite"
             >
               <div className="flex items-center gap-3">
-                <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-                <span className="text-white font-medium">그래프 레이아웃 계산 중...</span>
+                <div className="animate-spin h-5 w-5 border-2 border-myth-gold border-t-transparent rounded-full" />
+                <span className="text-myth-primary font-medium">그래프 레이아웃 계산 중...</span>
               </div>
             </div>
           </div>
@@ -220,7 +220,7 @@ export const MythGraph = React.memo(
         >
           {/* 배경 패턴 */}
           <Background
-            color="#64748b"
+            color="#6D727A"
             gap={16}
             size={0.5}
             style={{
@@ -232,9 +232,9 @@ export const MythGraph = React.memo(
           <Controls
             style={{
               button: {
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                color: 'white',
+                background: 'rgba(215, 178, 109, 0.15)',
+                border: '1px solid rgba(215, 178, 109, 0.3)',
+                color: '#F6F1E7',
               },
             }}
           />
@@ -243,10 +243,10 @@ export const MythGraph = React.memo(
           {nodes.length > 20 && (
             <MiniMap
               style={{
-                background: 'rgba(0, 0, 0, 0.3)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(10, 13, 17, 0.6)',
+                border: '1px solid rgba(215, 178, 109, 0.3)',
               }}
-              maskColor="rgba(0, 0, 0, 0.5)"
+              maskColor="rgba(10, 13, 17, 0.5)"
             />
           )}
         </ReactFlow>
