@@ -138,7 +138,7 @@ const GraphViewWrapper = ({
 
         // 전체 노드가 화면에 보이도록 fitView 호출
         setTimeout(() => {
-          fitView({ padding: 0.15 });
+          fitView({ padding: 0.2, duration: 300 });
         }, 100);
       } catch (error) {
         console.error('[MythGraph] Failed to apply layout:', error);
