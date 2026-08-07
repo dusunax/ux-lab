@@ -1,5 +1,6 @@
 # Memory Index
 
+- [MythGraph Sprint 1 결정사항](mythgraph_sprint1_decisions.md) — 4개 OQ(Entity라벨, Myth노드, 임베딩, 계정분리) 권장선택, 영향도, 변경리스크
 - [ai-empathy-diary 프로젝트 현황](project_ai_empathy_diary.md) — 스프린트 진행 현황, 확정 기술 결정(x-request-id body 포함, GA4 2개월, rate limit 30/min), 미결 질문(동의 배너, 빌드 환경)
 - [projection-art 프로젝트](project_projection_art.md) — Sprint/4 완료(126 tests, 키스톤+Worker+프리셋), Sprint/5 동화 작가 페르소나 기반 UX 고도화 진행 중
 - [quiz-drill-ai 프로젝트](project_quiz_drill_ai.md) — Sprint/1 완료(CSV 파서+퀴즈 풀 동작), Sprint/2 스코프: 저장·통계·UX 단축키·Vercel 배포
