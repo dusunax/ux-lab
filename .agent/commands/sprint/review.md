@@ -186,9 +186,9 @@ PR 제목: 템플릿 `PR 제목` 섹션에서 플레이스홀더를 채워 사�
 
 ---
 
-## Step 5.5 — 라벨 자동 부착
+## Step 5.5 — 라벨 & Assignees 자동 부착
 
-PR 생성 완료 후 아래 라벨을 부착한다.
+PR 생성 완료 후 아래 라벨을 부착하고 담당자를 지정한다.
 
 **고정 라벨:**
 
@@ -198,10 +198,67 @@ PR 생성 완료 후 아래 라벨을 부착한다.
 | `type: workflow` | 스프린트 번호가 없을 때 (인프라 PR) |
 | `eval: pending` | 항상 부착 |
 
-**라벨 부착 방법 (우선순위):**
+**라벨 부착 (올바른 방법):**
 
-- `mcp__github__update_pull_request` (labels 파라미터) 우선 시도
-- 미연결 시: `gh pr edit [NUMBER] --add-label "type: sprint,eval: pending" --repo [REPO]`
+```bash
+# ✅ 권장 방법 — GitHub API (배열 문법)
+gh api -X PATCH /repos/dusunax/ux-lab/issues/{PR_NUMBER} \
+  -f 'labels[]=type: sprint' \
+  -f 'labels[]=eval: pending'
+
+# 🚫 피할 것 — gh pr edit는 Projects classic GraphQL 사용 (deprecated)
+# gh pr edit {NUMBER} --add-label "type: sprint" # ← 작동 안 함
+```
+
+**Assignees 부착:**
+
+```bash
+# 현재 인증된 사용자
+GITHUB_USER=$(gh api /user --jq '.login')
+
+# PR에 할당
+gh api -X PATCH /repos/dusunax/ux-lab/issues/{PR_NUMBER} \
+  -f "assignees[]=$GITHUB_USER"
+```
+
+**에러 처리:**
+
+라벨/Assignees 부착 실패 시:
+```bash
+if ! gh api -X PATCH /repos/dusunax/ux-lab/issues/{PR_NUMBER} \
+     -f 'labels[]=type: sprint' -f 'labels[]=eval: pending' 2>/dev/null; then
+  echo "⚠️  라벨 자동 부착 실패"
+  echo "    수동 추가: https://github.com/dusunax/ux-lab/pull/{PR_NUMBER}/labels"
+fi
+```
+
+---
+
+## Step 5.6 — Merge 충돌 예방 가이드
+
+**충돌이 발생했다면 다음을 확인하세요:**
+
+### 원인 분석
+| 상황 | 해결책 |
+|------|---------|
+| **1. 브랜치가 main과 >2주 diverged** | `git fetch origin main && git merge origin/main` (스프린트 진행 중) |
+| **2. package.json/schema 변경** | main의 변경사항을 sprint에 merge하기 |
+| **3. 문서 전략 변경** | 팀과 조율 후 한쪽으로 통일 |
+
+### 예방 체크리스트 (스프린트 중)
+- ✅ **주 1회 sync:** `git merge origin/main` (스프린트 진행 중)
+- ✅ **공용 파일 변경 시:** 팀 공지 (package.json, schema.graphql, .env)
+- ✅ **2주 이상 diverge 방지:** 기간 체크
+
+### 충돌 해결 전략
+
+| 선택 | 용도 | 명령 |
+|------|------|------|
+| **ours** | sprint 코드 우선 | `git merge -X ours origin/main` |
+| **theirs** | main 코드 우선 | `git merge -X theirs origin/main` |
+| **manual** | 세밀한 제어 | `git merge origin/main` (수동 해결) |
+
+**참고:** `-X ours` 사용 시 main의 변경사항이 무시되므로, 필요한 것이 있는지 확인 필수
 
 ---
 
