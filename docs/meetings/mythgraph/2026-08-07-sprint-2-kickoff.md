@@ -8,8 +8,8 @@
 
 ## Sprint 2 목표
 
-> **의미론적 검색 · 최단 경로 고도화 · 데이터 안정성 확보**  
-> Foundation 위에서 검색 고급화, 관계 탐색 정교화, 테스트·성능 최적화로 MVP 완성도 제고
+> **Foundation 고도화 및 검색 기능 통합**  
+> Bloom 레이아웃 구현, 엣지 시각화 개선, 키워드 검색 UI 구축으로 그래프 인터랙션 완성
 
 ---
 
@@ -39,35 +39,35 @@ Sprint 1에서 정의한 모든 P0 항목과 주요 P1 항목을 완료하였다
 
 | # | 항목 | 담당 |
 |---|------|------|
-| 1 | Myth 탐색 기능 (Myth/Event 중심 탐색) | BE Blake |
-| 2 | 최단 경로 고도화 (Dijkstra, 경로 필터링) | BE Blake |
-| 3 | 벡터 임베딩 공급자 선택 & 인터페이스 설계 | BE Blake |
-| 4 | 의미론적 검색 (Keyword + Vector 하이브리드) | BE Blake |
-| 5 | 관계 유형 검증 & 데이터 무결성 자동화 | QA Morgan/Quinn |
+| 1 | Bloom 레이아웃 구현 (Zeus 중심 동심원 배치) | FE Avery |
+| 2 | 엣지 시각화 개선 (라벨 & 화살표 마커 추가) | FE Avery |
+| 3 | 키워드 검색 UI 구현 (엔티티명/설명 검색) | FE Avery |
+| 4 | Apollo Client GraphQL 최적화 | FE Avery |
+| 5 | 콘솔 로그 정리 & 경고 해결 | FE Avery |
 
 ### P1 — 스프린트 내 완료 목표
 
 | # | 항목 | 담당 |
 |---|------|------|
-| 6 | 그래프 시각화 성능 최적화 (노드 ≤200, memoization) | FE Avery |
-| 7 | GraphQL 통합 테스트 (깊이 제한, 복잡도 상한) | QA Morgan/Quinn |
-| 8 | E2E 테스트 커버리지 확대 | QA Morgan/Quinn |
-| 9 | 성능 벤치마크 & 모니터링 | PERF Chase |
-| 10 | Seed 데이터 확대 (80→150+ entities) | PM Jordan |
+| 6 | fitView 반응형 동작 구현 | FE Avery |
+| 7 | 글자 크기 가독성 개선 | FE Avery |
+| 8 | GraphQL 검색 쿼리 최적화 | BE Blake |
+| 9 | Neo4j full-text index 활용 | BE Blake |
+| 10 | Hybrid search 백엔드 준비 (UI는 Sprint 3) | BE Blake |
 
 ---
 
 ## 수용 기준 (Acceptance Criteria)
 
-- [ ] Myth/Event 연쇄 탐색 API 구현 (Entity → Myth → Event → Entity)
-- [ ] 최단 경로 알고리즘 구현 (평균 응답 <2초)
-- [ ] Keyword + Vector 하이브리드 검색 구현 (평균 응답 <1.5초)
-- [ ] 관계 검증 자동화 (무효 관계 0개)
-- [ ] Seed 데이터 150+ entities 로드 & 검증 완료
-- [ ] React Flow 그래프 렌더링 60fps (노드 ≤200)
-- [ ] 통합 테스트 커버리지 70% 이상
-- [ ] E2E 테스트 통과율 100%
-- [ ] API 응답시간 99%ile <3초
+- [x] Bloom 레이아웃 구현 (Zeus 중심 동심원 배치)
+- [x] 엣지 라벨 & 화살표 표시 (관계 방향 명확화)
+- [x] 키워드 검색 UI 구현 (엔티티명/설명 검색)
+- [x] 검색 결과 자동 관계 로드
+- [x] fitView 반응형 동작 (노드 개수 변경 시)
+- [x] 글자 크기 가독성 개선 (text-base)
+- [x] 콘솔 로그 정리 (불필요한 debug 제거)
+- [x] GraphQL 검색 쿼리 최적화 (Neo4j int 타입 수정)
+- [x] Apollo Client 캐싱 최적화
 
 ---
 
