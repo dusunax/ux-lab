@@ -13,6 +13,7 @@ import { gql } from '@apollo/client';
 import { MythGraph } from './MythGraph';
 import type { GraphNode, GraphEdge } from '@/app/services/layoutService';
 import { benchmarkLayout, logBenchmarkResult } from '@/app/utils/layoutBenchmark';
+import { filterValidSearchResults } from '@/app/utils/searchValidation';
 
 /**
  * GraphQL 쿼리: 모든 엔티티 목록 조회
@@ -236,16 +237,25 @@ export const GraphDemo: React.FC = () => {
       });
 
       if (result.data?.searchEntities) {
-        const searchResults = result.data.searchEntities;
+        const rawSearchResults = result.data.searchEntities;
+
+        // 유효한 검색 결과만 필터링
+        const validSearchResults = filterValidSearchResults(rawSearchResults);
+
+        if (validSearchResults.length === 0) {
+          setGraphData({ nodes: [], edges: [] });
+          setNodeCount(0);
+          return;
+        }
 
         // 검색 결과를 그래프에 표시
-        const nodes: GraphNode[] = searchResults.map((result: any) => ({
-          id: result.entity.id,
+        const nodes: GraphNode[] = validSearchResults.map((searchResult) => ({
+          id: searchResult.entity.id,
           data: {
-            label: result.entity.name,
-            type: result.entity.type.toLowerCase(),
-            description: result.entity.description,
-            matchScore: result.matchScore,
+            label: searchResult.entity.name,
+            type: searchResult.entity.type.toLowerCase(),
+            description: searchResult.entity.description || '',
+            matchScore: searchResult.matchScore,
           },
           width: 90,
           height: 50,
@@ -288,6 +298,7 @@ export const GraphDemo: React.FC = () => {
       }
     } catch (error) {
       console.error('검색 실패:', error);
+      setGraphData({ nodes: [], edges: [] });
     } finally {
       setIsSearching(false);
     }
