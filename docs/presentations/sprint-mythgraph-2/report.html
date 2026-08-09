@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprint 2 보고 — mythgraph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <style>
+    /* 우선순위 뱃지 */
+    .p0 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fee2e2; color:#991b1b; }
+    .p1 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#fef9c3; color:#854d0e; }
+    .p2 { display:inline-block; padding:2px 7px; border-radius:3px; font-size:11px; font-weight:700; background:#dcfce7; color:#166534; }
+    .done { color:#217346; font-weight:600; }
+
+    /* Achievement gauge */
+    .progress-bar {
+      width: 100%;
+      height: 24px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #217346;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      transition: width 0.3s ease;
+    }
+
+    /* Tech stack display */
+    .stack-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+      width: 100%;
+    }
+    .stack-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stack-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .stack-item {
+      font-size: 14px;
+      color: #333;
+      padding: 4px 0;
+      border-left: 3px solid #217346;
+      padding-left: 12px;
+      line-height: 1.5;
+    }
+
+    /* Decision table */
+    .decision-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+    .decision-table th {
+      background: #f0f0f0;
+      color: #333;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      border: 1px solid #ddd;
+    }
+    .decision-table td {
+      padding: 10px 14px;
+      border: 1px solid #e5e7eb;
+      vertical-align: top;
+      line-height: 1.6;
+      color: #333;
+    }
+    .decision-table tr:nth-child(even) td { background: #fafafa; }
+  </style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 1: 표지
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide slide--cover active">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">mythgraph</div>
+        <h1 class="cover-title">Sprint 2</h1>
+        <p class="cover-sub">Foundation 고도화 및 검색 기능 통합</p>
+        <p class="cover-meta">2026-08-07 · 2주</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 2: 스프린트 목표 & 완료율
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">스프린트 결과</div>
+      <h2 class="slide-title">목표 & 완료율</h2>
+
+      <div class="callout">
+        <div class="callout-goal">
+          Bloom 레이아웃 구현, 엣지 시각화 개선, 키워드 검색 UI 구축으로 그래프 인터랙션 완성
+        </div>
+      </div>
+
+      <h3 style="font-size: 18px; font-weight: 600; margin: 32px 0 16px 0; color: #1a1a1a;">완료율</h3>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="flex: 1;">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 100%;">100% 완료</div>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size: 14px; color: #555; margin-top: 20px;">
+        <strong>9개 항목 모두 완료</strong> — Bloom 레이아웃, 엣지 개선, 검색 UI, 성능 최적화 완료
+      </p>
+
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 3: 주요 완료 항목
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">구현 현황</div>
+      <h2 class="slide-title">주요 완료 항목</h2>
+
+      <ul class="items">
+        <li><strong>Bloom 레이아웃</strong> — Zeus 중심 동심원 배치로 신화 체계 시각화</li>
+        <li><strong>엣지 시각화 개선</strong> — 관계 라벨 & 화살표 마커 추가로 방향 명확화</li>
+        <li><strong>키워드 검색 UI</strong> — 엔티티명/설명 검색으로 신화 콘텐츠 탐색</li>
+        <li><strong>검색 결과 통합</strong> — 검색 후 자동으로 관계 로드</li>
+        <li><strong>Responsive fitView</strong> — 노드 개수 변경 시 자동 뷰 조정</li>
+        <li><strong>가독성 개선</strong> — 글자 크기 최적화 (text-base)</li>
+        <li><strong>디버그 정리</strong> — 불필요한 console.log 제거</li>
+        <li><strong>GraphQL 최적화</strong> — Neo4j int 타입 수정</li>
+        <li><strong>Apollo Client 캐싱</strong> — 쿼리 성능 최적화</li>
+      </ul>
+
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 4: 기술 구현 현황
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">기술 스택</div>
+      <h2 class="slide-title">구현 기술 & 최적화</h2>
+
+      <div class="stack-grid">
+        <div class="stack-group">
+          <div class="stack-label">Frontend</div>
+          <div class="stack-item">React Flow 그래프 렌더링</div>
+          <div class="stack-item">React 18 동시성 처리</div>
+          <div class="stack-item">Tailwind CSS 스타일링</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">State & API</div>
+          <div class="stack-item">Apollo Client GraphQL</div>
+          <div class="stack-item">쿼리 캐싱 최적화</div>
+          <div class="stack-item">Neo4j Aura Free tier</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">Database & Search</div>
+          <div class="stack-item">Neo4j Aura 그래프 DB</div>
+          <div class="stack-item">Full-text index 검색</div>
+          <div class="stack-item">Keyword-only (v2)</div>
+        </div>
+        <div class="stack-group">
+          <div class="stack-label">성능 최적화</div>
+          <div class="stack-item">동심원 레이아웃 계산</div>
+          <div class="stack-item">응답형 fitView 조정</div>
+          <div class="stack-item">콘솔 로그 최소화</div>
+        </div>
+      </div>
+
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 5: 주요 결정 사항
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결정 기록</div>
+      <h2 class="slide-title">주요 결정 사항</h2>
+
+      <table class="decision-table">
+        <thead>
+          <tr>
+            <th>영역</th>
+            <th>결정</th>
+            <th>이유</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>레이아웃</strong></td>
+            <td>Bloom 알고리즘 (Zeus 중심)</td>
+            <td>신화 체계의 계층 구조 시각화에 최적</td>
+          </tr>
+          <tr>
+            <td><strong>검색</strong></td>
+            <td>Keyword-only 구현</td>
+            <td>Vector search는 Sprint 3+ 우선순위 낮음</td>
+          </tr>
+          <tr>
+            <td><strong>엣지</strong></td>
+            <td>화살표 마커 추가</td>
+            <td>관계 방향 명확화로 UX 개선</td>
+          </tr>
+          <tr>
+            <td><strong>UI</strong></td>
+            <td>고정 글자 크기 (text-base)</td>
+            <td>가독성과 반응형 설계 균형</td>
+          </tr>
+          <tr>
+            <td><strong>View</strong></td>
+            <td>Responsive fitView</td>
+            <td>노드 추가/제거 시 자동 조정</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 6: 다음 스프린트 방향
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">다음 단계</div>
+      <h2 class="slide-title">Sprint 3 방향</h2>
+
+      <div class="two-col">
+        <div>
+          <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px 0; color: #1a1a1a;">우선 구현</h3>
+          <ul class="items" style="margin-bottom: 0;">
+            <li><strong>Vector search</strong> — OpenAI API 또는 Ollama 로컬</li>
+            <li><strong>Hybrid search UI</strong> — Keyword + Vector 통합</li>
+            <li><strong>성능 최적화</strong> — 대규모 그래프 렌더링</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px 0; color: #1a1a1a;">탐색 기능</h3>
+          <ul class="items" style="margin-bottom: 0;">
+            <li><strong>Myth/Event 콘텐츠</strong> — 신화 상세 페이지</li>
+            <li><strong>테스트 확대</strong> — E2E 및 성능 테스트</li>
+            <li><strong>성능 모니터링</strong> — 쿼리 최적화 추적</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────────────────────────
+       SLIDE 7: Q&A
+  ────────────────────────────────────────────────────────────────── -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="slide-label">논의</div>
+      <div class="qa-icon">?</div>
+      <h2 class="qa-title">Questions & Feedback</h2>
+      <p class="qa-sub">mythgraph Sprint 2 결과 공유 완료</p>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Navigation hint -->
+<div class="nav-hint">↑↓ 또는 ← → 를 눌러 슬라이드 이동</div>
+
+<script>
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+
+  function showSlide(n) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[n].classList.add('active');
+    updateCounter(n);
+  }
+
+  function updateCounter(n) {
+    const counters = document.querySelectorAll('.slide-counter');
+    counters.forEach(counter => {
+      counter.textContent = `${n + 1} / ${totalSlides}`;
+    });
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    showSlide(currentSlide);
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(currentSlide);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      prevSlide();
+    }
+  });
+
+  // Initialize
+  showSlide(0);
+</script>
+
+</body>
+</html>
