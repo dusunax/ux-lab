@@ -59,11 +59,13 @@ const GET_RELATIONSHIPS_QUERY = gql`
 const SEARCH_ENTITIES_QUERY = gql`
   query SearchEntities($query: String!, $limit: Int) {
     searchEntities(query: $query, limit: $limit) {
-      id
-      name
-      type
-      description
-      score
+      entity {
+        id
+        name
+        type
+        description
+      }
+      matchScore
     }
   }
 `;
@@ -237,13 +239,13 @@ export const GraphDemo: React.FC = () => {
         const searchResults = result.data.searchEntities;
 
         // 검색 결과를 그래프에 표시
-        const nodes: GraphNode[] = searchResults.map((entity: any) => ({
-          id: entity.id,
+        const nodes: GraphNode[] = searchResults.map((result: any) => ({
+          id: result.entity.id,
           data: {
-            label: entity.name,
-            type: entity.type.toLowerCase(),
-            description: entity.description,
-            score: entity.score,
+            label: result.entity.name,
+            type: result.entity.type.toLowerCase(),
+            description: result.entity.description,
+            matchScore: result.matchScore,
           },
           width: 90,
           height: 50,
