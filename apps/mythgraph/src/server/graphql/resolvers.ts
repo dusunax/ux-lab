@@ -252,7 +252,7 @@ export async function searchEntities(
 
     const params: any = {
       query: args.query,
-      limit: limit,
+      limit: neo4j.int(limit),
     };
 
     if (args.filters?.types && args.filters.types.length > 0) {
