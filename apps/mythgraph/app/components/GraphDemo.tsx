@@ -53,6 +53,21 @@ const GET_RELATIONSHIPS_QUERY = gql`
   }
 `;
 
+/**
+ * GraphQL 쿼리: 엔티티 검색 (Keyword search)
+ */
+const SEARCH_ENTITIES_QUERY = gql`
+  query SearchEntities($query: String!, $limit: Int) {
+    searchEntities(query: $query, limit: $limit) {
+      id
+      name
+      type
+      description
+      score
+    }
+  }
+`;
+
 interface SelectedEntity {
   id: string;
   label: string;
@@ -82,9 +97,14 @@ export const GraphDemo: React.FC = () => {
     edges: [],
   });
 
+  // 검색 상태
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
   // GraphQL query hooks
   const [listEntities, { loading: entitiesLoading }] = useLazyQuery(LIST_ENTITIES_QUERY);
   const [getRelationships] = useLazyQuery(GET_RELATIONSHIPS_QUERY);
+  const [searchEntities] = useLazyQuery(SEARCH_ENTITIES_QUERY);
 
   /**
    * Neo4j에서 실제 엔티티를 로드
@@ -202,6 +222,76 @@ export const GraphDemo: React.FC = () => {
   );
 
   /**
+   * 검색 실행
+   */
+  const handleSearch = useCallback(async () => {
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    try {
+      const result = await searchEntities({
+        variables: { query: searchQuery, limit: 50 },
+      });
+
+      if (result.data?.searchEntities) {
+        const searchResults = result.data.searchEntities;
+
+        // 검색 결과를 그래프에 표시
+        const nodes: GraphNode[] = searchResults.map((entity: any) => ({
+          id: entity.id,
+          data: {
+            label: entity.name,
+            type: entity.type.toLowerCase(),
+            description: entity.description,
+            score: entity.score,
+          },
+          width: 90,
+          height: 50,
+        }));
+
+        // 검색 결과의 관계 로드
+        const relatedEdges: GraphEdge[] = [];
+        for (const node of nodes.slice(0, 20)) {
+          try {
+            const relResult = await getRelationships({
+              variables: { entityId: node.id },
+            });
+
+            if (relResult.data?.getRelationships) {
+              const relationships = relResult.data.getRelationships;
+              for (const rel of relationships) {
+                const sourceNodeId = rel.source.id;
+                const targetNodeId = rel.target.id;
+
+                if (
+                  nodes.some((n) => n.id === sourceNodeId) &&
+                  nodes.some((n) => n.id === targetNodeId)
+                ) {
+                  relatedEdges.push({
+                    id: `edge_${rel.source.id}_${rel.target.id}_${rel.type}`,
+                    source: sourceNodeId,
+                    target: targetNodeId,
+                    label: rel.label,
+                  });
+                }
+              }
+            }
+          } catch (error) {
+            // 관계 로딩 실패 무시
+          }
+        }
+
+        setGraphData({ nodes, edges: relatedEdges });
+        setNodeCount(nodes.length);
+      }
+    } catch (error) {
+      console.error('검색 실패:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [searchQuery, searchEntities, getRelationships]);
+
+  /**
    * 벤치마크 실행
    */
   const runBenchmark = useCallback(async () => {
@@ -283,6 +373,46 @@ export const GraphDemo: React.FC = () => {
               <p className="text-myth-gold text-sm">{benchmarkResult}</p>
             </div>
           )}
+        </div>
+
+        {/* 검색 패널 */}
+        <div className="bg-myth-night/40 backdrop-blur border border-myth-slate rounded-lg p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 검색 입력 */}
+            <div>
+              <label className="block text-sm font-medium text-myth-secondary mb-2">
+                🔍 신화 엔티티 검색
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="엔티티명 또는 설명으로 검색... (예: 제우스, 올림푸스)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  disabled={isSearching}
+                  className="flex-1 bg-myth-abyss/50 border border-myth-slate rounded px-3 py-2 text-myth-primary placeholder-myth-muted focus:outline-none focus:border-myth-gold"
+                />
+                <button
+                  onClick={handleSearch}
+                  disabled={isSearching || !searchQuery.trim()}
+                  className="bg-myth-gold hover:bg-myth-amber disabled:bg-myth-muted text-myth-abyss font-semibold py-2 px-6 rounded-lg transition"
+                >
+                  {isSearching ? '검색 중...' : '검색'}
+                </button>
+              </div>
+            </div>
+
+            {/* 검색 결과 수 */}
+            <div className="flex items-end">
+              {graphData.nodes.length > 0 && (
+                <div className="text-sm text-myth-secondary">
+                  ✅ {graphData.nodes.length}개 엔티티 찾음
+                  {graphData.edges.length > 0 && ` • ${graphData.edges.length}개 관계`}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* 그래프 */}
