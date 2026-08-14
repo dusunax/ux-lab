@@ -130,9 +130,11 @@ PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
 |------|------|------|------|
 | 🔴 critical | 치명적 결함 | Blocker 항목 존재 | `eval: done` + `findings: critical` |
 | 🟡 major | 주요 개선사항 | Major만 존재 | `eval: done` + `findings: major` |
-| 🟢 minor | 경미한 개선사항 (통과 가능) | Minor 이하 / 지적 없음 | `eval: done` + `findings: minor` + `ready to merge` |
+| 🟢 minor | 경미한 개선사항 (통과 가능) | Minor 이하 / 지적 없음 | `eval: done` + `findings: minor` |
 
-**⚠️ 중요:** `findings:` 라벨은 평가 결과를 표시하며 유지됨. 머지 기준은 `eval: done`만 확인.
+**⚠️ 중요:** 
+- `findings:` 라벨은 평가 이력을 기록하며 영구 유지
+- `eval: done` = 머지 기준 (이 라벨이 있으면 머지 가능)
 
 **라벨 업데이트 방법 (우선순위):**
 
