@@ -39,7 +39,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env
 .env.local
+.env.development
 .env.development.local
+.env.production
 .env.production.local
 .env.test.local
 .env.staging.local
@@ -127,3 +129,7 @@ ref/
 # tooling artifacts
 __pycache__/
 .claude/worktrees/
+
+# Playwright/E2E test results
+**/test-results/
+.last-run.json
