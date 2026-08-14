@@ -1,6 +1,6 @@
 ---
-name: mythgraph-sprint1-plan
-description: MythGraph 신화 지식그래프 Sprint 1 플랜 - Foundation & Graph Explorer Phase
+name: mythgraph-sprint2-decisions
+description: MythGraph Sprint 2 OQ-8(하이브리드 검색 가중치), OQ-9(Seed 데이터 문헌) 제품 의사결정
 metadata:
   type: project
 ---

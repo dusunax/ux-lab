@@ -49,6 +49,7 @@
 | 파일 | 스프린트 | 날짜 | 주요 결정 |
 |------|----------|------|-----------|
 | [mythgraph/2026-08-07-sprint-1-mythgraph-kickoff.md](./mythgraph/2026-08-07-sprint-1-mythgraph-kickoff.md) | Sprint mythgraph/1 킥오프 | 2026-08-07 | 그리스·로마 신화 지식그래프의 Foundation 구축 |
+| [mythgraph/2026-08-07-sprint-2-kickoff.md](./mythgraph/2026-08-07-sprint-2-kickoff.md) | Sprint mythgraph/2 킥오프 | 2026-08-07 | 의미론적 검색 · 최단 경로 고도화 · 데이터 안정성 확보 |
 
 ### projection-art
 
