@@ -130,29 +130,35 @@ GitHub MCP(`mcp__github__add_issue_comment`) 우선 시도, 미연결 시 `gh` C
 
 ## Step 6 — 라벨 업데이트
 
-처리 결과에 따라 라벨을 교체한다.
+**⚠️ 중요: `findings:` 라벨은 절대 변경하지 않는다.**  
+평가 당시 심각도를 기록하는 영구 메타데이터로, 항목 처리 완료 후에도 유지된다.
 
-**모든 finding이 처리 완료된 경우:**
-- `finding: major` / `finding: blocker` 제거
-- `finding: clear` + `ready to merge` 추가
-
-**미처리(이월) 항목이 남은 경우:**
-- 라벨 변경 없음. 댓글에 이월 항목 명시로 대신함.
+**모든 경우 (처리 완료 / 미처리 상관없음):**
+- `findings: critical` / `findings: major` / `findings: minor` — **변경 없음**
+- 처리 결과는 댓글에만 기록
 
 ```bash
-gh api repos/[REPO]/issues/[NUMBER]/labels --method DELETE ...
-gh api repos/[REPO]/issues/[NUMBER]/labels --method POST ...
+# findings 라벨은 변경하지 않음 (Comment Step 5에서 댓글로만 반영)
+# 라벨 업데이트 불필요
 ```
+
+**처리 결과 반영 규칙:**
+- 모든 항목 완료 → 댓글에 "✅" 표시
+- 미처리 항목 있음 → 댓글에 "❌" 표시, 이월 스프린트 명시
 
 ---
 
 ## Step 7 — 완료 보고
 
 ```
-✅ eval 처리 결과 댓글 등록 완료
+✅ eval-fix 처리 완료
 
 PR:       [URL]
 댓글:     [댓글 URL]
 처리:     [완료 N건 / 미처리 N건]
-라벨:     [변경 내용 또는 "변경 없음"]
+라벨:     변경 없음 (findings 영구 유지)
 ```
+
+**라벨 유지 내용:**
+- `findings: critical` / `findings: major` / `findings: minor` — 평가 이력 보존
+- 처리 결과는 댓글의 ✅/❌ 마크로만 표시

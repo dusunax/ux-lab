@@ -124,20 +124,24 @@ PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
 **제거:**
 - `eval: pending`
 
-**추가 — finding 등급 (Nolan 평가 결과 기준):**
+**추가 — findings 등급 (심각도 표시, 평가 후 영구 유지):**
 
-| 조건 | 추가 라벨 |
-|------|-----------|
-| 🔴 Blocker 항목 존재 | `eval: done` + `finding: blocker` |
-| 🟡 Major만 존재 (Blocker 없음) | `eval: done` + `finding: major` |
-| 🟢 Minor 이하만 / 지적 없음 | `eval: done` + `finding: clear` + `ready to merge` |
+| 등급 | 의미 | 조건 | 라벨 |
+|------|------|------|------|
+| 🔴 critical | 치명적 결함 | Blocker 항목 존재 | `eval: done` + `findings: critical` |
+| 🟡 major | 주요 개선사항 | Major만 존재 | `eval: done` + `findings: major` |
+| 🟢 minor | 경미한 개선사항 (통과 가능) | Minor 이하 / 지적 없음 | `eval: done` + `findings: minor` |
+
+**⚠️ 중요:** 
+- `findings:` 라벨은 평가 이력을 기록하며 영구 유지
+- `eval: done` = 머지 기준 (이 라벨이 있으면 머지 가능)
 
 **라벨 업데이트 방법 (우선순위):**
 
 - `mcp__github__update_pull_request` (labels 파라미터) 우선 시도
-- 미연결 시: `gh pr edit [NUMBER] --remove-label "eval: pending" --add-label "eval: done,finding: [등급]" --repo [REPO]`
+- 미연결 시: `gh pr edit [NUMBER] --remove-label "eval: pending" --add-label "eval: done,findings: [등급]" --repo [REPO]`
 
-> `finding: blocker` → `finding: major` → `finding: clear` 는 상호 배타적이다. 이전 finding 라벨이 있으면 먼저 제거 후 새 라벨 부착.
+> `findings: critical` → `findings: major` → `findings: minor` 는 상호 배타적이다. 이전 findings 라벨이 있으면 먼저 제거 후 새 라벨 부착.
 
 ---
 
@@ -150,6 +154,6 @@ PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
 PR:       [URL]
 관점:     [ops / marketing / business / all]
 코멘트:   [URL]
-라벨:     eval: done + finding: [blocker | major | clear]
+라벨:     eval: done + findings: [critical | major | minor]
 재발방지: https://github.com/dusunax/ux-lab/discussions/42  (Blocker/Major RF가 있을 때만)
 ```
