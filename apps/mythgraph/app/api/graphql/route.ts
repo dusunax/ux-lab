@@ -28,7 +28,7 @@ function getQueryDepth(ast: any): number {
   let maxDepth = 0;
 
   visit(ast, {
-    SelectionSet(node: any, _key, _parent, _path, ancestors) {
+    SelectionSet(_node: any, _key, _parent, _path, ancestors) {
       const depth = ancestors.filter((a: any) => a.kind === 'SelectionSet').length;
       maxDepth = Math.max(maxDepth, depth);
     },
@@ -49,8 +49,9 @@ const yoga = createYoga({
   },
   plugins: [
     {
-      onRequestParse({ request, serverContext: { query } }) {
+      onRequestParse(event: any) {
         const MAX_DEPTH = 10;
+        const { query } = event.serverContext;
 
         try {
           if (query) {

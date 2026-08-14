@@ -1,5 +1,6 @@
 # Memory Index
 
+- [MythGraph Sprint 2 OQ-8·OQ-9 의사결정](mythgraph_sprint2_oq8_oq9.md) — 하이브리드 검색 50:50 권장, Seed 데이터 2단계 접근(Theoi+Perseus→한글), 후속액션·리스크
 - [MythGraph Sprint 1 결정사항](mythgraph_sprint1_decisions.md) — 4개 OQ(Entity라벨, Myth노드, 임베딩, 계정분리) 권장선택, 영향도, 변경리스크
 - [ai-empathy-diary 프로젝트 현황](project_ai_empathy_diary.md) — 스프린트 진행 현황, 확정 기술 결정(x-request-id body 포함, GA4 2개월, rate limit 30/min), 미결 질문(동의 배너, 빌드 환경)
 - [projection-art 프로젝트](project_projection_art.md) — Sprint/4 완료(126 tests, 키스톤+Worker+프리셋), Sprint/5 동화 작가 페르소나 기반 UX 고도화 진행 중

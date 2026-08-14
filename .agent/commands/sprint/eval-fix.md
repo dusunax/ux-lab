@@ -98,9 +98,31 @@ git log --oneline -10
 
 ## Step 5 — 댓글 등록
 
+댓글 본문을 **파일로 작성**한 후 등록한다:
+
 ```bash
-gh pr comment [NUMBER] --repo [REPO] --body "[본문]"
+# 1. 댓글 본문을 파일로 작성
+cat > /tmp/evalfix_comment.txt << 'EOF'
+[댓글 본문]
+EOF
+
+# 2. 파일로부터 댓글 등록 (--body-file 사용 필수)
+gh pr comment [NUMBER] --repo [REPO] --body-file /tmp/evalfix_comment.txt
+
+# 3. 댓글 등록 확인
+if [ $? -eq 0 ]; then
+  echo "✅ 댓글 등록 성공"
+else
+  echo "❌ 댓글 등록 실패"
+  exit 1
+fi
 ```
+
+**주의사항:**
+- ❌ `--body "$(cat file.txt)"` 금지 (쉘 이스케이프, 마크다운 파이프 미처리)
+- ❌ `--body "$(cat file.txt | jq -Rs .)"` 금지 (JSON 이스케이프 오류)
+- ✅ `--body-file file.txt` 사용 (파일 직접 읽음)
+- ✅ `-F body=@file.txt` 사용 (파일 바이너리 전달, 가장 안전)
 
 GitHub MCP(`mcp__github__add_issue_comment`) 우선 시도, 미연결 시 `gh` CLI 폴백.
 

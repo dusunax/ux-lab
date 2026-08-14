@@ -156,6 +156,33 @@ git branch -d {branch_name}
 
 ---
 
+## Step 4.7 — 머지된 PR 라벨 정리
+
+PR이 이미 merge된 상태라면, 아래 라벨을 제거한다:
+
+| 제거할 라벨 | 사유 |
+|------------|------|
+| `ready to merge` | 머지 완료 — 더 이상 불필요 |
+| `finding: improved` | 임시 평가 라벨 — 최종 상태는 finding: clear 또는 eval: done만 유지 |
+
+```bash
+# 현재 라벨 확인
+gh pr view {PR_NUMBER} --repo dusunax/ux-lab --json labels --jq '.labels[].name'
+
+# 라벨 제거
+gh pr edit {PR_NUMBER} --repo dusunax/ux-lab --remove-label "ready to merge"
+gh pr edit {PR_NUMBER} --repo dusunax/ux-lab --remove-label "finding: improved"
+```
+
+**유지할 라벨:**
+- `type: sprint` — 스프린트 구분 (유지)
+- `eval: done` — 평가 완료 (유지)
+- `finding: clear` / `finding: major` / `finding: blocker` — 최종 평가 (유지)
+
+머지되지 않은 PR이라면 이 단계를 **건너뛴다**.
+
+---
+
 ## Step 5 — 완료 보고
 
 ```
