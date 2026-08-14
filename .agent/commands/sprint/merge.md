@@ -156,6 +156,30 @@ git branch -d {branch_name}
 
 ---
 
+## Step 4.7 — 머지된 PR 라벨 정리
+
+PR이 이미 merge된 상태라면, 임시 라벨들을 제거한다:
+
+```bash
+# 임시 라벨 제거
+gh pr edit {PR_NUMBER} --repo dusunax/ux-lab --remove-label "eval: done" --remove-label "ready to merge"
+```
+
+**⚠️ 중요: findings 라벨은 절대 제거하지 않는다.**  
+findings는 평가 심각도를 기록하는 영구 메타데이터이다.
+
+**제거할 라벨:**
+- `eval: done` — 임시 평가 완료 표시 (제거)
+- `ready to merge` — 임시 머지 준비 표시 (제거)
+
+**유지할 라벨:**
+- `type: sprint` — 스프린트 구분 (유지)
+- `findings: critical` / `findings: major` / `findings: minor` — 평가 심각도 (영구 유지)
+
+머지되지 않은 PR이라면 이 단계를 **건너뛴다**.
+
+---
+
 ## Step 5 — 완료 보고
 
 ```
