@@ -129,3 +129,7 @@ ref/
 # tooling artifacts
 __pycache__/
 .claude/worktrees/
+
+# Playwright/E2E test results
+**/test-results/
+.last-run.json
