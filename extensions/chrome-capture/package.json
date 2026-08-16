@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Smart Screenshot Capture - Chrome Extension",
   "scripts": {
+    "find-id": "node scripts/find-extension-id.js",
     "generate-screenshots": "node scripts/generate-screenshots.js"
   },
   "devDependencies": {

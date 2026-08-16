@@ -26,28 +26,46 @@ async function generateScreenshots() {
 
   try {
     // 익스텐션 ID 찾기
-    let extensionId = null;
-    const page = await context.newPage();
-    await page.goto('chrome://extensions', { waitUntil: 'networkidle' });
+    let extensionId = process.env.EXTENSION_ID;
 
-    const extensionIdMatch = await page.evaluate(() => {
-      const items = document.querySelectorAll('[data-id]');
-      for (const item of items) {
-        const name = item.textContent;
-        if (name.includes('Smart Screenshot Capture')) {
-          return item.getAttribute('data-id');
+    if (!extensionId) {
+      const page = await context.newPage();
+      await page.goto('chrome://extensions');
+      await page.waitForTimeout(2000);
+
+      const extensionIdMatch = await page.evaluate(() => {
+        const extensions = document.querySelectorAll('div[data-id]');
+        for (const ext of extensions) {
+          const text = ext.textContent;
+          if (
+            text.includes('Smart Screenshot Capture') ||
+            text.includes('screenshot') ||
+            text.includes('capture')
+          ) {
+            const id = ext.getAttribute('data-id');
+            console.log(`Found: ${id}`);
+            return id;
+          }
         }
-      }
-      return null;
-    });
+        return null;
+      });
 
-    if (extensionIdMatch) {
-      extensionId = extensionIdMatch;
-      console.log(`✅ 익스텐션 ID 찾음: ${extensionId}\n`);
+      if (extensionIdMatch) {
+        extensionId = extensionIdMatch;
+        console.log(`✅ 익스텐션 ID 찾음: ${extensionId}\n`);
+      } else {
+        console.error('❌ 익스텐션을 자동으로 찾을 수 없습니다.\n');
+        console.log('📍 수동으로 ID를 찾으려면:\n');
+        console.log('1. npm run find-id 를 실행하세요');
+        console.log('2. Chrome이 열리면 Smart Screenshot Capture의 ID를 복사하세요');
+        console.log('3. 다음 명령어를 실행하세요:\n');
+        console.log('   EXTENSION_ID="YOUR_ID" npm run generate-screenshots\n');
+        process.exit(1);
+      }
+
+      await page.close();
     } else {
-      console.warn('⚠️  익스텐션을 찾을 수 없습니다. 수동으로 확인하세요.');
-      console.log('방법: chrome://extensions 에서 익스텐션 ID 복사 후 EXTENSION_ID 변수에 설정\n');
-      extensionId = 'abcdefghijklmnopqrstuvwxyzabcdef'; // 임시 ID
+      console.log(`✅ 익스텐션 ID (환경변수): ${extensionId}\n`);
     }
 
     await page.close();
