@@ -117,13 +117,37 @@ Essential tool for developers, designers, and QA teams!
 ## 추가 정보
 
 ### 개인정보 보호 정책
-이 익스텐션은 **로컬 저장소(localStorage)만 사용**하며, 사용자 데이터를 서버로 전송하지 않습니다.
+https://github.com/dusunax/ux-lab/blob/main/extensions/chrome-capture/PRIVACY_POLICY.md
 
 ### 지원 사이트
 https://github.com/dusunax/ux-lab/tree/main/extensions/chrome-capture
 
 ### 개발자 이메일
 dusunax@gmail.com
+
+---
+
+## 권한 사용 정책
+
+### activeTab 권한
+현재 활성 탭의 스크린샷을 캡처하기 위해 필요합니다.
+
+사용자가 "현재 탭 캡처" 버튼을 클릭했을 때, 현재 보고 있는 탭의 화면을 스크린샷으로 저장합니다.
+
+### scripting 권한
+페이지의 HTML 요소를 숨기고 표시하기 위해 필요합니다.
+
+사용자가 입력한 CSS 선택자에 해당하는 요소에 스타일을 적용하여 `visibility: hidden`으로 숨기거나 복원합니다.
+
+### storage 권한
+사용자 설정을 저장하기 위해 필요합니다.
+
+선택한 CSS 선택자 목록, 테마 설정(다크/라이트), 언어 설정을 브라우저의 localStorage에 저장하여 다음 사용 시 자동으로 복구합니다.
+
+### tabs 권한
+현재 활성 탭의 정보를 가져오기 위해 필요합니다.
+
+스크린샷을 촬영할 대상 탭을 확인하고, 그 탭의 내용을 캡처하는 데 사용됩니다.
 
 ---
 
