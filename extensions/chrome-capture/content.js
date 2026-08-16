@@ -99,8 +99,16 @@ function highlightElements(selector) {
 function clearHighlight() {
   highlightedElements.forEach(({ element, originalBorder, originalBackground }) => {
     try {
-      element.style.border = originalBorder || '';
-      element.style.backgroundColor = originalBackground || '';
+      if (originalBorder) {
+        element.style.border = originalBorder;
+      } else {
+        element.style.removeProperty('border');
+      }
+      if (originalBackground) {
+        element.style.backgroundColor = originalBackground;
+      } else {
+        element.style.removeProperty('background-color');
+      }
     } catch (e) {
       console.warn('[Smart Screenshot] Error clearing highlight', e);
     }
