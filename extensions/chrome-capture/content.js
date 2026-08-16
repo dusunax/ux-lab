@@ -103,14 +103,17 @@ function highlightElements(selector) {
 function clearHighlight() {
   highlightedElements.forEach(({ element, originalBorder, originalBackground }) => {
     try {
+      // 인라인 스타일 직접 제거
       if (originalBorder) {
         element.style.border = originalBorder;
       } else {
+        element.style.border = '';
         element.style.removeProperty('border');
       }
       if (originalBackground) {
         element.style.backgroundColor = originalBackground;
       } else {
+        element.style.backgroundColor = '';
         element.style.removeProperty('background-color');
       }
     } catch (e) {
