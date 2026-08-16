@@ -47,7 +47,7 @@ function hideElements(selectors) {
             element: el,
             originalDisplay: el.style.display,
           });
-          el.style.display = 'none';
+          el.style.setProperty('display', 'none', 'important');
           totalCount++;
         }
       });
@@ -129,8 +129,8 @@ function highlightHiddenElements(selectors) {
       elements.forEach((el) => {
         const originalBorder = el.style.border;
         const originalBackground = el.style.backgroundColor;
-        el.style.border = '2px solid #FF4444'; // 빨간 border
-        el.style.backgroundColor = 'rgba(255, 68, 68, 0.1)'; // 연한 빨강 배경
+        el.style.setProperty('border', '2px solid #FF4444', 'important');
+        el.style.setProperty('background-color', 'rgba(255, 68, 68, 0.1)', 'important');
         highlightedElements.push({
           element: el,
           originalBorder: originalBorder,
