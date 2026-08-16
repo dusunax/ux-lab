@@ -82,10 +82,12 @@ function highlightElements(selector) {
     const elements = document.querySelectorAll(selector);
     elements.forEach((el) => {
       const originalBorder = el.style.border;
+      const originalBackground = el.style.backgroundColor;
       el.style.border = '2px solid #FF4444';
       highlightedElements.push({
         element: el,
         originalBorder: originalBorder,
+        originalBackground: originalBackground,
       });
     });
     console.log(`[Smart Screenshot] Highlighted ${elements.length} elements`);
