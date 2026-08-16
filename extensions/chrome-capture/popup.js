@@ -59,6 +59,14 @@ async function addSelector() {
     return;
   }
 
+  // 선택자 유효성 검증
+  try {
+    document.querySelector(selector);
+  } catch (e) {
+    showStatus(`❌ 유효하지 않은 선택자: ${selector}`, 'error');
+    return;
+  }
+
   hiddenSelectors.push(selector);
   saveToStorage();
   selectorInput.value = '';
@@ -149,7 +157,7 @@ async function captureScreenshot() {
     }
   } finally {
     captureBtn.disabled = false;
-    captureBtn.innerHTML = '⛶ 현재 탭 캡처';
+    captureBtn.innerHTML = getI18nMessage('capture-btn');
   }
 }
 
