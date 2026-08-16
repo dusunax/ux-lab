@@ -42,12 +42,12 @@ function hideElements(selectors) {
       const elements = document.querySelectorAll(selector);
       elements.forEach((el) => {
         // 이미 숨겨진 요소는 스킵
-        if (el.style.display !== 'none') {
+        if (el.style.visibility !== 'hidden') {
           hiddenElements.push({
             element: el,
-            originalDisplay: el.style.display,
+            originalVisibility: el.style.visibility,
           });
-          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('visibility', 'hidden', 'important');
           totalCount++;
         }
       });
@@ -61,9 +61,13 @@ function hideElements(selectors) {
 }
 
 function showElements() {
-  hiddenElements.forEach(({ element, originalDisplay }) => {
+  hiddenElements.forEach(({ element, originalVisibility }) => {
     try {
-      element.style.display = originalDisplay || '';
+      if (originalVisibility) {
+        element.style.visibility = originalVisibility;
+      } else {
+        element.style.removeProperty('visibility');
+      }
     } catch (e) {
       console.warn('[Smart Screenshot] Error restoring element', e);
     }
