@@ -1,0 +1,12 @@
+{
+  "name": "chrome-capture-extension",
+  "version": "1.0.0",
+  "description": "Smart Screenshot Capture - Chrome Extension",
+  "scripts": {
+    "generate-screenshots": "node scripts/generate-screenshots.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright": "^1.40.0"
+  }
+}
