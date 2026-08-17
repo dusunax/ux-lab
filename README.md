@@ -4,7 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
-| **Smart Screenshot Capture** | 스크린샷 촬영 중 HTML 요소를 숨기는 Chrome 익스텐션 ([소스](./extensions/chrome-capture), [Web Store 심사 중 ⏳](https://chrome.google.com/webstore)) | 2026-08-16 | dusunax | ![Chrome Extension](https://img.shields.io/badge/Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white) ![Manifest v3](https://img.shields.io/badge/Manifest%20v3-34A853?logo=chromatic&logoColor=white) |
+| **Smart Screenshot Capture** | 스크린샷 촬영 중 HTML 요소를 숨기는 Chrome 익스텐션 ([소스](./extensions/chrome-capture), Web Store 심사 중 | 2026-08-16 | dusunax | ![Chrome Extension](https://img.shields.io/badge/Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white) ![Manifest v3](https://img.shields.io/badge/Manifest%20v3-34A853?logo=chromatic&logoColor=white) |
 | **marathon-diary** | 배번호와 셀피를 마라톤 앨범으로 남기는 3D 책 UI 앱 ([앱](./apps/marathon-diary), [배포](https://marathon-diary-three.vercel.app/)) | 2026-06-16 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![react-pageflip](https://img.shields.io/badge/react--pageflip-111827) |
 | **quiz-drill-ai** | CSV/TSV 기반 시험 대비 퀴즈 드릴 앱 ([앱](./apps/quiz-drill-ai), [배포](https://quiz-drill-ai.vercel.app/)) | 2026-06-13 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **projection-art** | WebGL 기반 인터랙티브 프로젝션 아트 PoC ([앱](./apps/projection-art)) | 2026-05-29 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![MediaPipe](https://img.shields.io/badge/MediaPipe-0097A7?logo=google&logoColor=white) |
@@ -27,7 +27,7 @@
 | 구분          | 방법                             | 반복 작업     | 속도·비용          |
 | ----------- | ------------------------------ | --------- | -------------- |
 | **As-is 1** | 개발자도구에서 요소를 직접 찾아 제거           | 매번 반복     | 번거롭고 느림        |
-| **As-is 2** | Coding Agent에 Playwright 캡처 요청 | 매번 요청     | 더 느리고 토큰 소모    |
+| **As-is 2** | Coding Agent에 Playwright 캡처 요청, 요소 제거 Skill 사용 | 매번 요청     | 더 느리고 토큰 소모    |
 | **To-be**   | 숨길 요소를 기억해 Extension이 제거&캡쳐       | 반복 작업 최소화 | 클릭 3번으로 빠르게 완료 |
 
 <img width="1081" height="843" alt="image" src="https://github.com/user-attachments/assets/c59c37c9-9153-4322-a0ba-7756cf256d02" />
