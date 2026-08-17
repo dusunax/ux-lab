@@ -133,3 +133,4 @@ __pycache__/
 # Playwright/E2E test results
 **/test-results/
 .last-run.json
+SkillSpector/
