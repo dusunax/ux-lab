@@ -19,6 +19,23 @@
 
 ## 📸 스크린샷
 
+### 📍 Smart Screenshot Capture
+
+- **기능:** 현재 브라우저 화면 캡쳐 및 다운로드
+- **목적:** 개발 중 테스트 도구나 디버그 바, 혹은 스크린샷에 민감한 정보나 내부 UI 숨기기
+
+| 구분          | 방법                             | 반복 작업     | 속도·비용          |
+| ----------- | ------------------------------ | --------- | -------------- |
+| **As-is 1** | 개발자도구에서 요소를 직접 찾아 제거           | 매번 반복     | 번거롭고 느림        |
+| **As-is 2** | Coding Agent에 Playwright 캡처 요청 | 매번 요청     | 더 느리고 토큰 소모    |
+| **To-be**   | 숨길 요소를 기억해 Extension이 제거&캡쳐       | 반복 작업 최소화 | 클릭 3번으로 빠르게 완료 |
+
+<img width="1081" height="843" alt="image" src="https://github.com/user-attachments/assets/c59c37c9-9153-4322-a0ba-7756cf256d02" />
+
+<img width="412" height="527" alt="image" src="https://github.com/user-attachments/assets/bc9f167a-e27e-4781-8527-261b57e7d034" />
+
+
+
 ### 📍 marathon-diary
 
 - 배번호 사진, 셀피 폴라로이드, 완주 기록을 한 장의 앨범 페이지로 구성
