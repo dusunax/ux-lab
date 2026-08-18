@@ -5,7 +5,6 @@
   "description": "Capture screenshots with the ability to hide specific HTML elements",
   "permissions": [
     "activeTab",
-    "scripting",
     "tabs",
     "storage"
   ],
