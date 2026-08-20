@@ -15,4 +15,5 @@
 local.properties
 key.properties
 *.keystore
+*.jks
 !debug.keystore
