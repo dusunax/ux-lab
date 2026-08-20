@@ -8,11 +8,6 @@ import {
 import {useI18n} from '../i18n';
 import type {LunarDate, Translation} from '../types';
 
-interface UseDateConverterProps {
-  t?: Translation;
-  onLunarChange?: (lunarData: LunarDate) => void;
-}
-
 interface UseDateConverterReturn {
   selectedYear: number;
   selectedMonth: number;
@@ -64,7 +59,7 @@ export const useDateConverter = (
       } else {
         setConvertError(t?.convertError || '변환 실패');
       }
-    } catch (e) {
+    } catch {
       setConvertError(t?.convertError || '변환 실패');
     }
   }, [selectedYear, selectedMonth, selectedDay, onLunarChange, t, getGanZhi]);

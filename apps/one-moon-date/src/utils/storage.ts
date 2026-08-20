@@ -39,7 +39,7 @@ export const loadLanguage = async (): Promise<Language | null> => {
             return nativeLang as Language;
           }
         }
-      } catch (e) {
+      } catch {
         // Ignore
       }
     }
