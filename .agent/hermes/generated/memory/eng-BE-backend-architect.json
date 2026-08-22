@@ -1,5 +1,28 @@
 {
-  "entries": [],
+  "entries": [
+    {
+      "body": "# MythGraph 프로젝트\n\n**프로젝트 개요:**\n그리스·로마 신화 지식그래프 시스템. 신화 entity 간 관계를 Neo4j에서 관리하고 GraphQL Yoga를 통해 API 제공.\n\n**현황 (2026-08-07):**\n- Spring 1 완료: 70개 entity, 기본 검색 (전문), 1단계 그래프 구현\n- 스택: Next.js, GraphQL Yoga, Neo4j Aura\n\n**Sprint 2 목표 (진행 중):**\n1. 의미론적 검색 (벡터 임베딩 기반)\n2. 최단 경로 알고리즘 고도화 (의미론적 거리)\n3. 데이터 안정성 강화\n\n**주요 제약 조건:**\n- 벡터 임베딩 비용: 월 $50-300\n- 응답시간 SLA: 의미론적 검색 <1.5초, 경로 탐색 <2초\n- 한국어 지원 필수 (신화 한글 entity 명칭)\n\n**확정된 기술 선택:**\n- OQ-6: **OpenAI text-embedding-3-small** (2026-08-07 권장)\n- OQ-7: **Dijkstra 알고리즘** (Neo4j GDS, 2026-08-07 권장)\n\n**구현 계획:**\n- Phase 1 (주 1-2): OpenAI 임베딩 + Redis 캐시\n- Phase 2 (주 2-3): Dijkstra 경로 탐색 통합\n- Phase 3 (주 3-4): 통합 테스트 및 성능 튜닝\n\n**기술 결정 근거:**\n- OpenAI: 한글 지원 우수, 안정성 입증, 커뮤니티 풍부\n- Dijkstra: 가중치 지원, Neo4j GDS 네이티브, Cypher 간결 구현\n\n**다음 단계:**\n1. OQ-6, OQ-7 최종 승인 미팅\n2. 기술 검증 문서 검토 (https://claude.ai/code/artifact/c0559798-84b1-4de8-b900-194a946a5f85)\n3. Phase 1 개발 착수\n\n**Why:** Sprint 2에서 의미론적 검색과 관계 탐색이 핵심 기능. 기술 선택이 비용/성능/품질을 좌우함.\n\n**How to apply:** 향후 MythGraph 개발/최적화 시 이 스택과 제약 조건을 기준으로 판단.\n",
+      "description": [
+        "MythGraph 프로젝트 현황",
+        "Sprint 2 목표",
+        "기술 스택 (Neo4j+GraphQL+Next.js)"
+      ],
+      "name": "mythgraph_project_context",
+      "source": {
+        "path": ".agent/agent-memory/eng-BE-backend-architect/mythgraph_project.md"
+      },
+      "type": "project"
+    },
+    {
+      "body": "# MythGraph 기술 결정 기록 (2026-08-07)\n\n## OQ-6: 벡터 임베딩 공급자 선택\n\n**결정:** OpenAI text-embedding-3-small\n\n**근거:**\n- **한글 성능:** Multilingual embedding에서 한국어 우수, 신화 한글 텍스트 의미 이해도 높음\n- **응답 속도:** 안정적으로 <200ms 응답, SLA 1.5초 충분한 여유\n- **비용:** $50-200/월 (text-embedding-3-small $0.02/1M 토큰)\n- **커뮤니티:** 최풍부한 한국 개발자 문서 및 운영 사례\n- **안정성:** 다수 한국 프로덕션 서비스 검증됨\n\n**차선 대안:** DeepSeek (가격 저렴 $20-80, 한글 지원도 좋음, 하지만 응답속도 150-300ms, 중국 정책 불확실성)\n\n**구현 핵심:**\n- API 키: 환경변수로 관리 (프로덕션: AWS Secrets Manager)\n- 배치 처리: 신화 데이터 백필 시 100개 배치로 일괄 임베딩\n- 캐싱: Redis (entity_id → embedding), TTL 24시간\n- 폴백: 2초 이상 응답 없으면 기본 전문 검색으로 대체\n- 모니터링: 평균 응답시간, 캐시 히트율, API 에러율\n\n---\n\n## OQ-7: 최단 경로 알고리즘 선택\n\n**결정:** Dijkstra 알고리즘 (Neo4j GDS 네이티브 구현)\n\n**근거:**\n- **가중치 지원:** 관계마다 다른 의미적 거리 정확히 반영 (부모-자식 1.0, 동료 2.5 등)\n- **정확도:** 항상 weighted shortest path 보장. A*의 휴리스틱 오버헤드 불필요\n- **Neo4j 최적화:** `gds.shortestPath.dijkstra` 함수 인메모리 실행, P95 <500ms\n- **구현:** Cypher 한 줄로 구현 가능, 개발 속도 빠름\n- **응답:** 70개 entity 규모에서 SLA 2초 충분히 달성\n\n**A* vs Dijkstra 트레이드오프:**\n- A*는 휴리스틱(좌표/거리)이 필요한데, 신화 entity 간 좌표 정의가 의미론적이지 않음\n- A*의 탐색 공간 축소 이득이 신화 그래프 소규모에선 미미\n- 따라서 A*의 추가 복잡성이 정당화되지 않음\n\n**구현 핵심:**\n- 관계 가중치: PARENT(1.0), SIBLING(1.5), MYTH_RELATED(2.0)\n- GDS 프로젝션: 앱 시작 시 로드, 변경 시 30초 배치 재구성\n- 필터링: 여러 프로젝션 관리 (lineage, mythology, historical 등)\n- 캐싱: Redis key `dijkstra:${fromId}:${toId}:${filterType}`, TTL 1시간\n- 모니터링: 경로 길이 분포, GDS 실행시간, 캐시 히트율\n\n---\n\n## 두 결정의 시너지\n\n**Hybrid 검색 가능:**\n- 벡터 임베딩 (OpenAI): 의미론적 유사도 계산\n- Dijkstra 경로: 구조적 거리 계산\n- 결합: \"Zeus와 관련된 신\" → 의미 유사 entity 찾고 → Zeus까지 경로 표시\n\n**구현 로드맵:**\n1. Phase 1 (주 1-2): OpenAI 임베딩 + Redis 캐시\n2. Phase 2 (주 2-3): Dijkstra 경로 탐색 통합\n3. Phase 3 (주 3-4): 통합 테스트, 성능 튜닝, 가중치 재조정\n\n**리스크 관리:**\n- OpenAI 과금 폭증 → 월 토큰 제한, 캐시 TTL 조정\n- Dijkstra 응답시간 초과 → 경로 깊이 제한(max_hops=8), 경로 사전계산\n- 가중치 부정확 → 사용자 피드백 기반 A/B 테스트\n\n**Why:** 의미론적 검색과 관계 탐색은 Spring 2 핵심 기능. 프로덕션 안정성과 한글 지원이 최우선.\n\n**How to apply:** 향후 신화 데이터 추가/수정 시 이 기술 스택 고려. 벡터 임베딩 부하 증가 시 배치 최적화. Dijkstra 성능 저하 시 경로 깊이/캐시 재조정.\n",
+      "description": "MythGraph Sprint 2 기술 결정 — 벡터 임베딩 (OpenAI) vs 최단 경로 (Dijkstra)",
+      "name": "mythgraph_tech_decisions",
+      "source": {
+        "path": ".agent/agent-memory/eng-BE-backend-architect/mythgraph_tech_decisions.md"
+      },
+      "type": "project"
+    }
+  ],
   "id": "eng-BE-backend-architect",
   "index": {
     "path": ".agent/agent-memory/eng-BE-backend-architect/MEMORY.md"

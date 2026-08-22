@@ -23,7 +23,7 @@ OUTPUT_ROOT = AGENT_ROOT / "hermes"
 GENERATED_ROOT = OUTPUT_ROOT / "generated"
 
 SCHEMA = "ux-lab.hermes.agent-system.v1"
-TEAM = {"id": "susan-market", "name": "수산시장"}
+TEAM = {"id": "soo-function", "name": "수평션"}
 
 
 def read_text(path: Path) -> str:

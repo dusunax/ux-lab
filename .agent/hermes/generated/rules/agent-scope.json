@@ -19,7 +19,7 @@
     },
     "roles": {
       "AI": {
-        "agent": "Sage",
+        "agent": "Dolphin",
         "allow": [
           "apps/openrouter-proxy/**"
         ],
@@ -35,7 +35,7 @@
         ]
       },
       "BE": {
-        "agent": "Blake",
+        "agent": "Kraken",
         "allow": [
           "apps/**/api/**",
           "apps/**/app/api/**",
@@ -56,7 +56,7 @@
         ]
       },
       "EV": {
-        "agent": "Nolan",
+        "agent": "Grouper",
         "allow": [],
         "deny": [],
         "description": "스프린트 PR 평가 — 결과는 PR 코멘트로만, 파일 수정 없음",
@@ -64,7 +64,7 @@
         "readonly": true
       },
       "FE": {
-        "agent": "Avery",
+        "agent": "Angelfish",
         "allow": [
           "apps/**/components/**",
           "apps/**/styles/**",
@@ -88,7 +88,7 @@
         ]
       },
       "OC": {
-        "agent": "Sam",
+        "agent": "Pilot",
         "allow": [
           ".agent/subagents/**",
           ".agent/commands/**",
@@ -105,7 +105,7 @@
         "layer": "에이전트 메타"
       },
       "PERF": {
-        "agent": "Chase",
+        "agent": "Sailfish",
         "allow": [
           "*.config.js",
           "*.config.ts",
@@ -133,7 +133,7 @@
         ]
       },
       "PM": {
-        "agent": "Jordan",
+        "agent": "Orca",
         "allow": [
           "docs/**",
           ".agent/agent-memory/**"
@@ -154,7 +154,7 @@
         ]
       },
       "QA": {
-        "agent": "Morgan, Quinn",
+        "agent": "Shark, Octopus",
         "allow": [],
         "deny": [],
         "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
@@ -166,7 +166,7 @@
         "readonly": true
       },
       "TS": {
-        "agent": "Alex",
+        "agent": "Nautilus",
         "allow": [
           "docs/meetings/**",
           "docs/**"
@@ -183,7 +183,7 @@
         "layer": "문서"
       },
       "UX": {
-        "agent": "Riley",
+        "agent": "Coral",
         "allow": [],
         "deny": [],
         "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",

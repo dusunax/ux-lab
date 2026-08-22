@@ -1,5 +1,5 @@
 ---
-description: 회의록 기반 상위 보고용 HTML 프레젠테이션 자동 생성. Jordan(PM)이 스프린트 완료 후 상위 보고에 사용.
+description: 회의록 기반 상위 보고용 HTML 프레젠테이션 자동 생성. Orca(PM)이 스프린트 완료 후 상위 보고에 사용.
 ---
 
 # /sprint:report 하네스
@@ -149,7 +149,7 @@ ls -t docs/presentations/sprint-*-report-*.html | head -1
 > HTML 파일을 직접 Write하지 않는다. **`product/PM/prd-product-manager` 에이전트를 `isolation: "worktree"` 옵션으로 소환**해 아래 데이터를 전달하고 파일 생성을 위임한다.
 > 소환 직전 `echo 'PM' > .claude/.active-role`로 활성 역할을 기록하고, 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다.
 
-Step 1–3에서 수집한 내용을 Jordan에게 전달할 프롬프트로 구성한다:
+Step 1–3에서 수집한 내용을 Orca에게 전달할 프롬프트로 구성한다:
 
 ```
 다음 정보를 바탕으로 Sprint {APP}/{N} HTML 프레젠테이션을 생성해줘.
@@ -194,17 +194,17 @@ docs/presentations/sprint-{APP}-{N}-report-{yymmdd}.html
 
 ## Step 4.5 — worktree 병합 및 정리
 
-Jordan의 worktree 작업이 완료되면 변경사항을 현재 브랜치로 병합한다.
+Orca의 worktree 작업이 완료되면 변경사항을 현재 브랜치로 병합한다.
 
 ```bash
 # 1. worktree 목록 확인
 git worktree list
 
-# 2. Jordan worktree 브랜치의 커밋 확인
+# 2. Orca worktree 브랜치의 커밋 확인
 git log --oneline <jordan-worktree-branch> ^HEAD
 
 # 3. 현재 브랜치로 병합
-git merge <jordan-worktree-branch> --no-ff -m "docs({APP}): Sprint {N} Jordan worktree 병합 — 보고서 HTML 생성"
+git merge <jordan-worktree-branch> --no-ff -m "docs({APP}): Sprint {N} Orca worktree 병합 — 보고서 HTML 생성"
 
 # 4. worktree 정리 (자동 정리되지 않은 경우)
 git worktree remove <jordan-worktree-path> --force
@@ -298,5 +298,5 @@ open docs/presentations/sprint-{APP}-{N}-report-{yymmdd}.html
 
 - 회의록에 없는 내용은 임의로 추가하지 않는다
 - 민감한 정보(개인 이름, 토큰, 키)는 슬라이드에 포함하지 않는다
-- 에이전트 이름(Jordan, Riley 등)은 역할명(PM, UX, FE 등)으로 대체한다
+- 에이전트 이름(Orca, Coral 등)은 역할명(PM, UX, FE 등)으로 대체한다
 - 한국어 텍스트가 깨지지 않도록 폰트 로딩을 확인한다

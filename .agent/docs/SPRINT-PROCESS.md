@@ -31,7 +31,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | Jordan (PM) + Alex (TS) |
+| **주체** | Orca (PM) + Nautilus (TS) |
 | **커맨드** | `/sprint:start` |
 | **입력** | 이전 스프린트 킥오프 파일, git log |
 | **출력** | 킥오프 MD (`docs/meetings/{app}/YYYY-MM-DD-sprint-N-kickoff.md`) |
@@ -39,8 +39,8 @@ sprint:merge
 
 **절차:**
 1. 이전 스프린트 완료율 확인 (90% 미만 시 블록)
-2. Jordan: 스프린트 플랜 작성 (목표·백로그·AC·OQ·리스크)
-3. Alex: 킥오프 MD 생성 + README.md 인덱스 업데이트
+2. Orca: 스프린트 플랜 작성 (목표·백로그·AC·OQ·리스크)
+3. Nautilus: 킥오프 MD 생성 + README.md 인덱스 업데이트
 4. `sprint/{app}/{N}` 브랜치 생성
 
 ---
@@ -49,7 +49,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | FE Avery / BE Blake / AI Sage (역할별) |
+| **주체** | FE Angelfish / BE Kraken / AI Dolphin (역할별) |
 | **커맨드** | 없음 (일반 개발) |
 | **git 규칙** | `.agent/rules/git.md` 준수 |
 
@@ -65,7 +65,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | Jordan (PM) |
+| **주체** | Orca (PM) |
 | **커맨드** | `/sprint:report` |
 | **입력** | 킥오프 MD, 스크린샷 (`docs/presentations/{app}/shot-*.png`) |
 | **출력** | HTML 보고서 (`docs/presentations/sprint-{app}-{N}-report-{date}.html`) |
@@ -82,7 +82,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | Jordan (PM) |
+| **주체** | Orca (PM) |
 | **커맨드** | `/sprint:review` |
 | **입력** | 킥오프 MD, 보고서 HTML |
 | **출력** | GitHub PR (`sprint/{app}/{N}` → `main`) |
@@ -99,14 +99,14 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | Nolan (EV) |
+| **주체** | Grouper (EV) |
 | **커맨드** | `/sprint:eval` |
 | **입력** | PR diff, 킥오프 MD |
 | **출력** | PR 평가 코멘트, Discussions 재발방지 항목 |
 
 **절차:**
 1. PR diff + 킥오프 컨텍스트 수집
-2. Nolan(EV): ops·마케팅·비즈니스 관점 평가
+2. Grouper(EV): ops·마케팅·비즈니스 관점 평가
 3. PR 코멘트 등록
 4. Blocker/Major RF → Discussions #42에 재발방지 코멘트 추가
 5. 라벨 교체: `eval: pending` → `eval: done` + `finding: {blocker|major|clear}`
@@ -117,7 +117,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | 담당 엔지니어 (FE Avery / BE Blake 등) |
+| **주체** | 담당 엔지니어 (FE Angelfish / BE Kraken 등) |
 | **커맨드** | `/sprint:eval-fix` |
 | **입력** | eval 코멘트의 RF 항목 |
 | **출력** | 수정 커밋 + PR 재발방지 코멘트 |
@@ -133,7 +133,7 @@ sprint:merge
 
 | 항목 | 내용 |
 |------|------|
-| **주체** | Jordan (PM) |
+| **주체** | Orca (PM) |
 | **커맨드** | `/sprint:merge` |
 | **입력** | PR 번호 |
 | **출력** | merged PR, main URL로 교체된 PR 본문 |
@@ -152,16 +152,16 @@ sprint:merge
 
 | 역할 | 에이전트 | subagent_type | 담당 커맨드 |
 |------|---------|---------------|------------|
-| PM | Jordan | `product/PM/prd-product-manager` | `sprint:start`, `sprint:report`, `sprint:review`, `sprint:merge` |
-| TS | Alex | `product/TS/secretary` | 킥오프 MD 작성 |
-| EV | Nolan | `product/EV/sprint-evaluator` | `sprint:eval` |
-| OC | Sam | `product/OC/orchestrator` | 태스크 라우팅 (`/oc`) |
-| FE | Avery | `eng/FE/frontend-dev` | 화면 구현, `eval-fix` |
-| BE | Blake | `eng/BE/backend-architect` | API·DB 구현, `eval-fix` |
-| AI | Sage | `eng/AI/openrouter-llm-specialist` | LLM 통합 |
-| UX | Riley | `design/UX/ux-design-reviewer` | UX 리뷰 |
-| QA | Morgan | `qa/QA/code-quality-reviewer` | 코드 리뷰 |
-| QA | Quinn | `qa/QA/qa-engineer` | 기능 검증 |
+| PM | Orca | `product/PM/prd-product-manager` | `sprint:start`, `sprint:report`, `sprint:review`, `sprint:merge` |
+| TS | Nautilus | `product/TS/secretary` | 킥오프 MD 작성 |
+| EV | Grouper | `product/EV/sprint-evaluator` | `sprint:eval` |
+| OC | Pilot | `product/OC/orchestrator` | 태스크 라우팅 (`/oc`) |
+| FE | Angelfish | `eng/FE/frontend-dev` | 화면 구현, `eval-fix` |
+| BE | Kraken | `eng/BE/backend-architect` | API·DB 구현, `eval-fix` |
+| AI | Dolphin | `eng/AI/openrouter-llm-specialist` | LLM 통합 |
+| UX | Coral | `design/UX/ux-design-reviewer` | UX 리뷰 |
+| QA | Shark | `qa/QA/code-quality-reviewer` | 코드 리뷰 |
+| QA | Octopus | `qa/QA/qa-engineer` | 기능 검증 |
 
 ---
 

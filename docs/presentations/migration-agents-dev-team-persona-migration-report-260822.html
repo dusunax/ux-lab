@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수평션(Soo Function) dev-team 마이그레이션 — TD-42</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./ppt-theme.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 1: 표지 -->
+  <div class="slide slide--cover">
+    <div class="slide-inner">
+      <div class="cover-inner">
+        <div class="slide-label">TD-42 · PR #55</div>
+        <h1 class="cover-title">수평션(Soo Function) dev-team</h1>
+        <p class="cover-sub">GStack workflow 채택 + dev-team 페르소나 마이그레이션</p>
+        <p class="cover-meta">2026-08-22 · 91개 파일 변경 · Review 대기</p>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Workflow 채택 (Mermaid) -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">Workflow</div>
+      <h2 class="slide-title">GStack Stage 채택</h2>
+      <div style="background:#f8faf9; padding:12px 18px; border-radius:6px; margin-top:8px;">
+        <p style="font-size:12px; color:#666;">GStack — Garry Tan(YC)이 만든 오픈소스 AI 개발팀 워크플로 도구 (★ 129K · Fork 19K)</p>
+        <ul class="bullet-list" style="font-size:12px; color:#666; margin-top:2px;">
+          <li>Claude Code 등에서 슬래시 커맨드로 CEO·Eng Manager·QA 등 역할 호출</li>
+        </ul>
+      </div>
+      <pre class="mermaid" style="width:100%; margin-top:10px;">
+flowchart LR
+  A["`**Think**
+Pilot (OC)
+요청 분석·라우팅`"] --> B["`**Plan**
+Orca (PM)
+PRD·우선순위 결정`"]
+  B --> C["`**Build**
+Kraken · Angelfish · Dolphin
+BE·FE·AI 구현`"]
+  C --> D["`**Review**
+Shark · Coral
+코드·UX 리뷰`"]
+  D --> E["`**Test**
+Octopus · Sailfish
+QA·성능 검증`"]
+  E --> F["`**Ship**
+Pilot (OC)
+커밋·PR·배포`"]
+  F --> G["`**Reflect**
+Nautilus · Grouper
+회의록·스프린트 평가`"]
+
+  classDef stage fill:#f8faf9,stroke:#217346,stroke-width:1.5px,color:#1a1a1a;
+  class A,B,C,D,E,F,G stage;
+      </pre>
+      <p style="font-size:12px; color:#666; margin-top:8px;">GStack workflow 패턴 5가지 중 2가지만 채택 (Stage 라벨 자체는 위 다이어그램으로 별도 표현):</p>
+      <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:8px;">
+        <span class="badge badge-green">✓ 산출물 체이닝 (핸드오프)</span>
+        <span class="badge badge-green">✓ 스마트 리뷰 라우팅 (리뷰 스킵)</span>
+        <span class="tag tag-red">✗ Test everything (커버리지 자동화)</span>
+        <span class="tag tag-red">✗ Continuous checkpoint (WIP 자동커밋)</span>
+        <span class="tag tag-red">✗ 병렬 스프린트 전제</span>
+      </div>
+      <p style="position:absolute; top:64px; right:80px; font-size:10px; color:#aaa;">참고: <a href="https://github.com/garrytan/gstack" target="_blank" style="color:#aaa;">github.com/garrytan/gstack</a></p>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 네이밍 변경 — 무엇이 바뀌었나 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">변경</div>
+      <h2 class="slide-title">네이밍 변경 — 무엇이 바뀌었나</h2>
+      <table class="data-table" style="margin-top:18px; font-size:14px;">
+        <thead><tr><th>항목</th><th>기존</th><th>변경</th><th>비고</th></tr></thead>
+        <tbody>
+          <tr><td>팀 이름</td><td>수산시장</td><td class="col-highlight-green"><strong>수평션</strong> (Soo Function)</td><td class="col-highlight-yellow">dev-team v2 배지 추가</td></tr>
+          <tr><td>Persona Format</td><td><code>You are [Name], a [Title].</code></td><td class="col-highlight-green"><code>You are the [Title], [Name].</code></td><td class="col-highlight-yellow">타이틀 우선</td></tr>
+          <tr><td>Name 규칙</td><td>미국식 영어 이름</td><td class="col-highlight-green">해양동물 이름</td><td class="col-highlight-yellow">바다 테마 11종</td></tr>
+          <tr><td>Existing Agents 표</td><td>Stage 컬럼 없음</td><td class="col-highlight-green">Stage 컬럼 추가</td><td class="col-highlight-yellow">GStack 착안</td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 페르소나 이름 매핑 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">매핑</div>
+      <h2 class="slide-title">페르소나 이름 매핑 (11명)</h2>
+      <table class="data-table" style="margin-top:16px; font-size:13px;">
+        <thead>
+          <tr>
+            <th>역할</th><th>신규</th><th>기존</th>
+            <th class="col-spacer"></th>
+            <th>역할</th><th>신규</th><th>기존</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>OC</td><td><strong>Pilot</strong></td><td>Sam</td><td class="col-spacer"></td><td>AI</td><td><strong>Dolphin</strong></td><td>Sage</td></tr>
+          <tr><td>PM</td><td><strong>Orca</strong></td><td>Jordan</td><td class="col-spacer"></td><td>QA</td><td><strong>Shark</strong></td><td>Morgan</td></tr>
+          <tr><td>UX</td><td><strong>Coral</strong></td><td>Riley</td><td class="col-spacer"></td><td>QA</td><td><strong>Octopus</strong></td><td>Quinn</td></tr>
+          <tr><td>BE</td><td><strong>Kraken</strong></td><td>Blake</td><td class="col-spacer"></td><td>TS</td><td><strong>Nautilus</strong></td><td>Alex</td></tr>
+          <tr><td>FE</td><td><strong>Angelfish</strong></td><td>Avery</td><td class="col-spacer"></td><td>EV</td><td><strong>Grouper</strong></td><td>Nolan</td></tr>
+          <tr><td>PERF</td><td><strong>Sailfish</strong></td><td>Chase</td><td class="col-spacer"></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px; color:#666; margin-top:12px;">role identifier·subagent_type은 문자열 치환 대상에서 제외 — 전부 유지.</p>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 진행 & 검증 방법 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">검증</div>
+      <h2 class="slide-title">어떻게 진행하고 검증했나</h2>
+      <table class="data-table" style="margin-top:16px; font-size:12px;">
+        <thead><tr><th>단계</th><th>작업</th><th>검증 방법</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>"수산시장" 전체 검색</td><td><code>grep -rln</code> 리포 전체 스캔</td><td class="col-highlight-green">56개 파일 확인</td></tr>
+          <tr><td>2</td><td>팀 정체성 / 생성 산출물 / 과거 기록 3분류</td><td>파일 성격별 규칙 매칭 (날짜 유무 등)</td><td class="col-highlight-green">분류별 처리 규칙 적용</td></tr>
+          <tr><td>3</td><td>정체성 문서·11개 subagent md 문자열 치환</td><td>치환 후 <code>grep</code> 재검색</td><td class="col-highlight-green">잔존 0건</td></tr>
+          <tr><td>4</td><td>export-hermes.py · gen-scope-doc.py 재실행</td><td>스크립트 재실행 후 산출물 diff</td><td class="col-highlight-green">옛 이름 0건</td></tr>
+          <tr><td>5</td><td>subagent_type(role identifier) 대조</td><td>AGENT.md 표 vs md frontmatter name: 비교</td><td class="col-highlight-green">11개 전부 불변</td></tr>
+        </tbody>
+      </table>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: 개선 결과 -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-label">결과</div>
+      <h2 class="slide-title">개선 결과</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; width:100%;">
+        <div style="background:#f8faf9; padding:14px 18px; border-radius:6px;">
+          <div style="font-weight:700; font-size:20px; color:#1a1a1a;">태스크 완료율 100%</div>
+          <div style="font-size:16px; font-weight:700; color:#217346; margin-top:4px;">28/28</div>
+        </div>
+        <div style="background:#f8faf9; padding:14px 18px; border-radius:6px;">
+          <div style="font-weight:700; font-size:20px; color:#1a1a1a;">산출물 자동 갱신 완료</div>
+          <div style="font-size:16px; font-weight:700; color:#217346; margin-top:4px;">1회 · 완료</div>
+          <div style="font-size:12px; color:#555; line-height:1.5; margin-top:2px;">export-hermes.py를 1회 실행해 에이전트 11개·커맨드 22개 정의 파일 전체에 새 이름 반영 완료 (수작업 없이 일괄 처리)</div>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; width:100%;">
+        <div style="background:#f8faf9; padding:14px 16px; border-radius:6px;">
+          <div style="font-weight:700; font-size:20px; color:#1a1a1a;">스코프 기반 리뷰 자동 배정 추가</div>
+          <div style="font-size:16px; font-weight:700; color:#217346; margin-top:4px;">11개</div>
+          <div style="font-size:12px; color:#555; line-height:1.5; margin-top:2px;">orchestrator.md 규칙 한 줄로 변경 범위에 맞는 리뷰어를 전체 에이전트 기준으로 자동 매칭.</div>
+        </div>
+        <div style="background:#f8faf9; padding:14px 16px; border-radius:6px;">
+          <div style="font-weight:700; font-size:20px; color:#1a1a1a;">산출물 핸드오프 경로 문서화</div>
+          <div style="font-size:16px; font-weight:700; color:#217346; margin-top:4px;">3단계</div>
+          <div style="font-size:12px; color:#555; line-height:1.5; margin-top:2px;">PM→TS→EV로 이어지는 산출물 흐름을 문서에 명시해 참조 경로를 표준화.</div>
+        </div>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Q&A -->
+  <div class="slide slide--qa-light">
+    <div class="slide-inner">
+      <div class="qa-icon">Q&amp;A</div>
+      <p class="qa-title">감사합니다</p>
+      <div class="qa-links">
+        <span>수평션 · dev-team v2</span>
+        <span>PR #55 → main · /git:merge --pr 55</span>
+        <span>2026-08-22</span>
+      </div>
+      <div class="slide-counter"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav-hint">← → 또는 클릭으로 전환</div>
+<div class="slide-counter"></div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#f8faf9',
+      primaryBorderColor: '#217346',
+      primaryTextColor: '#1a1a1a',
+      lineColor: '#217346',
+      fontFamily: 'Noto Sans KR, sans-serif',
+      fontSize: '14px'
+    }
+  });
+
+  let currentSlide = 0;
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+
+  function showSlide(n) {
+    slides.forEach(slide => slide.classList.remove('active'));
+    if (n >= totalSlides) currentSlide = 0;
+    if (n < 0) currentSlide = totalSlides - 1;
+    slides[currentSlide].classList.add('active');
+    updateCounter();
+  }
+
+  function updateCounter() {
+    const counters = document.querySelectorAll('.slide-counter');
+    counters.forEach(counter => {
+      counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      currentSlide--;
+      showSlide(currentSlide);
+    } else if (e.key === 'ArrowRight') {
+      currentSlide++;
+      showSlide(currentSlide);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, button, code')) return;
+    if (e.clientX < window.innerWidth / 2) {
+      currentSlide--;
+    } else {
+      currentSlide++;
+    }
+    showSlide(currentSlide);
+  });
+
+  // Initialize
+  showSlide(0);
+</script>
+
+</body>
+</html>

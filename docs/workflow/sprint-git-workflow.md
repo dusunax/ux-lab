@@ -1,8 +1,8 @@
-# 수산시장 스프린트 Git 워크플로우
+# 수평션 스프린트 Git 워크플로우
 
 **확정일:** 2026-05-23
-**작성:** TS (Alex)
-**근거 회의:** PM Jordan 컨설팅 (2026-05-23)
+**작성:** TS (Nautilus)
+**근거 회의:** PM Orca 컨설팅 (2026-05-23)
 **관련 문서:** `docs/workflow/sprint-workflow.md`
 
 ---
@@ -52,14 +52,14 @@ main
 > 상세 사양: `.claude/commands/sprint/start.md`
 
 - 이전 스프린트 완료 게이트(90% 룰) 통과 후 **자동으로 `sprint/프로젝트명/N` 브랜치를 생성**하고 체크아웃한다.
-- Jordan(PM)의 스프린트 플랜 작성, Alex(TS)의 킥오프 MD 생성까지 일괄 처리한다.
+- Orca(PM)의 스프린트 플랜 작성, Nautilus(TS)의 킥오프 MD 생성까지 일괄 처리한다.
 
 ```
 실행 흐름:
   게이트 통과
     → git checkout -b sprint/프로젝트명/N
-    → Jordan: 스프린트 플랜 작성
-    → Alex: kickoff MD 생성 + README 업데이트
+    → Orca: 스프린트 플랜 작성
+    → Nautilus: kickoff MD 생성 + README 업데이트
 ```
 
 ### `/sprint:review`
@@ -109,8 +109,8 @@ main
 /sprint:start
   ├─ 게이트: 이전 스프린트 90% 완료 확인
   ├─ git checkout -b sprint/프로젝트명/N
-  ├─ Jordan: 스프린트 플랜 작성
-  └─ Alex: kickoff MD 생성
+  ├─ Orca: 스프린트 플랜 작성
+  └─ Nautilus: kickoff MD 생성
 
   [스프린트 진행 — 커밋은 sprint/프로젝트명/N 브랜치에]
 

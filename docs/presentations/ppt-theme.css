@@ -156,6 +156,15 @@
   }
   .data-table tr:nth-child(even) td { background: #f8faf9; }
   .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr td.col-highlight-green { background: #f2f9f5; }
+  .data-table tr td.col-highlight-yellow { background: #fffdf5; }
+  .data-table th.col-spacer,
+  .data-table td.col-spacer {
+    background: #fff !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 32px;
+  }
 
   /* Badges */
   .badge {
