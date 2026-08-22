@@ -63,8 +63,8 @@ grep으로 재확인된 범위(plan.md 8장 추가 항목). 팀 이름 + frontma
 
 ## Phase 7 — PR & 보고
 
-- [ ] **T027** PR 생성 (`.agent/rules/git.md` 커밋 메시지 형식 준수)
-- [ ] **T028** TD-42에 결과 코멘트 (변경 파일 수, 검증 결과, 남은 리스크)
+- [x] **T027** PR 생성 — https://github.com/dusunax/ux-lab/pull/55 (`chore/dev-team-persona-migration` → `main`)
+- [x] **T028** TD-42에 결과 코멘트 등록 완료
 
 ---
 
