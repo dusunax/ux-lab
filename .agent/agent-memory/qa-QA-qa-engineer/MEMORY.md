@@ -1,3 +1,3 @@
 # QA Engineer Memory
 
-Persistent notes for Quinn (`qa/QA/qa-engineer`).
+Persistent notes for Octopus (`qa/QA/qa-engineer`).

@@ -110,16 +110,17 @@ GStack의 모든 워크플로 스킬 프리앰블에 자동 주입되는 원칙�
 ![수평션](https://img.shields.io/badge/dev--team--v2-0EA5E9?logoColor=white)
 ```
 
-- README.md 등 팀 이름이 처음 등장하는 문서 상단에 위 배지를 추가한다.
+- `.agent/rules/agent-creation.md` 등 팀 이름이 처음 등장하는 문서 상단에 위 배지를 추가한다.
 - "수산시장"이 언급된 과거 문서(8장 "과거 기록" 분류)는 v1으로 간주하고 갱신하지 않는다 — v1/v2 구분 자체가 혼선 방지 장치이므로 과거 기록을 지우거나 덮어쓰지 않는다.
+- **정정 (태스크 실행 중 발견):** `README.md`는 애초 "팀 정체성 문서"로 분류했으나, 실제 내용은 앱별 "작업자" 컬럼에 시작일과 함께 박힌 과거 기록(marathon-diary 2026-06-16 등 전부 마이그레이션 이전 날짜)이었다 — 회의록과 같은 성격이라 8장 "과거 기록(보존)" 분류로 재분류하고 갱신하지 않는다.
 
 **적용 범위:** `수산시장` 문자열은 저장소 전반 56개 파일에 나타난다(grep 확인). 아래 기준으로 분류해 적용한다.
 
 | 분류 | 처리 | 예시 |
 |---|---|---|
-| 팀 정체성 문서 (갱신) | 새 이름 + v2 배지로 교체 | `README.md`, `.agent/rules/agent-creation.md`, `.agent/subagents/dev-team/product/orchestrator.md`, `.agent/commands/dev-team/{oc,orchestrate}.md`, `.claude/`·`.cursor/` wrapper 동일 파일, `docs/workflow/sprint-workflow.md`, `docs/workflow/sprint-git-workflow.md` |
+| 팀 정체성 문서 (갱신) | 새 이름 + v2 배지로 교체 | `.agent/rules/agent-creation.md`, `.agent/subagents/dev-team/product/orchestrator.md`, `.agent/commands/dev-team/{oc,orchestrate}.md`, `.claude/`·`.cursor/` wrapper 동일 파일, `docs/workflow/sprint-workflow.md`, `docs/workflow/sprint-git-workflow.md` |
 | 생성 산출물 (재생성) | 손으로 고치지 않고 `export-hermes.py` 재실행으로 동기화 | `.agent/hermes/generated/**` |
-| 과거 기록 (보존, v1로 간주) | 갱신하지 않음 — 히스토리는 당시 이름 그대로 남긴다 | `docs/meetings/**/*.md`, `.agent/agent-memory/**/project_*.md` |
+| 과거 기록 (보존, v1로 간주) | 갱신하지 않음 — 히스토리는 당시 이름 그대로 남긴다 | `docs/meetings/**/*.md`, `.agent/agent-memory/**/project_*.md`, **`README.md`**(앱별 작업자 배지 — 날짜가 박힌 과거 기록) |
 
 ## 7. 이름 매핑 (제안 — 승인 필요)
 
@@ -141,7 +142,7 @@ GStack의 모든 워크플로 스킬 프리앰블에 자동 주입되는 원칙�
 
 ## 8. 변경 대상 파일
 
-- 팀 이름(6장 표 기준): `README.md`, `.agent/rules/agent-creation.md`, `.agent/subagents/dev-team/product/orchestrator.md`, `.agent/commands/dev-team/{oc,orchestrate}.md`, `.claude/`·`.cursor/` 동일 wrapper 파일, `docs/workflow/sprint-{workflow,git-workflow}.md`
+- 팀 이름(6장 표 기준): `.agent/rules/agent-creation.md`, `.agent/subagents/dev-team/product/orchestrator.md`, `.agent/commands/dev-team/{oc,orchestrate}.md`, `.claude/`·`.cursor/` 동일 wrapper 파일, `docs/workflow/sprint-{workflow,git-workflow}.md` (`README.md`는 과거 기록으로 재분류 — 제외)
 - `.agent/subagents/dev-team/**` (11개 md — 헤더 문장, 이름 전체)
 - `.agent/rules/agent-creation.md` (Persona Format, Existing Agents 표, Stage 컬럼, 팀 이름)
 - `.agent/rules/agent-scope.md` / `agent-scope.json` (이름 참조가 있다면 동기화)
@@ -157,7 +158,7 @@ GStack의 모든 워크플로 스킬 프리앰블에 자동 주입되는 원칙�
 1. 본 계획 문서 사용자 최종 승인 (이름 매핑 포함)
 2. 브랜치 생성 (`chore/dev-team-persona-migration`, `.agent/rules/git.md` 기준)
 3. `.agent/rules/agent-creation.md` 갱신 (Persona Format + Stage 컬럼 — workflow 채택분 우선 반영)
-4. 팀 이름 교체 (6장 표의 "팀 정체성 문서" 분류 파일) — `README.md` 등 상단에 dev-team v2 배지 추가
+4. 팀 이름 교체 (6장 표의 "팀 정체성 문서" 분류 파일, `README.md` 제외) — `.agent/rules/agent-creation.md` 상단에 dev-team v2 배지 추가
 5. `.agent/subagents/dev-team/**` 11개 파일 일괄 갱신 (이름 + 포맷)
 6. scope/memory 경로 및 wrapper 문서 동기화
 7. `python3 .agent/scripts/export-hermes.py` 실행, `.agent/hermes/generated/**` 확인

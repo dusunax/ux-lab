@@ -1,5 +1,5 @@
 ---
-description: 스프린트 시작 의식. 이전 스프린트 완료 여부를 검증한 뒤, Jordan(PM)이 플랜을 작성하고 Alex(TS)가 docs/meetings/에 킥오프 MD를 생성한다. 인수 없음 — 모든 컨텍스트를 자동 수집한다.
+description: 스프린트 시작 의식. 이전 스프린트 완료 여부를 검증한 뒤, Orca(PM)이 플랜을 작성하고 Nautilus(TS)가 docs/meetings/에 킥오프 MD를 생성한다. 인수 없음 — 모든 컨텍스트를 자동 수집한다.
 ---
 
 # /sprint:start 하네스
@@ -103,7 +103,7 @@ Step 0-2에서 찾은 파일을 읽는다.
 
 Sprint [NEXT_SPRINT] 킥오프에 이월 항목을 포함합니다.
 ```
-→ 이월 항목 목록을 저장하고 Step 3(Jordan)에게 전달한다. 진행은 계속한다.
+→ 이월 항목 목록을 저장하고 Step 3(Orca)에게 전달한다. 진행은 계속한다.
 
 **90% 미만 (중단):**
 
@@ -158,7 +158,7 @@ git branch --list sprint/[APP]/[NEXT_SPRINT]
 
 ## Step 2 — 컨텍스트 보강
 
-Jordan에게 전달할 배경 정보를 수집한다.
+Orca에게 전달할 배경 정보를 수집한다.
 
 ```bash
 # 이전 스프린트 이후 커밋 이력
@@ -175,7 +175,7 @@ date +"%Y-%m-%d"
 
 ---
 
-## Step 3 — Jordan(PM) 소환: 스프린트 플랜 작성
+## Step 3 — Orca(PM) 소환: 스프린트 플랜 작성
 
 소환 직전 활성 역할을 기록한다 (scope-enforcer 훅 전제):
 
@@ -186,7 +186,7 @@ echo 'PM' > .claude/.active-role
 `product/PM/prd-product-manager` 에이전트를 소환한다.
 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다.
 
-Jordan에게 전달할 프롬프트:
+Orca에게 전달할 프롬프트:
 
 ```
 Sprint [NEXT_SPRINT] 플랜을 작성해줘.
@@ -230,19 +230,19 @@ PRD 전체가 아닌 스프린트 범위 요약만 작성할 것.
 - [알려진 불확실성 또는 의존성]
 ```
 
-Jordan의 결과물을 저장한다.
+Orca의 결과물을 저장한다.
 
 ---
 
-## Step 4 — Alex(TS) 소환: 킥오프 MD 생성 (worktree 격리)
+## Step 4 — Nautilus(TS) 소환: 킥오프 MD 생성 (worktree 격리)
 
 소환 직전 `echo 'TS' > .claude/.active-role`로 활성 역할을 기록하고, 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다.
 
 `product/TS/secretary` 에이전트를 **`isolation: "worktree"`** 옵션으로 소환한다.
 
-> Alex는 `docs/meetings/` 아래 파일을 생성하므로 메인 워크트리와 충돌을 방지하기 위해 격리된 worktree에서 실행한다.
+> Nautilus는 `docs/meetings/` 아래 파일을 생성하므로 메인 워크트리와 충돌을 방지하기 위해 격리된 worktree에서 실행한다.
 
-Alex에게 전달할 프롬프트:
+Nautilus에게 전달할 프롬프트:
 
 ```
 Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘. (앱: [APP])
@@ -250,33 +250,33 @@ Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘. (앱: [APP])
 파일 경로: docs/meetings/[APP]/[오늘날짜]-sprint-[NEXT_SPRINT]-kickoff.md
 오늘 날짜: [Step 2에서 수집한 날짜]
 
-아래 템플릿에 Jordan의 스프린트 플랜을 채워서 작성해줘.
+아래 템플릿에 Orca의 스프린트 플랜을 채워서 작성해줘.
 같은 앱 디렉터리(docs/meetings/[APP]/)의 최신 킥오프 회의록 형식을 그대로 따를 것.
 
 ---
 # Sprint [NEXT_SPRINT] 킥오프 회의록
 
 **날짜:** [오늘날짜]
-**참석자:** PM Jordan, FE Avery, BE Blake, QA Morgan, QA Quinn, TS Alex, AI Sage
-**진행자:** PM Jordan
+**참석자:** PM Orca, FE Angelfish, BE Kraken, QA Shark, QA Octopus, TS Nautilus, AI Dolphin
+**진행자:** PM Orca
 
 ---
 
 ## Sprint [NEXT_SPRINT] 목표
 
-> **[Jordan의 한 줄 목표]**
+> **[Orca의 한 줄 목표]**
 
 ---
 
 ## Sprint [NEXT_SPRINT] 확정 스코프
 
-[Jordan의 주요 작업 테이블]
+[Orca의 주요 작업 테이블]
 
 ---
 
 ## 수용 기준 (Acceptance Criteria)
 
-[Jordan의 수용 기준 체크리스트]
+[Orca의 수용 기준 체크리스트]
 
 ---
 
@@ -288,21 +288,21 @@ Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘. (앱: [APP])
 
 ## Open Questions
 
-[Jordan의 Open Questions 테이블]
+[Orca의 Open Questions 테이블]
 
 ---
 
 ## 비고
 
 ### 리스크
-[Jordan의 리스크]
+[Orca의 리스크]
 
 ### 제외 범위
-[Jordan의 제외 범위]
+[Orca의 제외 범위]
 
 ---
 
-*회의록 작성: TS Alex | 다음 회의: Sprint [NEXT_SPRINT] 리뷰*
+*회의록 작성: TS Nautilus | 다음 회의: Sprint [NEXT_SPRINT] 리뷰*
 ---
 
 파일 생성 후 docs/meetings/README.md의 [APP] 섹션 인덱스 테이블에도 한 줄 추가해줘
@@ -314,17 +314,17 @@ Sprint [NEXT_SPRINT] 킥오프 회의록 MD 파일을 생성해줘. (앱: [APP])
 
 ## Step 4.5 — worktree 병합 및 정리
 
-Alex의 worktree 작업이 완료되면 변경사항을 `sprint/[APP]/[NEXT_SPRINT]` 브랜치로 병합한다.
+Nautilus의 worktree 작업이 완료되면 변경사항을 `sprint/[APP]/[NEXT_SPRINT]` 브랜치로 병합한다.
 
 ```bash
 # 1. 현재 worktree 목록 확인
 git worktree list
 
-# 2. Alex worktree의 브랜치 이름 확인 후 커밋 목록 조회
+# 2. Nautilus worktree의 브랜치 이름 확인 후 커밋 목록 조회
 git log --oneline <alex-worktree-branch> ^sprint/[APP]/[NEXT_SPRINT]
 
 # 3. 변경사항을 sprint/[APP]/[NEXT_SPRINT]로 가져오기
-git merge <alex-worktree-branch> --no-ff -m "docs([APP]): Sprint [NEXT_SPRINT] Alex worktree 병합 — 킥오프 MD 생성"
+git merge <alex-worktree-branch> --no-ff -m "docs([APP]): Sprint [NEXT_SPRINT] Nautilus worktree 병합 — 킥오프 MD 생성"
 
 # 4. worktree 정리 (자동 정리되지 않은 경우)
 git worktree remove <alex-worktree-path> --force
@@ -346,11 +346,11 @@ ls docs/meetings/[APP]/ | grep sprint-[NEXT_SPRINT]
 
 ✅ Sprint [APP]/[PREV_SPRINT] 완료 검증 통과
 🌿 브랜치:  sprint/[APP]/[NEXT_SPRINT]
-Jordan(PM): 스프린트 플랜 작성 완료
-Alex(TS):   docs/meetings/[APP]/[파일명] 생성 완료
+Orca(PM): 스프린트 플랜 작성 완료
+Nautilus(TS):   docs/meetings/[APP]/[파일명] 생성 완료
             README.md 인덱스 업데이트 완료
 
-목표: [Jordan의 한 줄 목표]
+목표: [Orca의 한 줄 목표]
 
 참고: docs/workflow/sprint-git-workflow.md
 ```

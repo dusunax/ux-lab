@@ -41,7 +41,7 @@ PR 번호를 확정하지 못하면:
 gh pr view [NUMBER] --repo [REPO] --comments --json comments
 ```
 
-eval 댓글(`🏁 Sprint {APP}/{N} 평가 — Nolan (EV)`, 구형 `🏁 Sprint N 평가 — Nolan (EV)` 제목도 허용)을 찾아 **Review Findings 테이블**을 추출한다.
+eval 댓글(`🏁 Sprint {APP}/{N} 평가 — Grouper (EV)`, 구형 `🏁 Sprint N 평가 — Grouper (EV)` 제목도 허용)을 찾아 **Review Findings 테이블**을 추출한다.
 
 각 항목의 등급(🔴 Blocker / 🟡 Major / 🟢 Minor)과 항목명을 목록화한다.
 
@@ -91,7 +91,7 @@ git log --oneline -10
 - 완료 항목: 무엇을 어떻게 했는지 + 커밋 SHA (있으면)
 - 미처리 항목: `**사유:**` 라벨로 명확히 구분
 - 등급 순서: 🔴 → 🟡 → 🟢
-- 에이전트 실명(Jordan, Blake 등)은 역할명(PM, BE 등)으로 대체
+- 에이전트 실명(Orca, Kraken 등)은 역할명(PM, BE 등)으로 대체
 - 마지막 줄: `*🤖 /sprint:eval 후속 조치 — YYYY-MM-DD*`
 
 ---

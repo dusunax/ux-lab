@@ -2,7 +2,7 @@
   "_comment": "SSOT: 이 파일이 단일 진실 공급원. scope-enforcer.py 훅이 읽고, gen-scope-doc.py 훅이 agent-scope.md를 자동 재생성한다. agent-scope.md를 직접 수정하지 말 것. memory 필드는 해당 역할의 자기 메모리 디렉터리 — deny/readonly보다 우선해 항상 쓰기 허용된다.",
   "roles": {
     "FE": {
-      "agent": "Avery",
+      "agent": "Angelfish",
       "layer": "UI",
       "description": "렌더링, 컴포넌트, 스타일",
       "allow": [
@@ -26,7 +26,7 @@
       ]
     },
     "BE": {
-      "agent": "Blake",
+      "agent": "Kraken",
       "layer": "API",
       "description": "서버 로직, DB, 외부 서비스 연동",
       "allow": [
@@ -47,7 +47,7 @@
       ]
     },
     "PERF": {
-      "agent": "Chase",
+      "agent": "Sailfish",
       "layer": "성능",
       "description": "성능 최적화, 번들 분석, 빌드 설정 (Core Web Vitals · 렌더링 병목 전담)",
       "allow": [
@@ -75,7 +75,7 @@
       ]
     },
     "AI": {
-      "agent": "Sage",
+      "agent": "Dolphin",
       "layer": "AI",
       "description": "LLM 통합, 프롬프트, AI 파이프라인",
       "allow": [
@@ -91,7 +91,7 @@
       ]
     },
     "PM": {
-      "agent": "Jordan",
+      "agent": "Orca",
       "layer": "문서",
       "description": "스프린트 기록, 의사결정 문서",
       "allow": [
@@ -112,7 +112,7 @@
       ]
     },
     "TS": {
-      "agent": "Alex",
+      "agent": "Nautilus",
       "layer": "문서",
       "description": "회의록, 스프린트 기록",
       "allow": [
@@ -129,7 +129,7 @@
       ]
     },
     "OC": {
-      "agent": "Sam",
+      "agent": "Pilot",
       "layer": "에이전트 메타",
       "description": "에이전트 정의, 라우팅 규칙, 소유권 정책",
       "allow": [
@@ -146,7 +146,7 @@
       ]
     },
     "UX": {
-      "agent": "Riley",
+      "agent": "Coral",
       "layer": "읽기 전용",
       "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
       "allow": [],
@@ -157,7 +157,7 @@
       ]
     },
     "QA": {
-      "agent": "Morgan, Quinn",
+      "agent": "Shark, Octopus",
       "layer": "읽기 전용",
       "description": "검증, 피드백 — 파일 수정 없음 (자기 메모리 제외)",
       "allow": [],
@@ -169,7 +169,7 @@
       ]
     },
     "EV": {
-      "agent": "Nolan",
+      "agent": "Grouper",
       "layer": "읽기 전용",
       "description": "스프린트 PR 평가 — 결과는 PR 코멘트로만, 파일 수정 없음",
       "allow": [],

@@ -1,12 +1,12 @@
 ---
-description: 스프린트 평가. Nolan(EV)이 운영/마케팅/비즈니스 관점에서 PR diff를 분석하고 코멘트를 작성한다.
+description: 스프린트 평가. Grouper(EV)이 운영/마케팅/비즈니스 관점에서 PR diff를 분석하고 코멘트를 작성한다.
 ---
 
 # /sprint:eval 하네스
 
 **인수:** $ARGUMENTS
 
-**평가자:** Nolan (EV) — `product/EV/sprint-evaluator`
+**평가자:** Grouper (EV) — `product/EV/sprint-evaluator`
 **사양 문서:** `docs/workflow/sprint-git-workflow.md`
 
 ---
@@ -43,7 +43,7 @@ git log --oneline sprint/{APP}/{N} ^main
 
 ---
 
-## Step 2 — Nolan(EV) 소환
+## Step 2 — Grouper(EV) 소환
 
 소환 직전 `echo 'EV' > .claude/.active-role`로 활성 역할을 기록하고, 소환 완료 직후 `rm -f .claude/.active-role`로 정리한다. (EV는 읽기 전용 — 평가 결과는 PR 코멘트로만 남긴다.)
 
@@ -66,7 +66,7 @@ Sprint [APP]/[N] PR을 평가해줘.
 
 ## Step 3 — PR 코멘트 등록
 
-Nolan의 평가 결과를 PR에 코멘트로 등록한다.
+Grouper의 평가 결과를 PR에 코멘트로 등록한다.
 
 - GitHub MCP(`mcp__github__add_issue_comment`) 우선 시도
 - 미연결 시: `gh pr comment [NUMBER] --body "..."` 로 폴백
@@ -150,7 +150,7 @@ PR 코멘트 등록 후 Review Findings 결과에 따라 라벨을 교체한다.
 ```
 📊 Sprint {APP}/{N} 평가 완료
 
-평가자:   Nolan (EV)
+평가자:   Grouper (EV)
 PR:       [URL]
 관점:     [ops / marketing / business / all]
 코멘트:   [URL]

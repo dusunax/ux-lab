@@ -1,6 +1,6 @@
 {
   "argumentsVariable": "$ARGUMENTS",
-  "description": "/orchestrate의 축약 별칭. 수산시장 플릿 라우터. 사용법: /oc [태스크 설명]",
+  "description": "/orchestrate의 축약 별칭. 수평션 플릿 라우터. 사용법: /oc [태스크 설명]",
   "detectedToolMentions": [],
   "flags": [],
   "id": "dev-team/oc",
@@ -18,7 +18,7 @@
     "path": ".agent/commands/dev-team/oc.md"
   },
   "team": {
-    "id": "susan-market",
-    "name": "수산시장"
+    "id": "soo-function",
+    "name": "수평션"
   }
 }

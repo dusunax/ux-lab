@@ -1,6 +1,6 @@
 ---
 description: |-
-  /orchestrate의 축약 별칭. 수산시장 플릿 라우터. 사용법: /oc [태스크 설명]
+  /orchestrate의 축약 별칭. 수평션 플릿 라우터. 사용법: /oc [태스크 설명]
 ---
 
 > Thin wrapper - 실제 정의는 `.agent/commands/dev-team/oc.md`를 읽으세요.

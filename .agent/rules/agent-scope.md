@@ -2,7 +2,7 @@
 # Agent File Scope Rules
 
 에이전트가 파일을 수정할 때 적용되는 소유권 규칙.
-오케스트레이터(Sam)는 브리핑 시 수신 에이전트에게 이 규칙을 기반으로 **담당 파일 범위**를 명시적으로 전달한다.
+오케스트레이터(Pilot)는 브리핑 시 수신 에이전트에게 이 규칙을 기반으로 **담당 파일 범위**를 명시적으로 전달한다.
 
 ---
 
@@ -10,16 +10,16 @@
 
 | 역할 | 에이전트 | 쓰기 허용 경로 | 메모리 쓰기 | 읽기 |
 |------|---------|--------------|------------|------|
-| **FE** | Avery | `apps/**/components/**`, `apps/**/styles/**`, `apps/**/public/**`, `apps/**/app/**`, `apps/**/src/**`, `apps/**/pages/**` | `.agent/agent-memory/eng-FE-frontend-dev/**` | 전체 |
-| **BE** | Blake | `apps/**/api/**`, `apps/**/app/api/**`, `apps/**/lib/**`, `apps/puppeteer-api/**` | `.agent/agent-memory/eng-BE-backend-architect/**` | 전체 |
-| **PERF** | Chase | `*.config.js`, `*.config.ts`, `vercel.json`, `vercel.ts`, `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.env*`, `Dockerfile`, `**/Dockerfile`, `**/package.json`, `**/*.config.js`, `**/*.config.ts` | `.agent/agent-memory/eng-PERF-perf-optimizer/**` | 전체 |
-| **AI** | Sage | `apps/openrouter-proxy/**` | `.agent/agent-memory/eng-AI-openrouter-llm-specialist/**` | 전체 |
-| **PM** | Jordan | `docs/**`, `.agent/agent-memory/**` | `.agent/agent-memory/product-PM-prd-product-manager/**` | 전체 |
-| **TS** | Alex | `docs/meetings/**`, `docs/**` | — | 전체 |
-| **UX** | Riley | 읽기 전용 (피드백은 텍스트 출력만) | `.agent/agent-memory/design-UX-ux-design-reviewer/**` | 전체 |
-| **QA** | Morgan, Quinn | 읽기 전용 (결과는 텍스트 출력만) | `.agent/agent-memory/qa-QA-code-quality-reviewer/**`, `.agent/agent-memory/qa-QA-qa-engineer/**` | 전체 |
-| **EV** | Nolan | 읽기 전용 (결과는 텍스트 출력만) | — | 전체 |
-| **OC** | Sam | `.agent/subagents/**`, `.agent/commands/**`, `.agent/rules/**`, `.agent/scripts/**`, `.claude/**`, `.cursor/**` | — | 전체 |
+| **FE** | Angelfish | `apps/**/components/**`, `apps/**/styles/**`, `apps/**/public/**`, `apps/**/app/**`, `apps/**/src/**`, `apps/**/pages/**` | `.agent/agent-memory/eng-FE-frontend-dev/**` | 전체 |
+| **BE** | Kraken | `apps/**/api/**`, `apps/**/app/api/**`, `apps/**/lib/**`, `apps/puppeteer-api/**` | `.agent/agent-memory/eng-BE-backend-architect/**` | 전체 |
+| **PERF** | Sailfish | `*.config.js`, `*.config.ts`, `vercel.json`, `vercel.ts`, `package.json`, `pnpm-lock.yaml`, `.npmrc`, `.env*`, `Dockerfile`, `**/Dockerfile`, `**/package.json`, `**/*.config.js`, `**/*.config.ts` | `.agent/agent-memory/eng-PERF-perf-optimizer/**` | 전체 |
+| **AI** | Dolphin | `apps/openrouter-proxy/**` | `.agent/agent-memory/eng-AI-openrouter-llm-specialist/**` | 전체 |
+| **PM** | Orca | `docs/**`, `.agent/agent-memory/**` | `.agent/agent-memory/product-PM-prd-product-manager/**` | 전체 |
+| **TS** | Nautilus | `docs/meetings/**`, `docs/**` | — | 전체 |
+| **UX** | Coral | 읽기 전용 (피드백은 텍스트 출력만) | `.agent/agent-memory/design-UX-ux-design-reviewer/**` | 전체 |
+| **QA** | Shark, Octopus | 읽기 전용 (결과는 텍스트 출력만) | `.agent/agent-memory/qa-QA-code-quality-reviewer/**`, `.agent/agent-memory/qa-QA-qa-engineer/**` | 전체 |
+| **EV** | Grouper | 읽기 전용 (결과는 텍스트 출력만) | — | 전체 |
+| **OC** | Pilot | `.agent/subagents/**`, `.agent/commands/**`, `.agent/rules/**`, `.agent/scripts/**`, `.claude/**`, `.cursor/**` | — | 전체 |
 
 ---
 
@@ -29,13 +29,13 @@
 
 | 파일 패턴 | 소유 역할 | 근거 |
 |-----------|---------|------|
-| `apps/**/app/api/**/route.ts` | **BE** Blake | Next.js App Router API Route는 서버사이드 코드 |
-| `apps/**/pages/api/**` | **BE** Blake | Pages Router API Route도 서버사이드 코드 |
-| `apps/**/app/layout.tsx` | **FE** Avery | 렌더링 책임 |
-| `apps/**/app/page.tsx` | **FE** Avery | 렌더링 책임 |
-| `apps/ai-empathy-diary/index.html` | **FE** Avery | 싱글 HTML 구조의 UI 레이어 |
-| `apps/ai-empathy-diary/api/*.js` | **BE** Blake | Vercel serverless function |
-| `package.json` (의존성 추가) | 요청자 역할 | FE 추가면 Avery, BE 추가면 Blake. 빌드 설정이면 Chase |
+| `apps/**/app/api/**/route.ts` | **BE** Kraken | Next.js App Router API Route는 서버사이드 코드 |
+| `apps/**/pages/api/**` | **BE** Kraken | Pages Router API Route도 서버사이드 코드 |
+| `apps/**/app/layout.tsx` | **FE** Angelfish | 렌더링 책임 |
+| `apps/**/app/page.tsx` | **FE** Angelfish | 렌더링 책임 |
+| `apps/ai-empathy-diary/index.html` | **FE** Angelfish | 싱글 HTML 구조의 UI 레이어 |
+| `apps/ai-empathy-diary/api/*.js` | **BE** Kraken | Vercel serverless function |
+| `package.json` (의존성 추가) | 요청자 역할 | FE 추가면 Angelfish, BE 추가면 Kraken. 빌드 설정이면 Sailfish |
 
 ---
 
@@ -53,7 +53,7 @@
 `.active-role`이 없으면(메인 세션) 검사하지 않는다.
 **이 강제는 Claude Code 전용이다.** Cursor/Codex에서는 프롬프트 제약(브리핑 삽입)만 적용된다.
 
-Sam의 브리핑에 다음 형식으로 경고를 삽입한다:
+Pilot의 브리핑에 다음 형식으로 경고를 삽입한다:
 
 ```
 ⚠️ 파일 범위 주의: [파일명]은 [다른 역할]의 소유권 범위에 속합니다.
@@ -64,7 +64,7 @@ Sam의 브리핑에 다음 형식으로 경고를 삽입한다:
 
 ## 오케스트레이터 브리핑 삽입 규칙
 
-Sam이 에이전트에게 태스크를 위임할 때, 컨텍스트 브리프의 **마지막 항목**으로 아래 블록을 항상 추가한다:
+Pilot이 에이전트에게 태스크를 위임할 때, 컨텍스트 브리프의 **마지막 항목**으로 아래 블록을 항상 추가한다:
 
 ```
 - 파일 범위 제약: [해당 역할의 쓰기 허용 경로 목록]
