@@ -15,6 +15,8 @@ export const translations: Translations = {
     day: '일',
     convertError: '변환 실패',
     leapMonth: '윤',
+    darkModeToggleLabel: '다크 모드 전환',
+    languageSelectorLabel: '언어 선택',
     zodiac: {
       rat: '쥐',
       ox: '소',
@@ -48,6 +50,8 @@ export const translations: Translations = {
     day: 'Day',
     convertError: 'Conversion failed',
     leapMonth: 'Leap ',
+    darkModeToggleLabel: 'Toggle dark mode',
+    languageSelectorLabel: 'Select language',
     zodiac: {
       rat: 'Rat',
       ox: 'Ox',
@@ -81,6 +85,8 @@ export const translations: Translations = {
     day: '日',
     convertError: '変換失敗',
     leapMonth: '閏',
+    darkModeToggleLabel: 'ダークモード切替',
+    languageSelectorLabel: '言語選択',
     zodiac: {
       rat: '子',
       ox: '丑',
