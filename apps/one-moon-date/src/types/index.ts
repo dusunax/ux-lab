@@ -51,8 +51,6 @@ export interface Translation {
   day: string;
   convertError: string;
   leapMonth: string;
-  darkModeToggleLabel: string;
-  languageSelectorLabel: string;
   zodiac: Zodiac;
   ganZhi: GanZhiData;
 }

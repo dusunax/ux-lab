@@ -20,7 +20,7 @@ const LANGUAGE_LABELS: Record<Language, string> = {
 export const LanguageSelector = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const {darkMode: isDarkMode} = useDarkMode();
-  const {language, changeLanguage, availableLanguages, t} = useI18n();
+  const {language, changeLanguage, availableLanguages} = useI18n();
 
   const handleLanguageChange = (lang: Language) => {
     try {
@@ -42,9 +42,7 @@ export const LanguageSelector = () => {
     <>
       <TouchableOpacity
         style={styles.langIconButton}
-        onPress={() => setModalVisible(true)}
-        accessibilityRole="button"
-        accessibilityLabel={t?.languageSelectorLabel}>
+        onPress={() => setModalVisible(true)}>
         <Text style={[styles.langIconText, isDarkMode && styles.langIconTextDark]}>
           🌐
         </Text>
@@ -67,10 +65,7 @@ export const LanguageSelector = () => {
                   styles.modalItem,
                   language === lang && styles.modalItemActive,
                 ]}
-                onPress={() => handleLanguageChange(lang)}
-                accessibilityRole="button"
-                accessibilityState={{selected: language === lang}}
-                accessibilityLabel={getLanguageLabel(lang)}>
+                onPress={() => handleLanguageChange(lang)}>
                 <Text
                   style={[
                     styles.modalItemText,

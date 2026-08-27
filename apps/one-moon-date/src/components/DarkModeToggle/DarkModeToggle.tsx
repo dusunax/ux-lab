@@ -1,20 +1,15 @@
 import React from 'react';
 import {Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {useDarkMode} from '../../contexts/DarkModeContext';
-import {useI18n} from '../../i18n';
 
 export const DarkModeToggle = () => {
   const {darkMode, toggleDarkMode} = useDarkMode();
-  const {t} = useI18n();
   const isDarkMode = darkMode;
 
   return (
     <TouchableOpacity
       style={styles.iconButton}
-      onPress={toggleDarkMode}
-      accessibilityRole="switch"
-      accessibilityState={{checked: isDarkMode}}
-      accessibilityLabel={t?.darkModeToggleLabel}>
+      onPress={toggleDarkMode}>
       <Text style={[styles.iconText, isDarkMode && styles.iconTextDark]}>
         {isDarkMode ? '🌙' : '☀️'}
       </Text>

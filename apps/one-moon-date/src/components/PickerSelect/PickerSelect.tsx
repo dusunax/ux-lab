@@ -27,9 +27,7 @@ export const PickerSelect = ({value, options, onSelect, label, isDarkMode}: Pick
       </Text>
       <TouchableOpacity
         style={[styles.pickerButton, isDarkMode && styles.pickerButtonDark]}
-        onPress={() => setModalVisible(true)}
-        accessibilityRole="button"
-        accessibilityLabel={`${label}: ${value}`}>
+        onPress={() => setModalVisible(true)}>
         <Text style={[styles.pickerButtonText, isDarkMode && styles.textDark]}>
           {value}
         </Text>
@@ -53,9 +51,7 @@ export const PickerSelect = ({value, options, onSelect, label, isDarkMode}: Pick
                     styles.modalItem,
                     item === value && styles.modalItemSelected,
                   ]}
-                  onPress={() => handleSelect(item)}
-                  accessibilityRole="button"
-                  accessibilityState={{selected: item === value}}>
+                  onPress={() => handleSelect(item)}>
                   <Text
                     style={[
                       styles.modalItemText,

@@ -152,9 +152,7 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayPro
                     styles.modalItem,
                     item === selectedValue && styles.modalItemSelected,
                   ]}
-                  onPress={() => onSelect(item)}
-                  accessibilityRole="button"
-                  accessibilityState={{selected: item === selectedValue}}>
+                  onPress={() => onSelect(item)}>
                   <Text
                     style={[
                       styles.modalItemText,
@@ -180,9 +178,7 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayPro
         <TouchableOpacity
           style={[styles.yearPickerButton, isDarkMode && styles.yearPickerButtonDark]}
           onPress={() => onLunarDateSelect && setYearModalVisible(true)}
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={`${t.year}: ${lunar.year}`}>
+          activeOpacity={0.7}>
           <Text style={[styles.yearPickerText, isDarkMode && styles.textDark]}>
             {lunar.year}
           </Text>
@@ -193,17 +189,13 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayPro
         <TouchableOpacity
           style={styles.monthHeader}
           onPress={() => onLunarDateSelect && setMonthModalVisible(true)}
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={`${t.month}: ${monthDisplay}`}>
+          activeOpacity={0.7}>
           <Text style={styles.monthText}>{monthHeaderText}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.dayContainer}
           onPress={() => onLunarDateSelect && setDayModalVisible(true)}
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={`${t.day}: ${lunar.day}`}>
+          activeOpacity={0.7}>
           <Text style={[styles.dayText, isDarkMode && styles.textDark]}>
             {lunar.day}
           </Text>

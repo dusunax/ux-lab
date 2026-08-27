@@ -71,11 +71,7 @@ export const DateConverter = ({
         />
       </View>
 
-      {convertError && (
-        <Text style={styles.errorText} accessibilityRole="alert">
-          {convertError}
-        </Text>
-      )}
+      {convertError && <Text style={styles.errorText}>{convertError}</Text>}
     </View>
   );
 };
