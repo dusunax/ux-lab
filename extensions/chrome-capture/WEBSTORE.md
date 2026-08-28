@@ -134,15 +134,17 @@ dusunax@gmail.com
 
 사용자가 "현재 탭 캡처" 버튼을 클릭했을 때, 현재 보고 있는 탭의 화면을 스크린샷으로 저장합니다.
 
-### scripting 권한
-페이지의 HTML 요소를 숨기고 표시하기 위해 필요합니다.
-
-사용자가 입력한 CSS 선택자에 해당하는 요소에 스타일을 적용하여 `visibility: hidden`으로 숨기거나 복원합니다.
-
 ### tabs 권한
 현재 활성 탭의 정보를 가져오기 위해 필요합니다.
 
 스크린샷을 촬영할 대상 탭을 확인하고, 그 탭의 내용을 캡처하는 데 사용됩니다.
+
+### host permissions
+`http://*/*`, `https://*/*` 페이지에서 사용자가 입력한 CSS 선택자에 해당하는 요소를 숨기고 복원하기 위해 필요합니다.
+
+### storage 권한 없음
+이 확장 프로그램은 `chrome.storage` 권한을 요청하지 않습니다.
+선택자, 테마, 언어 설정은 확장 프로그램의 popup/options 페이지 안에서 `localStorage`로 저장합니다. 이는 Chrome Web Store의 `storage` permission과 다릅니다.
 
 ---
 
