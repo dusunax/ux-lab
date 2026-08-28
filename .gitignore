@@ -55,6 +55,9 @@ yarn-error.log*
 # figma-harness 검증용 스크린샷 (로컬 전용)
 apps/figma-harness/.verify/
 
+# chrome-capture 웹스토어 업로드용 빌드 zip (로컬 전용)
+extensions/chrome-capture/versions/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
