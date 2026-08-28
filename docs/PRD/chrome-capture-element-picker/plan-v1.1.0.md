@@ -1,0 +1,100 @@
+# chrome-capture: 클릭으로 요소 선택하는 UX 추가
+
+파일명(`plan-v1.1.0.md`)의 버전이 이 계획이 목표로 하는 실제 익스텐션 버전이다. 현재 배포 버전은 `1.0.2`(`manifest.json`/`package.json`) — 사용자가 체감하는 새 기능 추가라 semver 기준 **minor 버전업 `1.1.0`**으로 올린다(patch 아님). 실제 버전 변경은 구현 단계에서 `manifest.json`·`package.json`에 반영한다.
+
+## Context
+
+`extensions/chrome-capture`(Smart Screenshot Capture)는 스크린샷 촬영 전 특정 HTML 요소를 숨기는 기능이 있는데, 현재는 **CSS 선택자를 직접 타이핑**해야만 한다(`popup.html`의 `#selectorInput`, 예: `.navbar, #sidebar`). 이건 개발자에게는 익숙하지만 일반 사용자는 요소의 class/id를 알 방법이 없어 사실상 못 쓴다.
+
+요청 목표: 사용자가 **페이지의 요소를 직접 클릭**해서 "숨길 목록"에 추가할 수 있는 피커(picker) UX를 추가한다. 기존 텍스트 입력 방식은 파워유저용으로 그대로 유지(추가이지 대체 아님).
+
+## 현재 구조 (참고)
+
+- `popup.js`: 숨길 선택자 목록(`hiddenSelectors`)을 **팝업 자신의 `localStorage`**에 저장. 추가/삭제/초기화 모두 팝업 안에서 처리.
+- `content.js`: `chrome.runtime.onMessage`로 `hideElements`/`showElements`/`highlightElements`/`clearHighlight`/`highlightHiddenElements` 액션을 받아 처리. 이미 "빨간 테두리로 하이라이트" 로직(`highlightHiddenElements`)이 있어 재사용 가능.
+- `manifest.json` 권한: `activeTab`, `tabs` + 정적 `content_scripts`(모든 http/https, `all_frames: false`)만 있음. **`storage`/`scripting` 권한 없음** — 최근 두 번의 웹스토어 재심사 대응으로 각각 제거된 이력이 있음(`git log`: "storage 권한 제거로 웹스토어 재심사 대응", "Remove unnecessary scripting permission").
+
+## 핵심 설계 문제: 팝업은 페이지 클릭 시 자동으로 닫힌다
+
+Chrome 확장 팝업(`default_popup`)은 포커스를 잃으면 강제로 닫히는 게 브라우저 자체 동작이라, "팝업 안에서 페이지를 클릭해 요소를 고른다"는 방식 자체가 불가능하다. uBlock Origin의 "요소 차단" 도구 등 실제 확장들이 쓰는 표준 패턴대로, **피커 UI 자체를 `content.js`가 페이지에 직접 주입**해서 동작시킨다.
+
+흐름:
+1. 팝업에 새 버튼 "🎯 요소 선택" 추가 (기존 텍스트 입력 옆)
+2. 클릭 시 `chrome.tabs.sendMessage(tab.id, {action:'startElementPicker'})` 전송 → 팝업은 곧 자동으로 닫힘
+3. `content.js`가 페이지 상단에 고정된 안내 툴바를 주입하고 피킹 모드 시작 (툴바 문구는 전부 다국어 처리 — 아래 참고)
+   - 마우스가 올라간 요소를 파란색 점선 테두리로 하이라이트(호버 미리보기)
+   - **일반 클릭**은 토글이다 — 처음 보는 요소면 목록에 추가하고 기존 `highlightHiddenElements`와 동일한 빨간색 스타일로 전환(이미 추가됨 표시). **이미 추가했던 요소를 다시 클릭하면 그 추가가 취소**되고, **원래 저장돼 있던 요소를 클릭하면 취소 예약**되었다가(다시 클릭하면 예약 취소) 팝업이 다시 열릴 때 실제로 목록에서 빠진다 — "잘못 골랐다"를 항상 같은 동작(다시 클릭)으로 되돌릴 수 있게 함. **피킹 모드는 끝나지 않고 계속 유지**되어 한 세션에서 여러 요소를 연달아 추가/취소 가능
+   - **Shift+클릭**: 확정하지 않고 한 단계 위 부모로 미리보기만 이동(같은 지점에서 Shift+클릭을 반복할 때마다 한 단계씩 더 올라감 — 너무 안쪽 요소를 클릭했을 때 대응). 미리보기 테두리는 부모로 올라갈 때마다 1px씩 두꺼워지고, 옆에 `↑{단계}` 숫자 배지도 함께 떠서 지금 몇 단계 올라왔는지 명확히 구분됨(레벨 0에서는 배지 숨김). 확정 후 하이라이트에는 그 두께만 그대로 반영되고 배지는 사라짐(호버 중에만 표시)
+   - **Enter** 또는 툴바의 "완료" 버튼으로 종료 (Esc가 아닌 Enter로 확정)
+
+**다국어 처리**: 툴바 안내문·버튼·완료 토스트 등 사용자에게 보이는 모든 문구는 `i18n.js`(ko/en)를 거친다. content script는 `i18n.js`가 로드되지 않는 별도 컨텍스트라, 팝업이 `startElementPicker` 메시지를 보낼 때 이미 번역된 문자열을 함께 실어 보내는 방식으로 처리한다(번역 소스는 여전히 `i18n.js` 하나 — 자세한 내용은 tech-spec-v1.1.0.md 참고).
+4. 종료 시 툴바에 "✓ N개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요" 안내 토스트를 잠깐 띄움 (프로그래밍 방식으로 팝업을 다시 열 수 없음 — `chrome.action.openPopup()`은 버전/플랫폼 제약이 커서 의존하지 않음)
+5. 사용자가 확장 아이콘을 다시 클릭하면 팝업이 최신 목록을 불러와 렌더링
+
+## 상태 동기화 방식 — 권한 추가 없이, content.js가 목록을 소유 (확정)
+
+팝업(닫혔다 다시 열림)과 content script(페이지에 계속 상주) 사이에서 "새로 추가된 선택자 목록"을 주고받아야 하는데, `storage` 권한을 다시 선언하지 않는 쪽으로 확정했다(과거 두 차례 웹스토어 재심사에서 권한을 줄인 이력이 있어, 신규 기능 하나 때문에 권한을 되돌리지 않는 방향).
+
+**채택안**: 콘텐츠 스크립트 쪽(`element-picker.js`)이 "피커로 고른 선택자 목록"의 소유자가 된다.
+- 페이지가 살아있는 동안 메모리에 목록을 들고 있고, 요소를 클릭(확정)할 때마다 여기에 추가한다.
+- 팝업이 열릴 때 `chrome.tabs.sendMessage(tab.id, {action:'getPickerChanges'})`로 물어보고, 응답받은 추가/취소 내역을 **기존 `localStorage` 기반 `hiddenSelectors`에 반영**(추가분 병합 + 취소분 제거, 중복 제거)한 뒤 정상적으로 렌더링·저장한다.
+- 반영 후에는 `clearPickerChanges` 메시지로 콘텐츠 스크립트 쪽 세션 상태를 비워서 같은 항목이 중복 반영되지 않게 한다.
+- **트레이드오프**: 페이지를 새로고침하면 아직 팝업에 병합되지 않은 피킹 결과는 초기화된다. 이미 팝업을 열어 병합이 끝난(즉 `localStorage`에 들어간) 항목은 기존 수동 입력 항목과 똑같이 영구 보존되어 사이트 재방문·새로고침에도 남는다. 실질적으로 "피킹 직후 팝업을 한 번도 안 열고 새로고침하는" 드문 경우에만 영향이 있다.
+
+## 팝업-페이지 호버 동기화 (피커와 별개 기능)
+
+기존 수동 입력 목록 UX도 함께 개선한다: **팝업이 열려 있는 동안** 페이지에서 이미 저장된 요소 위에 마우스를 올리면, 팝업 안의 해당 선택자 태그 칩 테두리가 활성화되어 "지금 마우스가 가리키는 게 어떤 선택자인지" 바로 확인할 수 있다. Chrome 확장 팝업은 포커스를 잃어야 닫히고 페이지 위에서 마우스만 움직이는 걸로는 안 닫히므로, 팝업을 켜둔 채로 이 상호작용이 가능하다.
+
+메커니즘은 피커와 다르다 — 피커는 "한 번 요청·한 번 응답"이면 되지만, 이건 마우스가 움직이는 동안 계속 이벤트가 필요해서 `chrome.tabs.connect`로 여는 장수명 `Port`를 쓴다. 팝업이 닫히면 Port가 자동으로 끊겨 별도 정리가 거의 필요 없다. 자세한 구현은 tech-spec-v1.1.0.md 참고.
+
+## CSS 선택자 자동 생성 로직
+
+클릭한 요소 `el`에 대해:
+1. `el.id`가 있으면 `#id` 사용 (가장 안정적)
+2. 없으면 클래스 중 "안정적으로 보이는" 것(숫자/해시가 섞인 CSS-in-JS 클래스 등은 제외)만 골라 `tag.class1.class2` 조합 시도
+3. 그 선택자가 페이지에서 **1~5개** 정도만 매치되면 그대로 채택(비슷한 요소 여러 개를 한 번에 숨기고 싶은 경우가 실제로 많음 — 예: 광고 배너 3개)
+4. 매치 수가 너무 많거나(범용 클래스) 후보가 없으면, 클릭한 요소 하나만 정확히 가리키는 **nth-child 경로**를 가까운 조상까지 거슬러 올라가며 생성(DevTools의 "Copy selector"와 같은 방식)
+
+## UI/편의성 리뷰 (자체 검토 후 반영한 사항)
+
+- **호버색과 완료색을 다르게**: "지금 가리키는 중"(파란 점선)과 "이미 추가됨"(빨간 실선, 기존 하이라이트 스타일 재사용)을 구분해야 사용자가 혼란 없음.
+- **부모 선택(Shift+클릭)을 MVP에 포함, 반복 가능하게**: 요소 피커에서 가장 흔한 불만이 "너무 안쪽 요소가 잡힘"이라, Shift+클릭을 누를 때마다 한 단계씩 더 올라가도록 해서 원하는 높이까지 조정할 수 있게 함. 몇 단계 올라왔는지는 테두리 두께(부모 1단계당 +1px) + `↑{단계}` 숫자 배지로 표시해 실수로 엉뚱한 조상을 고르는 걸 방지 — 두께 차이만으로는 인접 레벨 구분이 애매하다는 팀 리뷰 피드백을 반영해 배지를 추가로 붙임([lunch review](../../meetings/chrome-capture/2026-08-28-lunch-review-element-picker.md) 참고).
+- **사용자 메시지 다국어 처리**: 페이지에 주입되는 툴바 문구도 예외 없이 ko/en 대응 — content script가 `i18n.js`에 직접 접근 못 하는 제약을 팝업이 번역된 문자열을 메시지에 실어 보내는 방식으로 해결.
+- **iframe 안 요소는 iframe 전체가 선택됨**: `all_frames:false`라 프레임 내부까지는 못 들어가지만, "임베드 광고/영상 전체를 숨기고 싶다"는 요구에는 오히려 자연스럽게 맞아떨어짐 — 버그 아님, 문서화만.
+- **되돌리기 어려움 대응, 이중으로**: 툴바 "실행 취소" 버튼(클릭 반복으로 최근 10개까지 순서대로 되돌리기) + 잘못 고른 요소를 페이지에서 직접 다시 클릭해도 그 자리에서 바로 취소 — 버튼까지 갈 필요 없이 실수를 즉시 되돌릴 수 있음.
+- **팝업-페이지 호버 동기화**: 수동 입력 목록에도 페이지 호버 시 해당 태그가 강조되는 기능을 추가 — 태그 문자열만으로는 어떤 요소인지 바로 알기 어려운 경우에 도움이 됨.
+- **팝업 재오픈 안내**: 4번 단계의 토스트 문구로 "다음에 뭘 해야 하는지"를 명시 — 그냥 조용히 끝나면 사용자가 "저장이 된 건가?" 헷갈림.
+- **기존 텍스트 입력 흐름과 시각적 일관성**: 새 버튼은 기존 `.btn-secondary` 스타일을 따르고, i18n 리소스(`i18n.js`)에 새 문자열을 ko/en 둘 다 추가.
+
+## 변경 파일
+
+`content.js`가 비대해지는 걸 피하기 위해 피커·호버동기화 관련 코드는 새 파일 3개로 분리한다(빌드 스텝이 없는 순수 vanilla 확장이라 `manifest.json`의 `content_scripts.js` 배열에 파일을 나열하기만 하면 됨 — 같은 실행 컨텍스트를 공유하므로 모듈 시스템 없이 전역 함수로 바로 호출 가능).
+
+- `extensions/chrome-capture/selector-generator.js` **(신규)** — DOM을 건드리지 않는 순수 함수만: 클릭한 요소로부터 CSS 선택자를 만드는 로직
+- `extensions/chrome-capture/element-picker.js` **(신규)** — 피킹 모드 상태머신, 툴바/호버오버레이 DOM 주입, mousemove/click/keydown 리스너, 토글 클릭 로직(새로 추가/내 픽 취소/저장된 항목 취소/취소 취소), `startElementPicker`/`stopElementPicker`/`getPickerChanges`/`clearPickerChanges` 함수 정의(전역 함수로 노출)
+- `extensions/chrome-capture/hover-sync.js` **(신규)** — 팝업이 열려 있는 동안 페이지 호버와 팝업 태그를 `chrome.tabs.connect` 포트로 실시간 연결
+- `extensions/chrome-capture/content.js` — 기존 역할(hideElements/showElements/highlight 계열) 그대로 유지, `chrome.runtime.onMessage` 리스너에 새 액션 4개 케이스만 추가하고 실제 처리는 `element-picker.js`의 함수를 호출하도록 위임(파일 크기 증가 최소화)
+- `extensions/chrome-capture/manifest.json` — `content_scripts[0].js` 배열에 `selector-generator.js`, `element-picker.js`, `hover-sync.js` 추가(로드 순서: 의존 관계상 `content.js`보다 먼저), `version`을 `1.0.2` → `1.1.0`으로. **권한(`permissions`)은 변경 없음**
+- `extensions/chrome-capture/package.json` — `version`을 `1.0.2` → `1.1.0`으로 동기화
+- `extensions/chrome-capture/popup.js` — "🎯 요소 선택" 버튼, 팝업 로드 시 `getPickerChanges`로 content.js에서 추가/취소 내역을 받아와 기존 `localStorage` 목록에 반영 후 `clearPickerChanges` 호출, `connectHoverSync`로 호버 동기화 Port 연결
+- `extensions/chrome-capture/popup.html` — 새 버튼 마크업 + 스타일(기존 `.btn-secondary` 재사용), 태그에 `data-selector` 속성과 `.tag-active` 스타일 추가
+- `extensions/chrome-capture/i18n.js` — 새 문자열(ko/en): 피커 버튼 라벨, 툴바 안내문, 완료 토스트 등
+- `docs/PRD/chrome-capture-element-picker/plan-v1.1.0.md` — 이 계획 문서
+- `docs/PRD/chrome-capture-element-picker/tech-spec-v1.1.0.md` — 기술 스펙(선택자 생성 알고리즘 의사코드, 메시지 프로토콜, DOM/상태 다이어그램 등)
+
+## 검증
+
+1. 로컬에서 `chrome://extensions` → 압축해제 확장 프로그램으로 로드, 임의 사이트(뉴스/블로그 등 광고 배너 있는 곳)에서 피커로 2~3개 요소 선택 → 팝업 재오픈 시 목록에 병합되는지 확인
+2. Shift+클릭을 2~3번 연속으로 눌러 부모→조부모로 계속 올라가는지, 테두리가 매번 1px씩 두꺼워지고 `↑{단계}` 배지가 함께 표시되는지(레벨 0에서는 배지가 안 보이는지) 확인. Enter/완료 버튼으로 종료 확인, 요소 4~5개 선택 후 "실행 취소"를 여러 번 눌러 순서대로 되돌아가는지 확인
+2-1. 팝업 언어를 en으로 바꾼 뒤 피커를 실행해 툴바 문구가 영어로 뜨는지 확인
+2-2. 새로 추가한 요소를 다시 클릭해 취소되는지, 원래 저장돼 있던(수동 입력) 요소를 클릭해 취소 예약됐다가 다시 클릭하면 복구되는지 확인
+3. 캡처 실행 시 선택했던 요소들이 실제로 숨겨진 스크린샷이 나오는지 확인
+4. 팝업을 열지 않은 채 페이지를 새로고침하면 피킹 결과만 초기화되고(트레이드오프대로), 이미 병합돼 있던 기존 목록은 영향 없는지 확인
+5. `manifest.json`의 `permissions` 배열은 이번 변경으로 바뀌지 않았는지, `content_scripts[0].js`에는 새 파일 3개가 정확한 순서로 추가됐는지 확인(diff)
+6. `content.js`가 새 로직 유입 없이 기존 크기 수준(±10줄)으로 유지됐는지 확인
+7. 팝업을 켜둔 채 저장된 요소 위로 마우스를 움직여 해당 태그 칩 테두리가 활성화되는지, 팝업을 닫아도 에러 없이 정리되는지 확인
+8. `manifest.json`/`package.json`의 `version`이 `1.0.2` → `1.1.0`으로 반영됐는지 확인
+
+## 결정 로그
+
+- **상태 동기화 방식**: `chrome.storage.local`(권한 재추가) vs content.js 메모리 소유(권한 불변) 중 사용자가 후자를 선택. 과거 두 차례 웹스토어 재심사에서 권한을 줄인 이력을 우선시함.
