@@ -497,6 +497,7 @@ function updatePickerToolbarCount() {
 ```
 - `position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 2147483647;`
 - 배경은 다크/라이트 사이트 어디서든 보이도록 확장 팝업 테마와 무관한 고정 팔레트 사용: 배경 `#1F1F1F` + 텍스트 `#FFD700`(팝업의 accent-color와 통일감), 반투명 없이 불투명 배경(사이트 콘텐츠와 겹쳐 보이지 않게).
+- **좁은 뷰포트에서 줄바꿈 안전장치**: 컨테이너 너비가 뷰포트보다 크면 브라우저가 shrink-to-fit으로 폭을 줄이는데, 자식 요소에 `white-space: nowrap`이 없으면 "Enter: 종료"처럼 문구 중간이 다음 줄로 끊기는 보기 안 좋은 줄바꿈이 생긴다. 컨테이너는 `flex-wrap: wrap`으로 두되, 각 span/button에 `white-space: nowrap; flex-shrink: 0;`을 줘서 "항목 단위"로만 줄바꿈되게 하고, `max-width: min(640px, calc(100vw - 24px))`로 과도하게 넓어지는 것도 막는다.
 - **버튼 3개, 역할이 뚜렷이 다르다** — "되돌리기"(`picker-undo`)와 "취소"(범용 `cancel` 키)를 나란히 두면 이름이 비슷해 헷갈린다는 팀 피드백으로 `picker-undo`의 한국어 값을 "실행 취소" → "되돌리기"로 바꿨다.
   - `undoLastPick()`: 마지막 한 개만 되돌림 — `undoPickedItem(pickedItems.length - 1)` 호출.
   - `cancelAllPicks()`: 이번 세션의 추가/취소를 **전부** 무효화하고 피킹 모드를 닫는다. `pickedItems`를 전부 `undoPickedItem`으로 되돌리고, `removedSelectors`도 비운 뒤 `refreshKnownHighlights()`로 원래 하이라이트 상태를 복원, `stopElementPicker()` 호출. 완료 토스트는 띄우지 않는다(아무것도 반영 안 됐으므로).

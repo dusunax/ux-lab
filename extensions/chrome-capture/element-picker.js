@@ -236,20 +236,24 @@ function refreshKnownHighlights() {
 function injectPickerToolbar() {
   pickerToolbarEl = document.createElement('div');
   pickerToolbarEl.id = 'ssc-picker-toolbar';
+  // flex-wrap: wrap이라 공간이 부족하면 span/button "단위 전체"가 다음 줄로 내려간다.
+  // 각 항목엔 white-space:nowrap + flex-shrink:0을 줘서 "Enter: 종료"처럼 문구
+  // 중간이 잘려 다음 줄로 넘어가는 보기 안 좋은 줄바꿈을 방지한다.
   pickerToolbarEl.style.cssText = `
     position: fixed; top: 0; left: 50%; transform: translateX(-50%);
     z-index: 2147483647; background: #1F1F1F; color: #FFD700;
     font: 500 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    padding: 10px 16px; border-radius: 0 0 8px 8px; display: flex;
-    align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    padding: 10px 16px; border-radius: 0 0 10px 10px; display: flex;
+    flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px;
+    max-width: min(640px, calc(100vw - 24px)); box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   `;
   pickerToolbarEl.innerHTML = `
-    <span class="ssc-toolbar-text">${pickerMessages.instruction || ''}</span>
-    <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;">${pickerMessages.hint || ''}</span>
-    <span id="ssc-picker-count" style="background:#3A3A3A;color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;">0</span>
-    <button id="ssc-picker-undo" style="background:#2D2D2D;color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;cursor:pointer;">${pickerMessages.undo || ''}</button>
-    <button id="ssc-picker-cancel" style="background:#2D2D2D;color:#D99595;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;cursor:pointer;">${pickerMessages.cancel || ''}</button>
-    <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;">${pickerMessages.done || ''}</button>
+    <span class="ssc-toolbar-text" style="white-space:nowrap;flex-shrink:0;">${pickerMessages.instruction || ''}</span>
+    <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;white-space:nowrap;flex-shrink:0;">${pickerMessages.hint || ''}</span>
+    <span id="ssc-picker-count" style="background:#3A3A3A;color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;white-space:nowrap;flex-shrink:0;">0</span>
+    <button id="ssc-picker-undo" style="background:#2D2D2D;color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.undo || ''}</button>
+    <button id="ssc-picker-cancel" style="background:#2D2D2D;color:#D99595;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.cancel || ''}</button>
+    <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.done || ''}</button>
   `;
   document.documentElement.appendChild(pickerToolbarEl);
   pickerToolbarEl.querySelector('#ssc-picker-undo').addEventListener('click', undoLastPick);
