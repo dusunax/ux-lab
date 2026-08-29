@@ -477,11 +477,11 @@ function buildUniquePath(el, maxDepth = 5) {
 function injectPickerToolbar() {
   pickerToolbarEl = document.createElement('div');
   pickerToolbarEl.id = 'ssc-picker-toolbar';
-  // 1행: 설명 텍스트 단독. 2행: 힌트 + 카운트 + 버튼(별도 div로 감싸 아래 줄에 고정)
+  // 1행: 설명 텍스트 단독. 2행: 힌트 텍스트 단독. 3행: 카운트 + 버튼(별도 div로 감싸 아래 줄에 고정)
   pickerToolbarEl.innerHTML = `
     <span class="ssc-toolbar-text">${pickerMessages.instruction}</span>
-    <div class="ssc-toolbar-row2">
-      <span class="ssc-toolbar-hint">${pickerMessages.hint}</span>
+    <span class="ssc-toolbar-hint">${pickerMessages.hint}</span>
+    <div class="ssc-toolbar-row3">
       <span id="ssc-picker-count" class="ssc-toolbar-count">0</span>
       <button id="ssc-picker-undo">${pickerMessages.undo}</button>
       <button id="ssc-picker-cancel">${pickerMessages.cancel}</button>
@@ -501,8 +501,8 @@ function updatePickerToolbarCount() {
 ```
 - `position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 2147483647;`
 - 배경은 다크/라이트 사이트 어디서든 보이도록 확장 팝업 테마와 무관한 고정 팔레트 사용: 배경 `#1F1F1F` + 텍스트 `#FFD700`(팝업의 accent-color와 통일감), 반투명 없이 불투명 배경(사이트 콘텐츠와 겹쳐 보이지 않게).
-- **2행 구조 고정**: 설명 텍스트(`ssc-toolbar-text`)는 항상 1행 전체를 혼자 차지하고, 힌트·카운트·버튼은 그 아래 별도 행에 둔다(바깥 컨테이너 `flex-direction: column`, 안쪽에 두 번째 행을 감싸는 `div` 하나 추가). 좁은 뷰포트에서 브라우저가 shrink-to-fit으로 폭을 줄여도 이 2행 구조 자체는 항상 유지된다.
-- **2행 내부 줄바꿈 안전장치**: 2행 내부는 `flex-wrap: wrap`으로 두되, 각 span/button에 `white-space: nowrap; flex-shrink: 0;`을 줘서 정말 좁을 때도 "Enter: 종료"처럼 문구 중간이 아니라 "항목 단위"로만 줄바꿈되게 한다. 바깥 컨테이너의 `max-width: min(640px, calc(100vw - 24px))`로 과도하게 넓어지는 것도 막는다.
+- **3행 구조 고정**: 설명 텍스트(`ssc-toolbar-text`)와 힌트 텍스트(`ssc-toolbar-hint`)는 각각 항상 자기 줄을 혼자 차지하고(1행, 2행), 카운트·버튼은 그 아래 별도 행(3행)에 둔다(바깥 컨테이너 `flex-direction: column`, 3행만 별도 `div`로 감쌈). 좁은 뷰포트에서 브라우저가 shrink-to-fit으로 폭을 줄여도 "텍스트 다음에 줄바꿈"되는 구조 자체는 항상 유지된다 — 힌트 텍스트가 카운트/버튼과 같은 줄에 끼어 있다가 일부만 다음 줄로 밀리는 어색한 줄바꿈을 방지.
+- **3행 내부 줄바꿈 안전장치**: 3행(카운트+버튼) 내부는 `flex-wrap: wrap`으로 두되, 각 span/button에 `white-space: nowrap; flex-shrink: 0;`을 줘서 정말 좁을 때도 버튼 문구 중간이 아니라 "버튼 단위"로만 줄바꿈되게 한다. 바깥 컨테이너의 `max-width: min(640px, calc(100vw - 24px))`로 과도하게 넓어지는 것도 막는다.
 - **배경은 옅은 그래스모피즘**: 어떤 사이트 위에 떠도 위화감이 적도록 완전 불투명 대신 `background: rgba(31,31,31,0.8)` + `backdrop-filter: blur(2px)`을 쓴다. 80% 불투명도라 텍스트 대비는 충분히 유지되고, blur는 뒤 배경을 살짝만 흐리는 정도(2px)로 옅게 준다. 하위 요소들(카운트 배지, 버튼)도 같은 톤의 반투명(`rgba(...,0.8)`)으로 맞춰 통일감을 준다.
 - **버튼 3개, 역할이 뚜렷이 다르다** — "되돌리기"(`picker-undo`)와 "취소"(범용 `cancel` 키)를 나란히 두면 이름이 비슷해 헷갈린다는 팀 피드백으로 `picker-undo`의 한국어 값을 "실행 취소" → "되돌리기"로 바꿨다.
   - `undoLastPick()`: 마지막 한 개만 되돌림 — `undoPickedItem(pickedItems.length - 1)` 호출.
