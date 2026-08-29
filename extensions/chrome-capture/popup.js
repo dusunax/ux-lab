@@ -69,7 +69,7 @@ async function addSelector() {
   try {
     document.querySelector(selector);
   } catch (e) {
-    showStatus(`❌ 유효하지 않은 선택자: ${selector}`, 'error');
+    showStatus(getI18nMessage('invalid-selector').replace('{selector}', selector), 'error');
     return;
   }
 
@@ -120,7 +120,7 @@ async function captureScreenshot() {
     }
 
     captureBtn.disabled = true;
-    captureBtn.innerHTML = '⏳ 처리 중...';
+    captureBtn.innerHTML = getI18nMessage('capturing');
 
     // Step 1: 요소 숨기기
     if (hiddenSelectors.length > 0) {
@@ -372,7 +372,12 @@ async function mergePickerChanges() {
     syncKnownSelectorsToHoverSync();
 
     if (added.length || res.removed.length) {
-      showStatus(`✓ ${added.length}개 추가, ${res.removed.length}개 취소됨`, 'success');
+      showStatus(
+        getI18nMessage('picker-merge-status')
+          .replace('{added}', String(added.length))
+          .replace('{removed}', String(res.removed.length)),
+        'success'
+      );
     }
   } catch (e) {
     console.warn('Merge picker changes failed', e);
