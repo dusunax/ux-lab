@@ -18,8 +18,8 @@ const optionsBtn = document.getElementById('optionsBtn');
 const pickBtn = document.getElementById('pickBtn');
 const previewZoomLens = document.getElementById('previewZoomLens');
 
-const ZOOM_FACTOR = 2.5;
-const ZOOM_LENS_SIZE = 140;
+const ZOOM_FACTOR = 3.5;
+const ZOOM_LENS_SIZE = 220;
 
 // 초기화
 loadFromStorage();
@@ -187,13 +187,43 @@ function showPreview(dataUrl) {
   showStatus(getI18nMessage('preview-ready-msg'), 'success');
 }
 
+// previewImage는 object-fit: contain이라, 박스 크기와 실제 그려지는 이미지
+// 크기가 다를 수 있다(레터박스). 레터박스 여백까지 확대 기준으로 삼으면
+// 가로세로 배율이 어긋나 비율이 깨지므로, 실제 이미지가 그려지는 영역만 계산한다.
+function getRenderedImageRect() {
+  const box = previewImage.getBoundingClientRect();
+  const naturalW = previewImage.naturalWidth;
+  const naturalH = previewImage.naturalHeight;
+  if (!naturalW || !naturalH) return box;
+
+  const boxRatio = box.width / box.height;
+  const imgRatio = naturalW / naturalH;
+
+  let width = box.width;
+  let height = box.height;
+  if (imgRatio > boxRatio) {
+    height = box.width / imgRatio;
+  } else {
+    width = box.height * imgRatio;
+  }
+
+  return {
+    left: box.left + (box.width - width) / 2,
+    top: box.top + (box.height - height) / 2,
+    width,
+    height,
+  };
+}
+
 function handlePreviewZoomMove(e) {
   if (!previewImage.src) return;
-  const rect = previewImage.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  const box = previewImage.getBoundingClientRect();
+  const content = getRenderedImageRect();
 
-  if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+  const contentX = e.clientX - content.left;
+  const contentY = e.clientY - content.top;
+
+  if (contentX < 0 || contentY < 0 || contentX > content.width || contentY > content.height) {
     previewZoomLens.style.display = 'none';
     return;
   }
@@ -202,14 +232,18 @@ function handlePreviewZoomMove(e) {
   previewZoomLens.style.width = `${ZOOM_LENS_SIZE}px`;
   previewZoomLens.style.height = `${ZOOM_LENS_SIZE}px`;
 
-  const lensX = Math.max(0, Math.min(x - ZOOM_LENS_SIZE / 2, rect.width - ZOOM_LENS_SIZE));
-  const lensY = Math.max(0, Math.min(y - ZOOM_LENS_SIZE / 2, rect.height - ZOOM_LENS_SIZE));
+  // 렌즈 자체 위치는 이미지 박스(wrapper 좌표계) 기준으로 clamp
+  const boxX = e.clientX - box.left;
+  const boxY = e.clientY - box.top;
+  const lensX = Math.max(0, Math.min(boxX - ZOOM_LENS_SIZE / 2, box.width - ZOOM_LENS_SIZE));
+  const lensY = Math.max(0, Math.min(boxY - ZOOM_LENS_SIZE / 2, box.height - ZOOM_LENS_SIZE));
   previewZoomLens.style.left = `${lensX}px`;
   previewZoomLens.style.top = `${lensY}px`;
 
+  // 확대 기준은 레터박스 뺀 실제 이미지 영역(content) — 가로세로 배율이 항상 같아 비율 유지
   previewZoomLens.style.backgroundImage = `url(${currentScreenshot})`;
-  previewZoomLens.style.backgroundSize = `${rect.width * ZOOM_FACTOR}px ${rect.height * ZOOM_FACTOR}px`;
-  previewZoomLens.style.backgroundPosition = `${-(x * ZOOM_FACTOR - ZOOM_LENS_SIZE / 2)}px ${-(y * ZOOM_FACTOR - ZOOM_LENS_SIZE / 2)}px`;
+  previewZoomLens.style.backgroundSize = `${content.width * ZOOM_FACTOR}px ${content.height * ZOOM_FACTOR}px`;
+  previewZoomLens.style.backgroundPosition = `${-(contentX * ZOOM_FACTOR - ZOOM_LENS_SIZE / 2)}px ${-(contentY * ZOOM_FACTOR - ZOOM_LENS_SIZE / 2)}px`;
 }
 
 function hidePreviewZoomLens() {
@@ -300,6 +334,7 @@ async function startPicker() {
         instruction: getI18nMessage('picker-instruction'),
         hint: getI18nMessage('picker-hint'),
         undo: getI18nMessage('picker-undo'),
+        cancel: getI18nMessage('cancel'),
         done: getI18nMessage('picker-done'),
         toast: getI18nMessage('picker-toast'),
       },

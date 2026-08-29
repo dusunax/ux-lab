@@ -3,7 +3,7 @@
 // content.js의 highlightHiddenElements(기존 함수)를 재사용한다.
 
 let pickerActive = false;
-let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBorder }
+let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBoxShadow, originalBackground, originalBoxSizing }
 let knownHiddenSelectors = []; // startElementPicker 시점에 팝업이 넘겨준 "이미 저장된" 선택자 스냅샷
 let removedSelectors = [];     // knownHiddenSelectors 중 이번 세션에서 재클릭으로 취소한 것들
 let hoverOverlayEl = null;     // 호버 미리보기용 오버레이 div (position: fixed)
@@ -168,26 +168,44 @@ function toggleClickedElement(el, level) {
   confirmPick(el, level);
 }
 
+// border는 요소의 박스 크기에 더해져 주변 레이아웃을 밀어낼 수 있어(특히
+// width/height가 명시된 요소) box-shadow(inset)로 그린다 — box-shadow는
+// box-sizing과 무관하게 레이아웃에 전혀 영향을 주지 않는다. box-sizing도
+// border-box로 맞춰 혹시 다른 스타일과 충돌할 여지를 줄인다.
 function confirmPick(el, level) {
-  const originalBorder = el.style.border;
+  const originalBoxShadow = el.style.boxShadow;
   const originalBackground = el.style.backgroundColor;
-  el.style.setProperty('border', `${borderWidthForLevel(level)}px solid #FF4444`, 'important');
+  const originalBoxSizing = el.style.boxSizing;
+  el.style.setProperty('box-sizing', 'border-box', 'important');
+  el.style.setProperty('box-shadow', `inset 0 0 0 ${borderWidthForLevel(level)}px #FF4444`, 'important');
   el.style.setProperty('background-color', 'rgba(255,68,68,0.1)', 'important');
-  pickedItems.push({ selector: generateSelector(el), level, element: el, originalBorder, originalBackground });
+  pickedItems.push({
+    selector: generateSelector(el),
+    level,
+    element: el,
+    originalBoxShadow,
+    originalBackground,
+    originalBoxSizing,
+  });
   updatePickerToolbarCount();
 }
 
 function undoPickedItem(index) {
   const [item] = pickedItems.splice(index, 1);
-  if (item.originalBorder) {
-    item.element.style.border = item.originalBorder;
+  if (item.originalBoxShadow) {
+    item.element.style.boxShadow = item.originalBoxShadow;
   } else {
-    item.element.style.removeProperty('border');
+    item.element.style.removeProperty('box-shadow');
   }
   if (item.originalBackground) {
     item.element.style.backgroundColor = item.originalBackground;
   } else {
     item.element.style.removeProperty('background-color');
+  }
+  if (item.originalBoxSizing) {
+    item.element.style.boxSizing = item.originalBoxSizing;
+  } else {
+    item.element.style.removeProperty('box-sizing');
   }
   updatePickerToolbarCount();
 }
@@ -195,6 +213,16 @@ function undoPickedItem(index) {
 function undoLastPick() {
   if (pickedItems.length === 0) return;
   undoPickedItem(pickedItems.length - 1);
+}
+
+// "되돌리기"(한 단계씩)와 달리, 이번 세션의 추가/취소를 전부 무효화하고 피킹 모드를 닫는다.
+function cancelAllPicks() {
+  while (pickedItems.length > 0) {
+    undoPickedItem(pickedItems.length - 1);
+  }
+  removedSelectors = [];
+  refreshKnownHighlights();
+  stopElementPicker();
 }
 
 // knownHiddenSelectors 중 removedSelectors에 없는 것만 다시 하이라이트 — content.js의 기존 함수 재사용
@@ -220,10 +248,12 @@ function injectPickerToolbar() {
     <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;">${pickerMessages.hint || ''}</span>
     <span id="ssc-picker-count" style="background:#3A3A3A;color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;">0</span>
     <button id="ssc-picker-undo" style="background:#2D2D2D;color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;cursor:pointer;">${pickerMessages.undo || ''}</button>
+    <button id="ssc-picker-cancel" style="background:#2D2D2D;color:#D99595;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;cursor:pointer;">${pickerMessages.cancel || ''}</button>
     <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;">${pickerMessages.done || ''}</button>
   `;
   document.documentElement.appendChild(pickerToolbarEl);
   pickerToolbarEl.querySelector('#ssc-picker-undo').addEventListener('click', undoLastPick);
+  pickerToolbarEl.querySelector('#ssc-picker-cancel').addEventListener('click', cancelAllPicks);
   pickerToolbarEl.querySelector('#ssc-picker-done').addEventListener('click', finishPicking);
 }
 

@@ -86,6 +86,8 @@ function showElements() {
   hiddenElements = [];
 }
 
+// border는 요소의 박스 크기에 더해져 주변 레이아웃을 밀어낼 수 있어
+// box-shadow(inset)로 그린다 — box-sizing과 무관하게 레이아웃에 영향이 없다.
 function highlightElements(selector) {
   clearHighlight();
 
@@ -96,13 +98,16 @@ function highlightElements(selector) {
   try {
     const elements = document.querySelectorAll(selector);
     elements.forEach((el) => {
-      const originalBorder = el.style.border;
+      const originalBoxShadow = el.style.boxShadow;
       const originalBackground = el.style.backgroundColor;
-      el.style.border = '2px solid #FF4444';
+      const originalBoxSizing = el.style.boxSizing;
+      el.style.setProperty('box-sizing', 'border-box', 'important');
+      el.style.boxShadow = 'inset 0 0 0 2px #FF4444';
       highlightedElements.push({
         element: el,
-        originalBorder: originalBorder,
+        originalBoxShadow: originalBoxShadow,
         originalBackground: originalBackground,
+        originalBoxSizing: originalBoxSizing,
       });
     });
     console.log(`[Smart Screenshot] Highlighted ${elements.length} elements`);
@@ -112,20 +117,24 @@ function highlightElements(selector) {
 }
 
 function clearHighlight() {
-  highlightedElements.forEach(({ element, originalBorder, originalBackground }) => {
+  highlightedElements.forEach(({ element, originalBoxShadow, originalBackground, originalBoxSizing }) => {
     try {
       // 인라인 스타일 직접 제거
-      if (originalBorder) {
-        element.style.border = originalBorder;
+      if (originalBoxShadow) {
+        element.style.boxShadow = originalBoxShadow;
       } else {
-        element.style.border = '';
-        element.style.removeProperty('border');
+        element.style.removeProperty('box-shadow');
       }
       if (originalBackground) {
         element.style.backgroundColor = originalBackground;
       } else {
         element.style.backgroundColor = '';
         element.style.removeProperty('background-color');
+      }
+      if (originalBoxSizing) {
+        element.style.boxSizing = originalBoxSizing;
+      } else {
+        element.style.removeProperty('box-sizing');
       }
     } catch (e) {
       console.warn('[Smart Screenshot] Error clearing highlight', e);
@@ -145,14 +154,17 @@ function highlightHiddenElements(selectors) {
     try {
       const elements = document.querySelectorAll(selector);
       elements.forEach((el) => {
-        const originalBorder = el.style.border;
+        const originalBoxShadow = el.style.boxShadow;
         const originalBackground = el.style.backgroundColor;
-        el.style.setProperty('border', '2px solid #FF4444', 'important');
+        const originalBoxSizing = el.style.boxSizing;
+        el.style.setProperty('box-sizing', 'border-box', 'important');
+        el.style.setProperty('box-shadow', 'inset 0 0 0 2px #FF4444', 'important');
         el.style.setProperty('background-color', 'rgba(255, 68, 68, 0.1)', 'important');
         highlightedElements.push({
           element: el,
-          originalBorder: originalBorder,
+          originalBoxShadow: originalBoxShadow,
           originalBackground: originalBackground,
+          originalBoxSizing: originalBoxSizing,
         });
       });
     } catch (e) {

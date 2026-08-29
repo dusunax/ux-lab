@@ -38,7 +38,7 @@ const i18n = {
     'pick-element': '🎯 요소 선택',
     'picker-instruction': '요소를 클릭해 숨길 항목으로 추가하세요',
     'picker-hint': 'Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료',
-    'picker-undo': '실행 취소',
+    'picker-undo': '되돌리기',
     'picker-done': '완료',
     'picker-toast': '{count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요',
     'elements-hidden-count': '{count}개 요소 숨겨짐'
