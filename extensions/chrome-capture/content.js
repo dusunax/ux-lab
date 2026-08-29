@@ -36,6 +36,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.action === 'clearPickerChanges') {
       clearPickerChanges();
       sendResponse({ success: true });
+    } else if (request.action === 'hidePickerUIForCapture') {
+      hidePickerUIForCapture();
+      sendResponse({ success: true });
     }
   } catch (error) {
     console.error('[Smart Screenshot] Error:', error);

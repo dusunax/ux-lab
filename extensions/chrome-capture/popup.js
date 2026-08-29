@@ -136,6 +136,13 @@ async function captureScreenshot() {
       }
     }
 
+    // Step 1-1: 피커 완료 토스트 등 컨트롤 UI가 남아있다면 캡처 전 항상 제거
+    try {
+      await chrome.tabs.sendMessage(tab.id, { action: 'hidePickerUIForCapture' });
+    } catch (e) {
+      // content script 통신 실패는 무시 — 애초에 컨트롤 UI가 없는 페이지일 수 있음
+    }
+
     // Step 2: 스크린샷 캡처
     const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
       format: 'png',

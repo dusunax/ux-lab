@@ -327,6 +327,19 @@ function stopElementPicker() {
   removePickerToolbar();
 }
 
+// 캡처 직전 항상 호출 — 완료 토스트가 아직 떠 있거나(2.5초 타이머 중 바로 재캡처한
+// 경우) 피킹 모드가 어떤 이유로든 여전히 켜져 있으면 컨트롤 UI가 스크린샷에
+// 찍히지 않도록 정리한다.
+function hidePickerUIForCapture() {
+  if (pickerToastEl) {
+    pickerToastEl.remove();
+    pickerToastEl = null;
+  }
+  if (pickerActive) {
+    stopElementPicker();
+  }
+}
+
 function getPickerChanges() {
   return {
     added: pickedItems.map((item) => item.selector),

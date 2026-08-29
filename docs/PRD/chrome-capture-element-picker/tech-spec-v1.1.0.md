@@ -53,6 +53,7 @@
 | `stopElementPicker` | popup → content (안 쓸 수도 있음, 대비용) | 없음 | `{ success: true }` |
 | `getPickerChanges` | popup → content | 없음 | `{ success: true, added: string[], removed: string[] }` |
 | `clearPickerChanges` | popup → content | 없음 | `{ success: true }` |
+| `hidePickerUIForCapture` | popup → content | 없음 | `{ success: true }` |
 
 `knownHiddenSelectors`: 팝업이 현재 갖고 있는 `hiddenSelectors`(수동 입력 + 이전에 병합된 피커 결과)의 스냅샷. **이미 저장된 요소를 피킹 중에 다시 클릭하면 취소(토글)되도록** 하려면, `element-picker.js`가 "이건 이미 숨김 목록에 있는 요소다"를 판단할 기준이 필요해서 시작 시점에 넘겨준다(아래 섹션 5).
 
@@ -502,6 +503,7 @@ function updatePickerToolbarCount() {
   - `undoLastPick()`: 마지막 한 개만 되돌림 — `undoPickedItem(pickedItems.length - 1)` 호출.
   - `cancelAllPicks()`: 이번 세션의 추가/취소를 **전부** 무효화하고 피킹 모드를 닫는다. `pickedItems`를 전부 `undoPickedItem`으로 되돌리고, `removedSelectors`도 비운 뒤 `refreshKnownHighlights()`로 원래 하이라이트 상태를 복원, `stopElementPicker()` 호출. 완료 토스트는 띄우지 않는다(아무것도 반영 안 됐으므로).
   - `finishPicking()`: `stopElementPicker()` 호출 + 완료 토스트 표시. 토스트 문구는 `pickerMessages.toast`의 `{count}` 플레이스홀더를 치환: `pickerMessages.toast.replace('{count}', pickedItems.length)`, 2.5초 후 자동 제거(페이지에 주입되는 것이므로 팝업의 `.status`와는 별도의 최소 인라인 스타일 사용).
+  - **캡처 화면에 컨트롤 UI가 찍히면 안 됨**: "완료" 직후 토스트가 뜬 2.5초 사이에 바로 팝업을 열어 캡처하면 토스트가 스크린샷에 함께 찍힐 수 있다. `popup.js`의 `captureScreenshot()`은 실제 캡처(`chrome.tabs.captureVisibleTab`) 직전에 항상 `hidePickerUIForCapture` 메시지를 보내고, `element-picker.js`의 `hidePickerUIForCapture()`가 토스트를 즉시 제거하고(`pickerActive`가 어떤 이유로든 아직 true면 `stopElementPicker()`까지) 정리한다. 기존 `hideElements` 호출과 동일하게 항상 시도하고 실패해도 캡처 자체는 계속 진행한다.
 
 ## 8. Enter로 종료 처리 (`element-picker.js`)
 
