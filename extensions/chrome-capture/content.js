@@ -25,6 +25,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } else if (request.action === 'highlightHiddenElements') {
       highlightHiddenElements(request.selectors);
       sendResponse({ success: true });
+    } else if (request.action === 'startElementPicker') {
+      startElementPicker(request.messages, request.knownHiddenSelectors);
+      sendResponse({ success: true });
+    } else if (request.action === 'stopElementPicker') {
+      stopElementPicker();
+      sendResponse({ success: true });
+    } else if (request.action === 'getPickerChanges') {
+      sendResponse({ success: true, ...getPickerChanges() });
+    } else if (request.action === 'clearPickerChanges') {
+      clearPickerChanges();
+      sendResponse({ success: true });
     }
   } catch (error) {
     console.error('[Smart Screenshot] Error:', error);

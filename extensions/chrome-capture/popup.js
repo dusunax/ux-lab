@@ -15,6 +15,7 @@ const previewSection = document.getElementById('previewSection');
 const previewImage = document.getElementById('previewImage');
 const previewSize = document.getElementById('previewSize');
 const optionsBtn = document.getElementById('optionsBtn');
+const pickBtn = document.getElementById('pickBtn');
 
 // 초기화
 loadFromStorage();
@@ -29,6 +30,7 @@ resetBtn.addEventListener('click', resetAll);
 downloadBtn.addEventListener('click', downloadScreenshot);
 cancelBtn.addEventListener('click', cancelPreview);
 optionsBtn.addEventListener('click', openOptions);
+pickBtn.addEventListener('click', startPicker);
 
 function loadFromStorage() {
   const stored = localStorage.getItem('smartScreenshot_selectors');
@@ -73,6 +75,7 @@ async function addSelector() {
   renderHiddenList();
   showStatus(`✓ ${selector} ${getI18nMessage('selector-added')}`, 'success');
   await updateAllHighlights();
+  syncKnownSelectorsToHoverSync();
 }
 
 async function removeSelector(selector) {
@@ -81,13 +84,14 @@ async function removeSelector(selector) {
   renderHiddenList();
   showStatus(`✓ ${selector} ${getI18nMessage('selector-removed')}`, 'success');
   await updateAllHighlights();
+  syncKnownSelectorsToHoverSync();
 }
 
 function renderHiddenList() {
   hiddenElementsList.innerHTML = hiddenSelectors
     .map(
       (selector) => `
-    <div class="tag">
+    <div class="tag" data-selector="${selector}">
       <span>${selector}</span>
       <span class="tag-remove" data-selector="${selector}">×</span>
     </div>
@@ -211,6 +215,7 @@ async function resetAll() {
     statusDiv.className = 'status';
     showStatus(getI18nMessage('reset-done'), 'success');
     await updateAllHighlights();
+    syncKnownSelectorsToHoverSync();
   }
 }
 
@@ -247,6 +252,82 @@ function openOptions() {
 }
 
 
+async function startPicker() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    await chrome.tabs.sendMessage(tab.id, {
+      action: 'startElementPicker',
+      knownHiddenSelectors: hiddenSelectors,
+      messages: {
+        instruction: getI18nMessage('picker-instruction'),
+        hint: getI18nMessage('picker-hint'),
+        undo: getI18nMessage('picker-undo'),
+        done: getI18nMessage('picker-done'),
+        toast: getI18nMessage('picker-toast'),
+      },
+    });
+  } catch (e) {
+    console.warn('Start picker failed', e);
+    showStatus(getI18nMessage('page-unavailable'), 'error');
+    return;
+  }
+  window.close(); // 포커스 이동으로 어차피 닫히지만 명시적으로 닫아 유령 팝업 방지
+}
+
+async function mergePickerChanges() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    const res = await chrome.tabs.sendMessage(tab.id, { action: 'getPickerChanges' });
+    if (!res || (!res.added.length && !res.removed.length)) return;
+
+    hiddenSelectors = hiddenSelectors.filter((s) => !res.removed.includes(s));
+    const added = res.added.filter((s) => !hiddenSelectors.includes(s));
+    hiddenSelectors.push(...added);
+
+    saveToStorage();
+    renderHiddenList();
+    await chrome.tabs.sendMessage(tab.id, { action: 'clearPickerChanges' });
+    await updateAllHighlights();
+    syncKnownSelectorsToHoverSync();
+
+    if (added.length || res.removed.length) {
+      showStatus(`✓ ${added.length}개 추가, ${res.removed.length}개 취소됨`, 'success');
+    }
+  } catch (e) {
+    console.warn('Merge picker changes failed', e);
+  }
+}
+
+/* ---------- 팝업-페이지 호버 동기화 ---------- */
+
+let hoverSyncPort = null;
+
+async function connectHoverSync() {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    hoverSyncPort = chrome.tabs.connect(tab.id, { name: 'ssc-hover-sync' });
+    hoverSyncPort.postMessage({ action: 'setKnownSelectors', selectors: hiddenSelectors });
+    hoverSyncPort.onMessage.addListener((msg) => setActiveTag(msg.selector));
+  } catch (e) {
+    console.warn('Hover sync connect failed', e); // chrome:// 등 특수 페이지에서는 조용히 실패
+  }
+}
+
+function syncKnownSelectorsToHoverSync() {
+  if (!hoverSyncPort) return;
+  try {
+    hoverSyncPort.postMessage({ action: 'setKnownSelectors', selectors: hiddenSelectors });
+  } catch (e) {
+    console.warn('Hover sync update failed', e);
+  }
+}
+
+function setActiveTag(selector) {
+  document.querySelectorAll('.tag').forEach((tagEl) => {
+    tagEl.classList.toggle('tag-active', selector !== null && tagEl.dataset.selector === selector);
+  });
+}
+
 async function updateAllHighlights() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -271,5 +352,7 @@ async function updateAllHighlights() {
 // 초기 렌더링
 renderHiddenList();
 
-// 팝업 로드 시 하이라이트 표시
+// 팝업 로드 시 하이라이트 표시 + 피커에서 대기 중인 변경사항 병합 + 호버 동기화 연결
 updateAllHighlights();
+mergePickerChanges();
+connectHoverSync();

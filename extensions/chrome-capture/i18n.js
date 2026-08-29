@@ -34,7 +34,13 @@ const i18n = {
     'hide-failed': '⚠️ 요소 숨김 불가 (보안 정책) - 전체 페이지 캡처합니다',
     'error': '❌ 오류',
     'reset-confirm': '모든 선택 요소를 삭제하시겠습니까?',
-    'reset-done': '✓ 초기화됨'
+    'reset-done': '✓ 초기화됨',
+    'pick-element': '🎯 요소 선택',
+    'picker-instruction': '요소를 클릭해 숨길 항목으로 추가하세요',
+    'picker-hint': 'Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료',
+    'picker-undo': '실행 취소',
+    'picker-done': '완료',
+    'picker-toast': '{count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요'
   },
   en: {
     // 공통
@@ -70,7 +76,13 @@ const i18n = {
     'hide-failed': '⚠️ Cannot hide elements (security policy) - capturing full page',
     'error': '❌ Error',
     'reset-confirm': 'Delete all selected elements?',
-    'reset-done': '✓ Reset'
+    'reset-done': '✓ Reset',
+    'pick-element': '🎯 Pick Element',
+    'picker-instruction': 'Click an element to add it to the hide list',
+    'picker-hint': 'Shift+Click: move up one level · Enter: finish',
+    'picker-undo': 'Undo',
+    'picker-done': 'Done',
+    'picker-toast': '{count} added · click the extension icon again to capture'
   }
 };
 

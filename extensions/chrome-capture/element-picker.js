@@ -1,0 +1,300 @@
+// 요소 클릭 피커: 팝업 자동 닫힘 제약을 우회해 content script가 페이지에 직접
+// 주입하는 피킹 모드. selector-generator.js의 generateSelector와
+// content.js의 highlightHiddenElements(기존 함수)를 재사용한다.
+
+let pickerActive = false;
+let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBorder }
+let knownHiddenSelectors = []; // startElementPicker 시점에 팝업이 넘겨준 "이미 저장된" 선택자 스냅샷
+let removedSelectors = [];     // knownHiddenSelectors 중 이번 세션에서 재클릭으로 취소한 것들
+let hoverOverlayEl = null;     // 호버 미리보기용 오버레이 div (position: fixed)
+let levelBadgeEl = null;       // 호버 미리보기의 "↑{level}" 숫자 배지
+let pickerToolbarEl = null;    // 상단 안내 툴바
+let pickerToastEl = null;      // 완료 토스트
+let pickerMessages = {};       // popup에서 받은 i18n 번역 문자열
+
+let baseHoverTarget = null;    // 커서 아래 "원본" 요소 (elementFromPoint 그대로, 클라이밍 기준점)
+let climbLevel = 0;            // baseHoverTarget에서 Shift+클릭으로 몇 단계 올라갔는지
+let currentHoverTarget = null; // baseHoverTarget에서 climbLevel만큼 조상으로 올라간, 지금 실제로 하이라이트되는 요소
+
+function borderWidthForLevel(level) {
+  return 2 + level; // level 0 → 2px, level 1(부모) → 3px, level 2(조부모) → 4px ...
+}
+
+function isPickerOwnElement(el) {
+  return !!el.closest('#ssc-picker-toolbar, #ssc-hover-overlay, #ssc-level-badge, #ssc-picker-toast');
+}
+
+// baseEl에서 조상 방향으로 level단계 올라간 요소를 반환.
+// body/html에 닿으면 더 못 올라가게 멈춘다(전체 페이지를 실수로 숨기는 사고 방지).
+function climbToLevel(baseEl, level) {
+  let el = baseEl;
+  for (let i = 0; i < level; i++) {
+    const parent = el.parentElement;
+    if (!parent || parent === document.body || parent === document.documentElement) break;
+    el = parent;
+  }
+  return el;
+}
+
+/* ---------- 호버 오버레이 + 레벨 배지 ---------- */
+
+function ensureHoverOverlay() {
+  if (hoverOverlayEl) return hoverOverlayEl;
+  hoverOverlayEl = document.createElement('div');
+  hoverOverlayEl.id = 'ssc-hover-overlay';
+  hoverOverlayEl.style.cssText = `
+    position: fixed; pointer-events: none; z-index: 2147483646;
+    border-style: dashed; border-color: #2F86FF; background: rgba(47,134,255,0.08);
+    transition: all 0.05s ease-out; display: none;
+  `;
+  document.documentElement.appendChild(hoverOverlayEl);
+  return hoverOverlayEl;
+}
+
+function ensureLevelBadge() {
+  if (levelBadgeEl) return levelBadgeEl;
+  levelBadgeEl = document.createElement('div');
+  levelBadgeEl.id = 'ssc-level-badge';
+  levelBadgeEl.style.cssText = `
+    position: fixed; z-index: 2147483647; pointer-events: none;
+    background: #2F86FF; color: #FFFFFF; font: 600 11px/1.4 -apple-system, sans-serif;
+    padding: 1px 6px; border-radius: 3px; display: none; white-space: nowrap;
+  `;
+  document.documentElement.appendChild(levelBadgeEl);
+  return levelBadgeEl;
+}
+
+function updateHoverOverlay(el, level) {
+  const rect = el.getBoundingClientRect();
+  const overlay = ensureHoverOverlay();
+  overlay.style.display = 'block';
+  overlay.style.borderWidth = `${borderWidthForLevel(level)}px`;
+  overlay.style.top = `${rect.top}px`;
+  overlay.style.left = `${rect.left}px`;
+  overlay.style.width = `${rect.width}px`;
+  overlay.style.height = `${rect.height}px`;
+
+  updateLevelBadge(rect, level);
+}
+
+function updateLevelBadge(rect, level) {
+  const badge = ensureLevelBadge();
+  if (level === 0) {
+    badge.style.display = 'none';
+    return;
+  }
+  badge.style.display = 'block';
+  badge.textContent = `↑${level}`;
+  badge.style.top = `${Math.max(0, rect.top - 20)}px`;
+  badge.style.left = `${rect.left}px`;
+}
+
+function removeHoverOverlay() {
+  if (hoverOverlayEl) {
+    hoverOverlayEl.remove();
+    hoverOverlayEl = null;
+  }
+  if (levelBadgeEl) {
+    levelBadgeEl.remove();
+    levelBadgeEl = null;
+  }
+}
+
+/* ---------- 마우스 이동 / 클릭 처리 ---------- */
+
+function handlePickerMouseMove(e) {
+  const rawTarget = document.elementFromPoint(e.clientX, e.clientY);
+  if (!rawTarget || isPickerOwnElement(rawTarget)) {
+    removeHoverOverlay();
+    baseHoverTarget = null;
+    currentHoverTarget = null;
+    return;
+  }
+
+  if (rawTarget !== baseHoverTarget) {
+    baseHoverTarget = rawTarget;
+    climbLevel = 0; // 다른 요소로 이동하면 클라이밍 상태 초기화
+  }
+
+  currentHoverTarget = climbToLevel(baseHoverTarget, climbLevel);
+  updateHoverOverlay(currentHoverTarget, climbLevel);
+}
+
+function handlePickerClick(e) {
+  if (isPickerOwnElement(e.target)) return; // 툴바 자체 클릭은 무시(버튼이 자체 핸들러 처리)
+  e.preventDefault();
+  e.stopPropagation();
+  if (!currentHoverTarget) return;
+
+  if (e.shiftKey) {
+    climbLevel += 1;
+    currentHoverTarget = climbToLevel(baseHoverTarget, climbLevel);
+    updateHoverOverlay(currentHoverTarget, climbLevel); // 두께/배지만 갱신, 아직 추가 안 함
+    return;
+  }
+
+  toggleClickedElement(currentHoverTarget, climbLevel);
+  climbLevel = 0; // 다음 픽을 위해 리셋 — 마우스가 안 움직여도 다시 leaf부터 시작
+}
+
+function handlePickerKeyDown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    finishPicking();
+  }
+}
+
+/* ---------- 클릭 토글: 새로 추가 / 내 픽 취소 / 저장된 항목 취소 / 취소의 취소 ---------- */
+
+function toggleClickedElement(el, level) {
+  const selector = generateSelector(el); // selector-generator.js
+
+  const pickedIndex = pickedItems.findIndex((item) => item.selector === selector);
+  if (pickedIndex !== -1) {
+    undoPickedItem(pickedIndex);
+    return;
+  }
+
+  if (knownHiddenSelectors.includes(selector)) {
+    if (removedSelectors.includes(selector)) {
+      removedSelectors = removedSelectors.filter((s) => s !== selector); // 취소를 다시 취소
+    } else {
+      removedSelectors.push(selector); // 저장된 요소 취소 예약
+    }
+    refreshKnownHighlights();
+    return;
+  }
+
+  confirmPick(el, level);
+}
+
+function confirmPick(el, level) {
+  const originalBorder = el.style.border;
+  el.style.setProperty('border', `${borderWidthForLevel(level)}px solid #FF4444`, 'important');
+  el.style.setProperty('background-color', 'rgba(255,68,68,0.1)', 'important');
+  pickedItems.push({ selector: generateSelector(el), level, element: el, originalBorder });
+  updatePickerToolbarCount();
+}
+
+function undoPickedItem(index) {
+  const [item] = pickedItems.splice(index, 1);
+  if (item.originalBorder) {
+    item.element.style.border = item.originalBorder;
+  } else {
+    item.element.style.removeProperty('border');
+  }
+  updatePickerToolbarCount();
+}
+
+function undoLastPick() {
+  if (pickedItems.length === 0) return;
+  undoPickedItem(pickedItems.length - 1);
+}
+
+// knownHiddenSelectors 중 removedSelectors에 없는 것만 다시 하이라이트 — content.js의 기존 함수 재사용
+function refreshKnownHighlights() {
+  const stillHidden = knownHiddenSelectors.filter((s) => !removedSelectors.includes(s));
+  highlightHiddenElements(stillHidden);
+}
+
+/* ---------- 툴바 UI ---------- */
+
+function injectPickerToolbar() {
+  pickerToolbarEl = document.createElement('div');
+  pickerToolbarEl.id = 'ssc-picker-toolbar';
+  pickerToolbarEl.style.cssText = `
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+    z-index: 2147483647; background: #1F1F1F; color: #FFD700;
+    font: 500 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 10px 16px; border-radius: 0 0 8px 8px; display: flex;
+    align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  `;
+  pickerToolbarEl.innerHTML = `
+    <span class="ssc-toolbar-text">${pickerMessages.instruction || ''}</span>
+    <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;">${pickerMessages.hint || ''}</span>
+    <span id="ssc-picker-count" style="background:#3A3A3A;color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;">0</span>
+    <button id="ssc-picker-undo" style="background:#2D2D2D;color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;cursor:pointer;">${pickerMessages.undo || ''}</button>
+    <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;">${pickerMessages.done || ''}</button>
+  `;
+  document.documentElement.appendChild(pickerToolbarEl);
+  pickerToolbarEl.querySelector('#ssc-picker-undo').addEventListener('click', undoLastPick);
+  pickerToolbarEl.querySelector('#ssc-picker-done').addEventListener('click', finishPicking);
+}
+
+function updatePickerToolbarCount() {
+  const countEl = document.getElementById('ssc-picker-count');
+  if (countEl) countEl.textContent = String(pickedItems.length);
+}
+
+function removePickerToolbar() {
+  if (pickerToolbarEl) {
+    pickerToolbarEl.remove();
+    pickerToolbarEl = null;
+  }
+}
+
+function showPickerToast(message) {
+  if (pickerToastEl) pickerToastEl.remove();
+  pickerToastEl = document.createElement('div');
+  pickerToastEl.id = 'ssc-picker-toast';
+  pickerToastEl.style.cssText = `
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 2147483647; background: #1F1F1F; color: #FFD700;
+    font: 500 13px/1.5 -apple-system, sans-serif; padding: 10px 16px;
+    border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  `;
+  pickerToastEl.textContent = message;
+  document.documentElement.appendChild(pickerToastEl);
+  setTimeout(() => {
+    if (pickerToastEl) {
+      pickerToastEl.remove();
+      pickerToastEl = null;
+    }
+  }, 2500);
+}
+
+function finishPicking() {
+  const addedCount = pickedItems.length;
+  stopElementPicker();
+  if (pickerMessages.toast) {
+    showPickerToast(pickerMessages.toast.replace('{count}', String(addedCount)));
+  }
+}
+
+/* ---------- 시작/종료 + 메시지 핸들러 ---------- */
+
+function startElementPicker(messages, hiddenSelectorsSnapshot) {
+  if (pickerActive) return;
+  pickerActive = true;
+  pickerMessages = messages || {};
+  knownHiddenSelectors = hiddenSelectorsSnapshot || [];
+  removedSelectors = [];
+  injectPickerToolbar();
+  document.addEventListener('mousemove', handlePickerMouseMove, true);
+  document.addEventListener('click', handlePickerClick, true);
+  document.addEventListener('keydown', handlePickerKeyDown, true);
+  document.body.style.cursor = 'crosshair';
+}
+
+function stopElementPicker() {
+  if (!pickerActive) return;
+  pickerActive = false;
+  document.removeEventListener('mousemove', handlePickerMouseMove, true);
+  document.removeEventListener('click', handlePickerClick, true);
+  document.removeEventListener('keydown', handlePickerKeyDown, true);
+  document.body.style.cursor = '';
+  removeHoverOverlay();
+  removePickerToolbar();
+}
+
+function getPickerChanges() {
+  return {
+    added: pickedItems.map((item) => item.selector),
+    removed: removedSelectors,
+  };
+}
+
+function clearPickerChanges() {
+  pickedItems = [];
+  removedSelectors = [];
+}
