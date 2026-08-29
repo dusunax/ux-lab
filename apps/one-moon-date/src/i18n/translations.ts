@@ -17,6 +17,8 @@ export const translations: Translations = {
     leapMonth: '윤',
     darkModeToggleLabel: '다크 모드 전환',
     languageSelectorLabel: '언어 선택',
+    errorBoundaryMessage: '문제가 발생했습니다. 다시 시도해 주세요.',
+    errorBoundaryRetry: '다시 시도',
     zodiac: {
       rat: '쥐',
       ox: '소',
@@ -52,6 +54,8 @@ export const translations: Translations = {
     leapMonth: 'Leap ',
     darkModeToggleLabel: 'Toggle dark mode',
     languageSelectorLabel: 'Select language',
+    errorBoundaryMessage: 'Something went wrong. Please try again.',
+    errorBoundaryRetry: 'Try again',
     zodiac: {
       rat: 'Rat',
       ox: 'Ox',
@@ -87,6 +91,8 @@ export const translations: Translations = {
     leapMonth: '閏',
     darkModeToggleLabel: 'ダークモード切替',
     languageSelectorLabel: '言語選択',
+    errorBoundaryMessage: '問題が発生しました。もう一度お試しください。',
+    errorBoundaryRetry: 'もう一度試す',
     zodiac: {
       rat: '子',
       ox: '丑',
