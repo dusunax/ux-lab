@@ -581,7 +581,12 @@ Esc가 아닌 Enter를 종료 키로 쓴다. capture phase 리스너라 페이�
 | `picker-done` | 완료 | Done |
 | `picker-count` | {count} 선택 | {count} selected |
 | `picker-toast` | {count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요 | {count} added · click the extension icon again to capture |
+| `picker-merge-status` | ✓ {added}개 추가, {removed}개 취소됨 | ✓ {added} added, {removed} canceled |
 | `elements-hidden-count` | {count}개 요소 숨겨짐 | {count} element(s) hidden |
+| `invalid-selector` | ❌ 유효하지 않은 선택자: {selector} | ❌ Invalid selector: {selector} |
+| `capturing` | ⏳ 처리 중... | ⏳ Processing... |
+
+`invalid-selector`/`capturing`은 피커 기능과 무관한 기존 코드의 누락분(팀 리뷰에서 발견) — `showStatus`/버튼 라벨이 i18n 없이 하드코딩돼 있던 걸 이번에 같이 고쳤다.
 
 "취소" 버튼은 새 키를 만들지 않고 기존 범용 `cancel` 키(팝업 미리보기 취소 버튼과 동일)를 재사용한다 — "되돌리기"(1단계)와 "취소"(전체 취소 후 닫기)가 이름이 비슷해 헷갈린다는 팀 피드백으로, `picker-undo`의 한국어 값을 "실행 취소" → "되돌리기"로 바꿔 구분을 명확히 했다.
 
