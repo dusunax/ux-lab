@@ -53,6 +53,7 @@
 | `stopElementPicker` | popup → content (안 쓸 수도 있음, 대비용) | 없음 | `{ success: true }` |
 | `getPickerChanges` | popup → content | 없음 | `{ success: true, added: string[], removed: string[] }` |
 | `clearPickerChanges` | popup → content | 없음 | `{ success: true }` |
+| `hidePickerUIForCapture` | popup → content | 없음 | `{ success: true }` |
 
 `knownHiddenSelectors`: 팝업이 현재 갖고 있는 `hiddenSelectors`(수동 입력 + 이전에 병합된 피커 결과)의 스냅샷. **이미 저장된 요소를 피킹 중에 다시 클릭하면 취소(토글)되도록** 하려면, `element-picker.js`가 "이건 이미 숨김 목록에 있는 요소다"를 판단할 기준이 필요해서 시작 시점에 넘겨준다(아래 섹션 5).
 
@@ -71,7 +72,9 @@ pickBtn.addEventListener('click', async () => {
       instruction: getI18nMessage('picker-instruction'),
       hint: getI18nMessage('picker-hint'),
       undo: getI18nMessage('picker-undo'),
+      cancel: getI18nMessage('cancel'), // 기존 범용 'cancel' 키 재사용 — 새 키 추가 안 함
       done: getI18nMessage('picker-done'),
+      count: getI18nMessage('picker-count'), // "{count} 선택" — 숫자만 있으면 무슨 뜻인지 애매해 라벨을 붙임
       toast: getI18nMessage('picker-toast'), // "{count}개 추가됨 · ..." — {count}는 element-picker.js에서 치환
     },
   });
@@ -98,7 +101,12 @@ async function mergePickerChanges() {
     await updateAllHighlights(); // 기존 함수 재사용 — removed 반영된 최신 목록으로 하이라이트 갱신
 
     if (added.length || res.removed.length) {
-      showStatus(`✓ ${added.length}개 추가, ${res.removed.length}개 취소됨`, 'success');
+      showStatus(
+        getI18nMessage('picker-merge-status')
+          .replace('{added}', String(added.length))
+          .replace('{removed}', String(res.removed.length)),
+        'success'
+      );
     }
   } catch (e) {
     console.warn('Merge picker changes failed', e);
@@ -113,9 +121,10 @@ async function mergePickerChanges() {
 
 ```js
 let pickerActive = false;
-let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBorder } (팝업이 병합해가면 비워짐)
+let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBoxShadow, originalBackground, originalBoxSizing } (팝업이 병합해가면 비워짐)
 let knownHiddenSelectors = []; // startElementPicker 시점에 팝업이 넘겨준 "이미 저장된" 선택자 스냅샷
 let removedSelectors = [];     // knownHiddenSelectors 중 이번 세션에서 재클릭으로 취소한 것들
+let pickerClickShieldEl = null; // 뷰포트 전체를 덮는 투명 클릭 차단막(섹션 3, 광고 iframe 클릭 방지)
 let hoverOverlayEl = null;     // 호버 미리보기용 오버레이 div (position: fixed)
 let pickerToolbarEl = null;    // 상단 안내 툴바
 let levelBadgeEl = null;       // 호버 미리보기의 "↑{level}" 숫자 배지 (섹션 4)
@@ -137,7 +146,8 @@ picking ──(pickedItems에 이미 있는 요소 재클릭)──▶ picking (
 picking ──(knownHiddenSelectors에 있는 요소 클릭)──▶ picking (removedSelectors에 추가 = 저장된 항목 취소 예약)
 picking ──(removedSelectors에 있는 요소 재클릭)──▶ picking (removedSelectors에서 제거 = 취소를 다시 취소, 원상복구)
 picking ──(마우스가 다른 base 요소로 이동)──▶ picking (climbLevel 0으로 리셋)
-picking ──(실행 취소, 반복 가능)──▶ picking  (pickedItems.pop(), 세션 내 최소 10개까지 순서대로 되돌리기 가능)
+picking ──(되돌리기, 반복 가능)──▶ picking  (pickedItems.pop(), 세션 내 전체를 순서대로 되돌리기 가능)
+picking ──(취소 버튼)──▶ idle  (pickedItems/removedSelectors 전부 무효화 후 종료)
 picking ──(Enter / 완료 버튼)──▶ idle
 picking ──(페이지 unload)──▶ (자동 소멸, 별도 처리 불필요)
 ```
@@ -152,6 +162,7 @@ function startElementPicker(messages, hiddenSelectorsSnapshot) {
   pickerMessages = messages || {};
   knownHiddenSelectors = hiddenSelectorsSnapshot || [];
   removedSelectors = [];
+  ensureClickShield();
   injectPickerToolbar();
   document.addEventListener('mousemove', handlePickerMouseMove, true);
   document.addEventListener('click', handlePickerClick, true);
@@ -166,6 +177,7 @@ function stopElementPicker() {
   document.removeEventListener('click', handlePickerClick, true);
   document.removeEventListener('keydown', handlePickerKeyDown, true);
   document.body.style.cursor = '';
+  removeClickShield();
   removeHoverOverlay();
   removePickerToolbar();
 }
@@ -173,6 +185,48 @@ function stopElementPicker() {
 
 - 리스너는 전부 **capture phase(`true`)**로 등록 — 사이트 자체 클릭 핸들러(예: 링크 이동, SPA 라우팅)보다 먼저 가로채서 `preventDefault`/`stopPropagation`으로 원래 동작을 막아야 한다. 이게 없으면 요소를 "선택"하려는 클릭이 실제로 링크를 눌러버려 페이지가 이동해버린다 — 피커의 핵심 전제조건.
 - `pickedItems`/`removedSelectors`는 `stopElementPicker()`에서 비우지 않는다 — 팝업이 `getPickerChanges`로 가져가서 `clearPickerChanges`를 호출할 때 비로소 비워진다(아래).
+
+### 클릭 차단막 — 광고 iframe 클릭 방지
+
+`preventDefault`/`stopPropagation`만으로는 부족한 경우가 있다: 광고 대부분은 `<iframe>`으로 렌더링되는데, 클릭 좌표가 iframe 위에 있으면 브라우저가 애초에 그 클릭을 iframe **내부 문서**로 직접 전달해버린다. 이건 최상위 프레임의 어떤 JS 리스너도(캡처 단계라도) 가로챌 수 없는 별개의 이벤트라, 광고가 그대로 클릭/이동돼 버린다.
+
+해결책은 뷰포트 전체를 덮는 투명 `div`를 하나 두는 것이다. 물리적인 클릭은 항상 이 오버레이(우리 쪽 최상위 문서에 속한 요소)로 먼저 떨어지므로, 애초에 iframe에 도달할 좌표 자체가 없어진다.
+
+```js
+function ensureClickShield() {
+  if (pickerClickShieldEl) return pickerClickShieldEl;
+  pickerClickShieldEl = document.createElement('div');
+  pickerClickShieldEl.id = 'ssc-picker-click-shield';
+  pickerClickShieldEl.style.cssText = `
+    position: fixed; inset: 0; z-index: 2147483645;
+    background: transparent; cursor: crosshair;
+  `;
+  document.documentElement.appendChild(pickerClickShieldEl);
+  return pickerClickShieldEl;
+}
+
+function removeClickShield() {
+  if (pickerClickShieldEl) {
+    pickerClickShieldEl.remove();
+    pickerClickShieldEl = null;
+  }
+}
+
+// 차단막이 elementFromPoint에 항상 잡히면 그 아래 실제 요소(광고 iframe
+// 포함)를 확인할 수 없으므로, 조회하는 순간만 pointer-events를 껐다 켠다.
+// 실제 클릭 이벤트는 이미 차단막이 받은 뒤이므로 이 토글은 elementFromPoint
+// 결과에만 영향을 주고, iframe으로의 클릭 전달 차단은 그대로 유지된다.
+function elementBeneathShield(x, y) {
+  if (pickerClickShieldEl) pickerClickShieldEl.style.pointerEvents = 'none';
+  const el = document.elementFromPoint(x, y);
+  if (pickerClickShieldEl) pickerClickShieldEl.style.pointerEvents = 'auto';
+  return el;
+}
+```
+
+- z-index는 `2147483645`로, 호버 오버레이(`2147483646`)와 툴바/배지/토스트(`2147483647`)보다 낮게 둔다 — 그래야 그것들이 차단막 위에서 그대로 보이고 클릭도 받는다(툴바 버튼은 원래대로 동작).
+- `handlePickerMouseMove`가 기존 `document.elementFromPoint` 대신 `elementBeneathShield`를 쓰도록 바꾸는 것 외에는 나머지 로직(클라이밍, 토글 등)은 전부 그대로 재사용 — `currentHoverTarget`이 이미 "차단막 아래 실제 요소"를 가리키므로 클릭 시점의 `handlePickerClick`은 수정할 필요가 없다.
+- 부작용(오히려 이득): 광고 iframe뿐 아니라 페이지의 일반 링크·버튼도 이제 전부 차단막 아래에 있어, `preventDefault`/`stopPropagation`에 기대지 않고도 물리적으로 클릭이 도달하지 않는다 — 이중 안전장치가 된 셈.
 
 ```js
 function getPickerChanges() {
@@ -192,9 +246,9 @@ function clearPickerChanges() {
 
 실제 요소에 인라인 스타일을 직접 입히지 않고, **별도의 `position: fixed` div를 하나 만들어 `getBoundingClientRect()` 좌표에 맞춰 이동**시키는 방식을 쓴다. 이유: 대상 요소의 기존 스타일(overflow, transform 등)을 건드리지 않고, 스크롤/리사이즈에도 독립적으로 재계산하기 쉬움.
 
-**테두리 두께 규칙**: 기본(레벨 0, 클라이밍 없음) 2px에서 시작해 부모로 한 단계 올라갈 때마다 1px씩 두꺼워진다 — 호버 미리보기(파란 점선)와, 실제로 추가된 요소의 하이라이트(빨간 실선) 둘 다 동일한 규칙을 쓴다.
+**테두리 두께 규칙**: 기본(레벨 0, 클라이밍 없음) 2px에서 시작해 부모로 한 단계 올라갈 때마다 1px씩 두꺼워진다 — 호버 미리보기(파란 점선)와, 실제로 추가된 요소의 하이라이트(빨간 실선) 둘 다 같은 두께 규칙(`borderWidthForLevel`)을 쓴다. 다만 그리는 방식은 다르다: 호버 오버레이는 페이지에 속하지 않는 별도 플로팅 div라 `border`를 그대로 쓰고, 실제 페이지 요소에 적용하는 확정 하이라이트는 레이아웃이 밀리지 않도록 `box-shadow: inset`으로 그린다(섹션 5).
 
-**레벨 숫자 배지**: 두께 차이만으로는(특히 2px vs 3px처럼 인접한 레벨) 정확히 몇 단계 올라갔는지 구분하기 어렵다는 팀 리뷰 피드백([lunch review](../../meetings/chrome-capture/2026-08-28-lunch-review-element-picker.md))을 반영해, 호버 오버레이 좌상단에 `↑{level}` 배지를 함께 띄운다. `level`이 0일 때(클라이밍 없이 바로 가리키는 상태)는 배지를 숨겨 화면이 지저분해지지 않게 한다. MVP에서는 **호버 미리보기에만** 적용하고, 이미 확정된(빨간 실선) 요소에는 배지를 붙이지 않는다 — 확정 시점엔 이미 배지로 몇 단계인지 확인하고 클릭한 뒤이고, 여러 개를 계속 추적하려면 스크롤마다 배지 여러 개를 재배치해야 해서 복잡도 대비 효용이 낮다고 판단했다(필요해지면 다음 리비전에서 확장).
+**레벨 숫자 배지**: 두께 차이만으로는(특히 2px vs 3px처럼 인접한 레벨) 정확히 몇 단계 올라갔는지 구분하기 어려워, 호버 오버레이 좌상단에 `↑{level}` 배지를 함께 띄운다([팀 리뷰](../../meetings/chrome-capture/2026-08-28-lunch-review-element-picker.md)에서 나온 아이디어). `level`이 0일 때(클라이밍 없이 바로 가리키는 상태)는 배지를 숨겨 화면이 지저분해지지 않게 한다. **호버 미리보기에만** 적용하고, 이미 확정된(빨간 실선) 요소에는 배지를 붙이지 않는다 — 확정 시점엔 이미 배지로 몇 단계인지 확인하고 클릭한 뒤이고, 여러 개를 계속 추적하려면 스크롤마다 배지 여러 개를 재배치해야 해서 복잡도 대비 효용이 낮다.
 
 ```js
 function borderWidthForLevel(level) {
@@ -309,7 +363,7 @@ Shift+클릭은 "부모를 골라서 바로 추가"가 아니라 **"한 단계 �
 
 Shift 없는 일반 클릭은 **토글**이다 — 대상이 무엇이었는지에 따라 결과가 다르다:
 1. 처음 보는 요소 → 새로 추가(`pickedItems`에 push)
-2. 이번 세션에서 이미 추가한 요소(`pickedItems`에 있음) → 그 추가를 취소(제거) — "실행 취소" 버튼으로 마지막 걸 지우는 것과 동일한 동작을, 굳이 버튼까지 안 가고 그 요소를 다시 클릭해서도 할 수 있게 하는 것
+2. 이번 세션에서 이미 추가한 요소(`pickedItems`에 있음) → 그 추가를 취소(제거) — "되돌리기" 버튼으로 마지막 걸 지우는 것과 동일한 동작을, 굳이 버튼까지 안 가고 그 요소를 다시 클릭해서도 할 수 있게 하는 것
 3. 원래 저장돼 있던 요소(`knownHiddenSelectors`에 있고 아직 취소 안 함) → `removedSelectors`에 추가(취소 예약), 화면에서 하이라이트 제거
 4. 취소 예약해둔 요소(`removedSelectors`에 있음)를 또 클릭 → 예약 취소(원상복구), 하이라이트 재적용
 
@@ -353,18 +407,46 @@ function toggleClickedElement(el, level) {
   confirmPick(el, level); // 케이스 1: 새로 추가
 }
 
+// border는 실제 페이지 요소의 박스 크기에 더해져 주변 레이아웃을 밀어낼 수 있다
+// (특히 width/height가 명시된 요소). box-shadow(inset)는 box-sizing과 무관하게
+// 레이아웃에 전혀 영향을 주지 않으므로 이걸로 그린다. box-sizing도 border-box로
+// 맞춰 혹시 모를 스타일 충돌 여지를 줄인다. (호버 미리보기용 `#ssc-hover-overlay`는
+// 실제 페이지에 속하지 않는 별도 플로팅 div라 레이아웃 영향이 없어 border를 그대로 씀 — 섹션 4)
 function confirmPick(el, level) {
-  const originalBorder = el.style.border;
-  el.style.setProperty('border', `${borderWidthForLevel(level)}px solid #FF4444`, 'important');
+  const originalBoxShadow = el.style.boxShadow;
+  const originalBackground = el.style.backgroundColor;
+  const originalBoxSizing = el.style.boxSizing;
+  el.style.setProperty('box-sizing', 'border-box', 'important');
+  el.style.setProperty('box-shadow', `inset 0 0 0 ${borderWidthForLevel(level)}px #FF4444`, 'important');
   el.style.setProperty('background-color', 'rgba(255,68,68,0.1)', 'important');
-  pickedItems.push({ selector: generateSelector(el), level, element: el, originalBorder });
+  pickedItems.push({
+    selector: generateSelector(el),
+    level,
+    element: el,
+    originalBoxShadow,
+    originalBackground,
+    originalBoxSizing,
+  });
   updatePickerToolbarCount();
 }
 
 function undoPickedItem(index) {
   const [item] = pickedItems.splice(index, 1);
-  item.element.style.border = item.originalBorder || '';
-  if (!item.originalBorder) item.element.style.removeProperty('border');
+  if (item.originalBoxShadow) {
+    item.element.style.boxShadow = item.originalBoxShadow;
+  } else {
+    item.element.style.removeProperty('box-shadow');
+  }
+  if (item.originalBackground) {
+    item.element.style.backgroundColor = item.originalBackground;
+  } else {
+    item.element.style.removeProperty('background-color');
+  }
+  if (item.originalBoxSizing) {
+    item.element.style.boxSizing = item.originalBoxSizing;
+  } else {
+    item.element.style.removeProperty('box-sizing');
+  }
   updatePickerToolbarCount();
 }
 
@@ -376,8 +458,8 @@ function refreshKnownHighlights() {
 }
 ```
 - 새로 확정된 요소는 `content.js`의 `highlightHiddenElements`를 재사용하지 않고 `element-picker.js`가 직접 스타일을 입힌다 — 레벨별 두께(`borderWidthForLevel`)를 반영해야 하는데 기존 함수는 고정 2px만 지원하기 때문.
-- 반대로 **원래 저장돼 있던 요소**(케이스 3/4)는 `element-picker.js`가 직접 스타일을 건드리지 않고 `content.js`의 `highlightHiddenElements`를 다시 호출해서 갱신한다 — 그 요소들의 하이라이트는 원래 `content.js`가 관리하던 것이라, 같은 함수로 "지우고 다시 그리기"를 하는 게 `originalBorder`를 이중으로 추적하지 않아도 돼서 더 안전하다.
-- "실행 취소" 버튼(섹션 7)은 `undoPickedItem(pickedItems.length - 1)`을 호출하는 것과 동일 — 케이스 2와 로직을 공유한다. `pickedItems`가 비어있지 않은 한 반복 클릭 가능(세션 내 전체 히스토리를 순서대로 되돌릴 수 있어 "10개까지"라는 요구를 자연히 만족).
+- 반대로 **원래 저장돼 있던 요소**(케이스 3/4)는 `element-picker.js`가 직접 스타일을 건드리지 않고 `content.js`의 `highlightHiddenElements`를 다시 호출해서 갱신한다 — 그 요소들의 하이라이트는 `content.js`가 관리하므로, 같은 함수로 "지우고 다시 그리기"를 하는 게 원본 스타일 값을 이중으로 추적하지 않아도 돼서 더 안전하다.
+- "되돌리기" 버튼(섹션 7)은 `undoPickedItem(pickedItems.length - 1)`을 호출하는 것과 동일 — 케이스 2와 로직을 공유한다. `pickedItems`가 비어있지 않은 한 반복 클릭 가능(세션 내 전체 히스토리를 순서대로 되돌릴 수 있어 "10개까지"라는 요구를 자연히 만족).
 
 ## 6. 선택자 생성 알고리즘 (`selector-generator.js`)
 
@@ -447,27 +529,38 @@ function buildUniquePath(el, maxDepth = 5) {
 function injectPickerToolbar() {
   pickerToolbarEl = document.createElement('div');
   pickerToolbarEl.id = 'ssc-picker-toolbar';
+  // 1행: 설명 텍스트 단독. 2행: 힌트 텍스트 단독. 3행: 카운트 + 버튼(별도 div로 감싸 아래 줄에 고정)
   pickerToolbarEl.innerHTML = `
     <span class="ssc-toolbar-text">${pickerMessages.instruction}</span>
     <span class="ssc-toolbar-hint">${pickerMessages.hint}</span>
-    <span id="ssc-picker-count" class="ssc-toolbar-count">0</span>
-    <button id="ssc-picker-undo">${pickerMessages.undo}</button>
-    <button id="ssc-picker-done">${pickerMessages.done}</button>
+    <div class="ssc-toolbar-row3">
+      <span id="ssc-picker-count" class="ssc-toolbar-count">0</span>
+      <button id="ssc-picker-undo">${pickerMessages.undo}</button>
+      <button id="ssc-picker-cancel">${pickerMessages.cancel}</button>
+      <button id="ssc-picker-done">${pickerMessages.done}</button>
+    </div>
   `;
   document.documentElement.appendChild(pickerToolbarEl);
   pickerToolbarEl.querySelector('#ssc-picker-undo').addEventListener('click', undoLastPick);
+  pickerToolbarEl.querySelector('#ssc-picker-cancel').addEventListener('click', cancelAllPicks);
   pickerToolbarEl.querySelector('#ssc-picker-done').addEventListener('click', finishPicking);
 }
 
 function updatePickerToolbarCount() {
   const countEl = document.getElementById('ssc-picker-count');
-  if (countEl) countEl.textContent = String(pickedItems.length);
+  if (countEl) countEl.textContent = (pickerMessages.count || '{count}').replace('{count}', String(pickedItems.length));
 }
 ```
 - `position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 2147483647;`
-- 배경은 다크/라이트 사이트 어디서든 보이도록 확장 팝업 테마와 무관한 고정 팔레트 사용: 배경 `#1F1F1F` + 텍스트 `#FFD700`(팝업의 accent-color와 통일감), 반투명 없이 불투명 배경(사이트 콘텐츠와 겹쳐 보이지 않게).
-- `undoLastPick()`: `pickedItems.pop()`한 항목의 `element.style.border = item.originalBorder`로 복원(비었으면 `removeProperty`) + `updatePickerToolbarCount()`.
-- `finishPicking()`: `stopElementPicker()` 호출 + 완료 토스트 표시. 토스트 문구는 `pickerMessages.toast`의 `{count}` 플레이스홀더를 치환: `pickerMessages.toast.replace('{count}', pickedItems.length)`, 2.5초 후 자동 제거(페이지에 주입되는 것이므로 팝업의 `.status`와는 별도의 최소 인라인 스타일 사용).
+- 텍스트 색은 다크/라이트 사이트 어디서든 보이도록 확장 팝업 테마와 무관한 고정 팔레트 사용: `#FFD700`(팝업의 accent-color와 통일감).
+- **3행 구조 고정**: 설명 텍스트(`ssc-toolbar-text`)와 힌트 텍스트(`ssc-toolbar-hint`)는 각각 항상 자기 줄을 혼자 차지하고(1행, 2행), 카운트·버튼은 그 아래 별도 행(3행)에 둔다(바깥 컨테이너 `flex-direction: column`, 3행만 별도 `div`로 감쌈). 좁은 뷰포트에서 브라우저가 shrink-to-fit으로 폭을 줄여도 "텍스트 다음에 줄바꿈"되는 구조 자체는 항상 유지되어, 힌트 텍스트가 카운트/버튼과 뒤섞여 일부만 다음 줄로 밀리는 어색한 줄바꿈이 생기지 않는다.
+- **3행 내부 줄바꿈 안전장치**: 3행(카운트+버튼) 내부는 `flex-wrap: wrap`으로 두되, 각 span/button에 `white-space: nowrap; flex-shrink: 0;`을 줘서 정말 좁을 때도 버튼 문구 중간이 아니라 "버튼 단위"로만 줄바꿈되게 한다. 바깥 컨테이너의 `max-width: min(640px, calc(100vw - 24px))`로 과도하게 넓어지는 것도 막는다.
+- **배경은 옅은 그래스모피즘**: 어떤 사이트 위에 떠도 위화감이 적도록 완전 불투명 대신 `background: rgba(31,31,31,0.8)` + `backdrop-filter: blur(2px)`을 쓴다. 80% 불투명도라 텍스트 대비는 충분히 유지되고, blur는 뒤 배경을 살짝만 흐리는 정도(2px)로 옅게 준다. 하위 요소들(카운트 배지, 버튼)도 같은 톤의 반투명(`rgba(...,0.8)`)으로 맞춰 통일감을 준다.
+- **버튼 3개, 역할이 뚜렷이 다르다**: "되돌리기"(`picker-undo`, 1단계씩)와 "취소"(범용 `cancel` 키 재사용, 세션 전체 무효화)를 나란히 둘 때 이름이 겹치면 헷갈리므로 서로 다른 단어를 쓴다.
+  - `undoLastPick()`: 마지막 한 개만 되돌림 — `undoPickedItem(pickedItems.length - 1)` 호출.
+  - `cancelAllPicks()`: 이번 세션의 추가/취소를 **전부** 무효화하고 피킹 모드를 닫는다. `pickedItems`를 전부 `undoPickedItem`으로 되돌리고, `removedSelectors`도 비운 뒤 `refreshKnownHighlights()`로 원래 하이라이트 상태를 복원, `stopElementPicker()` 호출. 완료 토스트는 띄우지 않는다(아무것도 반영 안 됐으므로).
+  - `finishPicking()`: `stopElementPicker()` 호출 + 완료 토스트 표시. 토스트 문구는 `pickerMessages.toast`의 `{count}` 플레이스홀더를 치환: `pickerMessages.toast.replace('{count}', pickedItems.length)`, 2.5초 후 자동 제거(페이지에 주입되는 것이므로 팝업의 `.status`와는 별도의 최소 인라인 스타일 사용).
+  - **캡처 화면에 컨트롤 UI가 찍히면 안 됨**: "완료" 직후 토스트가 뜬 2.5초 사이에 바로 팝업을 열어 캡처하면 토스트가 스크린샷에 함께 찍힐 수 있다. `popup.js`의 `captureScreenshot()`은 실제 캡처(`chrome.tabs.captureVisibleTab`) 직전에 항상 `hidePickerUIForCapture` 메시지를 보내고, `element-picker.js`의 `hidePickerUIForCapture()`가 토스트를 즉시 제거하고(`pickerActive`가 어떤 이유로든 아직 true면 `stopElementPicker()`까지) 정리한다. 기존 `hideElements` 호출과 동일하게 항상 시도하고 실패해도 캡처 자체는 계속 진행한다.
 
 ## 8. Enter로 종료 처리 (`element-picker.js`)
 
@@ -490,9 +583,18 @@ Esc가 아닌 Enter를 종료 키로 쓴다. capture phase 리스너라 페이�
 | `pick-element` | 🎯 요소 선택 | 🎯 Pick Element |
 | `picker-instruction` | 요소를 클릭해 숨길 항목으로 추가하세요 | Click an element to add it to the hide list |
 | `picker-hint` | Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료 | Shift+Click: move up one level · Enter: finish |
-| `picker-undo` | 실행 취소 | Undo |
+| `picker-undo` | 되돌리기 | Undo |
 | `picker-done` | 완료 | Done |
+| `picker-count` | {count} 선택 | {count} selected |
 | `picker-toast` | {count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요 | {count} added · click the extension icon again to capture |
+| `picker-merge-status` | ✓ {added}개 추가, {removed}개 취소됨 | ✓ {added} added, {removed} canceled |
+| `elements-hidden-count` | {count}개 요소 숨겨짐 | {count} element(s) hidden |
+| `invalid-selector` | ❌ 유효하지 않은 선택자: {selector} | ❌ Invalid selector: {selector} |
+| `capturing` | ⏳ 처리 중... | ⏳ Processing... |
+
+`invalid-selector`/`capturing`은 피커 기능과 무관한 기존 코드의 누락분(팀 리뷰에서 발견) — `showStatus`/버튼 라벨이 i18n 없이 하드코딩돼 있던 걸 이번에 같이 고쳤다.
+
+"취소" 버튼은 새 키를 만들지 않고 기존 범용 `cancel` 키(팝업 미리보기 취소 버튼과 동일)를 재사용한다. "되돌리기"(1단계씩)와 "취소"(전체 취소 후 닫기)는 서로 다른 동작이라 다른 단어를 쓴다.
 
 `popup.html`의 새 버튼에는 기존 관례대로 `data-i18n="pick-element"` 부여.
 

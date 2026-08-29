@@ -29,12 +29,23 @@ const i18n = {
     'selector-exists': '이미 추가된 selector입니다',
     'selector-added': '추가됨',
     'selector-removed': '제거됨',
+    'invalid-selector': '❌ 유효하지 않은 선택자: {selector}',
+    'capturing': '⏳ 처리 중...',
     'preview-ready-msg': '✓ 다운로드 준비 완료!',
     'page-unavailable': '❌ 이 페이지에서는 사용 불가능합니다',
     'hide-failed': '⚠️ 요소 숨김 불가 (보안 정책) - 전체 페이지 캡처합니다',
     'error': '❌ 오류',
     'reset-confirm': '모든 선택 요소를 삭제하시겠습니까?',
-    'reset-done': '✓ 초기화됨'
+    'reset-done': '✓ 초기화됨',
+    'pick-element': '🎯 요소 선택',
+    'picker-instruction': '요소를 클릭해 숨길 항목으로 추가하세요',
+    'picker-hint': 'Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료',
+    'picker-undo': '되돌리기',
+    'picker-done': '완료',
+    'picker-count': '{count} 선택',
+    'picker-toast': '{count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요',
+    'picker-merge-status': '✓ {added}개 추가, {removed}개 취소됨',
+    'elements-hidden-count': '{count}개 요소 숨겨짐'
   },
   en: {
     // 공통
@@ -65,12 +76,23 @@ const i18n = {
     'selector-exists': 'Selector already added',
     'selector-added': 'added',
     'selector-removed': 'removed',
+    'invalid-selector': '❌ Invalid selector: {selector}',
+    'capturing': '⏳ Processing...',
     'preview-ready-msg': '✓ Ready to download!',
     'page-unavailable': '❌ This page is not available',
     'hide-failed': '⚠️ Cannot hide elements (security policy) - capturing full page',
     'error': '❌ Error',
     'reset-confirm': 'Delete all selected elements?',
-    'reset-done': '✓ Reset'
+    'reset-done': '✓ Reset',
+    'pick-element': '🎯 Pick Element',
+    'picker-instruction': 'Click an element to add it to the hide list',
+    'picker-hint': 'Shift+Click: move up one level · Enter: finish',
+    'picker-undo': 'Undo',
+    'picker-done': 'Done',
+    'picker-count': '{count} selected',
+    'picker-toast': '{count} added · click the extension icon again to capture',
+    'picker-merge-status': '✓ {added} added, {removed} canceled',
+    'elements-hidden-count': '{count} element(s) hidden'
   }
 };
 

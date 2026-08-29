@@ -176,6 +176,12 @@
       min-height: 28px;
     }
 
+    .hidden-elements:empty {
+      display: none;
+      margin: 0;
+      min-height: 0;
+    }
+
     .tag {
       background: var(--bg-secondary);
       padding: 5px 10px;
@@ -195,6 +201,15 @@
       color: var(--accent-color);
       transition: all 0.2s;
       font-size: 14px;
+    }
+
+    .tag-active {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.25);
+    }
+
+    body[data-theme="light"] .tag-active {
+      box-shadow: 0 0 0 2px rgba(27, 78, 245, 0.2);
     }
 
     .tag-remove:hover {
@@ -266,14 +281,32 @@
       display: block;
     }
 
+    .preview-image-wrapper {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
     .preview-image {
+      display: block;
       width: 100%;
       border-radius: 4px;
-      margin-bottom: 12px;
       max-height: 250px;
       object-fit: contain;
       border: 1px solid var(--border-color);
       background: var(--bg-primary);
+      cursor: zoom-in;
+    }
+
+    .zoom-lens {
+      position: absolute;
+      display: none;
+      pointer-events: none;
+      border: 2px solid var(--accent-color);
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      background-color: var(--bg-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      z-index: 10;
     }
 
     .preview-info {
@@ -367,6 +400,10 @@
         <button class="btn-reset-icon" id="resetBtn" title="초기화" data-i18n-title="reset">🔄</button>
       </div>
 
+      <div class="input-group">
+        <button class="btn-secondary" id="pickBtn" data-i18n="pick-element" style="flex:1;">🎯 요소 선택</button>
+      </div>
+
       <div id="hiddenElementsList" class="hidden-elements"></div>
       <div id="status" class="status"></div>
     </div>
@@ -382,7 +419,10 @@
     <!-- Preview 섹션 -->
     <div class="section preview-section" id="previewSection">
       <div class="section-title" data-i18n="preview-section">미리보기</div>
-      <img id="previewImage" class="preview-image" alt="Preview">
+      <div class="preview-image-wrapper">
+        <img id="previewImage" class="preview-image" alt="Preview">
+        <div id="previewZoomLens" class="zoom-lens"></div>
+      </div>
       <div class="preview-info">
         <div data-i18n="preview-ready">✓ 스크린샷이 준비되었습니다</div>
         <div id="previewSize"></div>
