@@ -244,8 +244,8 @@ function injectPickerToolbar() {
   // 배경은 사이트 위에 겹쳐도 위화감이 적도록 옅은 유리질감(그래스모피즘) 사용.
   pickerToolbarEl.style.cssText = `
     position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-    z-index: 2147483647; background: rgba(31,31,31,0.55);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    z-index: 2147483647; background: rgba(31,31,31,0.8);
+    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
     color: #FFD700; font: 500 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     padding: 10px 16px; border-radius: 0 0 10px 10px; display: flex;
     flex-direction: column; align-items: center; gap: 6px;
