@@ -343,6 +343,7 @@ async function startPicker() {
         undo: getI18nMessage('picker-undo'),
         cancel: getI18nMessage('cancel'),
         done: getI18nMessage('picker-done'),
+        count: getI18nMessage('picker-count'),
         toast: getI18nMessage('picker-toast'),
       },
     });

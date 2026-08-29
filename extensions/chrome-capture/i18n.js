@@ -40,6 +40,7 @@ const i18n = {
     'picker-hint': 'Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료',
     'picker-undo': '되돌리기',
     'picker-done': '완료',
+    'picker-count': '{count} 선택',
     'picker-toast': '{count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요',
     'elements-hidden-count': '{count}개 요소 숨겨짐'
   },
@@ -83,6 +84,7 @@ const i18n = {
     'picker-hint': 'Shift+Click: move up one level · Enter: finish',
     'picker-undo': 'Undo',
     'picker-done': 'Done',
+    'picker-count': '{count} selected',
     'picker-toast': '{count} added · click the extension icon again to capture',
     'elements-hidden-count': '{count} element(s) hidden'
   }

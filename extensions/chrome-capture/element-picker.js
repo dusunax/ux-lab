@@ -254,8 +254,8 @@ function injectPickerToolbar() {
   pickerToolbarEl.innerHTML = `
     <span class="ssc-toolbar-text" style="text-align:center;">${pickerMessages.instruction || ''}</span>
     <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;text-align:center;">${pickerMessages.hint || ''}</span>
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;">
-      <span id="ssc-picker-count" style="background:rgba(58,58,58,0.8);color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;white-space:nowrap;flex-shrink:0;">0</span>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 6px;">
+      <span id="ssc-picker-count" style="background:rgba(58,58,58,0.8);color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;white-space:nowrap;flex-shrink:0;">${(pickerMessages.count || '{count}').replace('{count}', '0')}</span>
       <button id="ssc-picker-undo" style="background:rgba(45,45,45,0.8);color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.undo || ''}</button>
       <button id="ssc-picker-cancel" style="background:rgba(45,45,45,0.8);color:#D99595;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.cancel || ''}</button>
       <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.done || ''}</button>
@@ -269,7 +269,7 @@ function injectPickerToolbar() {
 
 function updatePickerToolbarCount() {
   const countEl = document.getElementById('ssc-picker-count');
-  if (countEl) countEl.textContent = String(pickedItems.length);
+  if (countEl) countEl.textContent = (pickerMessages.count || '{count}').replace('{count}', String(pickedItems.length));
 }
 
 function removePickerToolbar() {

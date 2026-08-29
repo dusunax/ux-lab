@@ -74,6 +74,7 @@ pickBtn.addEventListener('click', async () => {
       undo: getI18nMessage('picker-undo'),
       cancel: getI18nMessage('cancel'), // 기존 범용 'cancel' 키 재사용 — 새 키 추가 안 함
       done: getI18nMessage('picker-done'),
+      count: getI18nMessage('picker-count'), // "{count} 선택" — 숫자만 있으면 무슨 뜻인지 애매해 라벨을 붙임
       toast: getI18nMessage('picker-toast'), // "{count}개 추가됨 · ..." — {count}는 element-picker.js에서 치환
     },
   });
@@ -496,7 +497,7 @@ function injectPickerToolbar() {
 
 function updatePickerToolbarCount() {
   const countEl = document.getElementById('ssc-picker-count');
-  if (countEl) countEl.textContent = String(pickedItems.length);
+  if (countEl) countEl.textContent = (pickerMessages.count || '{count}').replace('{count}', String(pickedItems.length));
 }
 ```
 - `position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 2147483647;`
@@ -533,6 +534,7 @@ Esc가 아닌 Enter를 종료 키로 쓴다. capture phase 리스너라 페이�
 | `picker-hint` | Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료 | Shift+Click: move up one level · Enter: finish |
 | `picker-undo` | 되돌리기 | Undo |
 | `picker-done` | 완료 | Done |
+| `picker-count` | {count} 선택 | {count} selected |
 | `picker-toast` | {count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요 | {count} added · click the extension icon again to capture |
 | `elements-hidden-count` | {count}개 요소 숨겨짐 | {count} element(s) hidden |
 
