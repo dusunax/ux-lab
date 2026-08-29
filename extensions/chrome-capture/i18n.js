@@ -40,7 +40,8 @@ const i18n = {
     'picker-hint': 'Shift+클릭: 한 단계씩 상위 요소로 · Enter: 종료',
     'picker-undo': '실행 취소',
     'picker-done': '완료',
-    'picker-toast': '{count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요'
+    'picker-toast': '{count}개 추가됨 · 확장 아이콘을 다시 클릭해 캡처하세요',
+    'elements-hidden-count': '{count}개 요소 숨겨짐'
   },
   en: {
     // 공통
@@ -82,7 +83,8 @@ const i18n = {
     'picker-hint': 'Shift+Click: move up one level · Enter: finish',
     'picker-undo': 'Undo',
     'picker-done': 'Done',
-    'picker-toast': '{count} added · click the extension icon again to capture'
+    'picker-toast': '{count} added · click the extension icon again to capture',
+    'elements-hidden-count': '{count} element(s) hidden'
   }
 };
 

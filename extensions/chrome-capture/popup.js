@@ -16,6 +16,10 @@ const previewImage = document.getElementById('previewImage');
 const previewSize = document.getElementById('previewSize');
 const optionsBtn = document.getElementById('optionsBtn');
 const pickBtn = document.getElementById('pickBtn');
+const previewZoomLens = document.getElementById('previewZoomLens');
+
+const ZOOM_FACTOR = 2.5;
+const ZOOM_LENS_SIZE = 140;
 
 // 초기화
 loadFromStorage();
@@ -175,12 +179,45 @@ function showPreview(dataUrl) {
   const img = new Image();
   img.onload = () => {
     const sizeMB = (dataUrl.length / (1024 * 1024)).toFixed(2);
-    previewSize.textContent = `${img.width}×${img.height}px • ${sizeMB}MB`;
+    const hiddenCountText = getI18nMessage('elements-hidden-count').replace('{count}', String(hiddenSelectors.length));
+    previewSize.textContent = `${img.width}×${img.height}px • ${sizeMB}MB • ${hiddenCountText}`;
   };
   img.src = dataUrl;
 
   showStatus(getI18nMessage('preview-ready-msg'), 'success');
 }
+
+function handlePreviewZoomMove(e) {
+  if (!previewImage.src) return;
+  const rect = previewImage.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+    previewZoomLens.style.display = 'none';
+    return;
+  }
+
+  previewZoomLens.style.display = 'block';
+  previewZoomLens.style.width = `${ZOOM_LENS_SIZE}px`;
+  previewZoomLens.style.height = `${ZOOM_LENS_SIZE}px`;
+
+  const lensX = Math.max(0, Math.min(x - ZOOM_LENS_SIZE / 2, rect.width - ZOOM_LENS_SIZE));
+  const lensY = Math.max(0, Math.min(y - ZOOM_LENS_SIZE / 2, rect.height - ZOOM_LENS_SIZE));
+  previewZoomLens.style.left = `${lensX}px`;
+  previewZoomLens.style.top = `${lensY}px`;
+
+  previewZoomLens.style.backgroundImage = `url(${currentScreenshot})`;
+  previewZoomLens.style.backgroundSize = `${rect.width * ZOOM_FACTOR}px ${rect.height * ZOOM_FACTOR}px`;
+  previewZoomLens.style.backgroundPosition = `${-(x * ZOOM_FACTOR - ZOOM_LENS_SIZE / 2)}px ${-(y * ZOOM_FACTOR - ZOOM_LENS_SIZE / 2)}px`;
+}
+
+function hidePreviewZoomLens() {
+  previewZoomLens.style.display = 'none';
+}
+
+previewImage.addEventListener('mousemove', handlePreviewZoomMove);
+previewImage.addEventListener('mouseleave', hidePreviewZoomLens);
 
 function downloadScreenshot() {
   if (!currentScreenshot) return;
@@ -202,6 +239,7 @@ async function cancelPreview() {
   captureSection.style.display = 'block';
   previewImage.src = '';
   statusDiv.textContent = '';
+  hidePreviewZoomLens();
   await updateAllHighlights();
 }
 
