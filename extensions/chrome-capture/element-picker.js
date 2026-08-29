@@ -170,9 +170,10 @@ function toggleClickedElement(el, level) {
 
 function confirmPick(el, level) {
   const originalBorder = el.style.border;
+  const originalBackground = el.style.backgroundColor;
   el.style.setProperty('border', `${borderWidthForLevel(level)}px solid #FF4444`, 'important');
   el.style.setProperty('background-color', 'rgba(255,68,68,0.1)', 'important');
-  pickedItems.push({ selector: generateSelector(el), level, element: el, originalBorder });
+  pickedItems.push({ selector: generateSelector(el), level, element: el, originalBorder, originalBackground });
   updatePickerToolbarCount();
 }
 
@@ -182,6 +183,11 @@ function undoPickedItem(index) {
     item.element.style.border = item.originalBorder;
   } else {
     item.element.style.removeProperty('border');
+  }
+  if (item.originalBackground) {
+    item.element.style.backgroundColor = item.originalBackground;
+  } else {
+    item.element.style.removeProperty('background-color');
   }
   updatePickerToolbarCount();
 }
