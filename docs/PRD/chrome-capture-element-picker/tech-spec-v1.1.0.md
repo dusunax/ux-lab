@@ -119,6 +119,7 @@ let pickerActive = false;
 let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBorder } (팝업이 병합해가면 비워짐)
 let knownHiddenSelectors = []; // startElementPicker 시점에 팝업이 넘겨준 "이미 저장된" 선택자 스냅샷
 let removedSelectors = [];     // knownHiddenSelectors 중 이번 세션에서 재클릭으로 취소한 것들
+let pickerClickShieldEl = null; // 뷰포트 전체를 덮는 투명 클릭 차단막(섹션 3, 광고 iframe 클릭 방지)
 let hoverOverlayEl = null;     // 호버 미리보기용 오버레이 div (position: fixed)
 let pickerToolbarEl = null;    // 상단 안내 툴바
 let levelBadgeEl = null;       // 호버 미리보기의 "↑{level}" 숫자 배지 (섹션 4)
@@ -155,6 +156,7 @@ function startElementPicker(messages, hiddenSelectorsSnapshot) {
   pickerMessages = messages || {};
   knownHiddenSelectors = hiddenSelectorsSnapshot || [];
   removedSelectors = [];
+  ensureClickShield();
   injectPickerToolbar();
   document.addEventListener('mousemove', handlePickerMouseMove, true);
   document.addEventListener('click', handlePickerClick, true);
@@ -169,6 +171,7 @@ function stopElementPicker() {
   document.removeEventListener('click', handlePickerClick, true);
   document.removeEventListener('keydown', handlePickerKeyDown, true);
   document.body.style.cursor = '';
+  removeClickShield();
   removeHoverOverlay();
   removePickerToolbar();
 }
@@ -176,6 +179,48 @@ function stopElementPicker() {
 
 - 리스너는 전부 **capture phase(`true`)**로 등록 — 사이트 자체 클릭 핸들러(예: 링크 이동, SPA 라우팅)보다 먼저 가로채서 `preventDefault`/`stopPropagation`으로 원래 동작을 막아야 한다. 이게 없으면 요소를 "선택"하려는 클릭이 실제로 링크를 눌러버려 페이지가 이동해버린다 — 피커의 핵심 전제조건.
 - `pickedItems`/`removedSelectors`는 `stopElementPicker()`에서 비우지 않는다 — 팝업이 `getPickerChanges`로 가져가서 `clearPickerChanges`를 호출할 때 비로소 비워진다(아래).
+
+### 클릭 차단막 — 광고 iframe 클릭 방지
+
+`preventDefault`/`stopPropagation`만으로는 부족한 경우가 있다: 광고 대부분은 `<iframe>`으로 렌더링되는데, 클릭 좌표가 iframe 위에 있으면 브라우저가 애초에 그 클릭을 iframe **내부 문서**로 직접 전달해버린다. 이건 최상위 프레임의 어떤 JS 리스너도(캡처 단계라도) 가로챌 수 없는 별개의 이벤트라, 광고가 그대로 클릭/이동돼 버린다.
+
+해결책은 뷰포트 전체를 덮는 투명 `div`를 하나 두는 것이다. 물리적인 클릭은 항상 이 오버레이(우리 쪽 최상위 문서에 속한 요소)로 먼저 떨어지므로, 애초에 iframe에 도달할 좌표 자체가 없어진다.
+
+```js
+function ensureClickShield() {
+  if (pickerClickShieldEl) return pickerClickShieldEl;
+  pickerClickShieldEl = document.createElement('div');
+  pickerClickShieldEl.id = 'ssc-picker-click-shield';
+  pickerClickShieldEl.style.cssText = `
+    position: fixed; inset: 0; z-index: 2147483645;
+    background: transparent; cursor: crosshair;
+  `;
+  document.documentElement.appendChild(pickerClickShieldEl);
+  return pickerClickShieldEl;
+}
+
+function removeClickShield() {
+  if (pickerClickShieldEl) {
+    pickerClickShieldEl.remove();
+    pickerClickShieldEl = null;
+  }
+}
+
+// 차단막이 elementFromPoint에 항상 잡히면 그 아래 실제 요소(광고 iframe
+// 포함)를 확인할 수 없으므로, 조회하는 순간만 pointer-events를 껐다 켠다.
+// 실제 클릭 이벤트는 이미 차단막이 받은 뒤이므로 이 토글은 elementFromPoint
+// 결과에만 영향을 주고, iframe으로의 클릭 전달 차단은 그대로 유지된다.
+function elementBeneathShield(x, y) {
+  if (pickerClickShieldEl) pickerClickShieldEl.style.pointerEvents = 'none';
+  const el = document.elementFromPoint(x, y);
+  if (pickerClickShieldEl) pickerClickShieldEl.style.pointerEvents = 'auto';
+  return el;
+}
+```
+
+- z-index는 `2147483645`로, 호버 오버레이(`2147483646`)와 툴바/배지/토스트(`2147483647`)보다 낮게 둔다 — 그래야 그것들이 차단막 위에서 그대로 보이고 클릭도 받는다(툴바 버튼은 원래대로 동작).
+- `handlePickerMouseMove`가 기존 `document.elementFromPoint` 대신 `elementBeneathShield`를 쓰도록 바꾸는 것 외에는 나머지 로직(클라이밍, 토글 등)은 전부 그대로 재사용 — `currentHoverTarget`이 이미 "차단막 아래 실제 요소"를 가리키므로 클릭 시점의 `handlePickerClick`은 수정할 필요가 없다.
+- 부작용(오히려 이득): 광고 iframe뿐 아니라 페이지의 일반 링크·버튼도 이제 전부 차단막 아래에 있어, `preventDefault`/`stopPropagation`에 기대지 않고도 물리적으로 클릭이 도달하지 않는다 — 이중 안전장치가 된 셈.
 
 ```js
 function getPickerChanges() {

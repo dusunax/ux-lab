@@ -6,6 +6,7 @@ let pickerActive = false;
 let pickedItems = [];          // 이번 세션에서 새로 추가한 { selector, level, element, originalBoxShadow, originalBackground, originalBoxSizing }
 let knownHiddenSelectors = []; // startElementPicker 시점에 팝업이 넘겨준 "이미 저장된" 선택자 스냅샷
 let removedSelectors = [];     // knownHiddenSelectors 중 이번 세션에서 재클릭으로 취소한 것들
+let pickerClickShieldEl = null; // 뷰포트 전체를 덮는 투명 클릭 차단막 (아래 설명)
 let hoverOverlayEl = null;     // 호버 미리보기용 오버레이 div (position: fixed)
 let levelBadgeEl = null;       // 호버 미리보기의 "↑{level}" 숫자 배지
 let pickerToolbarEl = null;    // 상단 안내 툴바
@@ -22,6 +23,41 @@ function borderWidthForLevel(level) {
 
 function isPickerOwnElement(el) {
   return !!el.closest('#ssc-picker-toolbar, #ssc-hover-overlay, #ssc-level-badge, #ssc-picker-toast');
+}
+
+// iframe으로 렌더링되는 광고 등을 클릭하면, 브라우저가 클릭 좌표를 애초에
+// iframe 내부 문서로 직접 전달해버려 우리 스크립트가 가로챌 기회 자체가
+// 없다(광고 클릭/이동이 그대로 실행됨). 뷰포트 전체를 덮는 투명 오버레이를
+// 두면 물리적인 클릭이 항상 이 오버레이(우리 쪽 문서)로 먼저 떨어지므로
+// iframe에는 아예 도달하지 않는다.
+function ensureClickShield() {
+  if (pickerClickShieldEl) return pickerClickShieldEl;
+  pickerClickShieldEl = document.createElement('div');
+  pickerClickShieldEl.id = 'ssc-picker-click-shield';
+  pickerClickShieldEl.style.cssText = `
+    position: fixed; inset: 0; z-index: 2147483645;
+    background: transparent; cursor: crosshair;
+  `;
+  document.documentElement.appendChild(pickerClickShieldEl);
+  return pickerClickShieldEl;
+}
+
+function removeClickShield() {
+  if (pickerClickShieldEl) {
+    pickerClickShieldEl.remove();
+    pickerClickShieldEl = null;
+  }
+}
+
+// 차단막이 항상 elementFromPoint에 잡히면 그 아래 실제 요소(광고 iframe 포함)를
+// 확인할 수 없으므로, 조회하는 순간만 pointer-events를 껐다 켠다. 실제 클릭
+// 이벤트는 이미 차단막이 받은 뒤이므로 이 토글은 elementFromPoint 결과에만
+// 영향을 주고, iframe으로의 클릭 전달은 막힌 상태 그대로 유지된다.
+function elementBeneathShield(x, y) {
+  if (pickerClickShieldEl) pickerClickShieldEl.style.pointerEvents = 'none';
+  const el = document.elementFromPoint(x, y);
+  if (pickerClickShieldEl) pickerClickShieldEl.style.pointerEvents = 'auto';
+  return el;
 }
 
 // baseEl에서 조상 방향으로 level단계 올라간 요소를 반환.
@@ -103,7 +139,7 @@ function removeHoverOverlay() {
 /* ---------- 마우스 이동 / 클릭 처리 ---------- */
 
 function handlePickerMouseMove(e) {
-  const rawTarget = document.elementFromPoint(e.clientX, e.clientY);
+  const rawTarget = elementBeneathShield(e.clientX, e.clientY);
   if (!rawTarget || isPickerOwnElement(rawTarget)) {
     removeHoverOverlay();
     baseHoverTarget = null;
@@ -315,6 +351,7 @@ function startElementPicker(messages, hiddenSelectorsSnapshot) {
   pickerMessages = messages || {};
   knownHiddenSelectors = hiddenSelectorsSnapshot || [];
   removedSelectors = [];
+  ensureClickShield();
   injectPickerToolbar();
   document.addEventListener('mousemove', handlePickerMouseMove, true);
   document.addEventListener('click', handlePickerClick, true);
@@ -329,6 +366,7 @@ function stopElementPicker() {
   document.removeEventListener('click', handlePickerClick, true);
   document.removeEventListener('keydown', handlePickerKeyDown, true);
   document.body.style.cursor = '';
+  removeClickShield();
   removeHoverOverlay();
   removePickerToolbar();
 }
