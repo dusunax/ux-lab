@@ -53,6 +53,8 @@ export interface Translation {
   leapMonth: string;
   darkModeToggleLabel: string;
   languageSelectorLabel: string;
+  errorBoundaryMessage: string;
+  errorBoundaryRetry: string;
   zodiac: Zodiac;
   ganZhi: GanZhiData;
 }

@@ -15,7 +15,11 @@ export const LoadingScreen = () => {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={isDarkMode ? Colors.background.dark : Colors.background.light}
       />
-      <View style={styles.loadingContainer}>
+      <View
+        style={styles.loadingContainer}
+        accessible
+        accessibilityRole="text"
+        accessibilityLiveRegion="polite">
         <Text style={[styles.loadingText, isDarkMode && styles.textDark]}>
           {t?.loading || '불러오는 중...'}
         </Text>
