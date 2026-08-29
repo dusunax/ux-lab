@@ -96,10 +96,6 @@ Chrome 확장 팝업(`default_popup`)은 포커스를 잃으면 강제로 닫히
 9. `content.js`가 새 로직 유입 없이 기존 크기 수준으로 유지됐는지 확인
 10. 팝업을 켜둔 채 저장된 요소 위로 마우스를 움직여 해당 태그 칩 테두리가 활성화되는지, 팝업을 닫아도 에러 없이 정리되는지 확인
 
-## 백로그
-
-지금 스코프에서는 제외했지만 나중에 다시 볼 항목은 [BACKLOG.md](./BACKLOG.md)에 모아둔다.
-
 ## 결정 로그
 
 개발 과정에서 확정한 기술적·정책적 판단들. 각 판단의 배경과 최종 결론만 기록한다.
@@ -115,3 +111,12 @@ Chrome 확장 팝업(`default_popup`)은 포커스를 잃으면 강제로 닫히
 | 카운트 표시 | 숫자만 노출하지 않고 "{count} 선택" 라벨을 붙임 | 숫자만 있으면 무슨 뜻인지 애매함 |
 | 미리보기 확대 배율 | 실제 렌더링된 이미지 영역(레터박스 제외) 기준으로 계산 | `object-fit: contain`으로 생기는 레터박스까지 확대 기준에 포함하면 가로세로 배율이 어긋나 비율이 깨짐 |
 | 파일 분리 | 피커·호버동기화 로직을 `selector-generator.js`/`element-picker.js`/`hover-sync.js` 3개로 신규 분리, `content.js`는 라우팅만 추가 | 기존 `content.js`가 비대해지는 것을 방지 |
+
+## 백로그
+
+지금 스코프에서는 제외했지만 나중에 다시 볼 항목.
+
+| 항목 | 출처 | 상태 |
+|---|---|---|
+| Shadow DOM을 쓰는 사이트(웹 컴포넌트 기반)에서 피커/호버 동기화 수동 테스트 — `elementFromPoint`는 open shadow root 안까지 보지만 `closest()`는 shadow boundary를 못 넘어서, `isPickerOwnElement`/`matchesKnownSelector` 판별이 오작동할 가능성 있음 | [lunch review](../../meetings/chrome-capture/2026-08-28-lunch-review-element-picker.md) | 미확인 |
+| 레벨 숫자 배지(`↑{level}`)를 호버 미리보기뿐 아니라 확정된 픽(빨간 실선)에도 표시할지 — 여러 개를 동시에 추적하려면 스크롤마다 배지 재배치가 필요해 MVP에서는 제외 | tech-spec-v1.1.0.md 섹션 4 | 보류 |
