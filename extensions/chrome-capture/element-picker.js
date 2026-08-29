@@ -236,24 +236,30 @@ function refreshKnownHighlights() {
 function injectPickerToolbar() {
   pickerToolbarEl = document.createElement('div');
   pickerToolbarEl.id = 'ssc-picker-toolbar';
-  // flex-wrap: wrap이라 공간이 부족하면 span/button "단위 전체"가 다음 줄로 내려간다.
-  // 각 항목엔 white-space:nowrap + flex-shrink:0을 줘서 "Enter: 종료"처럼 문구
-  // 중간이 잘려 다음 줄로 넘어가는 보기 안 좋은 줄바꿈을 방지한다.
+  // 설명 텍스트는 항상 자기 줄을 차지하고(1행), 힌트·카운트·버튼은 그 아래
+  // 별도 행(2행)에 둔다 — column 방향 2행 구조라 좁은 뷰포트에서도 항상
+  // 이 구조를 유지한다. 2행 내부는 flex-wrap: wrap + 각 항목
+  // white-space:nowrap/flex-shrink:0으로, 정말 좁을 때만 항목 단위로
+  // 줄바꿈되고 문구 중간이 끊기지 않는다.
+  // 배경은 사이트 위에 겹쳐도 위화감이 적도록 옅은 유리질감(그래스모피즘) 사용.
   pickerToolbarEl.style.cssText = `
     position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-    z-index: 2147483647; background: #1F1F1F; color: #FFD700;
-    font: 500 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    z-index: 2147483647; background: rgba(31,31,31,0.55);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: #FFD700; font: 500 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     padding: 10px 16px; border-radius: 0 0 10px 10px; display: flex;
-    flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px;
-    max-width: min(640px, calc(100vw - 24px)); box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    flex-direction: column; align-items: center; gap: 6px;
+    max-width: min(640px, calc(100vw - 24px)); box-shadow: 0 2px 12px rgba(0,0,0,0.25);
   `;
   pickerToolbarEl.innerHTML = `
-    <span class="ssc-toolbar-text" style="white-space:nowrap;flex-shrink:0;">${pickerMessages.instruction || ''}</span>
-    <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;white-space:nowrap;flex-shrink:0;">${pickerMessages.hint || ''}</span>
-    <span id="ssc-picker-count" style="background:#3A3A3A;color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;white-space:nowrap;flex-shrink:0;">0</span>
-    <button id="ssc-picker-undo" style="background:#2D2D2D;color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.undo || ''}</button>
-    <button id="ssc-picker-cancel" style="background:#2D2D2D;color:#D99595;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.cancel || ''}</button>
-    <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.done || ''}</button>
+    <span class="ssc-toolbar-text" style="text-align:center;">${pickerMessages.instruction || ''}</span>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;">
+      <span class="ssc-toolbar-hint" style="color:#A8A8A8;font-size:11px;white-space:nowrap;flex-shrink:0;">${pickerMessages.hint || ''}</span>
+      <span id="ssc-picker-count" style="background:rgba(58,58,58,0.8);color:#FFD700;padding:2px 8px;border-radius:10px;font-size:11px;white-space:nowrap;flex-shrink:0;">0</span>
+      <button id="ssc-picker-undo" style="background:rgba(45,45,45,0.8);color:#E8E8E8;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.undo || ''}</button>
+      <button id="ssc-picker-cancel" style="background:rgba(45,45,45,0.8);color:#D99595;border:1px solid #4A4A4A;border-radius:4px;padding:5px 10px;font-size:11px;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.cancel || ''}</button>
+      <button id="ssc-picker-done" style="background:#FFD700;color:#1F1F1F;border:none;border-radius:4px;padding:5px 10px;font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;cursor:pointer;">${pickerMessages.done || ''}</button>
+    </div>
   `;
   document.documentElement.appendChild(pickerToolbarEl);
   pickerToolbarEl.querySelector('#ssc-picker-undo').addEventListener('click', undoLastPick);
