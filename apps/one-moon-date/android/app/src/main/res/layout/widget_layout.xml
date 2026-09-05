@@ -24,11 +24,14 @@
         android:letterSpacing="0.1" />
 
     <!-- 일 표시 (큰 숫자) -->
+    <!-- paddingBottom은 세로 중앙 기준을 끌어올린다. 12dp가 실측 상한 —
+         이보다 키워도 더 올라가지 않고, 24dp부터는 숫자가 잘린다 -->
     <TextView
         android:id="@+id/widget_day"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:paddingBottom="12dp"
         android:gravity="center_horizontal|center_vertical"
         android:textAlignment="center"
         android:text="1"
