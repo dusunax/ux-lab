@@ -24,11 +24,14 @@
         android:letterSpacing="0.1" />
 
     <!-- 일 표시 (큰 숫자) -->
+    <!-- paddingBottom은 세로 중앙 기준을 절반만큼 끌어올린다 (5dp → 2.5dp 위로).
+         1x1보다 값이 작은 이유는 이 레이아웃이 이미 거의 중앙에 맞아 있기 때문 -->
     <TextView
         android:id="@+id/widget_day"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:paddingBottom="5dp"
         android:gravity="center_horizontal|center_vertical"
         android:textAlignment="center"
         android:text="1"
