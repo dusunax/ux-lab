@@ -226,8 +226,7 @@ function confirmPick(el, level) {
   updatePickerToolbarCount();
 }
 
-function undoPickedItem(index) {
-  const [item] = pickedItems.splice(index, 1);
+function restorePickedItemStyle(item) {
   if (item.originalBoxShadow) {
     item.element.style.boxShadow = item.originalBoxShadow;
   } else {
@@ -243,6 +242,11 @@ function undoPickedItem(index) {
   } else {
     item.element.style.removeProperty('box-sizing');
   }
+}
+
+function undoPickedItem(index) {
+  const [item] = pickedItems.splice(index, 1);
+  restorePickedItemStyle(item);
   updatePickerToolbarCount();
 }
 
@@ -265,6 +269,15 @@ function cancelAllPicks() {
 function refreshKnownHighlights() {
   const stillHidden = knownHiddenSelectors.filter((s) => !removedSelectors.includes(s));
   highlightHiddenElements(stillHidden);
+}
+
+// knownHiddenSelectors(취소분 제외) + 이번 세션에 새로 추가한 것까지 합쳐서 하이라이트
+function highlightFinalSelection() {
+  const finalSelectors = knownHiddenSelectors.filter((s) => !removedSelectors.includes(s));
+  pickedItems.forEach((item) => {
+    if (!finalSelectors.includes(item.selector)) finalSelectors.push(item.selector);
+  });
+  highlightHiddenElements(finalSelectors);
 }
 
 /* ---------- 툴바 UI ---------- */
@@ -337,6 +350,8 @@ function showPickerToast(message) {
 
 function finishPicking() {
   const addedCount = pickedItems.length;
+  pickedItems.forEach(restorePickedItemStyle);
+  highlightFinalSelection();
   stopElementPicker();
   if (pickerMessages.toast) {
     showPickerToast(pickerMessages.toast.replace('{count}', String(addedCount)));
