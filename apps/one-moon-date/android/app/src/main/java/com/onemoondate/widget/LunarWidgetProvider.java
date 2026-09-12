@@ -29,16 +29,26 @@ public class LunarWidgetProvider extends AppWidgetProvider {
     private static final String KEY_DARK_MODE = "darkMode";
     private static final String ASYNC_STORAGE_PREFS_NAME = "ReactNativeAsyncStorage";
 
-    // 1x1은 resizeMode="none"이라 사용자가 리사이즈할 수는 없지만, "1칸"의 실제 렌더 크기는
-    // 런처마다 달라 고정 sp로는 일부 기기에서 잘림이 발생한다. 그래서 배치 시점의 실제 크기(dp)를
-    // 읽어 이 범위 안에서 텍스트 크기를 비례 계산한다.
-    // 음력 달력 사용자층이 고연령대라 최소 크기에서도 숫자가 박스를 거의 채우도록 크게 잡는다.
+    // 1x1은 resizeMode="none"이라 리사이즈는 안 되지만 "1칸"의 실제 렌더 크기는 런처마다 달라,
+    // 배치 시점 실제 크기(dp)를 읽어 텍스트 크기를 계산한다. day는 헤더를 뺀 나머지 세로 공간을
+    // 채우는 폰트 크기를 직접 역산한다(임의 min/max sp보다 정확).
     private static final int MIN_CELL_DP = 40;
     private static final int MAX_CELL_DP = 180;
-    private static final float MIN_MONTH_SP = 15f;
-    private static final float MAX_MONTH_SP = 28f;
-    private static final float MIN_DAY_SP = 30f;
-    private static final float MAX_DAY_SP = 60f;
+    private static final float MIN_MONTH_SP = 13f;
+    private static final float MAX_MONTH_SP = 26f;
+
+    // widget_layout.xml의 padding과 맞춰야 한다.
+    private static final float MONTH_LINE_HEIGHT_FACTOR = 1.35f;
+    private static final int HEADER_PADDING_TOP_DP = 5;
+    private static final int HEADER_PADDING_BOTTOM_DP = 4;
+    private static final int DAY_PADDING_BOTTOM_DP = 4;
+    // 레슨런: 처음엔 글자 잉크(획) 높이 비율(약 0.73, 1 미만)로 나눠서 계산했다가 실기기에서
+    // 위아래가 잘렸다. TextView가 예약하는 줄 높이는 잉크 높이가 아니라 폰트 크기의 1.2~1.3배라,
+    // 반대로 1보다 큰 값으로 나눠야 안전하다.
+    private static final float DAY_SAFETY_RATIO = 0.85f;
+    private static final float DAY_LINE_HEIGHT_FACTOR = 1.3f;
+    private static final float DAY_WIDTH_FACTOR = 1.12f;
+    private static final int WIDTH_SAFETY_MARGIN_DP = 8;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -225,10 +235,15 @@ public class LunarWidgetProvider extends AppWidgetProvider {
             Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
             int minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, MIN_CELL_DP);
             int minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, MIN_CELL_DP);
-            int cellDp = Math.min(minWidthDp, minHeightDp);
 
-            float monthSp = WidgetTextSizeCalculator.scaledSp(cellDp, MIN_CELL_DP, MAX_CELL_DP, MIN_MONTH_SP, MAX_MONTH_SP);
-            float daySp = WidgetTextSizeCalculator.scaledSp(cellDp, MIN_CELL_DP, MAX_CELL_DP, MIN_DAY_SP, MAX_DAY_SP);
+            float monthSp = WidgetTextSizeCalculator.scaledSp(minHeightDp, MIN_CELL_DP, MAX_CELL_DP, MIN_MONTH_SP, MAX_MONTH_SP);
+
+            float headerHeightDp = monthSp * MONTH_LINE_HEIGHT_FACTOR + HEADER_PADDING_TOP_DP + HEADER_PADDING_BOTTOM_DP;
+            float dayAreaHeightDp = Math.max(minHeightDp - headerHeightDp - DAY_PADDING_BOTTOM_DP, 1f);
+            float daySpFromHeight = WidgetTextSizeCalculator.fillHeightSp(dayAreaHeightDp, DAY_SAFETY_RATIO, DAY_LINE_HEIGHT_FACTOR);
+            float daySpFromWidth = WidgetTextSizeCalculator.capByWidth(minWidthDp - WIDTH_SAFETY_MARGIN_DP, DAY_WIDTH_FACTOR);
+            float daySp = Math.min(daySpFromHeight, daySpFromWidth);
+
             views.setTextViewTextSize(R.id.widget_month, TypedValue.COMPLEX_UNIT_SP, monthSp);
             views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, daySp);
 

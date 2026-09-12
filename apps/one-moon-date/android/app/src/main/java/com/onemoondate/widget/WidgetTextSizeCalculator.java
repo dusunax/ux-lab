@@ -28,4 +28,14 @@ final class WidgetTextSizeCalculator {
         }
         return availableDp / widthFactor;
     }
+
+    // 세로로 남은 공간에 안전하게 들어가는 최대 폰트 크기를 구한다.
+    // lineHeightFactor는 TextView 한 줄이 실제로 예약하는 세로 폭(ascent+descent+leading) / 폰트
+    // 크기(보통 1.2~1.3, 글자 잉크 높이가 아니다 — 잉크 높이로 계산하면 실제로는 잘린다).
+    static float fillHeightSp(float availableHeightDp, float safetyRatio, float lineHeightFactor) {
+        if (lineHeightFactor <= 0f) {
+            return 0f;
+        }
+        return Math.max(0f, availableHeightDp * safetyRatio / lineHeightFactor);
+    }
 }
