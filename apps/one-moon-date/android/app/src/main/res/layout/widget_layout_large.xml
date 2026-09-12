@@ -19,24 +19,25 @@
         android:paddingBottom="10dp"
         android:text="1월"
         android:textColor="@color/white"
-        android:textSize="32sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:letterSpacing="0.1" />
 
-    <!-- 일 표시 (큰 숫자) -->
-    <!-- paddingBottom은 세로 중앙 기준을 절반만큼 끌어올린다 (5dp → 2.5dp 위로).
-         1x1보다 값이 작은 이유는 이 레이아웃이 이미 거의 중앙에 맞아 있기 때문 -->
+    <!-- 일 표시 (큰 숫자). 실제 폰트 크기는 LunarWidgetLargeProvider가 위젯 실제 크기에 맞춰 계산한다.
+         1x1 미리보기 박스의 day 영역(세로 124px) 대비 안전한 잉크 비율(24sp)을 실측하고, 2x2
+         미리보기 박스의 day 영역(세로 319px, 1x1의 약 2.57배)에 같은 비율로 맞춰 60sp로 산정 —
+         "8"로 실기기 재확인 완료. 처음 선제적으로 반토막 낸 40sp는 박스 대비 너무 작아 보였다. -->
     <TextView
         android:id="@+id/widget_day"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingBottom="5dp"
+        android:paddingBottom="3dp"
         android:gravity="center_horizontal|center_vertical"
         android:textAlignment="center"
         android:text="1"
         android:textColor="@color/text_primary_light"
-        android:textSize="80sp"
+        android:textSize="60sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-light" />
 
