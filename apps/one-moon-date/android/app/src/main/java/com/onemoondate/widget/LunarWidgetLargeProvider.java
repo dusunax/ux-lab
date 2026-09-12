@@ -38,6 +38,13 @@ public class LunarWidgetLargeProvider extends AppWidgetProvider {
     private static final float MIN_DAY_SP = 60f;
     private static final float MAX_DAY_SP = 110f;
 
+    // 2x2는 가로/세로를 독립적으로 리사이즈할 수 있어(2x3, 3x2 등) 가로·세로 중 더 긴 쪽을
+    // "성장 방향"으로 보고 크기를 키운다. 대신 헤더/일 텍스트 폭이 실제 가로 폭을 넘지 않도록
+    // 캔버스로 실측한 폭 계수(sp당 필요한 가로 dp)로 상한을 건다 — 안 늘어난 축에서 잘리는 걸 방지.
+    private static final float MONTH_WIDTH_FACTOR = 3.25f; // "윤12월" 기준
+    private static final float DAY_WIDTH_FACTOR = 1.12f; // "31" 기준
+    private static final int WIDTH_SAFETY_MARGIN_DP = 8;
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
@@ -206,10 +213,13 @@ public class LunarWidgetLargeProvider extends AppWidgetProvider {
             Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
             int minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, MIN_CELL_DP);
             int minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, MIN_CELL_DP);
-            int cellDp = Math.min(minWidthDp, minHeightDp);
+            int dominantDp = Math.max(minWidthDp, minHeightDp);
+            int availableWidthDp = Math.max(minWidthDp - WIDTH_SAFETY_MARGIN_DP, 1);
 
-            float monthSp = WidgetTextSizeCalculator.scaledSp(cellDp, MIN_CELL_DP, MAX_CELL_DP, MIN_MONTH_SP, MAX_MONTH_SP);
-            float daySp = WidgetTextSizeCalculator.scaledSp(cellDp, MIN_CELL_DP, MAX_CELL_DP, MIN_DAY_SP, MAX_DAY_SP);
+            float rawMonthSp = WidgetTextSizeCalculator.scaledSp(dominantDp, MIN_CELL_DP, MAX_CELL_DP, MIN_MONTH_SP, MAX_MONTH_SP);
+            float rawDaySp = WidgetTextSizeCalculator.scaledSp(dominantDp, MIN_CELL_DP, MAX_CELL_DP, MIN_DAY_SP, MAX_DAY_SP);
+            float monthSp = Math.min(rawMonthSp, WidgetTextSizeCalculator.capByWidth(availableWidthDp, MONTH_WIDTH_FACTOR));
+            float daySp = Math.min(rawDaySp, WidgetTextSizeCalculator.capByWidth(availableWidthDp, DAY_WIDTH_FACTOR));
             views.setTextViewTextSize(R.id.widget_month, TypedValue.COMPLEX_UNIT_SP, monthSp);
             views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, daySp);
 

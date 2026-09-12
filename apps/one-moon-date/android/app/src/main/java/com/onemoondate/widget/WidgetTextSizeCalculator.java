@@ -19,4 +19,13 @@ final class WidgetTextSizeCalculator {
 
         return minSp + (maxSp - minSp) * ratio;
     }
+
+    // 폭이 부족한 축(가로로 안 늘어난 2xN 모양 등)에서 텍스트가 옆으로 잘리지 않도록 하는 상한.
+    // widthFactor는 "이 폰트로 렌더링했을 때 sp당 필요한 가로 폭(dp)" — 실제 폭에서 계산한다.
+    static float capByWidth(int availableDp, float widthFactor) {
+        if (widthFactor <= 0f) {
+            return Float.MAX_VALUE;
+        }
+        return availableDp / widthFactor;
+    }
 }
