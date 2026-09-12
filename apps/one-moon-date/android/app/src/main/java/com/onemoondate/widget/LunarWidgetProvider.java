@@ -235,13 +235,14 @@ public class LunarWidgetProvider extends AppWidgetProvider {
             Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
             int minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, MIN_CELL_DP);
             int minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, MIN_CELL_DP);
+            int availableWidthDp = Math.max(minWidthDp - WIDTH_SAFETY_MARGIN_DP, 1);
 
             float monthSp = WidgetTextSizeCalculator.scaledSp(minHeightDp, MIN_CELL_DP, MAX_CELL_DP, MIN_MONTH_SP, MAX_MONTH_SP);
 
             float headerHeightDp = monthSp * MONTH_LINE_HEIGHT_FACTOR + HEADER_PADDING_TOP_DP + HEADER_PADDING_BOTTOM_DP;
             float dayAreaHeightDp = Math.max(minHeightDp - headerHeightDp - DAY_PADDING_BOTTOM_DP, 1f);
             float daySpFromHeight = WidgetTextSizeCalculator.fillHeightSp(dayAreaHeightDp, DAY_SAFETY_RATIO, DAY_LINE_HEIGHT_FACTOR);
-            float daySpFromWidth = WidgetTextSizeCalculator.capByWidth(minWidthDp - WIDTH_SAFETY_MARGIN_DP, DAY_WIDTH_FACTOR);
+            float daySpFromWidth = WidgetTextSizeCalculator.capByWidth(availableWidthDp, DAY_WIDTH_FACTOR);
             float daySp = Math.min(daySpFromHeight, daySpFromWidth);
 
             views.setTextViewTextSize(R.id.widget_month, TypedValue.COMPLEX_UNIT_SP, monthSp);
