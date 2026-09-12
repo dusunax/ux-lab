@@ -19,23 +19,25 @@
         android:paddingBottom="4dp"
         android:text="1월"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:letterSpacing="0.1" />
 
-    <!-- 일 표시 (큰 숫자). 실제 폰트 크기는 LunarWidgetProvider가 위젯 실제 크기에 맞춰 계산한다 -->
-    <!-- paddingBottom은 세로 중앙 기준을 끌어올린다. 폰트가 커진 만큼 옛 12dp 오프셋은 과해서 4dp로 줄였다. -->
+    <!-- 일 표시 (큰 숫자). 실제 폰트 크기는 LunarWidgetProvider가 위젯 실제 크기에 맞춰 계산한다.
+         이 textSize는 위젯 피커 미리보기 전용 — 피커의 미리보기 박스가 실기기 최소 배치 크기보다도
+         작아서, 48sp에서 "8"같이 위아래 폭이 큰 숫자가 절반 가까이 잘리는 걸 실기기에서 확인해
+         24sp로 낮췄다(레슨런: 미리보기는 실제 위젯과 별도로 안전 검증 필요). -->
     <TextView
         android:id="@+id/widget_day"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingBottom="4dp"
+        android:paddingBottom="2dp"
         android:gravity="center_horizontal|center_vertical"
         android:textAlignment="center"
         android:text="1"
         android:textColor="@color/text_primary_light"
-        android:textSize="48sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-light" />
 
