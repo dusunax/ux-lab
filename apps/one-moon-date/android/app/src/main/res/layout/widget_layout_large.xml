@@ -24,8 +24,9 @@
         android:letterSpacing="0.1" />
 
     <!-- 일 표시 (큰 숫자). 실제 폰트 크기는 LunarWidgetLargeProvider가 위젯 실제 크기에 맞춰 계산한다.
-         1x1 미리보기(48sp)에서 "8"이 절반 가까이 잘리는 걸 확인해 24sp로 낮췄던 것과 같은 이유로,
-         여기도 선제적으로 절반 수준(80→40sp)으로 낮췄다 — 2x2 피커 박스로 직접 재검증은 아직 안 함. -->
+         1x1 미리보기 박스의 day 영역(세로 124px) 대비 안전한 잉크 비율(24sp)을 실측하고, 2x2
+         미리보기 박스의 day 영역(세로 319px, 1x1의 약 2.57배)에 같은 비율로 맞춰 60sp로 산정 —
+         "8"로 실기기 재확인 완료. 처음 선제적으로 반토막 낸 40sp는 박스 대비 너무 작아 보였다. -->
     <TextView
         android:id="@+id/widget_day"
         android:layout_width="match_parent"
@@ -36,7 +37,7 @@
         android:textAlignment="center"
         android:text="1"
         android:textColor="@color/text_primary_light"
-        android:textSize="40sp"
+        android:textSize="60sp"
         android:textStyle="bold"
         android:fontFamily="sans-serif-light" />
 
