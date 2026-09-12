@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
+import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import com.onemoondate.R;
@@ -27,11 +29,26 @@ public class LunarWidgetLargeProvider extends AppWidgetProvider {
     private static final String KEY_DARK_MODE = "darkMode";
     private static final String ASYNC_STORAGE_PREFS_NAME = "ReactNativeAsyncStorage";
 
+    // widget_info_large.xml의 minWidth/maxResizeWidth와 일치
+    private static final int MIN_CELL_DP = 110;
+    private static final int MAX_CELL_DP = 300;
+    private static final float MIN_MONTH_SP = 20f;
+    private static final float MAX_MONTH_SP = 34f;
+    private static final float MIN_DAY_SP = 48f;
+    private static final float MAX_DAY_SP = 96f;
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
+                                           int appWidgetId, Bundle newOptions) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+        updateAppWidget(context, appWidgetManager, appWidgetId);
     }
 
     @Override
@@ -184,6 +201,16 @@ public class LunarWidgetLargeProvider extends AppWidgetProvider {
 
             String monthText = formatMonthText(language, lunar.month, lunar.isLeapMonth);
             views.setTextViewText(R.id.widget_month, monthText);
+
+            Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+            int minWidthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, MIN_CELL_DP);
+            int minHeightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, MIN_CELL_DP);
+            int cellDp = Math.min(minWidthDp, minHeightDp);
+
+            float monthSp = WidgetTextSizeCalculator.scaledSp(cellDp, MIN_CELL_DP, MAX_CELL_DP, MIN_MONTH_SP, MAX_MONTH_SP);
+            float daySp = WidgetTextSizeCalculator.scaledSp(cellDp, MIN_CELL_DP, MAX_CELL_DP, MIN_DAY_SP, MAX_DAY_SP);
+            views.setTextViewTextSize(R.id.widget_month, TypedValue.COMPLEX_UNIT_SP, monthSp);
+            views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, daySp);
 
             views.setTextViewText(R.id.widget_day, String.valueOf(lunar.day));
             int textColor;
