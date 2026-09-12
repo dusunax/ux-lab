@@ -30,12 +30,13 @@ public class LunarWidgetLargeProvider extends AppWidgetProvider {
     private static final String ASYNC_STORAGE_PREFS_NAME = "ReactNativeAsyncStorage";
 
     // widget_info_large.xml의 minWidth/maxResizeWidth와 일치
+    // MIN 값은 LunarWidgetProvider의 MAX 값과 맞춰 1x1→2x2 전환 지점에서 크기가 자연스럽게 이어지도록 한다.
     private static final int MIN_CELL_DP = 110;
     private static final int MAX_CELL_DP = 300;
-    private static final float MIN_MONTH_SP = 20f;
-    private static final float MAX_MONTH_SP = 34f;
-    private static final float MIN_DAY_SP = 48f;
-    private static final float MAX_DAY_SP = 96f;
+    private static final float MIN_MONTH_SP = 28f;
+    private static final float MAX_MONTH_SP = 40f;
+    private static final float MIN_DAY_SP = 60f;
+    private static final float MAX_DAY_SP = 110f;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

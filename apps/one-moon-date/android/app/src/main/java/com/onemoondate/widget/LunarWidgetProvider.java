@@ -31,12 +31,13 @@ public class LunarWidgetProvider extends AppWidgetProvider {
 
     // widget_info.xml의 minWidth/maxResizeWidth와 일치 — 런처마다 "1x1" 실제 렌더 크기가 달라
     // 고정 sp 대신 이 범위 안에서 텍스트 크기를 비례 계산한다.
+    // 음력 달력 사용자층이 고연령대라 최소 크기에서도 숫자가 박스를 거의 채우도록 크게 잡는다.
     private static final int MIN_CELL_DP = 40;
     private static final int MAX_CELL_DP = 180;
-    private static final float MIN_MONTH_SP = 11f;
-    private static final float MAX_MONTH_SP = 24f;
-    private static final float MIN_DAY_SP = 18f;
-    private static final float MAX_DAY_SP = 48f;
+    private static final float MIN_MONTH_SP = 15f;
+    private static final float MAX_MONTH_SP = 28f;
+    private static final float MIN_DAY_SP = 30f;
+    private static final float MAX_DAY_SP = 60f;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
