@@ -32,7 +32,9 @@
 
 <img width="1081" height="843" alt="image" src="https://github.com/user-attachments/assets/c59c37c9-9153-4322-a0ba-7756cf256d02" />
 
-<img width="417" height="565" alt="image" src="https://github.com/user-attachments/assets/cbd31168-aa41-489a-ab1e-cdd77ea06cb5" />
+<img width="1017" height="261" alt="image" src="https://github.com/user-attachments/assets/90974a3f-bfad-48f4-acff-e08cd85b0ba0" />
+
+<img width="417" height="565" alt="image" src="https://github.com/user-attachments/assets/cbd31168-aa41-489a-ab1e-cdd77ea06cb5" />x
 
 
 ### 📍 marathon-diary
