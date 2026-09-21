@@ -17,6 +17,11 @@ apps/openrouter-proxy/
 ├── src/
 │   ├── app.module.ts
 │   ├── main.ts
+│   ├── decisions/            # jev(Decisions) 프록시
+│   │   ├── decisions.controller.ts
+│   │   ├── decisions.dto.ts
+│   │   ├── decisions.module.ts
+│   │   └── decisions.service.ts
 │   ├── chat/
 │   │   ├── chat.controller.ts
 │   │   ├── chat.dto.ts
@@ -88,6 +93,30 @@ Content-Type: application/json
   "stream": false
 }
 ```
+
+### POST /api/decisions
+
+`~typesafe/jev-latest`(decisions 모델)용 프록시입니다. 이 모델은 `chat/completions`로 호출할 수 없고
+OpenRouter 알파 엔드포인트 `/api/alpha/decisions`를 사용합니다. 모델은 서버에서 고정되며 클라이언트는 `state`와 `questions`만 보냅니다.
+
+```json
+{
+  "state": { "situation": "초인종이 울렸다" },
+  "questions": {
+    "action": {
+      "type": "choice",
+      "instructions": "다음 행동을 고른다",
+      "criteria": { "hide": "숨는다", "ignore": "무시한다" }
+    }
+  }
+}
+```
+
+- 질문 타입: `choice`(선택지별 확률), `noul`(참/거짓 확률), `score`(0~1 점수)
+- 응답: `{ answers: { action: { choice, probabilities, confidence } }, usage }`
+- 제한: questions 1~8개, state 8,000자 이하 → 위반 시 `400`
+- 알파 엔드포인트 특성상 응답이 간헐적으로 지연되어 20초 타임아웃 후 `504`를 반환합니다.
+- 사용처: `apps/cat-game`
 
 ### 동작
 

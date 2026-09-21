@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ChatBody, MessageDto } from '../chat/chat.dto';
 
+const DECISIONS_URL = 'https://openrouter.ai/api/alpha/decisions';
+const DECISIONS_TIMEOUT_MS = 20_000;
+
 @Injectable()
 export class OpenrouterService {
   private readonly apiKey: string;
@@ -33,6 +36,20 @@ export class OpenrouterService {
       method: 'POST',
       headers: this.buildHeaders(),
       body: JSON.stringify(body),
+    });
+    return { status: res.status, data: await res.json() };
+  }
+
+  async callDecisions(body: {
+    model: string;
+    state: Record<string, unknown>;
+    questions: Record<string, unknown>;
+  }): Promise<{ status: number; data: unknown }> {
+    const res = await fetch(DECISIONS_URL, {
+      method: 'POST',
+      headers: this.buildHeaders(),
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(DECISIONS_TIMEOUT_MS),
     });
     return { status: res.status, data: await res.json() };
   }
