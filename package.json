@@ -23,6 +23,8 @@
     "dev:openrouter": "pnpm --filter @ux-lab/openrouter-proxy run dev",
     "build:openrouter": "pnpm --filter @ux-lab/openrouter-proxy run build",
     "start:openrouter": "pnpm --filter @ux-lab/openrouter-proxy run start",
+    "dev:cat": "pnpm --filter @ux-lab/cat-game run dev",
+    "build:cat": "pnpm --filter @ux-lab/cat-game run build",
     "dev:fridge": "pnpm --filter @ux-lab/fridge-recipe run dev",
     "build:fridge": "pnpm --filter @ux-lab/fridge-recipe run build",
     "dev:agent-and-my-ax": "pnpm --filter @ux-lab/agent-and-my-ax run dev",
