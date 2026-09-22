@@ -39,8 +39,8 @@ function readSavedGame(): SavedGame | null {
     if (typeof parsed.hearts !== 'number' || typeof parsed.healNext !== 'boolean') return null
     const nextId = typeof parsed.nextId === 'number' && parsed.nextId > 0 ? parsed.nextId : parsed.logs.length + 1
     return {
-      profile: parsed.profile as CatProfile,
-      stats: parsed.stats as CatStats,
+      profile: parsed.profile as unknown as CatProfile,
+      stats: parsed.stats as unknown as CatStats,
       hearts: parsed.hearts,
       healNext: parsed.healNext,
       logs: parsed.logs as TurnLog[],
