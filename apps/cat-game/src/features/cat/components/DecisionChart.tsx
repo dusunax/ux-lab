@@ -1,5 +1,5 @@
 import { ACTIONS, ACTION_IDS } from '../actions'
-import { FALLBACK_LABEL, MOOD_LABEL, type Decision } from '../types'
+import { MOOD_LABEL, fallbackLabel, type Decision } from '../types'
 
 const percent = (n: number) => `${Math.round(n * 100)}%`
 const RING_RADIUS = 20
@@ -29,7 +29,7 @@ function Ring({ label, value }: { label: string; value: number }) {
 }
 
 /** 결정 응답(행동별 확률 · 놀람 · 확신 · 기분)을 한눈에 보여주는 차트 */
-export function DecisionChart({ decision }: { decision: Decision }) {
+export function DecisionChart({ decision, catName }: { decision: Decision; catName: string }) {
   const probs = decision.actionProbabilities
   const all = ACTION_IDS.map((id) => ({ id, value: probs[id] ?? 0 })).sort((a, b) => b.value - a.value)
   // 반올림해서 0%로 보이는 행동은 막대 대신 스켈레톤으로 접는다
@@ -40,7 +40,7 @@ export function DecisionChart({ decision }: { decision: Decision }) {
   return (
     <figure className="dchart">
       <figcaption>
-        {decision.source === 'jev' ? 'jev의 결정' : `본능으로 결정 · ${FALLBACK_LABEL[decision.fallbackReason ?? 'network']}`} · {MOOD_LABEL[decision.mood]}
+        {decision.source === 'jev' ? `${catName}의 결정` : `본능으로 결정 · ${fallbackLabel(decision.fallbackReason ?? 'network', catName)}`} · {MOOD_LABEL[decision.mood]}
       </figcaption>
       {hasProbs && (
         <ul className="dchart__bars" aria-label="행동별 확률">
