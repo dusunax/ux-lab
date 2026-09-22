@@ -1,4 +1,4 @@
-import { spriteUrl } from './CatAvatar'
+import { Sprite } from './Sprite'
 
 export type NavTab = 'home' | 'records'
 
@@ -19,7 +19,7 @@ interface Props {
 export function BottomNav({ active, onChange, onChangeCat }: Props) {
   const item = (i: (typeof ITEMS)[number]) => (
     <button key={i.id} type="button" className={`nav__item${active === i.id ? ' is-active' : ''}`} aria-current={active === i.id ? 'page' : undefined} onClick={() => onChange(i.id)}>
-      <img className="nav__icon" src={spriteUrl(ICONS[i.id])} alt="" height={26} draggable={false} />
+      <Sprite className="nav__icon" name={ICONS[i.id]} height={26} draggable={false} />
       {i.label}
     </button>
   )
@@ -29,7 +29,7 @@ export function BottomNav({ active, onChange, onChangeCat }: Props) {
       <span className="nav__slot" aria-hidden="true" />
       {item(ITEMS[1])}
       <button type="button" className="nav__cat" onClick={onChangeCat} aria-label="성격 바꾸기">
-        <img src={spriteUrl('deco-sign')} alt="" width={64} draggable={false} />
+        <Sprite name="deco-sign" width={64} draggable={false} />
       </button>
     </nav>
   )
