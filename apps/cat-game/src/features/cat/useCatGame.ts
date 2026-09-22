@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ACTIONS } from './actions'
 import { ageAfterTurns } from './age'
 import { CAT_TYPES, DEFAULT_CAT_NAME, MAX_CAT_NAME_LENGTH } from './catTypes'
@@ -12,9 +12,44 @@ import type { CatStats, TurnLog } from './types'
 
 const INITIAL_STATS: CatStats = { satiety: 60, energy: 70, affection: 30 }
 const MAX_SITUATION_LENGTH = 200
+const STORAGE_KEY = 'cat-game:save:v1'
+
+interface SavedGame {
+  profile: CatProfile
+  stats: CatStats
+  hearts: number
+  healNext: boolean
+  logs: TurnLog[]
+  nextId: number
+}
 
 const normalizeName = (name: string) => name.trim().slice(0, MAX_CAT_NAME_LENGTH) || DEFAULT_CAT_NAME
 const normalizeOwnerName = (name: string) => name.trim().slice(0, MAX_OWNER_NAME_LENGTH) || DEFAULT_OWNER_NAME
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
+
+function readSavedGame(): SavedGame | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const parsed: unknown = JSON.parse(raw)
+    if (!isRecord(parsed)) return null
+    if (!isRecord(parsed.profile) || !isRecord(parsed.stats) || !Array.isArray(parsed.logs)) return null
+    if (typeof parsed.hearts !== 'number' || typeof parsed.healNext !== 'boolean') return null
+    const nextId = typeof parsed.nextId === 'number' && parsed.nextId > 0 ? parsed.nextId : parsed.logs.length + 1
+    return {
+      profile: parsed.profile as CatProfile,
+      stats: parsed.stats as CatStats,
+      hearts: parsed.hearts,
+      healNext: parsed.healNext,
+      logs: parsed.logs as TurnLog[],
+      nextId,
+    }
+  } catch {
+    return null
+  }
+}
 
 /** 하트가 새로 차오른 칸 (key가 바뀌면 애니메이션을 다시 재생한다) */
 export interface HeartGain {
@@ -23,20 +58,34 @@ export interface HeartGain {
 }
 
 export function useCatGame() {
-  const [profile, setProfile] = useState<CatProfile>(DEFAULT_CAT_PROFILE)
-  const [stats, setStats] = useState<CatStats>(INITIAL_STATS)
-  const [hearts, setHearts] = useState(MAX_HEARTS)
-  const [healNext, setHealNext] = useState(false)
+  const restored = useMemo(readSavedGame, [])
+  const [profile, setProfile] = useState<CatProfile>(() => restored?.profile ?? DEFAULT_CAT_PROFILE)
+  const [stats, setStats] = useState<CatStats>(() => restored?.stats ?? INITIAL_STATS)
+  const [hearts, setHearts] = useState(() => restored?.hearts ?? MAX_HEARTS)
+  const [healNext, setHealNext] = useState(() => restored?.healNext ?? false)
   const [gain, setGain] = useState<HeartGain | null>(null)
-  const [logs, setLogs] = useState<TurnLog[]>([])
+  const [logs, setLogs] = useState<TurnLog[]>(() => restored?.logs ?? [])
   const [thinking, setThinking] = useState(false)
   const [pending, setPending] = useState<string | null>(null)
-  const nextId = useRef(1)
+  const [hasActiveSession, setHasActiveSession] = useState(() => restored !== null)
+  const nextId = useRef(restored?.nextId ?? 1)
   const ageMonths = ageAfterTurns(profile.startAgeMonths, logs.length)
   const gameOver = hearts === 0
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (!hasActiveSession) {
+      window.localStorage.removeItem(STORAGE_KEY)
+      return
+    }
+    const payload: SavedGame = { profile, stats, hearts, healNext, logs, nextId: nextId.current }
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+  }, [hasActiveSession, hearts, healNext, logs, profile, stats])
+
   /** 선택 화면에서 정한 설정으로 새로 시작한다 (기록·게이지·하트 초기화) */
   const start = useCallback((next: CatProfile) => {
+    nextId.current = 1
+    setHasActiveSession(true)
     setProfile({ ...next, name: normalizeName(next.name), ownerName: normalizeOwnerName(next.ownerName) })
     setStats(INITIAL_STATS)
     setHearts(MAX_HEARTS)
@@ -45,7 +94,18 @@ export function useCatGame() {
     setLogs([])
   }, [])
 
-  const reset = useCallback(() => start(DEFAULT_CAT_PROFILE), [start])
+  const reset = useCallback(() => {
+    nextId.current = 1
+    setHasActiveSession(false)
+    setProfile(DEFAULT_CAT_PROFILE)
+    setStats(INITIAL_STATS)
+    setHearts(MAX_HEARTS)
+    setHealNext(false)
+    setGain(null)
+    setLogs([])
+    setThinking(false)
+    setPending(null)
+  }, [])
 
   const submitSituation = useCallback(
     async (rawSituation: string) => {
@@ -99,6 +159,7 @@ export function useCatGame() {
     logs,
     thinking,
     pending,
+    hasActiveSession,
     start,
     reset,
     submitSituation,
