@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { spriteUrl } from './features/cat/components/CatAvatar'
+import { Sprite } from './features/cat/components/Sprite'
 import { BottomNav, type NavTab } from './features/cat/components/BottomNav'
 import { ConfirmLeaveDialog } from './features/cat/components/ConfirmLeaveDialog'
 import { CatStatus } from './features/cat/components/CatStatus'
@@ -44,7 +44,7 @@ export default function App() {
         {[['deco-bush', 'deco-grass', 'deco-stump'], ['deco-fence', 'deco-sign', 'deco-flower', 'deco-bush']].map((group, g) => (
           <div key={g} className="backdrop__group">
             {group.map((name) => (
-              <img key={name} src={spriteUrl(name)} alt="" />
+              <Sprite key={name} name={name} height={56} />
             ))}
           </div>
         ))}

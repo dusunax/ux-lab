@@ -4,10 +4,11 @@ import { CAT_TYPE_LIST, DEFAULT_CAT_NAME, MAX_CAT_NAME_LENGTH, type CatTypeId } 
 import { DEFAULT_OWNER_NAME, MAX_OWNER_NAME_LENGTH, OWNER_GENDERS, OWNER_GENDER_LABEL, OWNER_SPRITE } from '../owners'
 import { DEFAULT_CAT_PROFILE, type CatProfile } from '../profile'
 import { GENDER_LABEL, type Gender } from '../types'
-import { CatAvatar, spriteUrl } from './CatAvatar'
+import { CatAvatar } from './CatAvatar'
 import { ImageButton } from './ImageButton'
 import { OwnerFigure } from './OwnerAvatar'
 import { PatternCard } from './PatternCard'
+import { Sprite } from './Sprite'
 
 function CheckIcon({ className }: { className?: string }) {
   return (
@@ -105,7 +106,7 @@ export function SelectScreen({ onBack, onConfirm }: Props) {
             ))}
             <button type="button" role="radio" aria-checked={personality === 'random'} className={`pick${personality === 'random' ? ' is-active' : ''}`} onClick={() => setPersonality('random')}>
               <span className="pick__circle">
-                <img src={spriteUrl('bubble-question')} width={44} alt="" draggable={false} />
+                <Sprite name="bubble-question" width={44} draggable={false} />
                 {personality === 'random' && <CheckIcon className="pick__check" />}
               </span>
               <span className="pick__name">랜덤</span>

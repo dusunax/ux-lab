@@ -1,5 +1,5 @@
 import { useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react'
-import { spriteUrl } from './CatAvatar'
+import { Sprite } from './Sprite'
 
 /** 드래그 거리 대비 실제 이동 비율 (고무줄처럼 저항감을 준다) */
 const RESISTANCE = 0.35
@@ -83,11 +83,10 @@ export function PullCat({ children }: { children: ReactNode }) {
         {children}
       </div>
       {pops.map((p) => (
-        <img
+        <Sprite
           key={p.id}
           className="pop"
-          src={spriteUrl(p.sprite)}
-          alt=""
+          name={p.sprite}
           width={POP_SIZE}
           style={{ '--dx': `${p.dx}px`, '--dy': `${p.dy}px` } as CSSProperties}
           onAnimationEnd={() => removePop(p.id)}

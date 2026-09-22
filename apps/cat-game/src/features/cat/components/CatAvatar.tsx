@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { CatTypeId } from '../catTypes'
 import type { Expression } from '../expression'
+import { Sprite, spriteUrl } from './Sprite'
 
 /** 표정별 스프라이트 (public/sprites, scripts/slice-sprites.py 로 생성) */
 const SPRITE: Record<Expression, string> = {
@@ -26,7 +27,7 @@ const TYPE_FILTER: Record<CatTypeId, string> = {
   playful: 'sepia(0.5) hue-rotate(-12deg) saturate(1.7)',
 }
 
-export const spriteUrl = (name: string) => `${import.meta.env.BASE_URL}sprites/${name}.png`
+export { spriteUrl }
 
 interface Props {
   typeId: CatTypeId
@@ -40,13 +41,12 @@ interface Props {
 export function CatAvatar({ typeId, expression = 'idle', size = 140, profile = false, className }: Props) {
   const style: CSSProperties = { objectFit: 'contain', filter: TYPE_FILTER[typeId] }
   return (
-    <img
-      src={spriteUrl(profile ? `profile-${typeId}` : SPRITE[expression])}
+    <Sprite
+      name={profile ? `profile-${typeId}` : SPRITE[expression]}
       width={size}
       height={size}
       style={style}
       className={className}
-      alt=""
       draggable={false}
     />
   )
@@ -54,5 +54,5 @@ export function CatAvatar({ typeId, expression = 'idle', size = 140, profile = f
 
 /** 채팅 말풍선용 얼굴 아이콘 (시트의 얼굴 아이콘 줄, 타입별 색) */
 export function CatFace({ typeId, size = 42, className }: { typeId: CatTypeId; size?: number; className?: string }) {
-  return <img src={spriteUrl(`face-${typeId}`)} width={size} height={size} className={className} alt="" draggable={false} />
+  return <Sprite name={`face-${typeId}`} width={size} height={size} className={className} draggable={false} />
 }

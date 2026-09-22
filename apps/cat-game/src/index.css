@@ -24,6 +24,20 @@ h1, h2, h3 { font-weight: 700; text-wrap: balance; }
 p, li, small { text-wrap: pretty; }
 button, .chip, .stat dt { white-space: nowrap; }
 
+/* 이미지 로딩: Sprite 컴포넌트가 렌더하는 모든 <img>에 붙는 스켈레톤 + 페이드인 */
+.sprite-img {
+  background: linear-gradient(100deg, var(--line) 30%, #faf0e2 50%, var(--line) 70%);
+  background-size: 200% 100%;
+  opacity: 0;
+  animation: sprite-shimmer 1.4s ease-in-out infinite;
+  transition: opacity 0.28s ease-out;
+}
+.sprite-img.is-loaded { opacity: 1; background: none; animation: none; }
+@keyframes sprite-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .sprite-img { animation: none; transition: none; }
+}
+
 /* 스크롤바 */
 * { scrollbar-width: thin; scrollbar-color: #f3b98a transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -154,6 +168,9 @@ html::-webkit-scrollbar-track { background: #f4d6b4; }
 
 /* 채팅 */
 .thread { flex: 1; min-height: 0; overflow-y: auto; padding: 26px 16px 36px; display: flex; flex-direction: column; gap: 10px; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 30px); mask-image: linear-gradient(to bottom, transparent 0, #000 30px); }
+/* 가상 스크롤 컨테이너: flex 기본값인 flex-shrink:1이면 실제 콘텐츠 높이가 부모(.thread)의 보이는 높이로 눌려버려
+   스크롤이 사라진다. 눌리지 않게 고정해 .thread가 overflow-y:auto로 넘치는 만큼만 스크롤하게 한다 */
+.thread__virtual { flex-shrink: 0; }
 .thread__turn { display: flex; flex-direction: column; gap: 10px; }
 .msg { display: flex; gap: 8px; align-items: flex-end; }
 .msg--me { justify-content: flex-end; }

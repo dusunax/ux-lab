@@ -1,5 +1,5 @@
 import type { HeartGain } from '../useCatGame'
-import { spriteUrl } from './CatAvatar'
+import { Sprite } from './Sprite'
 
 interface Props {
   hearts: number
@@ -18,10 +18,9 @@ export function Hearts({ hearts, max, gain }: Props) {
         const filled = i < hearts
         const gained = gain?.index === i && filled
         return (
-          <img
+          <Sprite
             key={gained ? `gain-${gain.key}` : i}
-            src={spriteUrl(filled ? 'heart-full' : 'heart-empty')}
-            alt=""
+            name={filled ? 'heart-full' : 'heart-empty'}
             width={HEART_WIDTH}
             height={16}
             draggable={false}
@@ -30,7 +29,7 @@ export function Hearts({ hearts, max, gain }: Props) {
         )
       })}
       {gain && gain.index < hearts && (
-        <img key={`spark-${gain.key}`} className="hearts__spark" src={spriteUrl('item-sparkle')} alt="" width={22} style={{ left: gain.index * (HEART_WIDTH + HEART_GAP) - 4 }} />
+        <Sprite key={`spark-${gain.key}`} className="hearts__spark" name="item-sparkle" width={22} style={{ left: gain.index * (HEART_WIDTH + HEART_GAP) - 4 }} />
       )}
     </div>
   )

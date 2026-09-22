@@ -2,9 +2,10 @@ import { formatAge } from '../age'
 import { CAT_TYPES, type CatTypeId } from '../catTypes'
 import { EXPRESSION_BY_ACTION, type Expression } from '../expression'
 import { GENDER_LABEL, type CatStats, type Gender, type TurnLog } from '../types'
-import { CatAvatar, spriteUrl } from './CatAvatar'
+import { CatAvatar } from './CatAvatar'
 import { Hearts } from './Hearts'
 import { PullCat } from './PullCat'
+import { Sprite } from './Sprite'
 import { MAX_HEARTS } from '../turn'
 import type { HeartGain } from '../useCatGame'
 
@@ -46,7 +47,7 @@ export function CatStatus({ typeId, catName, gender, ageMonths, hearts, gain, st
             <CatAvatar typeId={typeId} expression={expression} size={104} />
           </PullCat>
         </div>
-        {bubble && <img className="status__bubble" src={spriteUrl(bubble)} alt="" width={44} />}
+        {bubble && <Sprite className="status__bubble" name={bubble} width={44} />}
       </div>
       <div className="status__info">
         <div className="status__head">
@@ -66,7 +67,7 @@ export function CatStatus({ typeId, catName, gender, ageMonths, hearts, gain, st
           {STAT_ROWS.map(({ key, label, icon }) => (
             <div key={key} className="stat">
               <dt>
-                <img src={spriteUrl(icon)} alt="" height={16} /> {label}
+                <Sprite name={icon} height={16} /> {label}
               </dt>
               <dd>
                 <div className="stat__track">
