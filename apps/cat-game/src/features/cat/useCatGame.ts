@@ -8,7 +8,7 @@ import { DEFAULT_OWNER_GENDER, DEFAULT_OWNER_NAME, MAX_OWNER_NAME_LENGTH, OWNER_
 import { DEFAULT_CAT_PROFILE, type CatProfile } from './profile'
 import { FATIGUE_ENERGY_COST, analyzeSession, buildNotes, isFatigued, startledAfterRepeats } from './session'
 import { MAX_HEARTS, resolveTurn } from './turn'
-import type { CatStats, Gender, TurnLog } from './types'
+import type { CatStats, TurnLog } from './types'
 
 const INITIAL_STATS: CatStats = { satiety: 60, energy: 70, affection: 30 }
 const MAX_SITUATION_LENGTH = 200
@@ -17,7 +17,6 @@ const STORAGE_KEY = 'cat-game:save:v1'
 interface SavedProfile {
   typeId: CatTypeId
   name: string
-  gender: Gender
   startAgeMonths: number
 }
 
@@ -41,7 +40,7 @@ function toProfile(saved: SavedProfile): CatProfile {
     ownerName: DEFAULT_OWNER_NAME,
     typeId: saved.typeId,
     name: saved.name,
-    gender: saved.gender,
+    gender: DEFAULT_CAT_PROFILE.gender,
     startAgeMonths: saved.startAgeMonths,
   }
 }
@@ -58,15 +57,14 @@ function readSavedGame(): SavedGame | null {
 
     const typeId = parsed.profile.typeId
     const name = parsed.profile.name
-    const gender = parsed.profile.gender
     const startAgeMonths = parsed.profile.startAgeMonths
-    if (typeof typeId !== 'string' || typeof name !== 'string' || (gender !== 'female' && gender !== 'male') || typeof startAgeMonths !== 'number') {
+    if (typeof typeId !== 'string' || typeof name !== 'string' || typeof startAgeMonths !== 'number') {
       return null
     }
 
     const nextId = typeof parsed.nextId === 'number' && parsed.nextId > 0 ? parsed.nextId : parsed.logs.length + 1
     return {
-      profile: { typeId: typeId as CatTypeId, name, gender, startAgeMonths },
+      profile: { typeId: typeId as CatTypeId, name, startAgeMonths },
       stats: parsed.stats as unknown as CatStats,
       hearts: parsed.hearts,
       healNext: parsed.healNext,
@@ -109,7 +107,6 @@ export function useCatGame() {
       profile: {
         typeId: profile.typeId,
         name: profile.name,
-        gender: profile.gender,
         startAgeMonths: profile.startAgeMonths,
       },
       stats,
