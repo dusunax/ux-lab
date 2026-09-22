@@ -32,11 +32,18 @@ export type DecisionSource = 'jev' | 'instinct'
 /** jev 대신 본능으로 결정하게 된 이유 */
 export type FallbackReason = 'network' | 'timeout' | 'server' | 'invalid'
 
-export const FALLBACK_LABEL: Record<FallbackReason, string> = {
-  network: '서버에 연결할 수 없어요',
-  timeout: 'jev의 응답이 늦어졌어요',
-  server: '서버에서 오류가 났어요',
-  invalid: 'jev의 응답을 읽지 못했어요',
+/** 화면에 보여줄 실패 사유. jev 대신 고양이 이름으로 부른다(사용자에게는 jev가 드러나지 않는다) */
+export function fallbackLabel(reason: FallbackReason, catName: string): string {
+  switch (reason) {
+    case 'network':
+      return '서버에 연결할 수 없어요'
+    case 'timeout':
+      return `${catName}의 응답이 늦어졌어요`
+    case 'server':
+      return '서버에서 오류가 났어요'
+    case 'invalid':
+      return `${catName}의 응답을 읽지 못했어요`
+  }
 }
 
 export interface Decision {

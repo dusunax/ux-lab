@@ -22,7 +22,7 @@ export default function App() {
   const phoneRef = useRef<HTMLDivElement>(null)
   usePhoneFit(phoneRef)
   const keyboardOpen = useKeyboardOpen()
-  const [screen, setScreen] = useState<Screen>('start')
+  const [screen, setScreen] = useState<Screen>(() => (game.hasActiveSession ? 'main' : 'start'))
   const [tab, setTab] = useState<NavTab>('home')
   const [confirmingLeave, setConfirmingLeave] = useState(false)
 

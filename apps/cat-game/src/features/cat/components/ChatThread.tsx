@@ -32,7 +32,7 @@ function CatBubble({ typeId, log }: { typeId: CatTypeId; log: TurnLog }) {
             ))}
           </ul>
         )}
-        <DecisionChart decision={decision} />
+        <DecisionChart decision={decision} catName={log.catName} />
       </div>
     </div>
   )
