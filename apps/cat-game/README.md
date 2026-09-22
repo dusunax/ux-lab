@@ -2,6 +2,8 @@
 
 고양이의 기본 이름은 **Jev**이고, 선택 화면에서 최대 10자까지 바꿀 수 있습니다.
 
+![cat-game 시작 화면 스크린샷](./public/screenshots/cat-game-start.png)
+
 사용자가 **상황**을 입력하면, 고양이가 타입별 행동 패턴과 현재 상태를 바탕으로 **스스로 행동을 결정**하는 게임입니다.
 결정은 OpenRouter의 decisions 모델 `~typesafe/jev-latest`(Jev)가 내립니다.
 
