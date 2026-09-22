@@ -7,6 +7,9 @@
 사용자가 **상황**을 입력하면, 고양이가 타입별 행동 패턴과 현재 상태를 바탕으로 **스스로 행동을 결정**하는 게임입니다.
 결정은 OpenRouter의 decisions 모델 `~typesafe/jev-latest`(Jev)가 내립니다.
 
+**배포**: [cat-game-wheat-sigma.vercel.app](https://cat-game-wheat-sigma.vercel.app/)
+프록시(`openrouter-proxy`)는 별도 Vercel 프로젝트 `cat-game-proxy`로 배포되어 있고, `VITE_PROXY_URL` 환경변수로 프론트와 연결됩니다.
+
 ## 실행
 
 ```bash

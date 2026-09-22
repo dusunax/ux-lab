@@ -117,6 +117,8 @@ OpenRouter 알파 엔드포인트 `/api/alpha/decisions`를 사용합니다. 모
 - 제한: questions 1~8개, state 8,000자 이하 → 위반 시 `400`
 - 알파 엔드포인트 특성상 응답이 간헐적으로 지연되어 20초 타임아웃 후 `504`를 반환합니다.
 - 사용처: `apps/cat-game`
+- 배포: cat-game용 인스턴스는 Vercel 프로젝트 `cat-game-proxy`로 운영 중이며, [cat-game-wheat-sigma.vercel.app](https://cat-game-wheat-sigma.vercel.app/)의 `VITE_PROXY_URL`이 이 인스턴스를 가리킵니다.
+- 모니터링: [Vercel Analytics](https://vercel.com/dusuna/cat-game-proxy/analytics?environment=all) (Vercel 계정 접근 권한 필요)
 
 ### 동작
 
