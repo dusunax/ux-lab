@@ -1,21 +1,28 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ACTIONS } from './actions'
 import { ageAfterTurns } from './age'
-import { CAT_TYPES, DEFAULT_CAT_NAME, MAX_CAT_NAME_LENGTH } from './catTypes'
+import { CAT_TYPES, DEFAULT_CAT_NAME, MAX_CAT_NAME_LENGTH, type CatTypeId } from './catTypes'
 import { DecideError, FALLBACK_HINT, decideWithJev } from './decideApi'
 import { decideByInstinct } from './instinct'
-import { DEFAULT_OWNER_NAME, MAX_OWNER_NAME_LENGTH, OWNER_SPRITE } from './owners'
+import { DEFAULT_OWNER_GENDER, DEFAULT_OWNER_NAME, MAX_OWNER_NAME_LENGTH, OWNER_SPRITE } from './owners'
 import { DEFAULT_CAT_PROFILE, type CatProfile } from './profile'
 import { FATIGUE_ENERGY_COST, analyzeSession, buildNotes, isFatigued, startledAfterRepeats } from './session'
 import { MAX_HEARTS, resolveTurn } from './turn'
-import type { CatStats, TurnLog } from './types'
+import type { CatStats, Gender, TurnLog } from './types'
 
 const INITIAL_STATS: CatStats = { satiety: 60, energy: 70, affection: 30 }
 const MAX_SITUATION_LENGTH = 200
 const STORAGE_KEY = 'cat-game:save:v1'
 
+interface SavedProfile {
+  typeId: CatTypeId
+  name: string
+  gender: Gender
+  startAgeMonths: number
+}
+
 interface SavedGame {
-  profile: CatProfile
+  profile: SavedProfile
   stats: CatStats
   hearts: number
   healNext: boolean
@@ -28,6 +35,17 @@ const normalizeOwnerName = (name: string) => name.trim().slice(0, MAX_OWNER_NAME
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 
+function toProfile(saved: SavedProfile): CatProfile {
+  return {
+    ownerGender: DEFAULT_OWNER_GENDER,
+    ownerName: DEFAULT_OWNER_NAME,
+    typeId: saved.typeId,
+    name: saved.name,
+    gender: saved.gender,
+    startAgeMonths: saved.startAgeMonths,
+  }
+}
+
 function readSavedGame(): SavedGame | null {
   if (typeof window === 'undefined') return null
   try {
@@ -37,9 +55,18 @@ function readSavedGame(): SavedGame | null {
     if (!isRecord(parsed)) return null
     if (!isRecord(parsed.profile) || !isRecord(parsed.stats) || !Array.isArray(parsed.logs)) return null
     if (typeof parsed.hearts !== 'number' || typeof parsed.healNext !== 'boolean') return null
+
+    const typeId = parsed.profile.typeId
+    const name = parsed.profile.name
+    const gender = parsed.profile.gender
+    const startAgeMonths = parsed.profile.startAgeMonths
+    if (typeof typeId !== 'string' || typeof name !== 'string' || (gender !== 'female' && gender !== 'male') || typeof startAgeMonths !== 'number') {
+      return null
+    }
+
     const nextId = typeof parsed.nextId === 'number' && parsed.nextId > 0 ? parsed.nextId : parsed.logs.length + 1
     return {
-      profile: parsed.profile as unknown as CatProfile,
+      profile: { typeId: typeId as CatTypeId, name, gender, startAgeMonths },
       stats: parsed.stats as unknown as CatStats,
       hearts: parsed.hearts,
       healNext: parsed.healNext,
@@ -59,7 +86,7 @@ export interface HeartGain {
 
 export function useCatGame() {
   const restored = useMemo(readSavedGame, [])
-  const [profile, setProfile] = useState<CatProfile>(() => restored?.profile ?? DEFAULT_CAT_PROFILE)
+  const [profile, setProfile] = useState<CatProfile>(() => (restored ? toProfile(restored.profile) : DEFAULT_CAT_PROFILE))
   const [stats, setStats] = useState<CatStats>(() => restored?.stats ?? INITIAL_STATS)
   const [hearts, setHearts] = useState(() => restored?.hearts ?? MAX_HEARTS)
   const [healNext, setHealNext] = useState(() => restored?.healNext ?? false)
@@ -78,7 +105,19 @@ export function useCatGame() {
       window.localStorage.removeItem(STORAGE_KEY)
       return
     }
-    const payload: SavedGame = { profile, stats, hearts, healNext, logs, nextId: nextId.current }
+    const payload: SavedGame = {
+      profile: {
+        typeId: profile.typeId,
+        name: profile.name,
+        gender: profile.gender,
+        startAgeMonths: profile.startAgeMonths,
+      },
+      stats,
+      hearts,
+      healNext,
+      logs,
+      nextId: nextId.current,
+    }
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
   }, [hasActiveSession, hearts, healNext, logs, profile, stats])
 
