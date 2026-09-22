@@ -4,6 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
+| **cat-game — 고양이의 결정** | 상황을 입력하면 Jev 고양이가 타입·상태·기록을 바탕으로 행동을 결정하는 모바일 게임 ([소스코드](./apps/cat-game), [PR #66](https://github.com/dusunax/ux-lab/pull/66), Vercel 배포 예정) | 2026-09-22 | dusunax | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![OpenRouter](https://img.shields.io/badge/OpenRouter-111827) |
 | **Smart Screenshot Capture** | 스크린샷 촬영 중 HTML 요소를 숨기는 Chrome 익스텐션 ([소스코드](./extensions/chrome-capture), [chrome Web Store v1.1.1](https://chromewebstore.google.com/detail/smart-screenshot-capture/ppfgojhejbonngopillfneiphhienpcj) ) | 2026-08-16 | dusunax | ![Chrome Extension](https://img.shields.io/badge/Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white) ![Manifest v3](https://img.shields.io/badge/Manifest%20v3-34A853?logo=chromatic&logoColor=white) |
 | **marathon-diary** | 배번호와 셀피를 마라톤 앨범으로 남기는 3D 책 UI 앱 ([소스코드](./apps/marathon-diary), [배포](https://marathon-diary-three.vercel.app/)) | 2026-06-16 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![react-pageflip](https://img.shields.io/badge/react--pageflip-111827) |
 | **quiz-drill-ai** | CSV/TSV 기반 시험 대비 퀴즈 드릴 앱 ([소스코드](./apps/quiz-drill-ai), [배포](https://quiz-drill-ai.vercel.app/)) | 2026-06-13 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
@@ -18,6 +19,25 @@
 | **@ux-lab/showcase** | 컴포넌트 쇼케이스 | - | dusunax | - |
 
 ## 📸 스크린샷
+
+### 📍 cat-game — 고양이의 결정
+
+- 사용자가 상황을 입력하면 고양이의 성격·상태·최근 기록을 바탕으로 행동을 결정
+- OpenRouter decisions 모델 `~typesafe/jev-latest` 연동, 실패 시 타입별 본능 결정으로 대체
+- 모바일 우선 UI, 데스크톱에서는 390×844 폰 프레임으로 표시
+- [PR #66](https://github.com/dusunax/ux-lab/pull/66)에 상세 캡처와 구현 범위 기록
+- Vercel 배포 예정
+
+| 초기 화면 | 채팅 | 통계 |
+| --- | --- | --- |
+| <img width="240" alt="cat-game 초기 화면" src="https://github.com/user-attachments/assets/52abe5e4-9e79-4685-bb79-7b806a087b40" /> | <img width="240" alt="cat-game 채팅 화면" src="https://github.com/user-attachments/assets/9de30ee4-4f4a-457e-99eb-14b76554f4c9" /> | <img width="240" alt="cat-game 통계 화면" src="https://github.com/user-attachments/assets/8ba43f5d-09ac-4c45-8084-4213eb3fd616" /> |
+
+실행:
+
+```bash
+pnpm dev:openrouter   # 프록시: http://localhost:3035
+pnpm dev:cat          # 게임: http://localhost:5180
+```
 
 ### 📍 Smart Screenshot Capture
 
@@ -119,6 +139,7 @@ pnpm -w run dev:all
 # Applications: http://localhost:3334
 # Project Afterglow: http://localhost:3335
 # Stella's Archive: http://localhost:3336
+# Cat Game: http://localhost:5180
 ```
 
 ## 🔧 환경 설정
@@ -134,6 +155,8 @@ pnpm -w run dev:all
 - Next.js 15.5.2
 - TypeScript 5.0+
 - Tailwind CSS 3.4.0
+- Vite (@ux-lab/cat-game)
+- OpenRouter decisions proxy (@ux-lab/cat-game)
 - Firebase (@ux-lab/flow, @ux-lab/seasonal-project-2025)
 - OpenAI API (@ux-lab/seasonal-project-2025)
 - Framer Motion (@ux-lab/seasonal-project-2025)
