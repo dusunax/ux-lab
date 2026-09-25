@@ -1,6 +1,7 @@
-import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion'
-import { displayFont } from '../font'
-import { SAFE_TOP } from '../safezone'
+import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion'
+import { asset } from '../asset'
+import { displayFont } from '../../shared/font'
+import { SAFE_TOP } from '../../shared/safezone'
 import { backdropBackground, theme } from '../theme'
 import { MemeCaption } from './MemeCaption'
 
@@ -63,7 +64,7 @@ function ReactionCard({ beat, localFrame, fps }: { beat: Beat; localFrame: numbe
         transform: `translateY(${(1 - Math.min(1.3, pop)) * -30}px) scale(${Math.min(1.08, pop)})`,
       }}
     >
-      <Img src={staticFile(`sprites/${beat.face}`)} style={{ width: 116, height: 116, objectFit: 'contain', flexShrink: 0 }} />
+      <Img src={asset(`sprites/${beat.face}`)} style={{ width: 116, height: 116, objectFit: 'contain', flexShrink: 0 }} />
       <div
         style={{
           maxWidth: 760,
@@ -118,7 +119,7 @@ export function HookScene() {
         <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: titleOpacity }}>
           <Img
             key={poseIndex}
-            src={staticFile(`sprites/${POSES[poseIndex]}`)}
+            src={asset(`sprites/${POSES[poseIndex]}`)}
             style={{ width: 380, height: 380, objectFit: 'contain', transform: `scale(${Math.min(1.2, posePop)})` }}
           />
         </AbsoluteFill>

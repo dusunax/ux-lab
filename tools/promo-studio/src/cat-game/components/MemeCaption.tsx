@@ -1,6 +1,6 @@
 import { interpolate, useCurrentFrame } from 'remotion'
-import { displayFont } from '../font'
-import { SAFE_BOTTOM } from '../safezone'
+import { displayFont } from '../../shared/font'
+import { SAFE_BOTTOM } from '../../shared/safezone'
 import { theme } from '../theme'
 
 interface Props {

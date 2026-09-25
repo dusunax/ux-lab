@@ -1,6 +1,7 @@
-import { AbsoluteFill, Img, staticFile } from 'remotion'
+import { AbsoluteFill, Img } from 'remotion'
+import { asset } from './asset'
 import { randomDecorations, type Zone } from './decorate'
-import { displayFont } from './font'
+import { displayFont } from '../shared/font'
 import { SpriteDeco } from './components/SpriteDeco'
 import { theme } from './theme'
 
@@ -26,7 +27,7 @@ function Card({ face, tag, action, rotate }: CardProps) {
           placeItems: 'center',
         }}
       >
-        <Img src={staticFile(`sprites/${face}`)} style={{ width: 220, height: 220, objectFit: 'contain' }} />
+        <Img src={asset(`sprites/${face}`)} style={{ width: 220, height: 220, objectFit: 'contain' }} />
       </div>
       <span style={{ fontFamily: displayFont, fontSize: 34, color: theme.orangeDark, background: '#fff', padding: '4px 22px', borderRadius: 999 }}>{tag}</span>
       <span style={{ fontFamily: displayFont, fontSize: 64, color: '#fff', textShadow: '0 4px 0 rgba(0,0,0,0.22)', WebkitTextStroke: '3px rgba(0,0,0,0.15)' }}>

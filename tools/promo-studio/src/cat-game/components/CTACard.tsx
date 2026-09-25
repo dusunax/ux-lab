@@ -1,6 +1,7 @@
-import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion'
+import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion'
+import { asset } from '../asset'
 import { randomDecorations, type Zone } from '../decorate'
-import { displayFont } from '../font'
+import { displayFont } from '../../shared/font'
 import { theme } from '../theme'
 import { SpriteDeco } from './SpriteDeco'
 
@@ -48,7 +49,7 @@ export function CTACard() {
         같이 놀아요!
       </span>
       <Img
-        src={staticFile('profile-playful.png')}
+        src={asset('profile-playful.png')}
         style={{ width: 260, height: 260, objectFit: 'contain', opacity: enter, transform: `scale(${Math.min(1.1, catBounce)})`, marginTop: 8 }}
       />
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, opacity: enter * 0.95, marginTop: 8 }}>

@@ -1,6 +1,7 @@
-import { AbsoluteFill, Img, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion'
+import { AbsoluteFill, Img, spring, useCurrentFrame, useVideoConfig } from 'remotion'
+import { asset } from '../asset'
 import { randomDecorations, type Zone } from '../decorate'
-import { displayFont } from '../font'
+import { displayFont } from '../../shared/font'
 import { backdropBackground } from '../theme'
 import { SpriteDeco } from './SpriteDeco'
 
@@ -19,7 +20,7 @@ export function TitleCard() {
         <SpriteDeco key={i} {...d} />
       ))}
       <div style={{ position: 'relative', width: 860, transform: `scale(${Math.min(1.15, bounce)})` }}>
-        <Img src={staticFile('ui-board.png')} style={{ display: 'block', width: '100%' }} />
+        <Img src={asset('ui-board.png')} style={{ display: 'block', width: '100%' }} />
         {/* 보드 이미지의 진한 헤더 줄이 위쪽 26%를 차지한다(실제 앱 .title-board와 같은 비율) —
             grid-template-rows로 그 줄과 아래 크림색 영역을 나눠서, 타이틀이 헤더 줄을 침범하지
             않고 크림색 영역 안에서만 중앙 정렬되게 한다 */}

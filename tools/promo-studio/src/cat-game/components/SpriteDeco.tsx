@@ -1,4 +1,5 @@
-import { Img, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion'
+import { Img, spring, useCurrentFrame, useVideoConfig } from 'remotion'
+import { asset } from '../asset'
 
 interface Props {
   /** public/sprites/의 파일명(확장자 포함) */
@@ -25,7 +26,7 @@ export function SpriteDeco({ name, x, y, size = 88, delay = 0, rotate = 0 }: Pro
 
   return (
     <Img
-      src={staticFile(`sprites/${name}`)}
+      src={asset(`sprites/${name}`)}
       style={{
         position: 'absolute',
         left: x,

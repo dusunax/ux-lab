@@ -1,6 +1,7 @@
-import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion'
+import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion'
+import { asset } from '../asset'
 import { randomDecorations, type Zone } from '../decorate'
-import { SAFE_BOTTOM_Y, SAFE_TOP } from '../safezone'
+import { SAFE_BOTTOM_Y, SAFE_TOP } from '../../shared/safezone'
 import { backdropBackground } from '../theme'
 import { MemeCaption } from './MemeCaption'
 import { SpriteDeco } from './SpriteDeco'
@@ -43,7 +44,7 @@ export function Scene({ src, caption, decoCount = 9 }: Props) {
   return (
     <AbsoluteFill style={{ background: backdropBackground }}>
       <AbsoluteFill style={{ bottom: 0, top: 'auto', height: GROUND_HEIGHT, overflow: 'hidden' }}>
-        <Img src={staticFile('backgrounds/grass.webp')} style={{ position: 'absolute', bottom: -30, width: '100%', height: 'auto' }} />
+        <Img src={asset('backgrounds/grass.webp')} style={{ position: 'absolute', bottom: -30, width: '100%', height: 'auto' }} />
       </AbsoluteFill>
       {decorations.map((d, i) => (
         <SpriteDeco key={i} {...d} />
@@ -59,7 +60,7 @@ export function Scene({ src, caption, decoCount = 9 }: Props) {
           boxShadow: '0 30px 60px rgba(90, 50, 10, 0.35), 0 0 0 6px rgba(255,255,255,0.6)',
         }}
       >
-        <Img src={staticFile(`screens/${src}`)} style={{ display: 'block', width: SCREENSHOT_WIDTH, height: 'auto' }} />
+        <Img src={asset(`screens/${src}`)} style={{ display: 'block', width: SCREENSHOT_WIDTH, height: 'auto' }} />
       </div>
       <MemeCaption text={caption} />
     </AbsoluteFill>

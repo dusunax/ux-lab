@@ -1,4 +1,5 @@
-import { AbsoluteFill, Img, random, staticFile } from 'remotion'
+import { AbsoluteFill, Img, random } from 'remotion'
+import { asset } from './asset'
 import { SpriteDeco } from './components/SpriteDeco'
 
 // 스크린샷(430:932)은 늘리지 않고 세로만 캔버스 높이(1920)에 맞춰 자연스러운 배율로 띄운다.
@@ -77,9 +78,9 @@ export function Thumbnail2() {
   return (
     <AbsoluteFill style={{ background: '#f1dcc0' }}>
       {/* 스크린샷 좌우로 남는 공간을 실제 게임 배경(main.webp)으로 cover 채운다 */}
-      <Img src={staticFile('backgrounds/main.webp')} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+      <Img src={asset('backgrounds/main.webp')} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
       <Img
-        src={staticFile('screens/scene1-landing.png')}
+        src={asset('screens/scene1-landing.png')}
         style={{ position: 'absolute', left: SHOT_LEFT, top: 0, width: SHOT_WIDTH, height: SHOT_HEIGHT }}
       />
       {decorations.map((d, i) => (
