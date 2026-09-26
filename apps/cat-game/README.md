@@ -66,7 +66,7 @@
 - 입력한 상황은 고양이의 결정을 만들기 위해 AI 모델(OpenRouter)로 전송돼요. 개인정보는 입력하지 마세요.
 - 서버가 응답하지 못하면 성격과 상태로 고르는 **본능 결정**으로 대신하고, 그 이유를 결과에 보여줘요.
 
----
+<p align="center"><img src="./docs/promo/divider.webp" alt="" width="100%"></p>
 
 # Developer Notes
 
