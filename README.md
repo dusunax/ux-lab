@@ -22,11 +22,9 @@
 
 ### 📍 cat-game — 고양이의 결정
 
-- 사용자가 상황을 입력하면 고양이의 성격·상태·최근 기록을 바탕으로 행동을 결정
-- OpenRouter decisions 모델 `~typesafe/jev-latest` 연동, 실패 시 타입별 본능 결정으로 대체
+- 상황을 입력하면 고양이의 성격·상태·최근 기록을 바탕으로 스스로 행동을 결정 (OpenRouter decisions 모델 `~typesafe/jev-latest` 연동, 실패 시 본능 결정으로 대체)
 - 모바일 우선 UI, 데스크톱에서는 390×844 폰 프레임으로 표시
-- [README](./apps/cat-game/README.md)에 게임 소개와 개발 문서 정리
-- Vercel 배포: [cat-game-wheat-sigma.vercel.app](https://cat-game-wheat-sigma.vercel.app/) (프록시는 별도 프로젝트 `cat-game-proxy`로 배포)
+- [README](./apps/cat-game/README.md)에 게임 소개·개발 문서, [배포](https://cat-game-wheat-sigma.vercel.app/)
 
 | 초기 화면 | 채팅 | 통계 |
 | --- | --- | --- |
