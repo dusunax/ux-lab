@@ -83,6 +83,6 @@ git checkout -b {브랜치명}
 기준:    main ({latest commit SHA})
 
 다음 단계:
-  커밋:      /git:commit
-  커밋+PR:   /git:up
+  커밋:        /git:commit
+  커밋+PR:     our-claude:commit-and-pr
 ```

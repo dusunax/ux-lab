@@ -106,8 +106,6 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 | [commands/git/commit.md](commands/git/commit.md) | 범용 커밋 — 브랜치 분기·메시지 제안·사용자 확인 |
 | [commands/git/pr.md](commands/git/pr.md) | 범용 PR 생성 — push·본문 구성·라벨 |
 | [commands/git/merge.md](commands/git/merge.md) | 범용 merge — PR merge·post-merge 처리 |
-| [commands/git/up.md](commands/git/up.md) | ⭐ branch→commit→PR. "새 브랜치에 올려줘·브랜치 만들고 PR" 자연어 트리거 |
-| [commands/git/ship.md](commands/git/ship.md) | ⭐ commit→PR. 이미 브랜치에 있을 때. "ship·올려줘·PR 올려줘" 자연어 트리거 |
 | [commands/figma-harness.md](commands/figma-harness.md) | Figma 단일 노드 구현 |
 | [commands/figma-harness-all.md](commands/figma-harness-all.md) | Figma 페이지 전체 구현 |
 | [commands/figma-harness-snapshots.md](commands/figma-harness-snapshots.md) | Figma 스냅샷 형식 구현 |
@@ -149,9 +147,10 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 
 | 마켓플레이스 | 출처 | 스코프 | 활성 Skill |
 |------|------|--------|-------------|
-| our-claude | `dusunax/our-claude` | 프로젝트 (체크인, `.claude/settings.json`) | `pr-list` |
+| our-claude | `dusunax/our-claude` | 프로젝트 (체크인, `.claude/settings.json`) | `pr-list`, `commit-and-pr` |
 
-- `our-claude:commit-and-pr`은 기존 `git/ship`·`git/up` 커맨드와 트리거 문구가 중복돼 도입을 보류했습니다 (⚠️ Open, 회의록 참조).
+- `our-claude:commit-and-pr`을 2026-09-28 도입했다. 기존 `git/ship`·`git/up` 커맨드는 트리거 문구가 중복돼 제거했다 (회의록 참조). 브랜치→커밋→PR 흐름은 이제 `our-claude:commit-and-pr`을 사용한다.
+- ship·up 범위를 넘는 복합 워크플로우 Skill이 필요해지면, 그때 팀이 정한 Skill을 쓰는 방향으로 간다 — 지금 시점에 추가로 못박지 않는다.
 - `our-claude` 저장소 자체의 Skill 추가·수정은 그 저장소의 PR + 관리자 1명 승인 규칙을 따르며, ux-lab은 설치 여부·버전만 관리합니다.
 
 ---

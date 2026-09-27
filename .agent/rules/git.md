@@ -109,12 +109,13 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | 변경점 커밋 | `/git:commit` |
 | PR 생성 | `/git:pr` |
 | PR merge | `/git:merge` |
-| 커밋 → PR → merge 전체 | `/git:ship` |
+| 브랜치 → 커밋 → PR 전체 | `our-claude:commit-and-pr` |
 | 스프린트 PR 생성 | `/sprint:review` |
 | 스프린트 merge 마무리 | `/sprint:merge` |
 
 > 스프린트 전용 흐름은 `/sprint:*` 커맨드를 우선한다.
-> 스프린트와 무관한 일반 작업에는 `/git:*` 커맨드를 사용한다.
+> 스프린트와 무관한 일반 작업에는 `/git:*` 커맨드와 `our-claude:commit-and-pr`을 사용한다.
+> `git:ship`·`git:up`은 2026-09-28 `our-claude:commit-and-pr` 도입으로 제거됐다 (경위: [docs/meetings/2026-09-27-our-claude-adoption.md](../../docs/meetings/2026-09-27-our-claude-adoption.md)). ship·up 범위를 넘는 복합 워크플로우 Skill이 필요해지면, 그때 팀이 정한 Skill을 쓴다 — 지금 시점에 추가로 못박지 않는다.
 
 ---
 
