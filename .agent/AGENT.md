@@ -143,6 +143,19 @@ Vite 등의 빌드 환경 도입은 Sprint 5 기준으로 보류 상태이며, T
 
 ---
 
+## 외부 플러그인
+
+팀 공통 Claude Skill을 재사용하기 위해 외부 플러그인 마켓플레이스를 사용합니다. 도입 배경과 논의는 [docs/meetings/2026-09-27-our-claude-adoption.md](../docs/meetings/2026-09-27-our-claude-adoption.md)를 참조합니다.
+
+| 마켓플레이스 | 출처 | 스코프 | 활성 Skill |
+|------|------|--------|-------------|
+| our-claude | `dusunax/our-claude` | 프로젝트 (체크인, `.claude/settings.json`) | `pr-list` |
+
+- `our-claude:commit-and-pr`은 기존 `git/ship`·`git/up` 커맨드와 트리거 문구가 중복돼 도입을 보류했습니다 (⚠️ Open, 회의록 참조).
+- `our-claude` 저장소 자체의 Skill 추가·수정은 그 저장소의 PR + 관리자 1명 승인 규칙을 따르며, ux-lab은 설치 여부·버전만 관리합니다.
+
+---
+
 ## Scripts
 
 | 파일 | 사용처 |

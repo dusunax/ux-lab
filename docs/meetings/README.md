@@ -78,6 +78,7 @@
 | 파일 | 날짜 | 주요 결정 |
 |------|------|-----------|
 | [2026-05-21-sprint-workflow.md](./2026-05-21-sprint-workflow.md) | 2026-05-21 | 스프린트 7대 운영 규칙 공식 확정, 회의록 명명 규칙, QA 완료 기준, 프레젠테이션 경로 확정 |
+| [2026-09-27-our-claude-adoption.md](./2026-09-27-our-claude-adoption.md) | 2026-09-27 | `our-claude` 플러그인 도입 확정 (`pr-list` 즉시 도입, `commit-and-pr`은 기존 git 커맨드와 트리거 중복으로 보류), `.agent/AGENT.md` 외부 플러그인 섹션 신설 결정 |
 
 ## 프로세스 문서
 
