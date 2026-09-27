@@ -38,17 +38,6 @@ pnpm dev:openrouter   # 프록시: http://localhost:3035
 pnpm dev:cat          # 게임: http://localhost:5180
 ```
 
-### 📍 One Moon Date — 달력 한칸
-
-- 홈 화면 위젯으로 오늘의 음력 날짜를 한눈에 확인 (자정 자동 갱신, 앱의 다크 모드·언어 설정과 동기화)
-- 양력/음력 변환, 윤달 처리, 간지(干支)·띠 표시
-- 한국어·English·日本語 다국어 지원, 다크 모드
-- [README](./apps/one-moon-date/README.md)에 앱 소개, [Google Play](https://play.google.com/store/apps/details?id=com.onemoondate)에 배포
-
-| 위젯 | 음력 달력 |
-| --- | --- |
-| <img width="240" src="https://github.com/user-attachments/assets/a83aced8-e036-4fd9-9a8d-3b6f672a7ab8" /> | <img width="240" src="https://github.com/user-attachments/assets/3ad8bbcf-bbc2-4586-9b0d-7fb81dfe47b0" /> |
-
 ### 📍 Smart Screenshot Capture
 
 - **기능:** 현재 브라우저 화면 캡쳐 및 다운로드
@@ -66,6 +55,14 @@ pnpm dev:cat          # 게임: http://localhost:5180
 
 <img width="417" height="565" alt="image" src="https://github.com/user-attachments/assets/cbd31168-aa41-489a-ab1e-cdd77ea06cb5" />x
 
+### 📍 One Moon Date — 달력 한칸
+
+- [Google Play Store](https://play.google.com/store/apps/details?id=com.onemoondate) 정식 배포
+- 홈 화면 위젯으로 오늘의 음력 날짜를 한눈에 확인: 위젯 텍스트 크기를 사용자 기기의 실제 크기(dp)에 비례하도록 상대 크기 표시: [PR !64](https://github.com/dusunax/ux-lab/pull/64)
+
+| 위젯 선택 | 위젯 표시 | 음력 달력 |
+| --- | --- | --- |
+| <img width="240" alt="image" src="https://github.com/user-attachments/assets/58937083-34d8-4969-9bbf-b42eed951fd0" /> | <img width="240" alt="image" src="https://github.com/user-attachments/assets/8ea3b26c-f934-4129-9b2e-6eabcf96456f" /> | <img width="240" src="https://github.com/user-attachments/assets/3ad8bbcf-bbc2-4586-9b0d-7fb81dfe47b0" /> | 
 
 ### 📍 marathon-diary
 
