@@ -12,6 +12,7 @@
 | **ai-empathy-diary** | Excel 위장 AI 감정 일기 앱 ([배포](https://ai-empathy-diary.vercel.app/)) | 2026-05-11 | ![수산시장](https://img.shields.io/badge/dev--team-수산시장-0EA5E9?logoColor=white) | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **@ux-lab/stellas-archive** | 게임 ([개발 일지](https://github.com/dusunax/ux-lab/wiki/Development-Log#stellas-archive-game), [배포](https://ux-lab-stellas-archive.vercel.app/)) | 2026-03-14 | dusunax | |
 | **@ux-lab/cad-viewer** | DXF 도면 확인용 CAD 뷰어 ([배포](https://ux-lab-cad-viewer.vercel.app/)) | 2026-02-23 | dusunax | ![Next.js](https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white) ![Three.js](https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white) ![React Three Fiber](https://img.shields.io/badge/React%20Three%20Fiber-20232A?logo=react&logoColor=61DAFB) |
+| **One Moon Date — 달력 한칸** | 홈 화면 위젯으로 오늘의 음력을 보여주고 양력·음력을 변환하는 React Native 앱 ([README](./apps/one-moon-date/README.md), [Google Play](https://play.google.com/store/apps/details?id=com.onemoondate)) | 2026-01-18 | dusunax | ![React Native](https://img.shields.io/badge/React%20Native-20232A?logo=react&logoColor=61DAFB) ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white) ![Google Play](https://img.shields.io/badge/Google%20Play-414141?logo=googleplay&logoColor=white) |
 | **@ux-lab/seasonal-project-2025** | AI 기반 연말 사진 회고 웹 서비스 | 2025-12-20 | dusunax | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) ![Google Analytics](https://img.shields.io/badge/Google%20Analytics-E37400?logo=googleanalytics&logoColor=white) |
 | **@ux-lab/applications** | 이력서 지원 현황 관리 앱 ([상세 문서](./apps/applications/README.md)) | 2025-11-24 | dusunax | - |
 | **@ux-lab/flow** | UX Flow 다이어그램 에디터 | 2025-10-03 | dusunax | ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black) |
@@ -98,6 +99,17 @@ https://github.com/user-attachments/assets/ede3ae91-2991-4532-ac95-c83052a9c78e
 - 마우스/트랙패드 기반 확대/이동 조작
 
 <img width="800" src="https://github.com/user-attachments/assets/e88a0589-a42e-4a06-8861-057717419d39" />
+
+### 📍 One Moon Date — 달력 한칸
+
+- 홈 화면 위젯으로 오늘의 음력 날짜를 한눈에 확인 (자정 자동 갱신, 앱의 다크 모드·언어 설정과 동기화)
+- 양력/음력 변환, 윤달 처리, 간지(干支)·띠 표시
+- 한국어·English·日本語 다국어 지원, 다크 모드
+- [README](./apps/one-moon-date/README.md)에 앱 소개, [Google Play](https://play.google.com/store/apps/details?id=com.onemoondate)에 배포
+
+| 위젯 | 음력 달력 |
+| --- | --- |
+| <img width="240" src="https://github.com/user-attachments/assets/a83aced8-e036-4fd9-9a8d-3b6f672a7ab8" /> | <img width="240" src="https://github.com/user-attachments/assets/3ad8bbcf-bbc2-4586-9b0d-7fb81dfe47b0" /> |
 
 ### 📍 @ux-lab/seasonal-project-2025
 
