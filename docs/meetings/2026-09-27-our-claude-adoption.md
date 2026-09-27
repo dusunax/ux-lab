@@ -53,6 +53,8 @@
 
 **Pilot:** 그럼 여기서 결론 안 냅니다. 이건 라우팅으로 해결 안 되는 사안이에요 — ux-lab git 워크플로우 주인은 사용자입니다. 기존 유지, 대체, 병행 중에 직접 골라야 해요. ⚠️ Open. 넷. `pr-list`.
 
+> **후속 결정 (2026-09-28, 사용자):** `commit-and-pr` 도입. 기존 `git/ship`·`git/up`은 대체되어 제거한다. 앞으로 ship·up 범위를 넘어서는 복합적인 워크플로우 Skill이 필요해지면, 그때마다 팀이 정한 Skill을 쓰는 방향으로 간다 — 지금 시점에 추가 규칙을 미리 못박지 않는다.
+
 **Kraken:** 이건 짧아요. `pr-list`는 "기간 내 머지한 PR을 활동별 분류"하는 기능인데, ux-lab 기존 커맨드 어디와도 안 겹칩니다. 구조적으로 충돌 리스크가 없는 케이스예요.
 
 **Orca:** 그리고 바로 쓸 곳이 있어요 — `/sprint:report` 작성할 때 활동 근거 수집. 도입 안 할 이유가 없습니다.
@@ -76,7 +78,7 @@
 | 1 | `our-claude`를 프로젝트 스코프 플러그인으로 도입 (목적: 팀 공통 Skill 재사용) | Nautilus |
 | 2 | 설치는 `.claude/settings.json`(체크인)에 마켓플레이스 등록 + 플러그인 활성화로 반영 | Nautilus |
 | 3 | `pr-list` Skill 즉시 도입 | 전원 |
-| 4 | `commit-and-pr` Skill 도입 여부 — 기존 `git/ship`·`git/up`과 트리거 중복으로 보류 | ⚠️ Open (사용자 결정 필요) |
+| 4 | `commit-and-pr` Skill 도입. 기존 `git/ship`·`git/up`은 대체되어 제거. 향후 ship·up 범위를 넘는 복합 워크플로우 Skill은 그때그때 팀이 정한 Skill을 사용 | 사용자 (2026-09-28 확정) |
 | 5 | `.agent/AGENT.md`에 "외부 플러그인" 섹션 신설, `our-claude` 출처·스코프·활성 Skill 기록 | Nautilus |
 | 6 | `our-claude` 저장소 자체 변경은 그 저장소의 PR+관리자 승인 규칙을 그대로 따름 (ux-lab이 관여하지 않음) | 전원 |
 
@@ -91,7 +93,7 @@
 - [ ] 사용자 확인 후 `.claude/settings.json`에 `extraKnownMarketplaces`(`dusunax/our-claude`) 및 `enabledPlugins`(`our-claude@our-claude`) 반영
 
 **사용자**
-- [ ] 안건 3 — `commit-and-pr` Skill 도입 여부 결정 (기존 유지 / 대체 / 병행)
+- [x] 안건 3 — `commit-and-pr` Skill 도입 여부 결정: **대체** (`git/ship`·`git/up` 제거). 실행은 별도 PR(`chore/adopt-commit-and-pr-retire-ship-up`)
 
 ---
 
