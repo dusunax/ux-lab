@@ -117,4 +117,4 @@ git status
 
 다음 단계 안내:
 - PR 생성: `/git:pr`
-- 커밋·PR·merge 한 번에: `/git:ship`
+- 커밋·PR 한 번에: `our-claude:commit-and-pr`
