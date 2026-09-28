@@ -22,6 +22,22 @@
 
 ## 📸 스크린샷
 
+### 📍 Space Bubble — Google Chat 말풍선
+
+- Google Chat Space의 새 메시지를 polling해 데스크톱 우측 하단에 캐릭터 말풍선으로 표시하는 Electron 트레이 앱
+- Google OAuth(데스크톱 앱 유형) 로그인, token은 safeStorage로 암호화 저장
+- macOS(dmg, arm64)·Windows(NSIS, x64) 빌드 지원, [README](./apps/google-space-bubble/README.md)
+
+| 앱 아이콘 | 로그인 | 말풍선 알림 |
+| --- | --- | --- |
+| <img width="120" alt="Space Bubble 앱 아이콘" src="./apps/google-space-bubble/docs/screenshots/app-icon.png" /> | <img width="240" alt="Space Bubble 로그인 화면" src="./apps/google-space-bubble/docs/screenshots/login.png" /> | <img width="420" alt="Space Bubble 말풍선 알림" src="./apps/google-space-bubble/docs/screenshots/bubble.jpg" /> |
+
+실행:
+
+```bash
+pnpm dev:bubble
+```
+
 ### 📍 cat-game — 고양이의 결정
 
 - 상황을 입력하면 고양이의 성격·상태·최근 기록을 바탕으로 스스로 행동을 결정 (OpenRouter decisions 모델 `~typesafe/jev-latest` 연동, 실패 시 본능 결정으로 대체)
