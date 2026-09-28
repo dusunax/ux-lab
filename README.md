@@ -168,6 +168,9 @@ pnpm -w run dev:all
 # Project Afterglow: http://localhost:3335
 # Stella's Archive: http://localhost:3336
 # Cat Game: http://localhost:5180
+
+# Space Bubble (Electron 데스크톱 앱, dev:all에 미포함)
+pnpm dev:bubble
 ```
 
 ## 🔧 환경 설정
@@ -176,6 +179,11 @@ pnpm -w run dev:all
 
 1. `.env.local` 파일 생성 (apps/flow/.env.example 참고)
 2. Firebase 설정 값 입력
+
+### Space Bubble Google OAuth 설정 시 ![Google Chat API](https://img.shields.io/badge/Google%20Chat%20API-00AC47?logo=googlechat&logoColor=white)
+
+1. GCP에서 OAuth 클라이언트 ID(유형: 데스크톱 앱) 발급 ([apps/google-space-bubble/docs/spec.md](./apps/google-space-bubble/docs/spec.md) §0 참고)
+2. `apps/google-space-bubble/.env` 파일 생성 (apps/google-space-bubble/.env.example 참고)
 
 ## 🛠️ 기술 스택
 
@@ -193,3 +201,5 @@ pnpm -w run dev:all
 - three-dxf-viewer (DXF 렌더링)(@ux-lab/cad-viewer)
 - pdfjs-dist (PDF 파싱)(@ux-lab/applications)
 - EXIF 데이터 추출 (exifr) (@ux-lab/seasonal-project-2025)
+- Electron, electron-vite, electron-builder (google-space-bubble)
+- Google Chat API, google-auth-library (google-space-bubble)
