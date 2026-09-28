@@ -73,7 +73,6 @@ src/preload/    contextBridge로 window.api 노출
 src/renderer/   settings(로그인·설정 창), bubble(오버레이 창)
 src/shared/     타입, IPC 채널, Space ID 정규화
 spike/          Phase 0 API 검증 스크립트
-design/         캐릭터 원본
 ```
 
 ## 로컬 데이터
