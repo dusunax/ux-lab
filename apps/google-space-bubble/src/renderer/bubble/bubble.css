@@ -1,0 +1,249 @@
+/* 크기는 모두 rem 단위: 루트 font-size(글자 크기 설정)에 비례해 커진다 */
+:root {
+  font-size: 13px;
+  --surface: rgba(255, 255, 255, 0.97);
+  --text: #1f2328;
+  --muted: #667085;
+  --accent: #1a73e8;
+  --border: rgba(0, 0, 0, 0.08);
+  --shadow: 0 0.45rem 1.8rem rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12);
+  /* 말풍선 꼬리(캐릭터 쪽 모서리). tl tr br bl */
+  --radius: 1.1rem 1.1rem 0.3rem 1.1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: rgba(40, 43, 48, 0.97);
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --accent: #8ab4f8;
+    --border: rgba(255, 255, 255, 0.1);
+    --shadow: 0 0.45rem 1.8rem rgba(0, 0, 0, 0.5);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+body {
+  font: 1rem/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ─── 위치: 캐릭터가 모서리, 말풍선이 그 안쪽으로 쌓인다 ─── */
+
+.viewport {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 0.9rem 0.9rem 0.9rem;
+}
+/* 말풍선이 창보다 길어지면 이 영역만 스크롤 (캐릭터는 모서리에 고정) */
+.scroller {
+  min-height: 0;
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* 그림자가 잘리지 않도록 여백을 안쪽으로 */
+  margin: -0.9rem -0.9rem 0;
+  padding: 0.9rem 0.9rem 0.3rem;
+  width: calc(100% + 1.8rem);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+}
+.stack {
+  list-style: none;
+  margin: auto 0 0; /* 내용이 적으면 캐릭터 쪽(아래)에 붙는다 */
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* 위쪽 모서리: 캐릭터가 위, 최신 말풍선이 캐릭터 가까이 */
+.pos-top-right,
+.pos-top-left {
+  flex-direction: column-reverse;
+}
+.pos-top-right .stack,
+.pos-top-left .stack {
+  flex-direction: column-reverse;
+  margin: 0 0 auto;
+}
+.pos-top-right .scroller,
+.pos-top-left .scroller {
+  margin: 0 -0.9rem -0.9rem;
+  padding: 0.3rem 0.9rem 0.9rem;
+}
+/* 왼쪽 모서리 */
+.pos-bottom-left,
+.pos-top-left {
+  align-items: flex-start;
+}
+
+.pos-bottom-left {
+  --radius: 1.1rem 1.1rem 1.1rem 0.3rem;
+}
+.pos-top-right {
+  --radius: 1.1rem 0.3rem 1.1rem 1.1rem;
+}
+.pos-top-left {
+  --radius: 0.3rem 1.1rem 1.1rem 1.1rem;
+}
+
+/* ─── Bubble ─── */
+
+.bubble {
+  position: relative;
+  animation: bubble-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --slide: 1.8rem;
+}
+.pos-bottom-left .bubble,
+.pos-top-left .bubble {
+  --slide: -1.8rem;
+}
+.bubble.leaving {
+  animation: bubble-out 300ms ease forwards;
+}
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--slide));
+  }
+}
+@keyframes bubble-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.bubble-body {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.9rem 2.6rem 0.75rem 1.1rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+}
+.bubble-body:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+.bubble-space {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bubble-sender {
+  margin-top: 0.3rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bubble-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+  word-break: break-word;
+}
+.bubble-time {
+  align-self: flex-end;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.bubble-close {
+  all: unset;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.7;
+  transition:
+    opacity 120ms,
+    background 120ms;
+}
+.bubble:hover .bubble-close,
+.bubble-close:focus-visible {
+  opacity: 1;
+}
+.bubble-close:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* ─── Mascot ─── */
+
+.mascot-wrap {
+  display: block;
+  margin: 0.15rem 0.3rem;
+  pointer-events: none;
+}
+.mascot {
+  display: block;
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: contain;
+  filter: drop-shadow(0 0.3rem 0.6rem rgba(0, 0, 0, 0.25));
+  animation: mascot-hop 480ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes mascot-hop {
+  0% {
+    transform: translateY(0.9rem) scale(0.9);
+    opacity: 0.4;
+  }
+  60% {
+    transform: translateY(-0.45rem) scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble,
+  .bubble.leaving {
+    animation-duration: 1ms;
+  }
+  .mascot {
+    animation: none;
+  }
+}
