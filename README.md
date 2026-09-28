@@ -28,10 +28,6 @@
 - Google OAuth(데스크톱 앱 유형) 로그인, token은 safeStorage로 암호화 저장
 - macOS(dmg, arm64)·Windows(NSIS, x64) 빌드 지원, [README](./apps/google-space-bubble/README.md)
 
-| 앱 아이콘 | 로그인 | 말풍선 알림 |
-| --- | --- | --- |
-| <img width="120" alt="Space Bubble 앱 아이콘" src="./apps/google-space-bubble/docs/screenshots/app-icon.png" /> | <img width="240" alt="Space Bubble 로그인 화면" src="./apps/google-space-bubble/docs/screenshots/login.png" /> | <img width="420" alt="Space Bubble 말풍선 알림" src="./apps/google-space-bubble/docs/screenshots/bubble.jpg" /> |
-
 실행:
 
 ```bash

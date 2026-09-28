@@ -3,12 +3,6 @@
 Google Chat Space의 새 메시지를 데스크톱 화면 우측 하단에 말풍선으로 알려주는 Electron 앱입니다.
 명세는 [docs/spec.md](docs/spec.md)를 참고하세요.
 
-| 앱 아이콘 | 로그인 | 말풍선 알림 |
-| --- | --- | --- |
-| <img width="120" alt="Space Bubble 앱 아이콘" src="docs/screenshots/app-icon.png" /> | <img width="240" alt="Space Bubble 로그인 화면" src="docs/screenshots/login.png" /> | <img width="420" alt="Space Bubble 말풍선 알림" src="docs/screenshots/bubble.jpg" /> |
-
-> dmg로 설치한 앱(v0.1.0)에서 캡처했습니다. 말풍선은 트레이 메뉴의 `테스트 알림 보내기`로 띄운 화면입니다.
-
 ## 준비
 
 1. GCP 설정: [docs/spec.md §0](docs/spec.md) (OAuth 클라이언트 유형: 데스크톱 앱)
