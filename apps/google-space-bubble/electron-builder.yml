@@ -1,0 +1,43 @@
+appId: com.interxlab.google-space-bubble
+productName: Space Bubble
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**
+  - package.json
+  - resources/**
+  - "!**/*.map"
+# Chromium 언어 파일은 한국어·영어만 포함 (앱 UI는 한국어). mac은 .lproj(en), Windows는 .pak(en-US)
+electronLanguages: [ko, en, en-US]
+asarUnpack:
+  - resources/**
+mac:
+  target:
+    - target: dmg
+      arch: [arm64]
+  category: public.app-category.productivity
+  # electron-builder가 PNG에서 만든 icns는 16~48px이 깨져서 iconutil로 만든 icns를 직접 지정
+  icon: build/icon.icns
+  # Developer ID 인증서가 없으므로 ad-hoc 서명 (Apple Silicon은 서명 없으면 실행 불가)
+  identity: '-'
+  hardenedRuntime: false
+  notarize: false
+  # Dock 아이콘 없이 Menu bar에만 상주
+  extendInfo:
+    LSUIElement: true
+dmg:
+  title: Space Bubble
+  artifactName: Space-Bubble-${version}-${arch}.dmg
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  # 코드 서명 인증서 없음 (SmartScreen 경고가 뜰 수 있음)
+  signAndEditExecutable: true
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: Space Bubble
+  artifactName: Space-Bubble-Setup-${version}-${arch}.${ext}

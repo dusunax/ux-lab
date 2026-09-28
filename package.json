@@ -29,6 +29,8 @@
     "build:fridge": "pnpm --filter @ux-lab/fridge-recipe run build",
     "dev:agent-and-my-ax": "pnpm --filter @ux-lab/agent-and-my-ax run dev",
     "build:agent-and-my-ax": "pnpm --filter @ux-lab/agent-and-my-ax run build",
+    "dev:bubble": "pnpm --filter google-space-bubble run dev",
+    "build:bubble": "pnpm --filter google-space-bubble run build",
     "build:all": "pnpm run build:ui && pnpm run build:showcase && pnpm run build:flow && pnpm run build:applications",
     "dev:all": "concurrently \"pnpm run dev:ui\" \"pnpm run dev:showcase\" \"pnpm run dev:flow\" \"pnpm run dev:applications\"",
     "install:all": "pnpm install"
