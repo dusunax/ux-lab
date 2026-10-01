@@ -72,9 +72,9 @@ pnpm dev:cat          # 게임: http://localhost:5180
 - [Google Play Store](https://play.google.com/store/apps/details?id=com.onemoondate) 정식 배포
 - 홈 화면 위젯으로 오늘의 음력 날짜를 한눈에 확인: 위젯 텍스트 크기를 사용자 기기의 실제 크기(dp)에 비례하도록 상대 크기 표시: [PR !64](https://github.com/dusunax/ux-lab/pull/64)
 
-| 위젯 선택 | 위젯 표시 | 음력 달력 |
+| 위젯 선택 | 홈 화면에 위젯 1x1, 2x3, 3x3 표시 | LockStar에 1×1 |
 | --- | --- | --- |
-| <img width="240" alt="image" src="https://github.com/user-attachments/assets/58937083-34d8-4969-9bbf-b42eed951fd0" /> | <img width="240" alt="image" src="https://github.com/user-attachments/assets/8ea3b26c-f934-4129-9b2e-6eabcf96456f" /> | <img width="240" src="https://github.com/user-attachments/assets/3ad8bbcf-bbc2-4586-9b0d-7fb81dfe47b0" /> | 
+| <img width="240" alt="image" src="https://github.com/user-attachments/assets/58937083-34d8-4969-9bbf-b42eed951fd0" /> | <img width="240" alt="image" src="https://github.com/user-attachments/assets/9d154bd5-8fa5-4502-8d69-618a8ebf8c70" /> | <img width="240" alt="image" src="https://github.com/user-attachments/assets/a163ed79-069e-4528-89a4-10999061a349" /> | 
 
 ### 📍 marathon-diary
 
