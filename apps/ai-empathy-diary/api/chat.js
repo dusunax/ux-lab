@@ -77,13 +77,16 @@ function generateModelLabel(modelId) {
   return MODEL_LABEL_POOL[idx];
 }
 
+// openrouter-proxy와 같은 텍스트 목록 (.github/workflows/openrouter-free-models.yml이 매주 함께 점검)
 const FALLBACKS = [
-  'openai/gpt-oss-120b:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
   'nvidia/nemotron-3-super-120b-a12b:free',
-  'openai/gpt-oss-20b:free',
-  'qwen/qwen3-next-80b-a3b-instruct:free',
-  'minimax/minimax-m2.5:free',
+  'nvidia/nemotron-3-ultra-550b-a55b:free',
+  'qwen/qwen3.8-27b:free',
+  'google/gemma-4-31b-it:free',
+  'nvidia/nemotron-3.5-lightning:free',
+  'inclusionai/ling-3.0-flash-sante:free',
+  // 목록 전체가 실패하면 OpenRouter가 그 시점에 쓸 수 있는 무료 모델을 골라 주는 라우터로 마지막 시도
+  'openrouter/free',
 ];
 
 function log(event, fields) {
@@ -175,7 +178,8 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (upstream.status === 429 || (upstream.status >= 500 && upstream.status < 600)) {
+    // 404: 무료 제공 종료 등으로 모델이 사라진 경우
+    if (upstream.status === 404 || upstream.status === 429 || (upstream.status >= 500 && upstream.status < 600)) {
       log('chat_fallback', { request_id: requestId, from_model: candidate, attempt, reason: String(upstream.status) });
       continue;
     }
@@ -203,5 +207,5 @@ export default async function handler(req, res) {
   }
 
   log('chat_exhausted', { request_id: requestId, attempts: attempt });
-  res.status(429).json({ error: `모든 모델(${candidates.length}개)이 rate limit에 걸렸어요.` });
+  res.status(429).json({ error: `모든 모델(${candidates.length}개)이 rate limit에 걸렸거나 사용할 수 없어요.` });
 }
