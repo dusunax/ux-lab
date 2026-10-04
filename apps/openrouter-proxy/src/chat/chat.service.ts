@@ -2,22 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import { OpenrouterService } from '../openrouter/openrouter.service';
 import { ChatBody } from './chat.dto';
+import * as fallbackModels from './fallback-models.json';
+
+// 목록 전체가 실패하면 OpenRouter가 그 시점에 쓸 수 있는 무료 모델을 골라 주는 라우터로 마지막 시도
+const LAST_RESORT = 'openrouter/free';
 
 const FALLBACKS: Record<'image' | 'text', string[]> = {
-  image: [
-    'google/gemma-4-31b-it:free',
-    'qwen/qwen3.8-27b:free',
-    'google/gemma-4-26b-a4b-it:free',
-    'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
-  ],
-  text: [
-    'nvidia/nemotron-3-super-120b-a12b:free',
-    'nvidia/nemotron-3-ultra-550b-a55b:free',
-    'qwen/qwen3.8-27b:free',
-    'google/gemma-4-31b-it:free',
-    'nvidia/nemotron-3.5-lightning:free',
-    'inclusionai/ling-3.0-flash-sante:free',
-  ],
+  image: [...fallbackModels.image, LAST_RESORT],
+  text: [...fallbackModels.text, LAST_RESORT],
 };
 
 // 429: rate limit, 404: 무료 제공 종료 등으로 모델이 사라진 경우
