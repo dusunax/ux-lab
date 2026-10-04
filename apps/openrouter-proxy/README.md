@@ -85,7 +85,7 @@ Content-Type: application/json
 
 ```json
 {
-  "model": "openai/gpt-oss-120b:free",
+  "model": "auto",
   "messages": [
     { "role": "user", "content": "Hello" }
   ],
@@ -123,26 +123,24 @@ OpenRouter 알파 엔드포인트 `/api/alpha/decisions`를 사용합니다. 모
 ### 동작
 
 1. `requestedModel`을 먼저 시도
-2. 실패(`429`) 시 이미지/텍스트 그룹별 fallback 모델 순으로 재시도
+2. 실패(`429` rate limit, `404` 모델 없음) 시 이미지/텍스트 그룹별 fallback 모델 순으로 재시도
 3. 최종 응답은 OpenRouter 응답 status/body를 그대로 반환
 
 ## 폴백 모델
 
-- 이미지(멀티모달) 관련 메시지일 때
-  - `google/gemma-4-31b-it:free`
-  - `google/gemma-4-26b-a4b-it:free`
-  - `nvidia/nemotron-nano-12b-v2-vl:free`
-  - `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free`
-  - `baidu/qianfan-ocr-fast:free`
-- 텍스트 메시지일 때
-  - `openai/gpt-oss-120b:free`
-  - `meta-llama/llama-3.3-70b-instruct:free`
-  - `nvidia/nemotron-3-super-120b-a12b:free`
-  - `openai/gpt-oss-20b:free`
-  - `qwen/qwen3-next-80b-a3b-instruct:free`
-  - `minimax/minimax-m2.5:free`
+후보 목록은 [`src/chat/fallback-models.json`](src/chat/fallback-models.json)에 이미지(`image`)/텍스트(`text`) 그룹으로 나눠 둡니다. 앞에 있을수록 먼저 시도합니다.
 
-> 요청 본문의 `model`도 fallback 후보의 첫 번째로 포함됩니다.
+- 목록의 모델이 모두 실패하면 마지막으로 `openrouter/free`를 시도합니다. OpenRouter가 그 시점에 쓸 수 있는 무료 모델을 골라 주는 라우터라서, 목록이 오래돼도 요청이 완전히 실패하지 않습니다. 대신 어떤 모델이 답할지 정해져 있지 않습니다(응답의 `model` 필드로 확인).
+- 요청 본문의 `model`도 fallback 후보의 첫 번째로 포함됩니다.
+
+### 주기 점검
+
+OpenRouter 무료 모델은 예고 없이 내려갑니다(`404`). GitHub Actions [`openrouter-free-models.yml`](../../.github/workflows/openrouter-free-models.yml)이 매주 월요일 09:00(KST)에 목록을 점검합니다.
+
+- 사라진 모델이 있으면 `[openrouter-proxy] 무료 폴백 모델 점검` 이슈를 만들거나 갱신하고, 목록에 없는 무료 모델을 교체 후보로 함께 적습니다.
+- 모두 정상이면 열려 있는 점검 이슈를 닫습니다.
+- 같은 목록을 복사해 쓰는 `apps/ai-empathy-diary/api/chat.js`도 함께 점검합니다.
+- 로컬에서 바로 확인: `node apps/openrouter-proxy/scripts/check-free-models.mjs` (ux-lab 루트에서, API 키 불필요)
 
 ## 요청 크기 제한
 

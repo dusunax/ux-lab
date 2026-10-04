@@ -1,0 +1,40 @@
+name: OpenRouter 무료 모델 점검
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # 매주 월요일 09:00 KST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: 폴백 모델 점검
+        id: check
+        run: |
+          node apps/openrouter-proxy/scripts/check-free-models.mjs > report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: 점검 이슈 갱신
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MISSING: ${{ steps.check.outputs.missing }}
+        run: |
+          TITLE='[openrouter-proxy] 무료 폴백 모델 점검'
+          NUM=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number -q '.[0].number')
+          if [ "$MISSING" != "0" ]; then
+            if [ -n "$NUM" ]; then
+              gh issue edit "$NUM" --body-file report.md
+            else
+              gh issue create --title "$TITLE" --body-file report.md
+            fi
+          elif [ -n "$NUM" ]; then
+            gh issue close "$NUM" --comment "폴백 목록의 모델이 모두 확인돼 이슈를 닫습니다."
+          fi
