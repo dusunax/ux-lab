@@ -1,0 +1,6 @@
+# 루트 .gitignore의 build/ 규칙을 해제 — electron-builder 아이콘 리소스(icon.icns, icon.png)
+!build/
+
+out/
+dist/
+.env

@@ -1,0 +1,29 @@
+appId: com.dusunax.tuffy
+productName: Tuffy
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**
+  - package.json
+  - "!**/*.map"
+# 앱 UI는 한국어. Chromium 언어 파일은 한국어·영어만 포함
+electronLanguages: [ko, en]
+mac:
+  target:
+    - target: dmg
+      arch: [arm64]
+    - target: dir
+      arch: [arm64]
+  category: public.app-category.entertainment
+  icon: build/icon.icns
+  # Developer ID 인증서가 없으므로 ad-hoc 서명 (Apple Silicon은 서명 없으면 실행 불가)
+  identity: '-'
+  hardenedRuntime: false
+  notarize: false
+  extendInfo:
+    # 허밍·큰 소리·말소리 감지. 오디오는 기기 안(whisper-server 127.0.0.1)에서만 처리한다
+    NSMicrophoneUsageDescription: 터피가 허밍, 큰 소리, 이름 부르는 소리를 듣기 위해 마이크를 사용해요. 소리는 이 Mac 안에서만 처리돼요.
+dmg:
+  title: Tuffy
+  artifactName: Tuffy-${version}-${arch}.dmg
