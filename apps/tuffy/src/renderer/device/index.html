@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:"
+    />
+    <title>Tuffy</title>
+  </head>
+  <body>
+    <svg id="device" viewBox="0 0 466 466" role="img" aria-label="원형 화면 속 Tuffy">
+      <defs>
+        <clipPath id="screen"><circle cx="233" cy="233" r="233" /></clipPath>
+        <radialGradient id="aura">
+          <stop offset="0" stop-color="var(--emo)" stop-opacity=".22" />
+          <stop offset="1" stop-color="var(--emo)" stop-opacity="0" />
+        </radialGradient>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+        <path id="arcTop" d="M 47 233 A 186 186 0 0 1 419 233" />
+        <path id="arcBot" d="M 33 233 A 200 200 0 0 0 433 233" />
+      </defs>
+      <g clip-path="url(#screen)">
+        <rect width="466" height="466" fill="#000" />
+        <g id="drift">
+          <g id="ticks"></g>
+          <circle id="arousalArc" cx="233" cy="233" r="224" fill="none" stroke="var(--emo)" stroke-width="3"
+            stroke-linecap="round" transform="rotate(-90 233 233)" filter="url(#glow)" />
+          <text class="ring-text" fill="var(--emo)"><textPath id="topText" href="#arcTop" startOffset="50%" text-anchor="middle">CALM · IDLE</textPath></text>
+          <text class="say-text" fill="#e9e4da"><textPath id="sayText" href="#arcBot" startOffset="50%" text-anchor="middle">· · ·</textPath></text>
+          <circle id="auraCircle" cx="233" cy="233" r="150" fill="url(#aura)" />
+          <g id="notes"></g>
+          <g id="rig"><g id="legs"></g><g id="shell"></g></g>
+          <g id="dots" opacity="0"></g>
+          <circle id="micDot" cx="233" cy="404" r="4" fill="#ff5b5b" opacity="0" />
+        </g>
+      </g>
+    </svg>
+    <p class="sr" aria-live="polite" id="sayLive"></p>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

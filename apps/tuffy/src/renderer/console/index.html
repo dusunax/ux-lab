@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+    />
+    <title>tuffy.brain</title>
+  </head>
+  <body>
+    <main class="brain">
+      <header class="brain-head">
+        <h1>tuffy.brain</h1>
+        <span class="pill live">reflex <b>rules</b></span>
+        <div class="engine" role="radiogroup" aria-label="판단 엔진">
+          <button class="seg" type="button" role="radio" data-engine="free" aria-checked="true">무료 LLM</button>
+          <button class="seg" type="button" role="radio" data-engine="jev" aria-checked="false">jev · 유료</button>
+        </div>
+        <span class="pill" id="usagePill">—</span>
+        <span class="pill">escalate ≥ <b>0.50</b></span>
+      </header>
+
+      <div class="meters">
+        <div class="meter big"><span>EMOTION</span><strong id="mEmo">CALM</strong></div>
+        <div class="meter big"><span>MOTION</span><strong id="mMotion">IDLE</strong></div>
+        <div class="meter"><span>ENERGY</span><div class="bar"><i id="bEnergy"></i></div></div>
+        <div class="meter"><span>TURNS TODAY</span><strong id="mTurns">0</strong></div>
+      </div>
+
+      <section class="mic" id="mic" data-on="false" aria-label="마이크 진단">
+        <header class="mic-head">
+          <span class="mic-title">MIC</span>
+          <span class="mic-device" id="micDevice">마이크 꺼짐</span>
+          <span class="vad" id="micVad" data-vad="off">OFF</span>
+          <button class="btn small" id="micBtn" aria-pressed="false">마이크 꺼짐</button>
+        </header>
+        <div class="meter-track" id="micTrack" aria-hidden="true">
+          <i class="fill" id="micFill"></i>
+          <i class="peak" id="micPeak"></i>
+        </div>
+        <div class="ruler" id="micRuler" aria-hidden="true"></div>
+        <p class="mic-read" id="micRead">—</p>
+        <ol class="stt" id="stt" aria-label="음성 인식 결과"></ol>
+        <p class="mic-note">주변 말소리 원문은 이 진단 화면에만 잠깐 보여요. 로그·기억·LLM으로는 터피에게 한 말만 가요.</p>
+      </section>
+
+      <form class="chat" id="chatForm">
+        <label class="sr" for="chatInput">Tuffy에게 할 말</label>
+        <input id="chatInput" maxlength="140" autocomplete="off" placeholder="Tuffy에게 말 걸기…" />
+        <button class="btn primary" type="submit">보내기</button>
+      </form>
+
+      <div class="log-filter" role="group" aria-label="로그 필터">
+        <div class="tag-chips" id="logTags"></div>
+        <input id="logSearch" type="search" autocomplete="off" placeholder="로그 검색…" aria-label="로그 검색" />
+        <span class="log-count" id="logCount" aria-live="polite"></span>
+        <button class="btn small" id="logReset" type="button">초기화</button>
+      </div>
+      <div class="log" id="log" role="log" aria-label="사고 로그"></div>
+
+      <section class="decision" id="decision" hidden aria-label="마지막 판단 확률">
+        <header class="mic-head"><span class="mic-title">DECISION</span><span class="mic-device" id="decEngine"></span></header>
+        <div class="dec-grid">
+          <div><h3>평가</h3><div id="decAppraisal"></div></div>
+          <div><h3>감정</h3><div id="decEmotion"></div></div>
+          <div><h3>동작</h3><div id="decMotion"></div></div>
+        </div>
+      </section>
+
+      <div class="label">LAST CORTEX OUTPUT · state contract</div>
+      <pre class="json" id="json">{ "waiting": "첫 입력" }</pre>
+
+      <section class="card" aria-label="설정과 시뮬레이션">
+        <div class="card-part">
+          <h2 class="card-title">TypeSafe 키 <span class="key-state" id="keyStatus">확인 중</span></h2>
+          <p class="key-help">jev는 console.typesafe.ai/keys 에서 받은 키와 크레딧으로 TypeSafe를 직접 불러요. 키는 이 Mac의 키체인으로 암호화해 저장하고, 화면으로 다시 보여주지 않아요.</p>
+          <form class="chat" id="keyForm">
+            <label class="sr" for="keyInput">TypeSafe API 키</label>
+            <input id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="TypeSafe API 키 붙여 넣기" />
+            <button class="btn primary" type="submit">저장</button>
+            <button class="btn" type="button" id="keyClear">삭제</button>
+          </form>
+          <p class="key-msg" id="keyMsg" aria-live="polite"></p>
+        </div>
+        <div class="card-part">
+          <h2 class="card-title">신호 시뮬레이션</h2>
+          <div class="chips">
+            <button class="btn" data-sim="name-call">이름 부르기</button>
+            <button class="btn" data-sim="hum">허밍</button>
+            <button class="btn" data-sim="loud">큰 소리</button>
+            <button class="btn" data-sim="return">자리 복귀</button>
+            <button class="btn" data-sim="clock-late">새벽 3시</button>
+            <button class="btn" data-sim="idle">유휴 10분</button>
+            <button class="btn" data-sim="app-dev">VS Code 포커스</button>
+          </div>
+        </div>
+        <div class="card-part">
+          <h2 class="card-title">감각 스위치</h2>
+          <div class="chips">
+            <button class="btn" id="soundBtn" aria-pressed="false">화음 소리 꺼짐</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="copyright">
+        <p>© 2026 Dusuna · Tuffy</p>
+        <p>『프로젝트 헤일메리』(Andy Weir)에 대한 오마주 팬 프로젝트예요. 원작 및 원저작자와는 관계없어요.</p>
+      </footer>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

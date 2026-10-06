@@ -1,0 +1,9 @@
+# 루트 .gitignore의 build/ 규칙을 해제 — electron-builder 아이콘 리소스(icon.icns, icon.png)
+!build/
+
+out/
+dist/
+.env
+
+# 스크린샷은 저장소에 넣지 않는다 (PR 본문에 직접 첨부, README는 자리만)
+docs/screenshots/

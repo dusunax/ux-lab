@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TUFFY.exe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #000;
+    --panel: #0b0b0c;
+    --line: #1f1f22;
+    --ink: #e9e4da;
+    --dim: #6f6b66;
+    --phosphor: #7cffb2;
+    --pink: #ff6fb5;
+    --amber: #ffc857;
+    --cyan: #6fe7ff;
+    --violet: #b79cff;
+    --emo: #6fe7ff;
+    --pixel: 'Silkscreen', monospace;
+    --mono: 'Nanum Gothic Coding', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--mono); }
+  body {
+    min-height: 100vh;
+    background-image: radial-gradient(#141414 1px, transparent 1px);
+    background-size: 14px 14px;
+  }
+  button, input { font: inherit; color: inherit; }
+
+  .lab {
+    max-width: 1180px; margin: 0 auto; padding: 28px 16px 48px;
+    display: grid; gap: 28px;
+    grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+    grid-template-areas: "mast mast" "stage brain";
+  }
+  @media (max-width: 920px) {
+    .lab { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mast" "stage" "brain"; }
+  }
+
+  /* ---------- masthead ---------- */
+  .mast { grid-area: mast; display: flex; flex-wrap: wrap; align-items: end; gap: 10px 22px; }
+  .mast h1 { font-family: var(--pixel); font-size: clamp(34px, 6vw, 56px); margin: 0; line-height: .9; letter-spacing: -1px; }
+  .mast h1 span { color: var(--pink); }
+  .mast p { margin: 0; color: var(--dim); font-size: 13px; max-width: 46ch; }
+  .stickers { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+  .sticker {
+    font-family: var(--pixel); font-size: 11px; padding: 5px 9px; border-radius: 4px;
+    background: var(--amber); color: #000; transform: rotate(-2deg); box-shadow: 2px 2px 0 #fff2;
+  }
+  .sticker:nth-child(2) { background: var(--phosphor); transform: rotate(1.5deg); }
+  .sticker:nth-child(3) { background: var(--pink); transform: rotate(-1deg); }
+
+  /* ---------- stage / device ---------- */
+  .stage { grid-area: stage; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .bezel {
+    position: relative; width: min(500px, calc(100vw - 32px)); aspect-ratio: 1; border-radius: 50%; padding: 16px;
+    background: conic-gradient(from 210deg, #2b2b2e, #0d0d0f, #3a3a3e, #0d0d0f, #2b2b2e);
+    box-shadow: 0 0 0 2px #000, 0 0 0 3px #2a2a2a, 0 30px 80px -30px color-mix(in srgb, var(--emo) 45%, transparent);
+    transition: box-shadow .8s;
+  }
+  .bezel::after {
+    content: 'LITH-01'; position: absolute; right: 4%; bottom: 9%;
+    font-family: var(--pixel); font-size: 10px; background: var(--ink); color: #000;
+    padding: 3px 6px; border-radius: 3px; transform: rotate(-24deg);
+  }
+  #device { width: 100%; height: 100%; display: block; border-radius: 50%; background: #000; }
+  .ring-text { font-family: var(--pixel); font-size: 15px; letter-spacing: 3px; }
+  .say-text { font-family: var(--mono); font-size: 16px; font-weight: 700; }
+
+  /* ---------- controls ---------- */
+  .controls { width: 100%; display: grid; gap: 14px; }
+  .group { border: 1px dashed var(--line); border-radius: 10px; padding: 12px; background: #050505cc; }
+  .group h2 {
+    margin: 0 0 10px; font-family: var(--pixel); font-size: 11px; font-weight: 400; color: var(--dim);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .prio { color: #000; background: var(--phosphor); padding: 1px 5px; border-radius: 3px; }
+  .group:nth-child(2) .prio { background: var(--amber); }
+  .group:nth-child(3) .prio { background: var(--violet); }
+  .chat { display: flex; gap: 8px; }
+  .chat input {
+    flex: 1; min-width: 0; background: #000; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px;
+  }
+  .chat input:focus-visible { outline: 2px solid var(--phosphor); outline-offset: 1px; }
+  .btn {
+    cursor: pointer; border: 1px solid #333; background: #111; border-radius: 8px; padding: 8px 12px; font-size: 13px;
+    transition: transform .08s, background .2s, border-color .2s;
+  }
+  .btn:hover { border-color: var(--emo); }
+  .btn:active { transform: translateY(1px) scale(.98); }
+  .btn:focus-visible { outline: 2px solid var(--phosphor); outline-offset: 2px; }
+  .btn.primary { background: var(--phosphor); color: #000; border-color: var(--phosphor); font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip small { color: var(--dim); font-size: 11px; margin-left: 4px; }
+  .toggles { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .btn[aria-pressed="true"] { background: var(--ink); color: #000; }
+
+  /* ---------- brain panel ---------- */
+  .brain {
+    grid-area: brain; min-width: 0; display: flex; flex-direction: column; gap: 14px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+    align-self: start;
+  }
+  .brain-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .brain-head h2 { font-family: var(--pixel); font-size: 16px; margin: 0 auto 0 0; font-weight: 400; }
+  .brain-head h2::before { content: '>'; color: var(--phosphor); margin-right: 6px; animation: blink 1s steps(1) infinite; }
+  .pill { font-size: 11px; border: 1px solid #2a2a2a; border-radius: 99px; padding: 3px 8px; color: var(--dim); }
+  .pill b { color: var(--ink); font-weight: 700; }
+  .pill.live::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--phosphor); margin-right: 5px; vertical-align: 1px; }
+  .pill.mock::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); margin-right: 5px; vertical-align: 1px; }
+
+  .meters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .meter { background: #000; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .meter span { display: block; font-family: var(--pixel); font-size: 10px; color: var(--dim); }
+  .meter strong { font-family: var(--pixel); font-size: 15px; font-weight: 400; }
+  .meter.big strong { color: var(--emo); transition: color .6s; }
+  .bar { height: 6px; background: #161616; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 50%; background: var(--emo); transition: background .6s; }
+
+  .log {
+    height: 340px; overflow-y: auto; background: #000; border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px; font-size: 12.5px; line-height: 1.65; scrollbar-color: #333 #000;
+  }
+  .ln { display: grid; grid-template-columns: 58px 62px 1fr; gap: 6px; animation: in .25s ease-out; }
+  .ln time { color: #444; }
+  .tag { font-family: var(--pixel); font-size: 10px; font-weight: 400; padding-top: 2px; }
+  .t-sense { color: var(--cyan); } .t-reflex { color: var(--amber); } .t-cortex { color: var(--pink); }
+  .t-act { color: var(--phosphor); } .t-state { color: var(--violet); } .t-self { color: #ddd; }
+  .ln.dim span { color: var(--dim); }
+  .cursor::after { content: '▋'; color: var(--pink); animation: blink .8s steps(1) infinite; }
+  pre.json {
+    margin: 0; background: #000; border: 1px solid var(--line); border-radius: 8px; padding: 10px;
+    font-size: 12px; color: var(--phosphor); overflow-x: auto; max-height: 220px;
+  }
+  .label { font-family: var(--pixel); font-size: 10px; color: var(--dim); margin-bottom: -8px; }
+
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes in { from { opacity: 0; transform: translateX(-4px); } }
+
+  /* ---------- device-only mode ---------- */
+  body.device-only .mast, body.device-only .controls, body.device-only .brain { display: none; }
+  body.device-only .lab { grid-template-columns: 1fr; grid-template-areas: "stage"; min-height: 100vh; align-content: center; }
+  .float-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 5; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<main class="lab">
+  <header class="mast">
+    <h1>TUFFY<span>.exe</span></h1>
+    <p>입력을 받으면 뇌(brain)가 스스로 생각하고, 감정·움직임 상태값을 바꿔 행동하는 데스크탑 친구. 비주얼 프로토타입 v0.</p>
+    <div class="stickers">
+      <span class="sticker">466×466 AMOLED</span>
+      <span class="sticker">BRAIN: HYBRID</span>
+      <span class="sticker">NO EYES. ONLY CHORDS.</span>
+    </div>
+  </header>
+
+  <section class="stage" aria-label="Tuffy 디바이스">
+    <div class="bezel">
+      <svg id="device" viewBox="0 0 466 466" role="img" aria-label="원형 화면 속 Tuffy">
+        <defs>
+          <clipPath id="screen"><circle cx="233" cy="233" r="233" /></clipPath>
+          <radialGradient id="aura">
+            <stop offset="0" stop-color="var(--emo)" stop-opacity=".22" />
+            <stop offset="1" stop-color="var(--emo)" stop-opacity="0" />
+          </radialGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <path id="arcTop" d="M 47 233 A 186 186 0 0 1 419 233" />
+          <path id="arcBot" d="M 33 233 A 200 200 0 0 0 433 233" />
+        </defs>
+        <g clip-path="url(#screen)">
+          <rect width="466" height="466" fill="#000" />
+          <g id="drift">
+            <g id="ticks"></g>
+            <circle id="arousalArc" cx="233" cy="233" r="224" fill="none" stroke="var(--emo)" stroke-width="3"
+              stroke-linecap="round" transform="rotate(-90 233 233)" filter="url(#glow)" />
+            <text class="ring-text" fill="var(--emo)"><textPath id="topText" href="#arcTop" startOffset="50%" text-anchor="middle">CALM · IDLE</textPath></text>
+            <text class="say-text" fill="#e9e4da"><textPath id="sayText" href="#arcBot" startOffset="50%" text-anchor="middle">· · ·</textPath></text>
+            <circle id="auraCircle" cx="233" cy="233" r="150" fill="url(#aura)" />
+            <g id="notes"></g>
+            <g id="rig">
+              <g id="legs"></g>
+              <g id="shell"></g>
+            </g>
+            <g id="dots" opacity="0"></g>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <p class="sr" aria-live="polite" id="sayLive"></p>
+
+    <div class="controls">
+      <div class="group">
+        <h2><span class="prio">P1</span> 텍스트 대화</h2>
+        <form class="chat" id="chatForm">
+          <label class="sr" for="chatInput">Tuffy에게 할 말</label>
+          <input id="chatInput" maxlength="140" autocomplete="off" placeholder="Tuffy에게 말 걸기… (예: 오늘 버그 때문에 힘들어)" />
+          <button class="btn primary" type="submit">보내기</button>
+        </form>
+      </div>
+      <div class="group">
+        <h2><span class="prio">P2</span> 데스크탑 신호 <small>(시뮬레이션)</small></h2>
+        <div class="chips">
+          <button class="btn chip" data-signal="return">자리 복귀<small>.60</small></button>
+          <button class="btn chip" data-signal="late">새벽 3시<small>.70</small></button>
+          <button class="btn chip" data-signal="focus">VS Code 포커스<small>.35</small></button>
+          <button class="btn chip" data-signal="clipboard">클립보드 복사<small>.30</small></button>
+          <button class="btn chip" data-signal="idle">유휴 10분<small>.40</small></button>
+        </div>
+      </div>
+      <div class="group">
+        <h2><span class="prio">P3</span> 마이크 <small>(시뮬레이션)</small></h2>
+        <div class="chips">
+          <button class="btn chip" data-signal="hum">허밍<small>.55</small></button>
+          <button class="btn chip" data-signal="loud">큰 소리<small>.30</small></button>
+        </div>
+      </div>
+      <div class="toggles">
+        <button class="btn" id="soundBtn" aria-pressed="false">화음 소리 끔</button>
+        <button class="btn" id="deviceBtn" aria-pressed="false">디바이스만 보기</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="brain" aria-label="Tuffy의 뇌">
+    <div class="brain-head">
+      <h2>tuffy.brain</h2>
+      <span class="pill live">reflex <b>rules</b></span>
+      <span class="pill mock">cortex <b>openrouter-proxy</b> · mock</span>
+      <span class="pill">escalate ≥ <b>0.50</b></span>
+    </div>
+    <div class="meters">
+      <div class="meter big"><span>EMOTION</span><strong id="mEmo">CALM</strong></div>
+      <div class="meter big"><span>MOTION</span><strong id="mMotion">IDLE</strong></div>
+      <div class="meter"><span>VALENCE</span><div class="bar"><i id="bVal"></i></div></div>
+      <div class="meter"><span>AROUSAL</span><div class="bar"><i id="bAro"></i></div></div>
+      <div class="meter"><span>ENERGY</span><div class="bar"><i id="bEnergy"></i></div></div>
+      <div class="meter"><span>TURNS TODAY</span><strong id="mTurns">0</strong></div>
+    </div>
+    <div class="log" id="log" role="log" aria-label="사고 로그"></div>
+    <div class="label">LAST CORTEX OUTPUT · state contract</div>
+    <pre class="json" id="json">{ "waiting": "첫 입력" }</pre>
+  </aside>
+</main>
+<button class="btn float-toggle" id="exitDevice" hidden>패널 보기</button>
+
+<script>
+'use strict';
+const $ = (s) => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const TAU = Math.PI * 2;
+const CX = 233;
+const ESCALATE_AT = 0.5;
+const HOLD_MS = 5200;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= state vocabulary ================= */
+const EMOTIONS = {
+  calm:    { label: 'CALM',    ko: '평온', color: '#6fe7ff', v: .6,  a: .3, chord: 'Cmaj7',  hz: [261.6, 329.6, 392, 493.9] },
+  curious: { label: 'CURIOUS', ko: '궁금', color: '#ffc857', v: .6,  a: .6, chord: 'Dsus4↑', hz: [293.7, 392, 440] },
+  amaze:   { label: 'AMAZE',   ko: '신남', color: '#ff6fb5', v: .95, a: .9, chord: 'C↑↑',    hz: [523.3, 659.3, 784, 1046.5] },
+  worried: { label: 'WORRIED', ko: '걱정', color: '#ff8a5b', v: .25, a: .7, chord: 'Am',     hz: [220, 261.6, 329.6] },
+  sleepy:  { label: 'SLEEPY',  ko: '졸림', color: '#8c9bff', v: .5,  a: .1, chord: 'G5↓',    hz: [196, 146.8] },
+  focus:   { label: 'FOCUS',   ko: '집중', color: '#7cffb2', v: .6,  a: .5, chord: 'F5',     hz: [349.2, 523.8] },
+};
+const MOTIONS = {
+  idle:    { bend: .55, sway: .08, hz: .45, spin: 0,   hop: 0,  travel: 0, tap: 0, wave: 0, size: 1 },
+  perk:    { bend: .12, sway: .04, hz: 3,   spin: 0,   hop: .3, travel: 0, tap: 0, wave: 0, size: 1.04 },
+  think:   { bend: .85, sway: .03, hz: .3,  spin: .35, hop: 0,  travel: 0, tap: 1, wave: 0, size: 1 },
+  bounce:  { bend: .35, sway: .2,  hz: 2.2, spin: 0,   hop: 1,  travel: 0, tap: 0, wave: 0, size: 1 },
+  scuttle: { bend: .6,  sway: .38, hz: 3.2, spin: 0,   hop: 0,  travel: 1, tap: 0, wave: 0, size: 1 },
+  wave:    { bend: .5,  sway: .06, hz: .6,  spin: 0,   hop: 0,  travel: 0, tap: 0, wave: 1, size: 1 },
+  shiver:  { bend: 1.3, sway: .05, hz: 9,   spin: 0,   hop: 0,  travel: 0, tap: 0, wave: 0, size: .95 },
+  curl:    { bend: 2.35, sway: .02, hz: .2, spin: 0,   hop: 0,  travel: 0, tap: 0, wave: 0, size: .9 },
+};
+
+const state = { emotion: 'calm', motion: 'idle', energy: .9, turns: 0 };
+const brain = { busy: false, queue: [], lastInputAt: Date.now(), lastSelfAt: Date.now(), holdUntil: 0 };
+
+/* ================= device drawing ================= */
+const el = (tag, attrs = {}, parent) => {
+  const n = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (parent) parent.appendChild(n);
+  return n;
+};
+
+function drawTicks() {
+  const g = $('#ticks');
+  for (let i = 0; i < 60; i++) {
+    const a = (i / 60) * TAU;
+    const r1 = i % 5 === 0 ? 212 : 217;
+    el('line', {
+      x1: CX + Math.cos(a) * r1, y1: CX + Math.sin(a) * r1,
+      x2: CX + Math.cos(a) * 221, y2: CX + Math.sin(a) * 221,
+      stroke: i % 5 === 0 ? '#3a3a3a' : '#1c1c1c', 'stroke-width': 2, 'stroke-linecap': 'round',
+    }, g);
+  }
+}
+
+// deterministic jitter so the carapace looks hand-chipped but stable across reloads
+const rand = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+
+function drawShell() {
+  const g = $('#shell');
+  const pts = Array.from({ length: 10 }, (_, k) => {
+    const a = (k * 36 - 90) * Math.PI / 180 + (rand() - .5) * .12;
+    const r = (k % 2 === 0 ? 56 : 46) * (1 + (rand() - .5) * .12);
+    return [Math.cos(a) * r, Math.sin(a) * r, a];
+  });
+  const c = [-3, -5];
+  pts.forEach((p, k) => {
+    const q = pts[(k + 1) % 10];
+    const lit = Math.cos((p[2] + q[2]) / 2 + 2.3); // light from upper-left
+    const tone = Math.round(98 + lit * 34);
+    el('polygon', {
+      points: `${c} ${p[0]},${p[1]} ${q[0]},${q[1]}`,
+      fill: `rgb(${tone + 14},${tone + 4},${tone - 12})`, stroke: '#2a241f', 'stroke-width': 1.5, 'stroke-linejoin': 'round',
+    }, g);
+  });
+  el('polygon', { points: pts.map((p) => `${p[0]},${p[1]}`).join(' '), fill: 'none', stroke: '#14110e', 'stroke-width': 3, 'stroke-linejoin': 'round' }, g);
+  for (let i = 0; i < 9; i++) {
+    const a = rand() * TAU, r = 14 + rand() * 28;
+    el('circle', { cx: Math.cos(a) * r, cy: Math.sin(a) * r, r: 1 + rand() * 1.8, fill: '#3b332b', opacity: .7 }, g);
+  }
+  el('circle', { cx: c[0], cy: c[1], r: 9, fill: '#0f0c0a' }, g);
+  el('circle', { id: 'vent', cx: c[0], cy: c[1], r: 4.5, fill: 'var(--emo)', filter: 'url(#glow)' }, g);
+}
+
+const legs = [];
+function drawLegs() {
+  const g = $('#legs');
+  for (let i = 0; i < 5; i++) {
+    const lg = el('g', { transform: `rotate(${i * 72 - 90})` }, g);
+    legs.push({
+      outline: el('path', { fill: 'none', stroke: '#14110e', 'stroke-width': 17, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, lg),
+      limb: el('path', { fill: 'none', stroke: '#8c7f6d', 'stroke-width': 12, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, lg),
+      fingers: el('path', { fill: 'none', stroke: '#b7a993', 'stroke-width': 4, 'stroke-linecap': 'round' }, lg),
+      knee: el('circle', { r: 5.5, fill: '#b7a993', stroke: '#14110e', 'stroke-width': 2 }, lg),
+    });
+  }
+}
+
+const dots = [];
+function drawDots() {
+  for (let i = 0; i < 3; i++) dots.push(el('circle', { r: 4, fill: 'var(--emo)', filter: 'url(#glow)' }, $('#dots')));
+}
+
+/* ================= animation rig ================= */
+const rig = { ...MOTIONS.idle, spinAngle: 0, v: .6, a: .3 };
+const notes = [];
+let last = performance.now();
+
+function poseLeg(leg, i, t) {
+  const amp = REDUCED ? .4 : 1;
+  const L1 = 52, L2 = 46, hip = 32;
+  let th1 = rig.sway * amp * Math.sin(t * TAU * rig.hz + i * 1.26);
+  let bend = rig.bend + rig.tap * .6 * Math.max(0, Math.sin(t * 7 - i * 1.25)) ** 2;
+  if (i === 0 && rig.wave > .01) {
+    th1 += rig.wave * (-0.9 + .45 * Math.sin(t * 9) * amp);
+    bend *= 1 - rig.wave * .8;
+  }
+  const kx = hip + L1 * Math.cos(th1), ky = L1 * Math.sin(th1);
+  const th2 = th1 + bend;
+  const hx = kx + L2 * Math.cos(th2), hy = ky + L2 * Math.sin(th2);
+  const d = `M${hip},0 L${kx.toFixed(1)},${ky.toFixed(1)} L${hx.toFixed(1)},${hy.toFixed(1)}`;
+  leg.outline.setAttribute('d', d);
+  leg.limb.setAttribute('d', d);
+  leg.knee.setAttribute('cx', kx.toFixed(1));
+  leg.knee.setAttribute('cy', ky.toFixed(1));
+  leg.fingers.setAttribute('d', [-.6, 0, .6].map((o) =>
+    `M${hx.toFixed(1)},${hy.toFixed(1)} l${(Math.cos(th2 + o) * 8).toFixed(1)},${(Math.sin(th2 + o) * 8).toFixed(1)}`).join(' '));
+}
+
+function stepRig(dt) {
+  const target = MOTIONS[state.motion];
+  const k = 1 - Math.exp(-dt * 6);
+  for (const key of Object.keys(target)) rig[key] += (target[key] - rig[key]) * k;
+  const emo = EMOTIONS[state.emotion];
+  rig.v += (emo.v - rig.v) * k * .5;
+  rig.a += (emo.a - rig.a) * k * .5;
+  if (target.spin > 0) rig.spinAngle += rig.spin * dt;
+  else {
+    // settle onto the nearest 5-fold symmetric pose instead of snapping back
+    const snap = Math.round(rig.spinAngle / (TAU / 5)) * (TAU / 5);
+    rig.spinAngle += (snap - rig.spinAngle) * k;
+  }
+}
+
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000);
+  last = now;
+  const t = now / 1000;
+  stepRig(dt);
+
+  const hop = rig.hop * .07 * Math.abs(Math.sin(t * Math.PI * 2.2));
+  const breath = .015 * Math.sin(t * TAU * .25);
+  const x = CX + rig.travel * 34 * Math.sin(t * 1.4);
+  $('#rig').setAttribute('transform',
+    `translate(${x.toFixed(1)} ${CX}) rotate(${(rig.spinAngle * 180 / Math.PI).toFixed(2)}) scale(${(rig.size + hop + breath).toFixed(3)})`);
+  legs.forEach((leg, i) => poseLeg(leg, i, t));
+
+  // AMOLED burn-in guard: whole scene orbits 2px per minute
+  $('#drift').setAttribute('transform', `translate(${(2 * Math.cos(t / 60 * TAU)).toFixed(2)} ${(2 * Math.sin(t / 60 * TAU)).toFixed(2)})`);
+  $('#vent').setAttribute('opacity', (.45 + .55 * (.5 + .5 * Math.sin(t * TAU * (.2 + rig.a * .6)))).toFixed(2));
+
+  const circ = TAU * 224;
+  $('#arousalArc').setAttribute('stroke-dasharray', `${(circ * rig.a).toFixed(1)} ${circ}`);
+  $('#auraCircle').setAttribute('r', (120 + rig.a * 50).toFixed(1));
+
+  dots.forEach((d, i) => {
+    const a = t * 2.4 + i * TAU / 3;
+    d.setAttribute('cx', (CX + Math.cos(a) * 96).toFixed(1));
+    d.setAttribute('cy', (CX + Math.sin(a) * 96).toFixed(1));
+  });
+
+  stepNotes(dt);
+  renderMeters();
+  requestAnimationFrame(frame);
+}
+
+/* ================= chord notes (Tuffy's voice) ================= */
+function spawnNotes(count) {
+  for (let i = 0; i < count; i++) {
+    const g = el('g', { fill: 'var(--emo)', stroke: 'var(--emo)', 'stroke-width': 2.4, 'stroke-linecap': 'round', filter: 'url(#glow)' }, $('#notes'));
+    el('ellipse', { cx: 0, cy: 0, rx: 5.5, ry: 4, transform: 'rotate(-20)', stroke: 'none' }, g);
+    el('path', { d: 'M4.5 -1 V-20 q8 4 6 12', fill: 'none' }, g);
+    notes.push({ g, a: Math.random() * TAU, r: 50, speed: 55 + Math.random() * 40, life: 0, delay: i * .18, spin: (Math.random() - .5) * 60 });
+  }
+}
+
+function stepNotes(dt) {
+  for (let i = notes.length - 1; i >= 0; i--) {
+    const n = notes[i];
+    if (n.delay > 0) { n.delay -= dt; n.g.setAttribute('opacity', 0); continue; }
+    n.life += dt;
+    n.r += n.speed * dt;
+    const op = Math.max(0, 1 - n.life / 1.9);
+    n.g.setAttribute('transform', `translate(${(CX + Math.cos(n.a) * n.r).toFixed(1)} ${(CX + Math.sin(n.a) * n.r).toFixed(1)}) rotate(${(n.spin * n.life).toFixed(1)})`);
+    n.g.setAttribute('opacity', op.toFixed(2));
+    if (op <= 0) { n.g.remove(); notes.splice(i, 1); }
+  }
+}
+
+let audio = null;
+function playChord(hz) {
+  if (!audio) return;
+  hz.forEach((f, i) => {
+    const o = audio.createOscillator(), g = audio.createGain();
+    const t0 = audio.currentTime + i * .09;
+    o.type = 'triangle';
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(.06, t0 + .02);
+    g.gain.exponentialRampToValueAtTime(.0001, t0 + .55);
+    o.connect(g).connect(audio.destination);
+    o.start(t0);
+    o.stop(t0 + .6);
+  });
+}
+
+/* ================= UI readouts ================= */
+let lastMeterKey = '';
+function renderMeters() {
+  const key = [state.emotion, state.motion, rig.v.toFixed(2), rig.a.toFixed(2), state.energy.toFixed(2), state.turns].join('|');
+  if (key === lastMeterKey) return;
+  lastMeterKey = key;
+  $('#mEmo').textContent = EMOTIONS[state.emotion].label;
+  $('#mMotion').textContent = state.motion.toUpperCase();
+  $('#bVal').style.width = `${rig.v * 100}%`;
+  $('#bAro').style.width = `${rig.a * 100}%`;
+  $('#bEnergy').style.width = `${state.energy * 100}%`;
+  $('#mTurns').textContent = state.turns;
+}
+
+const clock = () => new Date().toTimeString().slice(0, 8);
+function log(tag, text, { dim = false, typing = false } = {}) {
+  const box = $('#log');
+  const ln = document.createElement('div');
+  ln.className = `ln${dim ? ' dim' : ''}`;
+  const time = document.createElement('time');
+  time.textContent = clock();
+  const b = document.createElement('b');
+  b.className = `tag t-${tag.toLowerCase()}`;
+  b.textContent = tag;
+  const span = document.createElement('span');
+  span.textContent = typing ? '' : text;
+  ln.append(time, b, span);
+  box.appendChild(ln);
+  while (box.children.length > 140) box.firstChild.remove();
+  box.scrollTop = box.scrollHeight;
+  return span;
+}
+
+async function typeInto(span, text) {
+  span.classList.add('cursor');
+  for (let i = 1; i <= text.length; i++) {
+    span.textContent = text.slice(0, i);
+    $('#log').scrollTop = $('#log').scrollHeight;
+    await sleep(18);
+  }
+  span.classList.remove('cursor');
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+let sayTimer = 0;
+function speak(text) {
+  const fit = text.length > 24 ? `${text.slice(0, 23)}…` : text;
+  $('#sayText').textContent = fit;
+  $('#sayLive').textContent = text;
+  clearTimeout(sayTimer);
+  sayTimer = setTimeout(() => { $('#sayText').textContent = '· · ·'; }, 7000);
+}
+
+/* ================= state mutation ================= */
+function setState({ emotion = state.emotion, motion = state.motion }, hold = HOLD_MS) {
+  const diff = [];
+  if (emotion !== state.emotion) diff.push(`emotion ${state.emotion}→${emotion}`);
+  if (motion !== state.motion) diff.push(`motion ${state.motion}→${motion}`);
+  state.emotion = emotion;
+  state.motion = motion;
+  brain.holdUntil = Date.now() + hold;
+  const color = EMOTIONS[emotion].color;
+  document.documentElement.style.setProperty('--emo', color);
+  $('#topText').textContent = `${EMOTIONS[emotion].label} · ${motion.toUpperCase()}`;
+  if (diff.length) log('STATE', diff.join(' · '));
+}
+
+const baseline = () => (state.emotion === 'sleepy' ? 'curl' : 'idle');
+
+/* ================= reflex layer (rules, instant) ================= */
+const REFLEX = {
+  text:      () => ({ salience: .8, motion: 'perk', note: '소리 감지 → 다리 쫙 (perk)' }),
+  return:    () => ({ salience: .6, motion: 'perk', note: '유휴 해제 → 고개 듦' }),
+  late:      () => ({ salience: .7, motion: 'perk', emotion: 'worried', note: '시계 03:00 → 경계' }),
+  focus:     () => ({ salience: .35, motion: 'think', emotion: 'focus', note: 'VS Code 포커스 → 집중 자세' }),
+  clipboard: () => ({ salience: .3, motion: 'perk', emotion: 'curious', note: '클립보드 변화 → 움찔' }),
+  idle:      () => ({ salience: .4, motion: 'idle', emotion: 'calm', note: '유휴 10분 → 조용히 대기', energy: -.1 }),
+  hum:       () => ({ salience: .55, motion: 'perk', note: '피치 있는 소리 → 귀 기울임' }),
+  loud:      () => ({ salience: .3, motion: 'shiver', emotion: 'worried', note: '큰 소리 → 움찔 떨림' }),
+  self:      () => ({ salience: .55, motion: 'idle', note: '자기 점검 틱' }),
+};
+
+function sense(kind, payload = '') {
+  if (kind !== 'self') {
+    brain.lastInputAt = Date.now();
+    if (state.emotion === 'sleepy') {
+      state.energy = Math.min(1, state.energy + .35);
+      log('REFLEX', '수면 중 입력 → 기상');
+      setState({ emotion: 'calm', motion: 'perk' }, 900);
+    }
+  }
+  log(kind === 'self' ? 'SELF' : 'SENSE', describe(kind, payload));
+  const r = REFLEX[kind]();
+  if (r.energy) state.energy = Math.max(0, state.energy + r.energy);
+  log('REFLEX', `${r.note} · salience ${r.salience.toFixed(2)}`);
+  const escalate = r.salience >= ESCALATE_AT;
+  setState({ emotion: r.emotion, motion: r.motion }, escalate ? 900 : 3500);
+  if (!escalate) {
+    log('CORTEX', `skip (${r.salience.toFixed(2)} < ${ESCALATE_AT.toFixed(2)}) · 반사만으로 충분`, { dim: true });
+    return;
+  }
+  brain.queue.push({ kind, payload });
+  if (brain.busy) log('CORTEX', `busy → 대기열 ${brain.queue.length}`, { dim: true });
+  else drainQueue();
+}
+
+function describe(kind, payload) {
+  const map = {
+    text: `text "${payload}"`, return: 'desktop.idle_end (42분 부재)', late: 'desktop.clock 03:12',
+    focus: 'desktop.focus "Visual Studio Code"', clipboard: 'desktop.clipboard (text, 86B)',
+    idle: 'desktop.idle 600s', hum: 'mic.pitch 220Hz · 1.8s', loud: 'mic.peak -6dBFS', self: `quiet ${idleSec()}s · energy ${pct(state.energy)}`,
+  };
+  return map[kind];
+}
+
+/* ================= cortex layer (LLM, mocked) ================= */
+async function drainQueue() {
+  brain.busy = true;
+  while (brain.queue.length) {
+    const job = brain.queue.shift();
+    await cortex(job.kind, job.payload);
+  }
+  brain.busy = false;
+}
+
+async function cortex(kind, payload) {
+  setState({ motion: 'think' }, 60_000);
+  $('#dots').setAttribute('opacity', 1);
+  log('CORTEX', 'POST openrouter-proxy /api/chat · model=text (mock)', { dim: true });
+  await sleep(450 + Math.random() * 400);
+  const out = kind === 'text' ? thinkText(payload) : thinkSignal(kind);
+  for (const line of out.thought) {
+    await typeInto(log('CORTEX', line, { typing: true }), line);
+    await sleep(120);
+  }
+  $('#dots').setAttribute('opacity', 0);
+  $('#json').textContent = JSON.stringify(out, null, 2);
+  act(out);
+}
+
+function act(out) {
+  if (out.source !== 'self') state.turns += 1;
+  state.energy = Math.min(1, state.energy + .08);
+  setState({ emotion: out.emotion, motion: out.motion });
+  log('ACT', `say "${out.say}" · chord ${EMOTIONS[out.emotion].chord} · intensity ${out.intensity}`);
+  speak(out.say);
+  spawnNotes(Math.round(2 + out.intensity * 6));
+  playChord(EMOTIONS[out.emotion].hz);
+}
+
+const TEXT_RULES = [
+  { re: /잘\s?자|졸려|자야|굿밤|good ?night/i, emotion: 'sleepy', motion: 'curl', tone: '휴식', score: .5,
+    say: '자. 나 지켜봐. 안전해.' },
+  { re: /힘들|피곤|짜증|우울|슬퍼|버그|에러|망했|안\s?돼|sad|tired/i, emotion: 'worried', motion: 'shiver', tone: '부정', score: .22,
+    say: '너 힘들어, 질문? 나 여기. 같이 고쳐.' },
+  { re: /고마|좋아|최고|사랑|귀여|잘했|성공|thanks|love/i, emotion: 'amaze', motion: 'bounce', tone: '긍정', score: .91,
+    say: '기뻐 기뻐 기뻐! 너 좋은 친구.' },
+  { re: /안녕|하이|반가|hello|\bhi\b|헬로/i, emotion: 'calm', motion: 'wave', tone: '인사', score: .7,
+    say: '친구 왔다. 손 흔들어. 좋아.' },
+  { re: /코드|과학|실험|계산|빌드|배포|커밋|리뷰/i, emotion: 'focus', motion: 'think', tone: '작업', score: .6,
+    say: '일 한다. 나 계산 도와, 질문?' },
+  { re: /\?|뭐|왜|어떻게|언제|누구/i, emotion: 'curious', motion: 'scuttle', tone: '질문', score: .6,
+    say: '좋은 질문. 과학으로 알아내자.' },
+];
+
+function thinkText(text) {
+  const rule = TEXT_RULES.find((r) => r.re.test(text)) ||
+    { emotion: 'curious', motion: 'think', tone: '모름', score: .5, say: '이해 못 함. 다시 말해, 질문?' };
+  const short = text.length > 16 ? `${text.slice(0, 15)}…` : text;
+  return {
+    source: 'text',
+    thought: [
+      `입력 해석: "${short}" (${text.length}자)`,
+      `어조 추정: ${rule.tone} ${rule.score.toFixed(2)}`,
+      `기억 조회: 오늘 대화 ${state.turns + 1}번째`,
+      `결론: ${EMOTIONS[rule.emotion].ko} → ${rule.motion}, 화음 ${EMOTIONS[rule.emotion].chord}`,
+    ],
+    emotion: rule.emotion, motion: rule.motion, intensity: rule.score, say: rule.say,
+  };
+}
+
+const SIGNAL_THOUGHTS = {
+  return: { emotion: 'amaze', motion: 'bounce', intensity: .85, say: '돌아왔다! 좋아 좋아 좋아!',
+    thought: ['유휴 해제: 부재 42분', '친구 복귀 = 좋은 일', '결론: 신남 → bounce'] },
+  late: { emotion: 'worried', motion: 'scuttle', intensity: .6, say: '새벽 3시. 인간 자야 해, 질문?',
+    thought: ['시스템 시계 03:12', '인간 수면 주기 위반 감지', '결론: 걱정 → 서성임(scuttle)'] },
+  hum: { emotion: 'amaze', motion: 'bounce', intensity: .75, say: '너 노래해! 나랑 같은 말, 질문?',
+    thought: ['피치 220Hz, 화음 패턴 유사', '리시언 언어와 닮음!', '결론: 신남 → 화음으로 대답'] },
+};
+
+const SELF_THOUGHTS = [
+  () => ({ emotion: 'curious', motion: 'scuttle', intensity: .35, say: '혼자 실험. 과학 과학.',
+    thought: [`주변 조용함 ${idleSec()}초`, '친구 바쁨으로 추정', '결론: 혼자 실험하며 돌아다님'] }),
+  () => ({ emotion: 'calm', motion: 'wave', intensity: .3, say: '나 여기 있어, 질문?',
+    thought: [`에너지 ${pct(state.energy)}`, '존재 알림 필요도 낮음', '결론: 작게 손 흔듦'] }),
+  () => ({ emotion: 'amaze', motion: 'bounce', intensity: .4, say: '친구 생각. 좋아.',
+    thought: [`오늘 대화 ${state.turns}회 회상`, '기억 평균 감정: 긍정', '결론: 혼자 신남'] }),
+];
+
+function thinkSignal(kind) {
+  const base = kind === 'self' ? SELF_THOUGHTS[Math.floor(Math.random() * SELF_THOUGHTS.length)]() : { ...SIGNAL_THOUGHTS[kind] };
+  return { source: kind, ...base };
+}
+
+const idleSec = () => Math.round((Date.now() - brain.lastInputAt) / 1000);
+const pct = (n) => `${Math.round(n * 100)}%`;
+
+/* ================= autonomy loop ================= */
+setInterval(() => {
+  state.energy = Math.max(0, state.energy - .004);
+  if (brain.busy) return;
+  const now = Date.now();
+  if (state.energy < .22 && state.emotion !== 'sleepy') {
+    log('SELF', `energy ${pct(state.energy)} 임계 미만`);
+    log('REFLEX', '저전력 → 몸 말기 (cortex 생략)');
+    setState({ emotion: 'sleepy', motion: 'curl' }, 0);
+    speak('졸려… 잠깐 잘게.');
+    return;
+  }
+  if (state.emotion !== 'sleepy' && idleSec() > 25 && now - brain.lastSelfAt > 25_000) {
+    brain.lastSelfAt = now;
+    sense('self');
+    return;
+  }
+  if (now > brain.holdUntil && state.motion !== baseline()) setState({ motion: baseline() }, 0);
+}, 1000);
+
+/* ================= wiring ================= */
+$('#chatForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const input = $('#chatInput');
+  const text = input.value.trim().slice(0, 140);
+  if (!text) return;
+  input.value = '';
+  sense('text', text);
+});
+document.querySelectorAll('[data-signal]').forEach((b) => b.addEventListener('click', () => sense(b.dataset.signal)));
+
+$('#soundBtn').addEventListener('click', (e) => {
+  const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+  if (on && !audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if (audio) on ? audio.resume() : audio.suspend();
+  e.currentTarget.setAttribute('aria-pressed', on);
+  e.currentTarget.textContent = on ? '화음 소리 켬' : '화음 소리 끔';
+  if (on) playChord(EMOTIONS[state.emotion].hz);
+});
+
+function setDeviceOnly(on) {
+  document.body.classList.toggle('device-only', on);
+  $('#exitDevice').hidden = !on;
+}
+$('#deviceBtn').addEventListener('click', () => setDeviceOnly(true));
+$('#exitDevice').addEventListener('click', () => setDeviceOnly(false));
+
+drawTicks();
+drawLegs();
+drawShell();
+drawDots();
+log('SELF', 'boot · reflex=rules · cortex=openrouter-proxy(mock) · escalate≥0.50');
+setState({ emotion: 'calm', motion: 'idle' }, 0);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

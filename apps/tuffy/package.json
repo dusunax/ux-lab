@@ -1,0 +1,26 @@
+{
+  "name": "tuffy",
+  "version": "0.1.0",
+  "private": true,
+  "description": "입력을 받아 스스로 생각하고 감정·움직임 상태를 바꾸는 원형 데스크탑 캐릭터",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "icon": "electron scripts/gen-icon.mjs",
+    "dist:mac": "electron-vite build && electron-builder --mac"
+  },
+  "devDependencies": {
+    "@fontsource/nanum-gothic-coding": "^5.2.0",
+    "@fontsource/silkscreen": "^5.2.0",
+    "@types/node": "^26.6.3",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^5.0.0",
+    "typescript": "^7.0.2",
+    "vite": "^7.3.6",
+    "vitest": "^5.0.2"
+  }
+}
