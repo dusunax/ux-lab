@@ -33,9 +33,9 @@
 
 <table>
   <tr>
-    <td align="center"><!-- 캡처 자리: screenshots/calm.png (width 180) -->[캡처 자리: 평온]<br /><sub>CALM · IDLE</sub></td>
-    <td align="center"><!-- 캡처 자리: screenshots/amaze.png (width 180) -->[캡처 자리: 신남]<br /><sub>AMAZE · BOUNCE</sub></td>
-    <td align="center"><!-- 캡처 자리: screenshots/sleepy.png (width 180) -->[캡처 자리: 졸림]<br /><sub>SLEEPY · CURL</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/e3ff6f41-77e7-486a-afcc-ed1bb5208a03" width="180" alt="평온" /><br /><sub>CALM · IDLE</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/5fa25f14-f183-4f12-9e47-e6cf1e25a925" width="180" alt="신남" /><br /><sub>AMAZE · BOUNCE</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/aa3a8767-4927-4b2e-9930-1b37dfd66e24" width="180" alt="졸림" /><br /><sub>SLEEPY · CURL</sub></td>
   </tr>
 </table>
 

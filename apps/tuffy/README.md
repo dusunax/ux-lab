@@ -28,20 +28,20 @@
 
 <table>
   <tr>
-    <td align="center"><!-- 캡처 자리: docs/screenshots/calm.png (width 220) -->[캡처 자리: 평온한 터피]<br /><sub><b>CALM · IDLE</b><br />숨구멍만 천천히 깜빡</sub></td>
-    <td align="center"><!-- 캡처 자리: docs/screenshots/wave.png (width 220) -->[캡처 자리: 손 흔드는 터피]<br /><sub><b>CALM · WAVE</b><br />"친구 왔다. 손 흔들어. 좋아."</sub></td>
-    <td align="center"><!-- 캡처 자리: docs/screenshots/amaze.png (width 220) -->[캡처 자리: 신난 터피]<br /><sub><b>AMAZE · BOUNCE</b><br />화음 음표를 뿌리며 통통</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/e3ff6f41-77e7-486a-afcc-ed1bb5208a03" width="220" alt="평온한 터피" /><br /><sub><b>CALM · IDLE</b><br />숨구멍만 천천히 깜빡</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/fa7191c2-a5b8-4368-8df9-1d3207f4cf33" width="220" alt="손 흔드는 터피" /><br /><sub><b>CALM · WAVE</b><br />"친구 왔다. 손 흔들어. 좋아."</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/5fa25f14-f183-4f12-9e47-e6cf1e25a925" width="220" alt="신난 터피" /><br /><sub><b>AMAZE · BOUNCE</b><br />화음 음표를 뿌리며 통통</sub></td>
   </tr>
   <tr>
-    <td align="center"><!-- 캡처 자리: docs/screenshots/thinking.png (width 220) -->[캡처 자리: 생각 중인 터피]<br /><sub><b>THINK</b><br />LLM을 기다리는 동안 "생각 중 · · ·"</sub></td>
-    <td align="center"><!-- 캡처 자리: docs/screenshots/worried.png (width 220) -->[캡처 자리: 걱정하는 터피]<br /><sub><b>WORRIED · SCUTTLE</b><br />새벽 3시엔 서성이며 걱정</sub></td>
-    <td align="center"><!-- 캡처 자리: docs/screenshots/sleepy.png (width 220) -->[캡처 자리: 잠든 터피]<br /><sub><b>SLEEPY · CURL</b><br />에너지가 떨어지면 몸을 말고 잠</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6b3008b9-7579-4540-8efa-2d8e0037ceb0" width="220" alt="생각 중인 터피" /><br /><sub><b>THINK</b><br />LLM을 기다리는 동안 "생각 중 · · ·"</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/0e9a4dd8-d1a8-4410-960d-4f05227b5b5f" width="220" alt="걱정하는 터피" /><br /><sub><b>WORRIED · SCUTTLE</b><br />새벽 3시엔 서성이며 걱정</sub></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/aa3a8767-4927-4b2e-9930-1b37dfd66e24" width="220" alt="잠든 터피" /><br /><sub><b>SLEEPY · CURL</b><br />에너지가 떨어지면 몸을 말고 잠</sub></td>
   </tr>
 </table>
 
 ## 뇌 콘솔
 
-<!-- 캡처 자리: docs/screenshots/console.png (width 440) -->[캡처 자리: tuffy.brain 콘솔]
+<img src="https://github.com/user-attachments/assets/2c8d2b77-272e-4c92-b9b8-3c1f2ce1da4e" width="440" align="right" alt="tuffy.brain 콘솔" />
 
 터피가 무엇을 듣고 어떻게 생각했는지 그대로 보여 주는 개발자 창이다.
 
