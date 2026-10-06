@@ -4,3 +4,6 @@
 out/
 dist/
 .env
+
+# 스크린샷은 저장소에 넣지 않는다 (PR 본문에 직접 첨부, README는 자리만)
+docs/screenshots/

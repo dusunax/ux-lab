@@ -33,9 +33,9 @@
 
 <table>
   <tr>
-    <td align="center"><img src="screenshots/calm.png" width="180" alt="평온" /><br /><sub>CALM · IDLE</sub></td>
-    <td align="center"><img src="screenshots/amaze.png" width="180" alt="신남" /><br /><sub>AMAZE · BOUNCE</sub></td>
-    <td align="center"><img src="screenshots/sleepy.png" width="180" alt="졸림" /><br /><sub>SLEEPY · CURL</sub></td>
+    <td align="center"><!-- 캡처 자리: screenshots/calm.png (width 180) -->[캡처 자리: 평온]<br /><sub>CALM · IDLE</sub></td>
+    <td align="center"><!-- 캡처 자리: screenshots/amaze.png (width 180) -->[캡처 자리: 신남]<br /><sub>AMAZE · BOUNCE</sub></td>
+    <td align="center"><!-- 캡처 자리: screenshots/sleepy.png (width 180) -->[캡처 자리: 졸림]<br /><sub>SLEEPY · CURL</sub></td>
   </tr>
 </table>
 
