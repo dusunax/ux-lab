@@ -112,9 +112,9 @@ OpenRouter 알파 엔드포인트 `/api/alpha/decisions`를 사용합니다. 모
 }
 ```
 
-- 질문 타입: `choice`(선택지별 확률), `noul`(참/거짓 확률), `score`(0~1 점수)
+- 질문 타입: `choice`(선택지별 확률), `noul`(참/거짓 확률), `score`(0\~1 점수)
 - 응답: `{ answers: { action: { choice, probabilities, confidence } }, usage }`
-- 제한: questions 1~8개, state 8,000자 이하 → 위반 시 `400`
+- 제한: questions 1\~8개, state 8,000자 이하 → 위반 시 `400`
 - 알파 엔드포인트 특성상 응답이 간헐적으로 지연되어 20초 타임아웃 후 `504`를 반환합니다.
 - 사용처: `apps/cat-game`
 - 배포: cat-game용 인스턴스는 Vercel 프로젝트 `cat-game-proxy`로 운영 중이며, [cat-game-wheat-sigma.vercel.app](https://cat-game-wheat-sigma.vercel.app/)의 `VITE_PROXY_URL`이 이 인스턴스를 가리킵니다.
@@ -151,7 +151,7 @@ OpenRouter 무료 모델은 예고 없이 내려갑니다(`404`). GitHub Actions
 | JSON body 한도 | **20MB** |
 | 권장 클라이언트 전처리 | 최대 1024px 리사이즈 + JPEG quality 0.82 압축 |
 
-클라이언트에서 이미지를 압축하지 않고 원본을 그대로 전송하면 10MB 이미지가 base64로 ~13.3MB가 되어 한도 내에 들어오지만, 토큰 소비가 불필요하게 늘어납니다.  
+클라이언트에서 이미지를 압축하지 않고 원본을 그대로 전송하면 10MB 이미지가 base64로 \~13.3MB가 되어 한도 내에 들어오지만, 토큰 소비가 불필요하게 늘어납니다.  
 `fridge-recipe` 앱은 Canvas API로 전처리 후 전송합니다.
 
 ## 유의사항
