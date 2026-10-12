@@ -11,6 +11,10 @@ export type MonitoredSpace = {
 export type AppSettings = BubbleSettings & {
   monitoredSpaces: MonitoredSpace[];
   pollIntervalSec: number;
+  /** Gmail INBOX 새 수신 메일도 Bubble로 표시 */
+  gmailEnabled: boolean;
+  gmailLastMessageId?: string;
+  gmailLastMessageInternalDate?: string;
   /** 사용자 이미지(userData/custom-mascot.png)를 바꿀 때마다 증가. 캐시 무효화용 */
   customMascotVersion?: number;
 };
@@ -36,24 +40,29 @@ export type AppState = {
   monitoring: MonitoringState;
   connection: 'ok' | 'waiting';
   spaces: SpaceView[];
-  settings: Omit<AppSettings, 'monitoredSpaces'>;
+  gmail: { status: SpaceStatus; error?: string };
+  settings: Omit<AppSettings, 'monitoredSpaces' | 'gmailLastMessageId' | 'gmailLastMessageInternalDate'>;
 };
 
 export type BubbleMessage =
   | {
       kind: 'message';
+      source?: 'chat' | 'gmail';
       id: string; // Message.name
       spaceId: string;
       spaceName: string;
+      gmailMessageId?: string;
       sender: string;
       text: string;
       createTime: string;
     }
   | {
       kind: 'summary';
+      source?: 'chat' | 'gmail';
       id: string;
       spaceId: string;
       spaceName: string;
+      gmailMessageId?: string;
       count: number;
       createTime: string;
     };

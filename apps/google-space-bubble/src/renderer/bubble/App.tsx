@@ -86,7 +86,7 @@ export function App() {
 
   const open = useCallback(
     (item: BubbleMessage) => {
-      window.api.openSpace(item.spaceId);
+      window.api.openBubble(item);
       remove(item.id);
     },
     [remove],

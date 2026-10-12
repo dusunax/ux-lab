@@ -42,9 +42,9 @@ export function MessageBubble({ item, durationMs, paused, onExpire, onOpen }: Pr
         if (leaving && e.animationName === 'bubble-out') onExpire(item.id);
       }}
     >
-      <button className="bubble-body" onClick={() => onOpen(item)} title="Google Chat에서 열기">
+      <button className="bubble-body" onClick={() => onOpen(item)} title={item.source === 'gmail' ? 'Gmail에서 열기' : 'Google Chat에서 열기'}>
         <span className="bubble-space">
-          <span aria-hidden>💬</span> {item.spaceName}
+          <span aria-hidden>{item.source === 'gmail' ? '✉️' : '💬'}</span> {item.spaceName}
         </span>
         {item.kind === 'message' ? (
           <>

@@ -28,7 +28,12 @@ export function Settings({ state }: { state: AppState }) {
         </button>
       </header>
 
-      <StatusBar paused={paused} waiting={connection === 'waiting'} count={spaces.filter((s) => s.enabled).length} />
+      <StatusBar
+        paused={paused}
+        waiting={connection === 'waiting'}
+        count={spaces.filter((s) => s.enabled).length}
+        gmailEnabled={state.settings.gmailEnabled}
+      />
 
       <ul className="space-list">
         {spaces.length === 0 && (
@@ -50,6 +55,15 @@ export function Settings({ state }: { state: AppState }) {
 
       <AppearanceSettings settings={state.settings} />
 
+      {state.settings.gmailEnabled && state.gmail.status === 'error' && (
+        <p className="error small" role="alert">
+          Gmail: {state.gmail.error}
+          <button className="btn btn-ghost small inline-action" onClick={() => void window.api.retryGmail()}>
+            재시도
+          </button>
+        </p>
+      )}
+
       <footer className="settings-footer">
         <button className="btn" onClick={() => void window.api.testBubble()}>
           테스트 알림 보내기
@@ -66,12 +80,12 @@ export function Settings({ state }: { state: AppState }) {
   );
 }
 
-function StatusBar({ paused, waiting, count }: { paused: boolean; waiting: boolean; count: number }) {
+function StatusBar({ paused, waiting, count, gmailEnabled }: { paused: boolean; waiting: boolean; count: number; gmailEnabled: boolean }) {
   const [cls, label] =
     paused ? ['paused', '모니터링 일시정지됨']
-    : waiting ? ['waiting', 'Google Chat 연결 대기 중']
-    : count === 0 ? ['paused', '모니터링할 Space 없음']
-    : ['ok', `모니터링 중 · Space ${count}개`];
+    : waiting ? ['waiting', 'Google 연결 대기 중']
+    : count === 0 && !gmailEnabled ? ['paused', '모니터링할 Space 없음']
+    : ['ok', `모니터링 중 · Space ${count}개${gmailEnabled ? ' · Gmail' : ''}`];
   return (
     <p className={`status status-${cls}`} role="status">
       <span className="dot" aria-hidden />

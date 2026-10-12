@@ -1,5 +1,5 @@
 import type { BubbleSettings } from './bubble-settings';
-import type { AddSpaceResult, AppState, BubbleMessage } from './types';
+import type { AddSpaceResult, AppSettings, AppState, BubbleMessage } from './types';
 
 export const IPC = {
   // settings window → main
@@ -14,6 +14,7 @@ export const IPC = {
   retrySpace: 'space:retry',
   setMonitoring: 'monitoring:set',
   updateSettings: 'settings:update',
+  retryGmail: 'gmail:retry',
   testBubble: 'bubble:test',
   chooseCustomMascot: 'mascot:choose',
   getCustomMascot: 'mascot:get',
@@ -50,7 +51,8 @@ export type Api = {
   setSpaceEnabled(spaceId: string, enabled: boolean): Promise<void>;
   retrySpace(spaceId: string): Promise<void>;
   setMonitoring(running: boolean): Promise<void>;
-  updateSettings(patch: Partial<BubbleSettings>): Promise<void>;
+  updateSettings(patch: Partial<BubbleSettings & Pick<AppSettings, 'gmailEnabled'>>): Promise<void>;
+  retryGmail(): Promise<void>;
   testBubble(): Promise<void>;
   /** 파일 선택 창을 열어 사용자 이미지를 캐릭터로 지정 */
   chooseCustomMascot(): Promise<{ ok: true } | { ok: false; error?: string }>;
@@ -58,7 +60,7 @@ export type Api = {
   getCustomMascot(): Promise<string | null>;
 
   onBubble(cb: (payload: BubblePayload) => void): () => void;
-  openSpace(spaceId: string): void;
+  openBubble(item: BubbleMessage): void;
   setBubbleHover(hover: boolean): void;
   notifyBubbleEmpty(): void;
   notifyBubbleReady(): void;
