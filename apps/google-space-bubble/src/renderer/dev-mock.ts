@@ -15,7 +15,8 @@ export function installDevMock(): void {
     auth: mode === 'signedOut' ? { status: 'signedOut' } : { status: 'signedIn', email: 'user@example.com' },
     monitoring: 'running',
     connection: 'ok',
-    settings: { pollIntervalSec: 5, ...DEFAULT_BUBBLE_SETTINGS },
+    gmail: { status: 'ok' },
+    settings: { pollIntervalSec: 5, gmailEnabled: true, ...DEFAULT_BUBBLE_SETTINGS },
     spaces: [
       { spaceId: 'spaces/AAAA1111', spaceName: 'Gen.AI Front-end 알림', enabled: true, status: 'ok' },
       { spaceId: 'spaces/BBBB2222', spaceName: 'Gen.AI 소통', enabled: true, status: 'waiting' },
@@ -58,9 +59,10 @@ export function installDevMock(): void {
     retrySpace: noop,
     setMonitoring: async (running) => set({ monitoring: running ? 'running' : 'paused' }),
     updateSettings: async (patch) => set({ settings: { ...state.settings, ...patch } }),
+    retryGmail: noop,
     testBubble: noop,
     onBubble: (cb) => (bubbleSubs.add(cb), () => void bubbleSubs.delete(cb)),
-    openSpace: (id) => console.log('[mock] open', id),
+    openBubble: (item) => console.log('[mock] open', item),
     setBubbleHover: () => {},
     notifyBubbleEmpty: () => console.log('[mock] bubble empty'),
     notifyBubbleReady: () => {},
@@ -72,10 +74,12 @@ export function installDevMock(): void {
     document.documentElement.style.background = '#6b7280';
     const now = new Date().toISOString();
     const samples: BubbleMessage[] = [
-      { kind: 'message', id: 'm1', spaceId: 'spaces/AAAA1111', spaceName: 'Gen.AI Front-end 알림', sender: 'gitlab', text: '*배포 완료* production v1.4.2 배포가 완료되었습니다.', createTime: now },
-      { kind: 'message', id: 'm2', spaceId: 'spaces/BBBB2222', spaceName: 'Gen.AI 소통', sender: '김OO', text: '오늘 회의 자료 공유드립니다. 확인 부탁드려요!\n두 번째 줄\n세 번째 줄\n네 번째 줄은 잘려야 합니다', createTime: now },
+      { kind: 'message', source: 'chat', id: 'm1', spaceId: 'spaces/AAAA1111', spaceName: 'Gen.AI Front-end 알림', sender: 'gitlab', text: '*배포 완료* production v1.4.2 배포가 완료되었습니다.', createTime: now },
+      { kind: 'message', source: 'chat', id: 'm2', spaceId: 'spaces/BBBB2222', spaceName: 'Gen.AI 소통', sender: '김OO', text: '오늘 회의 자료 공유드립니다. 확인 부탁드려요!\n두 번째 줄\n세 번째 줄\n네 번째 줄은 잘려야 합니다', createTime: now },
+      { kind: 'message', source: 'gmail', id: 'gmail/abc123', spaceId: 'gmail', spaceName: 'Gmail', gmailMessageId: 'abc123', sender: '채용팀 <hr@example.com>', text: '인터뷰 일정 안내\n다음 주 화요일 오후 2시에 진행 가능합니다.', createTime: now },
       {
         kind: 'message',
+        source: 'chat',
         id: 'm-long',
         spaceId: 'spaces/AAAA1111',
         spaceName: 'Gen.AI Front-end 알림',
@@ -83,7 +87,7 @@ export function installDevMock(): void {
         text: Array.from({ length: 20 }, (_, i) => `${i + 1}번째 줄: 긴 코멘트 내용이 이어집니다.`).join('\n'),
         createTime: now,
       },
-      { kind: 'summary', id: 's1', spaceId: 'spaces/AAAA1111', spaceName: 'Gen.AI Front-end 알림', count: 12, createTime: now },
+      { kind: 'summary', source: 'chat', id: 's1', spaceId: 'spaces/AAAA1111', spaceName: 'Gen.AI Front-end 알림', count: 12, createTime: now },
     ];
     samples.forEach((m, i) =>
       setTimeout(

@@ -1,11 +1,11 @@
 # Space Bubble
 
-Google Chat Space의 새 메시지를 데스크톱 화면 우측 하단에 말풍선으로 알려주는 Electron 앱입니다.
+Google Chat Space의 새 메시지와 수신 Gmail을 데스크톱 화면 우측 하단에 말풍선으로 알려주는 Electron 앱입니다.
 명세는 [docs/spec.md](docs/spec.md)를 참고하세요.
 
 ## 준비
 
-1. GCP 설정: [docs/spec.md §0](docs/spec.md) (OAuth 클라이언트 유형: 데스크톱 앱)
+1. GCP 설정: [docs/spec.md §0](docs/spec.md) (OAuth 클라이언트 유형: 데스크톱 앱, External + 테스트 사용자, Google Chat API와 Gmail API 사용 설정)
 2. 루트에 `.env` 작성 (`.env.example` 참고, 커밋되지 않음)
 
 ux-lab 모노레포(pnpm workspace)의 앱입니다. 의존성은 레포 루트에서 설치합니다.
@@ -62,7 +62,7 @@ pnpm --filter google-space-bubble dist:win   # dist/Space-Bubble-Setup-<version>
 ## 구조
 
 ```text
-src/main/       OAuth, Token 저장(safeStorage), Chat API polling, 창/트레이 관리
+src/main/       OAuth, Token 저장(safeStorage), Chat/Gmail polling, 창/트레이 관리
 src/preload/    contextBridge로 window.api 노출
 src/renderer/   settings(로그인·설정 창), bubble(오버레이 창)
 src/shared/     타입, IPC 채널, Space ID 정규화
@@ -73,5 +73,5 @@ spike/          Phase 0 API 검증 스크립트
 
 `~/Library/Application Support/google-space-bubble/` (Windows: `%APPDATA%\google-space-bubble\`)
 
-- `settings.json`: Space 목록, 마지막 처리 메시지
+- `settings.json`: Space 목록, 마지막 처리 메시지, Gmail 알림 여부와 마지막 처리 메일
 - `tokens.bin`: OAuth token (safeStorage 암호화)

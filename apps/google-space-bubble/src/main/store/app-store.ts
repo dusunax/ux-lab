@@ -13,6 +13,7 @@ const DEFAULTS: StoreData = {
   ...DEFAULT_BUBBLE_SETTINGS,
   monitoredSpaces: [],
   pollIntervalSec: 5,
+  gmailEnabled: false,
 };
 
 /**
@@ -40,6 +41,10 @@ export class AppStore extends EventEmitter<{ change: [] }> {
         ...DEFAULT_BUBBLE_SETTINGS,
         ...sanitizeBubbleSettings(parsed),
         pollIntervalSec: Math.max(LIMITS.minPollIntervalSec, parsed.pollIntervalSec ?? DEFAULTS.pollIntervalSec),
+        gmailEnabled: typeof parsed.gmailEnabled === 'boolean' ? parsed.gmailEnabled : DEFAULTS.gmailEnabled,
+        gmailLastMessageId: typeof parsed.gmailLastMessageId === 'string' ? parsed.gmailLastMessageId : undefined,
+        gmailLastMessageInternalDate:
+          typeof parsed.gmailLastMessageInternalDate === 'string' ? parsed.gmailLastMessageInternalDate : undefined,
         monitoredSpaces: Array.isArray(parsed.monitoredSpaces) ? parsed.monitoredSpaces : [],
       };
     } catch (e) {
@@ -91,6 +96,16 @@ export class AppStore extends EventEmitter<{ change: [] }> {
 
   updateBubbleSettings(patch: Partial<BubbleSettings>): void {
     Object.assign(this.data, patch);
+    this.save();
+  }
+
+  updateGmailSettings(patch: Pick<StoreData, 'gmailEnabled'> & Partial<Pick<StoreData, 'gmailLastMessageId' | 'gmailLastMessageInternalDate'>>): void {
+    Object.assign(this.data, patch);
+    this.save();
+  }
+
+  updateGmailCursor(cursor: { gmailLastMessageId: string; gmailLastMessageInternalDate: string }): void {
+    Object.assign(this.data, cursor);
     this.save();
   }
 

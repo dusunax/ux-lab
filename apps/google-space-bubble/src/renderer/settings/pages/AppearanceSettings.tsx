@@ -8,7 +8,7 @@ import {
   type BubbleSettings,
   type Mascot,
 } from '../../../shared/bubble-settings';
-import type { AppState } from '../../../shared/types';
+import type { AppSettings, AppState } from '../../../shared/types';
 import { MascotImage, useCustomMascotUrl } from '../../Mascot';
 
 const POSITIONS: { value: BubblePosition; label: string }[] = [
@@ -23,7 +23,7 @@ const DISPLAYS: { value: BubbleDisplay; label: string }[] = [
   { value: 'primary', label: '주 모니터' },
 ];
 
-const update = (patch: Partial<BubbleSettings>) => void window.api.updateSettings(patch);
+const update = (patch: Partial<BubbleSettings & Pick<AppSettings, 'gmailEnabled'>>) => void window.api.updateSettings(patch);
 
 /** 알림 설정: 내 메시지 포함 여부, 캐릭터, 표시 시간, 글자 크기, 위치 */
 export function AppearanceSettings({ settings }: { settings: AppState['settings'] }) {
@@ -53,6 +53,11 @@ export function AppearanceSettings({ settings }: { settings: AppState['settings'
           onChange={(e) => update({ includeOwnMessages: e.target.checked })}
         />
         <span>내가 보낸 메시지도 알림</span>
+      </label>
+
+      <label className="toggle">
+        <input type="checkbox" checked={settings.gmailEnabled} onChange={(e) => update({ gmailEnabled: e.target.checked })} />
+        <span>수신 Gmail도 알림</span>
       </label>
 
       <fieldset className="field">

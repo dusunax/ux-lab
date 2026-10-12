@@ -4,7 +4,7 @@
 
 | 패키지/앱 | 설명 | 시작일 | 작업자 | 기술 스택 |
 | --- | --- | --- | --- | --- |
-| **Space Bubble — Google Chat 말풍선** | Google Chat Space의 새 메시지를 데스크톱 우측 하단에 캐릭터 말풍선으로 알려주는 Electron 트레이 앱 ([README](./apps/google-space-bubble/README.md)) | 2026-09-28 | dusunax | ![Electron](https://img.shields.io/badge/Electron-47848F?logo=electron&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Google Chat API](https://img.shields.io/badge/Google%20Chat%20API-00AC47?logo=googlechat&logoColor=white) |
+| **Space Bubble — Google Chat 말풍선** | Google Chat Space의 새 메시지와 수신 Gmail을 데스크톱 우측 하단에 캐릭터 말풍선으로 알려주는 Electron 트레이 앱 ([README](./apps/google-space-bubble/README.md)) | 2026-09-28 | dusunax | ![Electron](https://img.shields.io/badge/Electron-47848F?logo=electron&logoColor=white) ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![Google Chat API](https://img.shields.io/badge/Google%20Chat%20API-00AC47?logo=googlechat&logoColor=white) ![Gmail API](https://img.shields.io/badge/Gmail%20API-EA4335?logo=gmail&logoColor=white) |
 | **cat-game — 고양이의 결정** | 상황을 입력하면 고양이가 타입·상태·기록을 바탕으로 행동을 결정하는 모바일 게임 ([README](./apps/cat-game/README.md), [배포](https://cat-game-wheat-sigma.vercel.app/)) | 2026-09-22 | dusunax | ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white) ![OpenRouter](https://img.shields.io/badge/OpenRouter-111827) ![Vercel](https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white) |
 | **Smart Screenshot Capture** | 스크린샷 촬영 중 HTML 요소를 숨기는 Chrome 익스텐션 ([소스코드](./extensions/chrome-capture), [chrome Web Store v1.1.1](https://chromewebstore.google.com/detail/smart-screenshot-capture/ppfgojhejbonngopillfneiphhienpcj) ) | 2026-08-16 | dusunax | ![Chrome Extension](https://img.shields.io/badge/Chrome%20Extension-4285F4?logo=googlechrome&logoColor=white) ![Manifest v3](https://img.shields.io/badge/Manifest%20v3-34A853?logo=chromatic&logoColor=white) |
 | **One Moon Date — 달력 한칸** | 홈 화면 위젯으로 오늘의 음력을 보여주고 양력·음력을 변환하는 React Native 앱 ([README](./apps/one-moon-date/README.md), [Google Play](https://play.google.com/store/apps/details?id=com.onemoondate)) | 2026-01-18, 2026-09-11(프로덕션) | dusunax | ![React Native](https://img.shields.io/badge/React%20Native-20232A?logo=react&logoColor=61DAFB) ![Android](https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white) ![Google Play](https://img.shields.io/badge/Google%20Play-414141?logo=googleplay&logoColor=white) |
@@ -173,7 +173,7 @@ pnpm dev:bubble
 
 ### Space Bubble Google OAuth 설정 시 ![Google Chat API](https://img.shields.io/badge/Google%20Chat%20API-00AC47?logo=googlechat&logoColor=white)
 
-1. GCP에서 OAuth 클라이언트 ID(유형: 데스크톱 앱) 발급 ([apps/google-space-bubble/docs/spec.md](./apps/google-space-bubble/docs/spec.md) §0 참고)
+1. GCP에서 OAuth 클라이언트 ID(유형: 데스크톱 앱) 발급 — 개인 Gmail 테스트는 External + 테스트 사용자 설정 필요 ([apps/google-space-bubble/docs/spec.md](./apps/google-space-bubble/docs/spec.md) §0 참고)
 2. `apps/google-space-bubble/.env` 파일 생성 (apps/google-space-bubble/.env.example 참고)
 
 ## 🛠️ 기술 스택

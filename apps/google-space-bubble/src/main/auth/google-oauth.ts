@@ -8,7 +8,12 @@ import type { AuthState } from '../../shared/types';
 import type { Account, AppStore } from '../store/app-store';
 import type { TokenStore } from './token-store';
 
-const SCOPES = ['https://www.googleapis.com/auth/chat.messages.readonly', 'openid', 'email'];
+const SCOPES = [
+  'https://www.googleapis.com/auth/chat.messages.readonly',
+  'https://www.googleapis.com/auth/gmail.readonly',
+  'openid',
+  'email',
+];
 const LOGIN_TIMEOUT_MS = 3 * 60 * 1000;
 
 const CLIENT_ID = import.meta.env.MAIN_VITE_GOOGLE_CLIENT_ID;

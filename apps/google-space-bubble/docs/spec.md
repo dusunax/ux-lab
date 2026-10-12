@@ -4,7 +4,7 @@
 
 ### 목적
 
-사용자가 Google Chat에 로그인한 뒤, 하나 이상의 Google Space에서 발생하는 새로운 메시지를 감지하여 데스크톱 화면에 말풍선(Floating Bubble) 형태로 표시하는 Electron 기반 앱을 개발한다.
+사용자가 Google Chat에 로그인한 뒤, 하나 이상의 Google Space에서 발생하는 새로운 메시지와 사용자가 수신한 Gmail을 감지하여 데스크톱 화면에 말풍선(Floating Bubble) 형태로 표시하는 Electron 기반 앱을 개발한다.
 
 ### 목표 플랫폼
 
@@ -14,7 +14,7 @@
 | 지원 | macOS, Windows |
 | 앱 | Electron |
 | UI | React + TypeScript |
-| Google 연동 | Google Chat API |
+| Google 연동 | Google Chat API, Gmail API |
 | 인증 | Google OAuth 2.0 |
 | 메시지 수신 | Polling |
 | 알림 UI | Custom Floating Bubble |
@@ -23,31 +23,37 @@
 
 ---
 
-## 0. 사전 준비 (GCP / Workspace)
+## 0. 사전 준비 (GCP / OAuth)
 
-Google Chat API는 **Google Workspace 계정**에서만 동작한다. 개인 Gmail 계정은 사용할 수 없다.
+Google Chat Space 모니터링은 **Google Workspace 계정**에서만 동작한다. 개인 Gmail 계정은 Chat Space 조회에 사용할 수 없다.
+단, Gmail 수신 알림만 사용할 경우 개인 Gmail 계정도 사용할 수 있으므로 OAuth 앱은 기본적으로 **External + 테스트 사용자**로 설정한다.
 
 ### 필요 조건
 
 | 항목 | 내용 |
 |---|---|
-| 계정 | 사내 Google Workspace 계정 |
-| GCP 권한 | 조직 내 GCP 프로젝트 생성 권한 (또는 기존 프로젝트의 편집자 권한) |
-| 관리자 정책 | Admin Console에서 내부 OAuth 앱과 Chat API 사용이 차단되어 있지 않아야 함 |
+| 계정 | Chat Space 모니터링: Google Workspace 계정 / Gmail 알림: 개인 Gmail 또는 Workspace 계정 |
+| GCP 권한 | GCP 프로젝트 생성 권한 또는 기존 프로젝트의 편집자 권한 |
+| OAuth 대상 | 개인 Gmail 테스트를 위해 External + Testing + 테스트 사용자 등록 |
+| 관리자 정책 | Workspace 계정으로 Chat을 사용할 경우 Admin Console에서 Chat API 사용이 차단되어 있지 않아야 함 |
 
-> 조직 정책으로 프로젝트 생성이 막혀 있거나, 동의 화면에서 "관리자 승인 필요"가 뜨면 Workspace 관리자에게 요청해야 한다.
+> 조직 정책으로 프로젝트 생성이 막혀 있거나, Workspace 계정 동의 화면에서 "관리자 승인 필요"가 뜨면 Workspace 관리자에게 요청해야 한다.
+> 개인 Gmail로 테스트할 때 OAuth 앱이 Internal이면 `403 org_internal`로 차단된다. 이 경우 External 앱을 새로 만들거나 OAuth consent screen을 External로 설정해야 한다.
 
 ### 설정 순서
 
-1. GCP 프로젝트 생성 (사내 조직 하위)
-2. **Google Chat API** 사용 설정
-3. **Chat API > Configuration**에서 Chat 앱 정보 입력 (앱 이름, 아바타 URL, 설명)
+1. GCP 프로젝트 생성
+2. **Google Chat API**와 **Gmail API** 사용 설정
+3. Chat Space 모니터링을 사용할 경우 **Chat API > Configuration**에서 Chat 앱 정보 입력 (앱 이름, 아바타 URL, 설명)
    - 사용자 인증으로만 호출하더라도 이 구성이 없으면 API 호출이 실패한다.
    - Interactive features는 끈다.
-4. **OAuth 동의 화면**: User Type을 **Internal**로 설정 (앱 검증 절차 생략)
-   - Scope에 `chat.messages.readonly` 추가 (`openid`, `email`은 비민감 scope라 별도 등록 없이 요청 가능)
+4. **OAuth 동의 화면**: User Type을 **External**로 설정하고 Publishing status는 **Testing**으로 둔다.
+   - Test users에 로그인할 Google 계정(예: 개인 Gmail)을 추가한다.
+   - Scope에 `chat.messages.readonly`와 `gmail.readonly` 추가 (`openid`, `email`은 비민감 scope라 별도 등록 없이 요청 가능)
 5. **사용자 인증 정보 > OAuth 클라이언트 ID** 생성, 유형은 **데스크톱 앱**
 6. Client ID와 Secret은 로컬 `.env`에만 보관하고 저장소에 커밋하지 않는다.
+
+> 사내 Workspace 구성원만 사용하는 배포라면 Internal OAuth 앱도 가능하다. 하지만 개인 Gmail 계정은 Internal 앱에 로그인할 수 없다.
 
 > 데스크톱 앱 유형의 Client Secret은 배포 바이너리에 포함되므로 비밀 정보로 취급되지 않는다. 대신 PKCE로 보호한다.
 
@@ -109,6 +115,7 @@ MVP에서는 메시지 읽기만 필요하므로 Chat 관련 scope는 `chat.mess
 
 ```text
 https://www.googleapis.com/auth/chat.messages.readonly
+https://www.googleapis.com/auth/gmail.readonly
 openid
 email
 ```
@@ -116,6 +123,7 @@ email
 - Space 이름은 API로 조회하지 않고 사용자가 입력한다. 그래서 `chat.spaces.readonly`는 요청하지 않는다.
 - Sender 이름은 `messages.list` 응답의 `sender.displayName`을 그대로 사용한다. Spike에서 HUMAN과 BOT 모두 값이 채워지는 것을 확인했으므로 People API는 사용하지 않는다.
 - `openid`로 받은 ID Token의 `sub`와 `email`은 로그인 계정 표시와 본인 메시지 식별(§6)에 사용한다.
+- Gmail 알림을 켜면 Gmail API의 `INBOX` label metadata만 조회한다. 메일 전송, 수정, 삭제 scope는 요청하지 않는다.
 
 ### 로그인 방식
 

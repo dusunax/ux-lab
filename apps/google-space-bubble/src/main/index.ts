@@ -2,11 +2,13 @@ import { app, ipcMain, powerMonitor, shell, type IpcMainEvent, type IpcMainInvok
 import { IPC } from '../shared/ipc';
 import { sanitizeBubbleSettings } from '../shared/bubble-settings';
 import { normalizeSpaceId, spaceUrl } from '../shared/space-id';
-import { LIMITS, type AddSpaceResult, type AppState } from '../shared/types';
+import { LIMITS, type AddSpaceResult, type AppState, type BubbleMessage } from '../shared/types';
 import { AuthManager } from './auth/google-oauth';
 import { TokenStore } from './auth/token-store';
 import { classifyError, createListMessages } from './chat/chat-client';
 import { MessagePoller } from './chat/message-poller';
+import { createListInboxMessages } from './gmail/gmail-client';
+import { GmailPoller } from './gmail/gmail-poller';
 import { BubbleWindow } from './notification/bubble-window';
 import { AppStore } from './store/app-store';
 import { CustomMascot } from './custom-mascot';
@@ -35,11 +37,22 @@ async function bootstrap(): Promise<void> {
   );
   const bubbleDurationMs = () => store.settings.bubbleDurationSec * 1000;
   const listMessages = createListMessages(() => auth.authClient);
+  const listInboxMessages = createListInboxMessages(() => auth.authClient);
   const poller = new MessagePoller({
     listMessages,
     getSpaces: () => store.spaces,
     saveCursor: (id, cursor) => store.updateSpace(id, cursor),
     excludeSelf: () => (store.settings.includeOwnMessages ? undefined : auth.account),
+    pollIntervalMs: () => store.settings.pollIntervalSec * 1000,
+  });
+  const gmailPoller = new GmailPoller({
+    listInboxMessages,
+    isEnabled: () => store.settings.gmailEnabled,
+    getCursor: () => ({
+      gmailLastMessageId: store.settings.gmailLastMessageId,
+      gmailLastMessageInternalDate: store.settings.gmailLastMessageInternalDate,
+    }),
+    saveCursor: (cursor) => store.updateGmailCursor(cursor),
     pollIntervalMs: () => store.settings.pollIntervalSec * 1000,
   });
 
@@ -50,10 +63,12 @@ async function bootstrap(): Promise<void> {
     return {
       auth: auth.state,
       monitoring: !signedIn ? 'stopped' : poller.isUserPaused ? 'paused' : 'running',
-      connection: signedIn && poller.waiting ? 'waiting' : 'ok',
+      connection: signedIn && (poller.waiting || gmailPoller.waiting) ? 'waiting' : 'ok',
       spaces: store.spaces.map((s) => ({ ...s, ...poller.statusOf(s.spaceId) })),
+      gmail: gmailPoller.status,
       settings: {
         pollIntervalSec: store.settings.pollIntervalSec,
+        gmailEnabled: store.settings.gmailEnabled,
         bubbleDurationSec: store.settings.bubbleDurationSec,
         bubbleFontSize: store.settings.bubbleFontSize,
         bubblePosition: store.settings.bubblePosition,
@@ -70,9 +85,11 @@ async function bootstrap(): Promise<void> {
       [
         {
           kind: 'message',
+          source: store.settings.gmailEnabled ? 'gmail' : 'chat',
           id: `test-${Date.now()}`,
-          spaceId: store.spaces[0]?.spaceId ?? '',
-          spaceName: store.spaces[0]?.spaceName ?? 'Space Bubble',
+          spaceId: store.settings.gmailEnabled ? 'gmail' : (store.spaces[0]?.spaceId ?? ''),
+          spaceName: store.settings.gmailEnabled ? 'Gmail' : (store.spaces[0]?.spaceName ?? 'Space Bubble'),
+          gmailMessageId: store.settings.gmailEnabled ? 'test' : undefined,
           sender: 'Space Bubble',
           text: '테스트 알림입니다.',
           createTime: new Date().toISOString(),
@@ -105,12 +122,17 @@ async function bootstrap(): Promise<void> {
   poller.on('status', broadcast);
   poller.on('messages', (messages) => void bubble.push(messages, bubbleDurationMs()));
   poller.on('authError', () => auth.handleInvalidGrant());
+  gmailPoller.on('status', broadcast);
+  gmailPoller.on('messages', (messages) => void bubble.push(messages, bubbleDurationMs()));
+  gmailPoller.on('authError', () => auth.handleInvalidGrant());
   auth.on('change', (state) => {
     if (state.status === 'signedIn') {
       poller.start();
+      gmailPoller.start();
       if (store.spaces.length === 0) settingsWin.show();
     } else {
       poller.stop();
+      gmailPoller.stop();
       bubble.hide();
       if (state.status === 'signedOut') settingsWin.show();
     }
@@ -123,6 +145,10 @@ async function bootstrap(): Promise<void> {
   powerMonitor.on('lock-screen', () => poller.setSystemPaused(true));
   powerMonitor.on('resume', () => poller.setSystemPaused(false));
   powerMonitor.on('unlock-screen', () => poller.setSystemPaused(false));
+  powerMonitor.on('suspend', () => gmailPoller.setSystemPaused(true));
+  powerMonitor.on('lock-screen', () => gmailPoller.setSystemPaused(true));
+  powerMonitor.on('resume', () => gmailPoller.setSystemPaused(false));
+  powerMonitor.on('unlock-screen', () => gmailPoller.setSystemPaused(false));
 
   // ─── IPC ──────────────────────────────────────────────
 
@@ -191,16 +217,31 @@ async function bootstrap(): Promise<void> {
   });
 
   handle(IPC.setMonitoring, (running: unknown) => {
-    if (typeof running === 'boolean') poller.setUserPaused(!running);
+    if (typeof running === 'boolean') {
+      poller.setUserPaused(!running);
+      gmailPoller.setUserPaused(!running);
+    }
   });
 
   handle(IPC.updateSettings, (patch: unknown) => {
     const valid = sanitizeBubbleSettings(patch);
     if (valid.mascot === 'custom' && !customMascot.dataUrl()) delete valid.mascot;
-    if (Object.keys(valid).length === 0) return;
-    store.updateBubbleSettings(valid);
-    bubble.applySettings(bubbleDurationMs());
+    const gmailEnabled = typeof (patch as { gmailEnabled?: unknown })?.gmailEnabled === 'boolean' ? (patch as { gmailEnabled: boolean }).gmailEnabled : undefined;
+    if (Object.keys(valid).length > 0) {
+      store.updateBubbleSettings(valid);
+      bubble.applySettings(bubbleDurationMs());
+    }
+    if (gmailEnabled !== undefined && gmailEnabled !== store.settings.gmailEnabled) {
+      store.updateGmailSettings({
+        gmailEnabled,
+        gmailLastMessageId: undefined,
+        gmailLastMessageInternalDate: undefined,
+      });
+      gmailPoller.retry();
+    }
   });
+
+  handle(IPC.retryGmail, () => gmailPoller.retry());
 
   handle(IPC.testBubble, () => testBubble());
 
@@ -216,9 +257,16 @@ async function bootstrap(): Promise<void> {
 
   handle(IPC.getCustomMascot, () => customMascot.dataUrl());
 
-  ipcMain.on(IPC.bubbleOpen, (e, spaceId: unknown) => {
-    if (!fromBubble(e) || typeof spaceId !== 'string' || !store.getSpace(spaceId)) return;
-    const url = spaceUrl(spaceId);
+  ipcMain.on(IPC.bubbleOpen, (e, item: unknown) => {
+    if (!fromBubble(e) || !isBubbleMessage(item)) return;
+    if (item.source === 'gmail') {
+      const id = item.gmailMessageId;
+      if (!id || !/^[A-Za-z0-9_-]+$/.test(id)) return;
+      void shell.openExternal(`https://mail.google.com/mail/u/0/#inbox/${id}`);
+      return;
+    }
+    if (!store.getSpace(item.spaceId)) return;
+    const url = spaceUrl(item.spaceId);
     if (url.startsWith('https://chat.google.com/')) void shell.openExternal(url);
   });
   ipcMain.on(IPC.bubbleHover, (e, hover: unknown) => {
@@ -234,7 +282,10 @@ async function bootstrap(): Promise<void> {
   // ─── 시작 ─────────────────────────────────────────────
 
   app.on('second-instance', () => settingsWin.show());
-  app.on('before-quit', () => poller.stop());
+  app.on('before-quit', () => {
+    poller.stop();
+    gmailPoller.stop();
+  });
 
   tray.update(getState());
   await auth.restore();
@@ -243,6 +294,12 @@ async function bootstrap(): Promise<void> {
 
 // 모든 창이 닫혀도 트레이에 상주
 app.on('window-all-closed', () => {});
+
+function isBubbleMessage(value: unknown): value is BubbleMessage {
+  if (typeof value !== 'object' || value === null) return false;
+  const item = value as Partial<BubbleMessage>;
+  return typeof item.id === 'string' && typeof item.spaceId === 'string';
+}
 
 // 외부 URL 이동 / 새 창 차단
 app.on('web-contents-created', (_e, contents) => {
