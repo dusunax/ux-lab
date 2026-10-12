@@ -61,3 +61,12 @@ try {
 - Place feature implementations under the `features` folder by feature area.
 - Prefer minimal file splitting for a feature; keep related logic and rendering together.
 - Split files only when complexity requires it to keep maintenance cost predictable.
+
+## Markdown Writing
+
+GitHub(GFM) renders text between two `~` as strikethrough — even a single `~` pair (`1~3초, 5~10초` → strikes `3초, 5`).
+
+- Write ranges with an escaped tilde: `1\~3초`, `D1\~D11`.
+- Leave `~` as is inside code spans/blocks (`` `~/Library` ``) — escaping there prints the backslash.
+- Code comments and string literals are not rendered markdown; no escaping needed.
+- Before committing `.md` changes, check for unescaped range tildes: `git diff -U0 -- '*.md' | grep -nE '^\+.*[^\\`]~[^/]'`
