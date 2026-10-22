@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+    />
+    <meta name="viewport" content="width=280, initial-scale=1" />
+    <title>Layered Pomodoro</title>
+  </head>
+  <body>
+    <main class="clock" id="clock">
+      <svg class="face" id="face" viewBox="0 0 280 280" aria-hidden="true">
+        <circle class="disc" cx="140" cy="140" r="124" />
+        <circle class="bezel" cx="140" cy="140" r="118" />
+        <g id="dial"></g>
+        <g id="rings"></g>
+      </svg>
+      <div class="center" role="timer" aria-live="off">
+        <span class="center-name" id="centerName"></span>
+        <span class="center-clock" id="centerClock">00:00</span>
+        <span class="center-status" id="centerStatus"></span>
+      </div>
+      <button class="crown" id="crown" type="button" title="레이어 설정 (⌘,)" aria-label="레이어 설정 열기"></button>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

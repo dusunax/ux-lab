@@ -1,0 +1,23 @@
+{
+  "name": "@ux-lab/layered-pomodoro",
+  "version": "0.1.0",
+  "private": true,
+  "description": "여러 개의 타이머를 동심원 레이어로 겹쳐 흘려보내는 데스크탑 뽀모도로",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@fontsource/jost": "^5.2.0",
+    "@types/node": "^26.6.3",
+    "electron": "^44.4.5",
+    "electron-vite": "^5.0.0",
+    "typescript": "^7.0.2",
+    "vite": "^7.3.6",
+    "vitest": "^5.0.2"
+  }
+}

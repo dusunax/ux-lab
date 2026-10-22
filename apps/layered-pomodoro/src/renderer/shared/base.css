@@ -1,0 +1,77 @@
+/* 유럽 편집 디자인 토큰: 흰 종이, 잉크색 활자, 기하학 산세리프(Jost) 한 가지. 명시성을 위해 흰 바탕 대비 4.5:1 이상 */
+@import '@fontsource/jost/400.css';
+@import '@fontsource/jost/500.css';
+@import '@fontsource/jost/600.css';
+
+:root {
+  --paper: #ffffff;
+  --paper-deep: #f1ede6;
+  --ink: #14110e;
+  --ink-soft: #3d3730;
+  --ink-faint: #625a4f;
+  --rule: #a99c86;
+  --line: 2px;
+  --accent: #7b2333;
+  --sans: 'Jost', 'Apple SD Gothic Neo', 'Pretendard', system-ui, sans-serif;
+  --radius: 2px;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  overflow: hidden;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.ring .track {
+  fill: none;
+  opacity: 0.18;
+}
+
+.ring .arc {
+  fill: none;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.ring.done .track {
+  opacity: 0.5;
+  stroke-dasharray: 2 4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring .arc {
+    transition: none;
+  }
+}
