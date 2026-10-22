@@ -1,0 +1,140 @@
+/* 화면 위에 떠 있는 원형 시계. 창 배경은 투명하고 흰 원판만 보인다. 멀리서도 읽히도록 굵은 선, 큰 산세리프 */
+html,
+body {
+  background: transparent;
+}
+
+/* 창 크기(main/windows.ts CLOCK_SIZE)와 같다. 용두 위치가 px 기준이라 늘어나지 않게 고정 */
+.clock {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  /* 원 전체를 잡아 끌어 옮긴다 */
+  -webkit-app-region: drag;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.disc {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 9px rgb(20 15 10 / 0.32));
+}
+
+.bezel {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.25;
+}
+
+.tick {
+  stroke: var(--ink-faint);
+  stroke-width: 1.25;
+}
+
+.tick.major {
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+
+.tick.quarter {
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+
+.ring.flash .arc,
+.ring.flash .track {
+  animation: flash 0.9s ease-in-out 4;
+}
+
+@keyframes flash {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+.clock.chiming .disc {
+  animation: chime 0.9s ease-in-out 4;
+}
+
+@keyframes chime {
+  50% {
+    stroke: var(--accent);
+    stroke-width: 6;
+  }
+}
+
+.center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  justify-items: center;
+  width: 106px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  text-align: center;
+}
+
+.center-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.center-clock {
+  font-size: 31px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--ink);
+}
+
+.center-clock.long {
+  font-size: 23px;
+}
+
+.center-status {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+/* 3시 방향 용두: 누르면 레이어 설정 팝업 */
+.crown {
+  position: absolute;
+  top: 125px;
+  left: 264px;
+  width: 13px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid var(--ink);
+  border-radius: 2px 5px 5px 2px;
+  background:
+    repeating-linear-gradient(180deg, rgb(255 255 255 / 0.35) 0 1.5px, transparent 1.5px 4px),
+    var(--ink-soft);
+  -webkit-app-region: no-drag;
+  transition:
+    transform 0.15s,
+    background-color 0.15s;
+}
+
+.crown:hover {
+  background-color: var(--accent);
+  transform: translateX(1px);
+}

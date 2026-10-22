@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>레이어 설정</title>
+  </head>
+  <body>
+    <div class="drag-region" aria-hidden="true"></div>
+    <div class="sheet">
+      <header class="masthead">
+        <p class="eyebrow">Réglages</p>
+        <h1>Couches <span>레이어</span></h1>
+        <div class="head-right">
+          <span class="tally" id="tally"></span>
+          <button class="reset-btn" id="resetAll" type="button" title="모든 레이어를 처음 시간부터 다시 시작">↻ 전체 리셋</button>
+        </div>
+      </header>
+
+      <ol class="layers" id="layers" aria-live="polite"></ol>
+
+      <form class="add" id="addForm" autocomplete="off">
+        <span class="add-swatch" aria-hidden="true"></span>
+        <label class="field">
+          <span>이름</span>
+          <input id="addName" type="text" maxlength="24" placeholder="Reading, Writing…" />
+        </label>
+        <label class="field">
+          <span>분</span>
+          <input id="addMinutes" type="number" min="1" max="240" step="1" value="25" required />
+        </label>
+        <button class="add-btn" id="addButton" type="submit">+ 추가</button>
+      </form>
+      <p class="hint" id="addHint"></p>
+
+      <footer class="colophon">
+        <span id="summary"></span>
+        <span aria-hidden="true">·</span>
+        <button class="link-btn" id="testSound" type="button">알림음 들어보기</button>
+      </footer>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
