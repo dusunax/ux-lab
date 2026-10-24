@@ -1,19 +1,23 @@
 # Layered Pomodoro
-
-여러 개의 뽀모도로 타이머를 **동심원 레이어**로 겹쳐 동시에 흘려보내는 데스크탑 앱.
-화면 위에는 배경이 투명한 **원형 시계**만 떠 있고, 레이어 설정은 용두(3시 방향 손잡이)를 눌러 여는 **팝업**에서 한다.
-흰 원판, 굵은 선과 눈금, 기하학 산세리프(Jost), 유럽 안료에서 따온 팔레트로 꾸민 유럽 편집 디자인 스타일. 멀리서도 읽히는 명시성을 우선한다.
-
 ![Electron](https://img.shields.io/badge/Electron-44-47848F?logo=electron&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-7-3178C6?logo=typescript&logoColor=white)
 ![Web Audio](https://img.shields.io/badge/Sound-Web%20Audio-111)
+
+여러 개의 뽀모도로 타이머를 **동심원 레이어**로 겹쳐 동시에 흘려보내는 데스크탑 앱.  
+화면 위에는 배경이 투명한 **원형 시계**가 항상 떠 있고 드래그로 위치를 조정할 수 있다. 
+레이어 설정은 용두 버튼(3시 방향 손잡이)을 눌러 여는 **팝업**에서 한다.
+
+| 원형 시계 | 레이어 설정 팝업 |
+| --- | --- |
+| <img width="332" height="303" alt="image" src="https://github.com/user-attachments/assets/8403f647-adc6-44fc-a7d1-99fd78bd6778" /> | <img width="577" height="737" alt="image" src="https://github.com/user-attachments/assets/2d0a6e31-b6dc-41be-8d55-011722e49950" /> |
+
 
 ## 화면
 
 | 창 | 모양 | 조작 |
 | --- | --- | --- |
-| 시계 | 280×280 투명·무테 원형 창. 항상 위, 모든 데스크탑·전체 화면에서 보임 | 원 전체를 끌어 옮긴다. 용두를 누르면 설정 팝업 |
-| 레이어 설정 | 500×660 팝업. 시계 옆(왼쪽 우선)에 열림 | 레이어 추가·삭제·순서·색·시간 변경, 전체 리셋, 알림음 미리 듣기 |
+| 시계 | 280×280 투명·무테 원형 창. 항상 위 | 원 전체를 드래그해 옮길 수 있다. 용두 버튼을 누르면 설정 팝업 |
+| 레이어 설정 | 500×660 팝업. | 레이어 추가·삭제·순서·색·시간 변경, 전체 리셋, 알림음 미리 듣기 |
 
 - 시계 가운데에는 가장 먼저 끝나는 레이어의 이름과 남은 시간, 흐르는 레이어 수를 보여준다.
 - 메뉴 `레이어 › 레이어 설정…`(⌘,), `시계 보이기`(⌘⇧L). Dock 아이콘을 눌러도 설정이 열린다.
@@ -30,8 +34,6 @@
 | 순서 변경 | 설정에서 줄을 끌어 놓거나 ↑ ↓. 목록 첫 레이어가 가장 바깥 링 |
 | 색상 변경 | 색 동그라미를 눌러 팔레트에서 고른다. 다른 레이어가 쓰는 색은 고를 수 없다 |
 | 저장 | `userData/layers.json`. 앱을 꺼 둔 사이 끝난 레이어는 소리 없이 종료됨으로 표시 |
-
-색은 겹칠 수 없으므로 레이어 최대 개수는 팔레트 크기(10색: Burgundy, Terracotta, Ochre, Olive, Sage, Prussian Blue, Delft Blue, Lavender, Dusty Rose, Slate)와 같다.
 
 ## 실행
 
@@ -69,7 +71,6 @@ src/
     shared/            api(브라우저 미리보기용 대체 구현 포함), rings, chime, base.css
 ```
 
-상태는 main 프로세스가 가진다. 두 창은 `layers:changed`를 구독하고 변경은 명령(`layers:command`)으로만 보내며, main이 `parseCommand`로 검증한 뒤 적용한다.
-시간은 남은 초를 깎지 않고 종료 시각(`endsAt`)과 현재 시각의 차로 계산한다. 시계 창은 가려져도 늦지 않도록 `backgroundThrottling: false`, 알림음이 사용자 입력 없이 나도록 `autoplayPolicy: 'no-user-gesture-required'`를 켰다.
+**시간/레이어 상태:** 상태는 main 프로세스가 가진다. 두 창은 `layers:changed`를 구독하고 변경은 명령(`layers:command`)으로만 보내며, main이 `parseCommand`로 검증한 뒤 적용한다. 시간은 남은 초를 깎지 않고 종료 시각(`endsAt`)과 현재 시각의 차로 계산한다. 시계 창은 가려져도 늦지 않도록 `backgroundThrottling: false`, 알림음이 사용자 입력 없이 나도록 `autoplayPolicy: 'no-user-gesture-required'`를 켰다.
 
-`out/renderer`를 정적 서버로 열면 브라우저에서도 `clock/`, `settings/` 화면을 볼 수 있다. 이때는 `window.api` 대신 localStorage로 같은 규칙을 흉내 내는 대체 구현을 쓴다(디자인 확인용).
+**브라우저로 열기**(개발용): `out/renderer`를 정적 서버로 열면 브라우저에서도 `clock/`, `settings/` 화면을 볼 수 있다. 이때는 `window.api` 대신 localStorage로 같은 규칙을 흉내 내는 대체 구현을 쓴다
