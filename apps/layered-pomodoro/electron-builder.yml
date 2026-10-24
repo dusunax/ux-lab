@@ -1,0 +1,26 @@
+appId: com.dusunax.layered-pomodoro
+productName: Layered Pomodoro
+directories:
+  buildResources: build
+  output: dist
+files:
+  - out/**
+  - package.json
+  - "!**/*.map"
+# 앱 UI는 한국어. Chromium 언어 파일은 한국어·영어만 포함
+electronLanguages: [ko, en]
+mac:
+  target:
+    - target: dmg
+      arch: [arm64]
+    - target: dir
+      arch: [arm64]
+  category: public.app-category.productivity
+  icon: build/icon.icns
+  # Developer ID 인증서가 없으므로 ad-hoc 서명 (Apple Silicon은 서명 없으면 실행 불가)
+  identity: '-'
+  hardenedRuntime: false
+  notarize: false
+dmg:
+  title: Layered Pomodoro
+  artifactName: LayeredPomodoro-${version}-${arch}.dmg

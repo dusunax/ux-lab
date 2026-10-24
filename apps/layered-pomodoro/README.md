@@ -40,6 +40,16 @@ pnpm dev:pomodoro      # 루트에서
 pnpm --filter @ux-lab/layered-pomodoro test
 ```
 
+## 앱으로 빌드 (macOS, Apple Silicon)
+
+```bash
+pnpm --filter @ux-lab/layered-pomodoro icon       # build/icon.png·icon.icns 다시 만들기 (아이콘을 바꿀 때만)
+pnpm --filter @ux-lab/layered-pomodoro dist:mac   # dist/에 .dmg와 mac-arm64/Layered Pomodoro.app
+```
+
+- Developer ID 인증서 없이 ad-hoc 서명이라, 다른 Mac에서 처음 열 때는 Finder에서 우클릭 › 열기로 한 번 허용해야 한다.
+- 설치한 앱과 `pnpm dev:pomodoro`는 같은 저장 폴더(`~/Library/Application Support/@ux-lab/layered-pomodoro`)를 써서 레이어가 이어지고, 동시에 두 개가 뜨지 않는다.
+
 ## 구조
 
 ```
