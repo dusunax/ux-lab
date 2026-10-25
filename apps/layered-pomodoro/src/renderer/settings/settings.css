@@ -14,7 +14,7 @@ body {
 .sheet {
   height: 100%;
   display: grid;
-  grid-template-rows: auto 1fr auto auto auto;
+  grid-template-rows: auto auto 1fr auto auto auto;
   padding: 46px 26px 16px;
 }
 
@@ -85,6 +85,136 @@ body {
   font-size: 19px;
   font-variant-numeric: lining-nums;
   color: var(--ink-soft);
+}
+
+/* ── Tabs ── 활성 탭은 잉크색 바탕, 비활성 탭은 테두리만 */
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 14px;
+  overflow-x: auto;
+  border-bottom: var(--line) solid var(--ink);
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: flex;
+  flex: none;
+  align-items: center;
+  border: var(--line) solid var(--ink-faint);
+  border-bottom: 0;
+  border-radius: 3px 3px 0 0;
+  background: var(--paper);
+}
+
+.tab.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 150px;
+  padding: 7px 12px 6px;
+  border: 0;
+  background: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab:not(.active) .tab-btn {
+  color: var(--ink-soft);
+}
+
+.tab:not(.active):hover {
+  border-color: var(--ink);
+}
+
+.tab:not(.active):hover .tab-btn {
+  color: var(--ink);
+}
+
+.tab.active .tab-btn {
+  cursor: text;
+}
+
+/* 멈춘 탭 표시: 일시정지 막대 두 개 */
+.tab-paused {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 10px;
+  border-left: 3px solid var(--accent);
+  border-right: 3px solid var(--accent);
+}
+
+.tab-remove {
+  margin-right: 6px;
+  padding: 1px 6px;
+  border: 1.5px solid rgb(255 255 255 / 0.5);
+  border-radius: var(--radius);
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--paper);
+}
+
+.tab-remove:hover,
+.tab-remove.armed {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.tab-input {
+  width: 130px;
+  margin: 4px 6px;
+  padding: 3px 6px;
+  border: var(--line) solid var(--paper);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  user-select: text;
+}
+
+.tab-input:focus {
+  outline: none;
+}
+
+.tab-add {
+  flex: none;
+  margin-bottom: 4px;
+  padding: 5px 10px 4px;
+  border: var(--line) dashed var(--ink-faint);
+  border-radius: var(--radius);
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.tab-add:hover:not(:disabled) {
+  border-style: solid;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.tab-add:disabled {
+  opacity: 0.35;
 }
 
 /* ── Layer list ── */

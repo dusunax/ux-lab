@@ -4,7 +4,8 @@
  */
 import { applyCommand, parseCommand } from '../../shared/commands';
 import type { Api } from '../../shared/ipc';
-import { sanitizeLayers, tick, type Layer } from '../../shared/layers';
+import type { Layer } from '../../shared/layers';
+import { sanitizeState, tickState, type AppState } from '../../shared/tabs';
 
 const PREVIEW_KEY = 'layered-pomodoro:preview';
 const TICK_MS = 250;
@@ -18,39 +19,41 @@ function previewApi(): Api {
       return null;
     }
   };
-  let layers = tick(sanitizeLayers(read(), Date.now(), makeId), Date.now()).layers;
-  const changeSubs = new Set<(l: Layer[]) => void>();
+  let state = tickState(sanitizeState(read(), Date.now(), makeId), Date.now()).state;
+  const stateSubs = new Set<(s: AppState) => void>();
   const finishSubs = new Set<(l: Layer[]) => void>();
-  const emit = () => changeSubs.forEach((cb) => cb(layers));
-  const set = (next: Layer[]) => {
-    layers = next;
-    localStorage.setItem(PREVIEW_KEY, JSON.stringify(layers));
+  const emit = () => stateSubs.forEach((cb) => cb(state));
+  const set = (next: AppState) => {
+    state = next;
+    localStorage.setItem(PREVIEW_KEY, JSON.stringify(state));
     emit();
   };
   // 다른 탭(시계 ↔ 설정)에서 바꾼 값을 따라간다
   window.addEventListener('storage', (e) => {
     if (e.key !== PREVIEW_KEY) return;
-    layers = sanitizeLayers(read(), Date.now(), makeId);
+    state = sanitizeState(read(), Date.now(), makeId);
     emit();
   });
   setInterval(() => {
-    const result = tick(layers, Date.now());
+    const result = tickState(state, Date.now());
     if (!result.finished.length) return;
-    set(result.layers);
+    set(result.state);
     finishSubs.forEach((cb) => cb(result.finished));
   }, TICK_MS);
 
-  const subscribe = (subs: Set<(l: Layer[]) => void>) => (cb: (l: Layer[]) => void) => {
-    subs.add(cb);
-    return () => void subs.delete(cb);
-  };
+  const subscribe =
+    <T,>(subs: Set<(v: T) => void>) =>
+    (cb: (v: T) => void) => {
+      subs.add(cb);
+      return () => void subs.delete(cb);
+    };
   return {
-    getLayers: async () => layers,
-    onLayers: subscribe(changeSubs),
+    getState: async () => state,
+    onState: subscribe(stateSubs),
     onFinished: subscribe(finishSubs),
     command: (raw) => {
       const cmd = parseCommand(raw);
-      if (cmd) set(applyCommand(layers, cmd, Date.now(), makeId));
+      if (cmd) set(applyCommand(state, cmd, Date.now(), makeId));
     },
     openSettings: () => void window.open('../settings/index.html', 'settings', 'width=500,height=660'),
   };

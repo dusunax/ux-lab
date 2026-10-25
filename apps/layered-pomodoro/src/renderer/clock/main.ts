@@ -1,6 +1,7 @@
 import '../shared/base.css';
 import './clock.css';
 import { formatClock, remainingMs, type Layer } from '../../shared/layers';
+import { activeTab, type AppState } from '../../shared/tabs';
 import { api } from '../shared/api';
 import { chime } from '../shared/chime';
 import { paintRings, renderRings, soonest, svgEl, type RingGeometry, type RingRefs } from '../shared/rings';
@@ -19,6 +20,7 @@ const dom = {
   clock: $<HTMLElement>('clock'),
   dial: $<SVGGElement>('dial'),
   rings: $<SVGGElement>('rings'),
+  tab: $<HTMLElement>('centerTab'),
   name: $<HTMLElement>('centerName'),
   time: $<HTMLElement>('centerClock'),
   status: $<HTMLElement>('centerStatus'),
@@ -89,13 +91,16 @@ function onFinished(finished: Layer[]): void {
 
 drawDial();
 dom.crown.addEventListener('click', () => api.openSettings());
-api.onLayers((next) => {
-  layers = next;
+/** 시계는 활성 탭의 레이어만 보여준다. 탭이 여러 개면 가운데 위에 탭 이름을 단다 */
+function onState(state: AppState): void {
+  const tab = activeTab(state);
+  layers = tab.layers;
+  dom.tab.textContent = state.tabs.length > 1 ? tab.name : '';
+  dom.tab.hidden = state.tabs.length < 2;
   render();
-});
+}
+
+api.onState(onState);
 api.onFinished(onFinished);
-void api.getLayers().then((initial) => {
-  layers = initial;
-  render();
-});
+void api.getState().then(onState);
 setInterval(paint, PAINT_MS);

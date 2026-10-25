@@ -2,7 +2,7 @@ import { BrowserWindow, Menu, Notification, app, ipcMain, type IpcMainEvent } fr
 import { parseCommand } from '../shared/commands';
 import { IPC } from '../shared/ipc';
 import type { Layer } from '../shared/layers';
-import { LayerStore } from './store';
+import { StateStore } from './store';
 import { ClockWindow, SettingsWindow } from './windows';
 
 if (!app.requestSingleInstanceLock()) {
@@ -28,8 +28,8 @@ function bootstrap(): void {
     clock.send(channel, payload);
     settings.send(channel, payload);
   };
-  const store = new LayerStore({
-    onChange: (layers) => broadcast(IPC.layers, layers),
+  const store = new StateStore({
+    onChange: (state) => broadcast(IPC.state, state),
     onFinished: (finished) => {
       broadcast(IPC.finished, finished);
       notifyFinished(finished);
@@ -41,7 +41,7 @@ function bootstrap(): void {
   const fromApp = (e: IpcMainEvent | Electron.IpcMainInvokeEvent) =>
     BrowserWindow.fromWebContents(e.sender) === clock.alive || BrowserWindow.fromWebContents(e.sender) === settings.alive;
 
-  ipcMain.handle(IPC.getLayers, (e) => (fromApp(e) ? store.snapshot : []));
+  ipcMain.handle(IPC.getState, (e) => (fromApp(e) ? store.snapshot : null));
   ipcMain.on(IPC.command, (e, raw: unknown) => {
     const cmd = fromApp(e) ? parseCommand(raw) : null;
     if (cmd) store.apply(cmd);
