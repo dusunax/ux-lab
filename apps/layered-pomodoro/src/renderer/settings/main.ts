@@ -1,17 +1,22 @@
 import '../shared/base.css';
 import './settings.css';
 import { LIMITS, canAdd, canRemove, freeColors, type ColorId, type Layer } from '../../shared/layers';
+import { activeTab, type AppState } from '../../shared/tabs';
 import { api } from '../shared/api';
 import { chime } from '../shared/chime';
+import { buildTabBar, type TabAction, type TabBarUi } from './tabbar';
 import { buildRow, paintRow, type RowAction, type RowRefs } from './view';
 
 const PAINT_MS = 250;
 /** 전체 리셋은 실수로 누르지 않도록 이 시간 안에 한 번 더 눌러야 실행된다 */
 const RESET_CONFIRM_MS = 3000;
 const RESET_LABEL = '↻ 전체 리셋';
+/** 탭 삭제도 레이어가 함께 지워지므로 이 시간 안에 한 번 더 눌러야 실행된다 */
+const TAB_REMOVE_CONFIRM_MS = 3000;
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const dom = {
+  tabs: $('tabs'),
   list: $<HTMLOListElement>('layers'),
   tally: $('tally'),
   summary: $('summary'),
@@ -25,10 +30,12 @@ const dom = {
 };
 
 const state = {
+  app: null as AppState | null,
   layers: [] as Layer[],
   pickerFor: null as string | null,
   dragId: null as string | null,
 };
+const tabUi: TabBarUi = { renaming: null, removeArmed: null };
 let rowRefs = new Map<string, RowRefs>();
 let pendingRender = false;
 
@@ -49,8 +56,19 @@ function render(): void {
     return li;
   });
   dom.list.replaceChildren(...rows);
+  renderTabs();
   renderForm();
   paint();
+}
+
+function renderTabs(): void {
+  if (!state.app) return;
+  dom.tabs.replaceChildren(...buildTabBar(state.app, tabUi));
+  const input = dom.tabs.querySelector<HTMLInputElement>('.tab-input');
+  if (input && document.activeElement !== input) {
+    input.focus();
+    input.select();
+  }
 }
 
 function renderForm(): void {
@@ -161,6 +179,69 @@ dom.resetAll.addEventListener('click', () => {
   api.command({ type: 'restartAll' });
 });
 
+let tabRemoveTimer: ReturnType<typeof setTimeout> | null = null;
+function disarmTabRemove(): void {
+  if (tabRemoveTimer) clearTimeout(tabRemoveTimer);
+  tabRemoveTimer = null;
+  if (!tabUi.removeArmed) return;
+  tabUi.removeArmed = null;
+  renderTabs();
+}
+
+function onTabAction(action: TabAction, id: string | undefined): void {
+  if (action === 'add') return api.command({ type: 'tabAdd', name: '' });
+  if (!id) return;
+  if (action === 'switch') {
+    // 활성 탭을 누르면 아무것도 하지 않는다 (더블클릭 이름 바꾸기가 끊기지 않게)
+    if (id === state.app?.activeTabId) return;
+    disarmTabRemove();
+    return api.command({ type: 'tabSwitch', id });
+  }
+  if (tabUi.removeArmed !== id) {
+    tabUi.removeArmed = id;
+    renderTabs();
+    tabRemoveTimer = setTimeout(disarmTabRemove, TAB_REMOVE_CONFIRM_MS);
+    return;
+  }
+  disarmTabRemove();
+  api.command({ type: 'tabRemove', id });
+}
+
+function finishRename(input: HTMLInputElement, save: boolean): void {
+  const id = input.dataset.tabRename;
+  if (!id || tabUi.renaming !== id) return;
+  tabUi.renaming = null;
+  if (save) api.command({ type: 'tabRename', id, name: input.value });
+  render();
+}
+
+/** 탭 바: 누르면 전환, 활성 탭을 더블클릭하면 이름 바꾸기, ×는 두 번 눌러 삭제 */
+function setupTabs(): void {
+  dom.tabs.addEventListener('click', (e) => {
+    const target = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-tab-action]');
+    if (!target || target.disabled) return;
+    e.stopPropagation();
+    onTabAction(target.dataset.tabAction as TabAction, target.closest<HTMLElement>('.tab')?.dataset.tabId);
+  });
+  dom.tabs.addEventListener('dblclick', (e) => {
+    const item = (e.target as HTMLElement).closest<HTMLElement>('.tab.active');
+    if (!item?.dataset.tabId || !(e.target as HTMLElement).closest('.tab-btn')) return;
+    tabUi.renaming = item.dataset.tabId;
+    renderTabs();
+  });
+  dom.tabs.addEventListener('keydown', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (!input.dataset.tabRename) return;
+    if (e.key === 'Enter') finishRename(input, true);
+    if (e.key === 'Escape') finishRename(input, false);
+  });
+  dom.tabs.addEventListener('focusout', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.dataset.tabRename) finishRename(input, true);
+    else if (pendingRender) render();
+  });
+}
+
 /** 줄을 끌어 순서를 바꾼다. 놓는 위치는 대상 줄의 위·아래 절반으로 정한다 */
 function setupDrag(): void {
   const rowOf = (e: DragEvent) => (e.target as HTMLElement).closest<HTMLLIElement>('.layer');
@@ -205,14 +286,19 @@ function setupDrag(): void {
 }
 
 setupDrag();
-api.onLayers((layers) => {
-  state.layers = layers;
-  const editing = (document.activeElement as HTMLElement | null)?.dataset?.duration;
-  if (editing) pendingRender = true;
+setupTabs();
+
+/** 설정 창은 활성 탭의 레이어를 보여주고, 레이어 명령은 main이 활성 탭에 적용한다 */
+function onState(app: AppState): void {
+  state.app = app;
+  state.layers = activeTab(app).layers;
+  if (tabUi.renaming && tabUi.renaming !== app.activeTabId) tabUi.renaming = null;
+  // 시간·탭 이름을 입력하는 중이면 입력이 날아가지 않게 포커스가 빠진 뒤 다시 그린다
+  const focused = (document.activeElement as HTMLElement | null)?.dataset;
+  if (focused?.duration || focused?.tabRename) pendingRender = true;
   else render();
-});
-void api.getLayers().then((layers) => {
-  state.layers = layers;
-  render();
-});
+}
+
+api.onState(onState);
+void api.getState().then(onState);
 setInterval(paint, PAINT_MS);

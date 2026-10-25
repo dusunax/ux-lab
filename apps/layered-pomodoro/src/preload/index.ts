@@ -8,8 +8,8 @@ const subscribe = <T>(channel: string, cb: (payload: T) => void) => {
 };
 
 const api: Api = {
-  getLayers: () => ipcRenderer.invoke(IPC.getLayers),
-  onLayers: (cb) => subscribe(IPC.layers, cb),
+  getState: () => ipcRenderer.invoke(IPC.getState),
+  onState: (cb) => subscribe(IPC.state, cb),
   onFinished: (cb) => subscribe(IPC.finished, cb),
   command: (cmd) => ipcRenderer.send(IPC.command, cmd),
   openSettings: () => ipcRenderer.send(IPC.openSettings),

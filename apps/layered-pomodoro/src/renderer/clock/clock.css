@@ -108,6 +108,25 @@ body {
   font-size: 23px;
 }
 
+.center-tab {
+  max-width: 88%;
+  margin-bottom: 1px;
+  padding: 0 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  font-size: 8.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.center-tab[hidden] {
+  display: none;
+}
+
 .center-status {
   margin-top: 2px;
   font-size: 11px;
