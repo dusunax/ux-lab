@@ -14,7 +14,18 @@ import {
   setDuration,
   type ColorId,
 } from './layers';
-import { TAB_LIMITS, addTab, removeTab, renameTab, switchTab, updateActiveLayers, type AppState } from './tabs';
+import {
+  TAB_LIMITS,
+  addTab,
+  isClockSize,
+  removeTab,
+  renameTab,
+  setClockSize,
+  switchTab,
+  updateActiveLayers,
+  type AppState,
+  type ClockSize,
+} from './tabs';
 
 export type Command =
   | { type: 'add'; name: string; minutes: number }
@@ -27,7 +38,8 @@ export type Command =
   | { type: 'tabAdd'; name: string }
   | { type: 'tabRemove'; id: string }
   | { type: 'tabRename'; id: string; name: string }
-  | { type: 'tabSwitch'; id: string };
+  | { type: 'tabSwitch'; id: string }
+  | { type: 'clockSize'; size: ClockSize };
 
 const MAX_ID_LENGTH = 64;
 
@@ -60,6 +72,8 @@ export function parseCommand(raw: unknown): Command | null {
       return isId(v.id) && typeof v.name === 'string'
         ? { type: 'tabRename', id: v.id, name: v.name.slice(0, TAB_LIMITS.maxNameLength * 2) }
         : null;
+    case 'clockSize':
+      return isClockSize(v.size) ? { type: 'clockSize', size: v.size } : null;
     default:
       return null;
   }
@@ -89,5 +103,7 @@ export function applyCommand(state: AppState, cmd: Command, now: number, makeId:
       return renameTab(state, cmd.id, cmd.name);
     case 'tabSwitch':
       return switchTab(state, cmd.id, now);
+    case 'clockSize':
+      return setClockSize(state, cmd.size);
   }
 }

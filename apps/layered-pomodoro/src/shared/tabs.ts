@@ -5,6 +5,13 @@
  */
 import { defaultLayers, remainingMs, sanitizeLayers, tick, type Layer } from './layers';
 
+/** 시계 크기. 화면 디자인은 M(280px) 기준이고 S·L은 같은 화면을 배율로 줄이고 키운다 */
+export const CLOCK_SIZES = { S: 200, M: 280, L: 360 } as const;
+export type ClockSize = keyof typeof CLOCK_SIZES;
+export const CLOCK_BASE_SIZE = CLOCK_SIZES.M;
+
+export const isClockSize = (v: unknown): v is ClockSize => typeof v === 'string' && v in CLOCK_SIZES;
+
 export interface Tab {
   id: string;
   name: string;
@@ -16,6 +23,7 @@ export interface Tab {
 export interface AppState {
   tabs: Tab[];
   activeTabId: string;
+  clockSize: ClockSize;
 }
 
 export const TAB_LIMITS = {
@@ -62,7 +70,7 @@ export function updateActiveLayers(state: AppState, fn: (layers: Layer[]) => Lay
 export function switchTab(state: AppState, id: string, now: number): AppState {
   if (id === activeTab(state).id || !state.tabs.some((t) => t.id === id)) return state;
   const tabs = state.tabs.map((t) => (t.id === id ? resume(t, now) : pause(t, now)));
-  return { tabs, activeTabId: id };
+  return { ...state, tabs, activeTabId: id };
 }
 
 /** 새 탭은 기본 레이어 하나를 갖고 바로 활성 탭이 된다 */
@@ -84,7 +92,7 @@ export function removeTab(state: AppState, id: string, now: number): AppState {
   const tabs = state.tabs.filter((t) => t.id !== id);
   if (id !== state.activeTabId) return { ...state, tabs };
   const next = tabs[Math.min(index, tabs.length - 1)];
-  return { tabs: tabs.map((t) => (t.id === next.id ? resume(t, now) : t)), activeTabId: next.id };
+  return { ...state, tabs: tabs.map((t) => (t.id === next.id ? resume(t, now) : t)), activeTabId: next.id };
 }
 
 export function renameTab(state: AppState, id: string, name: string): AppState {
@@ -100,7 +108,11 @@ export function tickState(state: AppState, now: number): { state: AppState; fini
 
 export function defaultState(now: number, makeId: () => string): AppState {
   const id = makeId();
-  return { tabs: [{ id, name: 'Tab 1', layers: defaultLayers(now, makeId), pausedAt: null }], activeTabId: id };
+  return { tabs: [{ id, name: 'Tab 1', layers: defaultLayers(now, makeId), pausedAt: null }], activeTabId: id, clockSize: 'M' };
+}
+
+export function setClockSize(state: AppState, size: ClockSize): AppState {
+  return { ...state, clockSize: size };
 }
 
 /**
@@ -110,7 +122,11 @@ export function defaultState(now: number, makeId: () => string): AppState {
 export function sanitizeState(raw: unknown, now: number, makeId: () => string): AppState {
   if (Array.isArray(raw)) {
     const id = makeId();
-    return { tabs: [{ id, name: 'Tab 1', layers: sanitizeLayers(raw, now, makeId), pausedAt: null }], activeTabId: id };
+    return {
+      tabs: [{ id, name: 'Tab 1', layers: sanitizeLayers(raw, now, makeId), pausedAt: null }],
+      activeTabId: id,
+      clockSize: 'M',
+    };
   }
   const v = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
   const tabs: Tab[] = [];
@@ -123,6 +139,7 @@ export function sanitizeState(raw: unknown, now: number, makeId: () => string): 
   return {
     tabs: tabs.map((t) => (t.id === activeTabId ? resume(t, now) : pause(t, now))),
     activeTabId,
+    clockSize: isClockSize(v.clockSize) ? v.clockSize : 'M',
   };
 }
 

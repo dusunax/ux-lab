@@ -100,6 +100,23 @@ describe('addTab · removeTab · renameTab', () => {
   });
 });
 
+describe('clockSize', () => {
+  it('기본은 M이고, 탭을 바꾸거나 지워도 유지된다', () => {
+    const start = twoTabs();
+    expect(start.clockSize).toBe('M');
+    const large = { ...start, clockSize: 'L' as const };
+    expect(switchTab(large, large.tabs[1].id, T0).clockSize).toBe('L');
+    expect(removeTab(large, large.activeTabId, T0).clockSize).toBe('L');
+  });
+
+  it('저장 파일의 잘못된 크기는 M으로 맞춘다', () => {
+    const start = twoTabs();
+    expect(sanitizeState({ ...start, clockSize: 'XL' }, T0, makeId).clockSize).toBe('M');
+    expect(sanitizeState({ ...start, clockSize: 'S' }, T0, makeId).clockSize).toBe('S');
+    expect(sanitizeState(start.tabs[0].layers, T0, makeId).clockSize).toBe('M');
+  });
+});
+
 describe('sanitizeState', () => {
   it('탭 이전 형식(레이어 배열)은 탭 하나로 옮긴다', () => {
     const layers: Layer[] = addLayer([], { name: 'old', minutes: 25 }, T0, 'old');

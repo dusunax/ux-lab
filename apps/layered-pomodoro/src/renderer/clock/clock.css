@@ -134,6 +134,34 @@ body {
   color: var(--ink-soft);
 }
 
+/*
+ * S(200px)는 이 화면을 0.71배로 줄여 보여준다. 작은 글자는 읽히지 않으므로
+ * 상태 줄과 탭 이름은 숨기고, 레이어 이름과 남은 시간만 키운다 (실제 크기 약 10px · 27px)
+ */
+.clock[data-size='S'] .center {
+  width: 112px;
+}
+
+.clock[data-size='S'] .center-tab,
+.clock[data-size='S'] .center-status {
+  display: none;
+}
+
+.clock[data-size='S'] .center-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.clock[data-size='S'] .center-clock {
+  font-size: 38px;
+  font-weight: 600;
+}
+
+.clock[data-size='S'] .center-clock.long {
+  font-size: 29px;
+}
+
 /* 3시 방향 용두: 누르면 레이어 설정 팝업 */
 .crown {
   position: absolute;

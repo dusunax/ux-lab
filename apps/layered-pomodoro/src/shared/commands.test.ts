@@ -16,6 +16,7 @@ describe('parseCommand', () => {
     expect(parseCommand({ type: 'tabAdd', name: 'Work' })).toEqual({ type: 'tabAdd', name: 'Work' });
     expect(parseCommand({ type: 'tabSwitch', id: 't1' })).toEqual({ type: 'tabSwitch', id: 't1' });
     expect(parseCommand({ type: 'tabRename', id: 't1', name: 'x' })).toEqual({ type: 'tabRename', id: 't1', name: 'x' });
+    expect(parseCommand({ type: 'clockSize', size: 'L' })).toEqual({ type: 'clockSize', size: 'L' });
   });
 
   it('모르는 명령, 잘못된 값은 버린다', () => {
@@ -28,6 +29,7 @@ describe('parseCommand', () => {
     expect(parseCommand({ type: 'duration', id: 'a', minutes: '15' })).toBeNull();
     expect(parseCommand({ type: 'tabRename', id: 't1' })).toBeNull();
     expect(parseCommand({ type: 'tabRemove', id: 7 })).toBeNull();
+    expect(parseCommand({ type: 'clockSize', size: 'XL' })).toBeNull();
   });
 });
 
