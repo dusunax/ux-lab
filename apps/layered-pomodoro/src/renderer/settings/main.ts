@@ -1,7 +1,7 @@
 import '../shared/base.css';
 import './settings.css';
 import { LIMITS, canAdd, canRemove, freeColors, type ColorId, type Layer } from '../../shared/layers';
-import { activeTab, type AppState } from '../../shared/tabs';
+import { activeTab, isClockSize, type AppState } from '../../shared/tabs';
 import { api } from '../shared/api';
 import { chime } from '../shared/chime';
 import { buildTabBar, type TabAction, type TabBarUi } from './tabbar';
@@ -27,6 +27,7 @@ const dom = {
   addHint: $('addHint'),
   testSound: $<HTMLButtonElement>('testSound'),
   resetAll: $<HTMLButtonElement>('resetAll'),
+  clockSize: $('clockSize'),
 };
 
 const state = {
@@ -58,6 +59,7 @@ function render(): void {
   dom.list.replaceChildren(...rows);
   renderTabs();
   renderForm();
+  renderClockSize();
   paint();
 }
 
@@ -69,6 +71,13 @@ function renderTabs(): void {
     input.focus();
     input.select();
   }
+}
+
+function renderClockSize(): void {
+  const size = state.app?.clockSize;
+  dom.clockSize.querySelectorAll<HTMLButtonElement>('[data-size]').forEach((btn) => {
+    btn.setAttribute('aria-checked', String(btn.dataset.size === size));
+  });
 }
 
 function renderForm(): void {
@@ -143,6 +152,11 @@ dom.form.addEventListener('submit', (e) => {
 });
 
 dom.testSound.addEventListener('click', () => chime());
+
+dom.clockSize.addEventListener('click', (e) => {
+  const size = (e.target as HTMLElement).closest<HTMLElement>('[data-size]')?.dataset.size;
+  if (isClockSize(size) && size !== state.app?.clockSize) api.command({ type: 'clockSize', size });
+});
 
 // 레이어 시간 수정: Enter·포커스 이동으로 값이 확정될 때 보낸다
 dom.list.addEventListener('change', (e) => {

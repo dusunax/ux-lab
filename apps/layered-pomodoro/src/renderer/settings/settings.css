@@ -582,6 +582,40 @@ body {
   color: var(--ink-soft);
 }
 
+/* 시계 크기 S·M·L: 고른 크기만 잉크색 바탕 */
+.size-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.size-label {
+  margin-right: 3px;
+}
+
+.size-btn {
+  min-width: 24px;
+  padding: 1px 5px 0;
+  border: 1.5px solid var(--ink-faint);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.size-btn:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.size-btn[aria-checked='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
 .link-btn:hover {
   color: var(--accent);
 }

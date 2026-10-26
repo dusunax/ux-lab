@@ -95,6 +95,8 @@ dom.crown.addEventListener('click', () => api.openSettings());
 function onState(state: AppState): void {
   const tab = activeTab(state);
   layers = tab.layers;
+  // S는 화면이 0.71배로 줄어 글자 구성을 따로 쓴다(clock.css)
+  dom.clock.dataset.size = state.clockSize;
   dom.tab.textContent = state.tabs.length > 1 ? tab.name : '';
   dom.tab.hidden = state.tabs.length < 2;
   render();

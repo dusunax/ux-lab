@@ -1,8 +1,7 @@
 import { join } from 'node:path';
 import { BrowserWindow, screen, shell, type WebPreferences } from 'electron';
+import { CLOCK_BASE_SIZE, CLOCK_SIZES, type ClockSize } from '../shared/tabs';
 
-/** 시계 원의 지름 + 그림자 여백. 화면 디자인은 280×280 기준 */
-const CLOCK_SIZE = 280;
 const MARGIN = 28;
 const SETTINGS_WIDTH = 500;
 const SETTINGS_HEIGHT = 660;
@@ -57,16 +56,23 @@ abstract class AppWindow {
   }
 }
 
-/** 화면 위에 떠 있는 투명 원형 시계. 원 전체를 잡아 끌어 옮긴다 */
+/**
+ * 화면 위에 떠 있는 투명 원형 시계. 원 전체를 잡아 끌어 옮긴다.
+ * 화면은 280px(M) 기준으로 그리고, S·L은 창 크기와 화면 배율(zoom factor)을 함께 바꿔 비율을 유지한다.
+ */
 export class ClockWindow extends AppWindow {
-  show(): void {
+  private size: ClockSize = 'M';
+
+  show(size: ClockSize = this.size): void {
+    this.size = size;
     const existing = this.alive;
     if (existing) return existing.show();
+    const px = CLOCK_SIZES[size];
     const area = screen.getPrimaryDisplay().workArea;
     const win = new BrowserWindow({
-      width: CLOCK_SIZE,
-      height: CLOCK_SIZE,
-      x: area.x + area.width - CLOCK_SIZE - MARGIN,
+      width: px,
+      height: px,
+      x: area.x + area.width - px - MARGIN,
       y: area.y + MARGIN,
       show: false,
       frame: false,
@@ -88,9 +94,27 @@ export class ClockWindow extends AppWindow {
     win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     win.once('ready-to-show', () => win.showInactive());
     win.on('closed', () => (this.win = null));
+    // 배율은 페이지를 다시 읽으면 초기화되므로 읽을 때마다 맞춘다
+    win.webContents.on('did-finish-load', () => this.applyZoom());
     guard(win);
     this.win = win;
     void loadRenderer(win, 'clock');
+  }
+
+  /** 크기를 바꾼다. 화면에서 시계의 오른쪽 위 모서리가 그대로 있도록 옮긴다 */
+  resize(size: ClockSize): void {
+    if (size === this.size) return;
+    this.size = size;
+    const win = this.alive;
+    if (!win) return;
+    const px = CLOCK_SIZES[size];
+    const b = win.getBounds();
+    win.setBounds({ x: b.x + b.width - px, y: b.y, width: px, height: px });
+    this.applyZoom();
+  }
+
+  private applyZoom(): void {
+    this.alive?.webContents.setZoomFactor(CLOCK_SIZES[this.size] / CLOCK_BASE_SIZE);
   }
 }
 

@@ -29,7 +29,10 @@ function bootstrap(): void {
     settings.send(channel, payload);
   };
   const store = new StateStore({
-    onChange: (state) => broadcast(IPC.state, state),
+    onChange: (state) => {
+      broadcast(IPC.state, state);
+      clock.resize(state.clockSize);
+    },
     onFinished: (finished) => {
       broadcast(IPC.finished, finished);
       notifyFinished(finished);
@@ -51,7 +54,7 @@ function bootstrap(): void {
   });
 
   installMenu(openSettings, () => clock.show());
-  clock.show();
+  clock.show(store.snapshot.clockSize);
   store.start();
 
   app.on('second-instance', () => clock.show());
