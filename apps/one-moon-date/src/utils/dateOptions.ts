@@ -1,4 +1,5 @@
 import {getLunarMonthDays, getLeapMonthOfYear} from './lunarCalendar';
+import type {LunarRegion} from '../types';
 
 const YEAR_MIN = 1900;
 const YEAR_MAX = 2100;
@@ -26,13 +27,14 @@ export const generateDayOptions = (
   selectedMonth: number,
   conversionMode: 'solarToLunar' | 'lunarToSolar',
   isLeapMonth: boolean,
+  region: LunarRegion = 'kr',
 ): number[] => {
   let daysInMonth: number;
   
   if (conversionMode === 'solarToLunar') {
     daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
   } else {
-    daysInMonth = getLunarMonthDays(selectedYear, selectedMonth, isLeapMonth) || 30;
+    daysInMonth = getLunarMonthDays(selectedYear, selectedMonth, isLeapMonth, region) || 30;
   }
   
   const days: number[] = [];
@@ -45,9 +47,10 @@ export const generateDayOptions = (
 export const getLeapMonth = (
   selectedYear: number,
   conversionMode: 'solarToLunar' | 'lunarToSolar',
+  region: LunarRegion = 'kr',
 ): number => {
   if (conversionMode === 'lunarToSolar') {
-    return getLeapMonthOfYear(selectedYear);
+    return getLeapMonthOfYear(selectedYear, region);
   }
   return 0;
 };

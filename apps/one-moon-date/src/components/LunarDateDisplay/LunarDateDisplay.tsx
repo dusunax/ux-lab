@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, TouchableOpacity, Modal, FlatList} from 'react-n
 import {Colors} from '../../constants/colors';
 import {useI18n} from '../../i18n';
 import {useDarkMode} from '../../contexts/DarkModeContext';
+import {useLunarRegion} from '../../contexts/LunarRegionContext';
 import {getZodiacKey} from '../../i18n/translations';
 import {
   formatSolarDate,
@@ -22,6 +23,7 @@ interface LunarDateDisplayProps {
 export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayProps) => {
   const {darkMode: isDarkMode} = useDarkMode();
   const {t, formatString, getZodiac, getGanZhi} = useI18n();
+  const {region} = useLunarRegion();
   const [yearModalVisible, setYearModalVisible] = useState(false);
   const [monthModalVisible, setMonthModalVisible] = useState(false);
   const [dayModalVisible, setDayModalVisible] = useState(false);
@@ -93,14 +95,14 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayPro
 
   const yearOptions = generateYearOptions();
   const monthOptions = Array.from({length: 12}, (_, i) => i + 1);
-  const dayOptions = generateDayOptions(lunar.year, lunar.month, 'lunarToSolar', lunar.isLeapMonth);
+  const dayOptions = generateDayOptions(lunar.year, lunar.month, 'lunarToSolar', lunar.isLeapMonth, region);
 
   const handleYearSelect = (year: number) => {
     setYearModalVisible(false);
     if (onLunarDateSelect) {
-      const newLeapMonth = getLeapMonthOfYear(year);
+      const newLeapMonth = getLeapMonthOfYear(year, region);
       const isLeap = newLeapMonth === lunar.month;
-      const maxDays = getLunarMonthDays(year, lunar.month, isLeap);
+      const maxDays = getLunarMonthDays(year, lunar.month, isLeap, region);
       onLunarDateSelect(year, lunar.month, Math.min(lunar.day, maxDays), isLeap);
     }
   };
@@ -108,9 +110,9 @@ export const LunarDateDisplay = ({lunar, onLunarDateSelect}: LunarDateDisplayPro
   const handleMonthSelect = (month: number) => {
     setMonthModalVisible(false);
     if (onLunarDateSelect) {
-      const newLeapMonth = getLeapMonthOfYear(lunar.year);
+      const newLeapMonth = getLeapMonthOfYear(lunar.year, region);
       const isLeap = newLeapMonth === month;
-      const maxDays = getLunarMonthDays(lunar.year, month, isLeap);
+      const maxDays = getLunarMonthDays(lunar.year, month, isLeap, region);
       onLunarDateSelect(lunar.year, month, Math.min(lunar.day, maxDays), isLeap);
     }
   };

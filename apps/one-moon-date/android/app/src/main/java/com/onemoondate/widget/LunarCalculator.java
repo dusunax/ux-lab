@@ -1,6 +1,12 @@
 package com.onemoondate.widget;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 한국 음력 변환 클래스
@@ -8,8 +14,34 @@ import java.util.Calendar;
  */
 public class LunarCalculator {
 
-    // 음력 데이터 테이블 (1900-2100)
-    private static final int[] LUNAR_DATA = {
+    // 음력 데이터 테이블 (1900-2100), 한국 표준시 기준 (중국 음력과 합삭 날짜가 다른 해가 있음)
+    // 1900-2049는 한국천문연구원 데이터, 2050-2100은 KST 합삭·중기 천문 계산값
+    private static final int[] LUNAR_DATA_KR = {
+        0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2, // 1900-1909
+        0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x0da95, 0x0b550, 0x056a0, 0x0ada2, 0x095d0, 0x04bb7, // 1910-1919
+        0x049b0, 0x0a4b0, 0x0b4b5, 0x06a90, 0x0ad40, 0x0bb54, 0x02b60, 0x095b0, 0x05372, 0x04970, // 1920-1929
+        0x06566, 0x0e4a0, 0x0ea50, 0x16a95, 0x05b50, 0x02b60, 0x18ae3, 0x092e0, 0x1c8d7, 0x0c950, // 1930-1939
+        0x0d4a0, 0x1d8a6, 0x0b690, 0x056d0, 0x125b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0d557, // 1940-1949
+        0x0b4a0, 0x0b550, 0x15555, 0x04db0, 0x025b0, 0x18573, 0x052b0, 0x0a9b8, 0x06950, 0x06aa0, // 1950-1959
+        0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570, 0x05270, 0x07263, 0x0d950, 0x06b57, 0x056a0, // 1960-1969
+        0x09ad0, 0x04dd5, 0x04ae0, 0x0a4e0, 0x0d4d4, 0x0d250, 0x0d598, 0x0b540, 0x0d6a0, 0x195a6, // 1970-1979
+        0x095b0, 0x049b0, 0x0a9b4, 0x0a4b0, 0x0b27a, 0x06a50, 0x06d40, 0x0b756, 0x02b60, 0x095b0, // 1980-1989
+        0x04b75, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06d98, 0x05ad0, 0x02b60, 0x096e5, 0x092e0, // 1990-1999
+        0x0c960, 0x0e954, 0x0d4a0, 0x0da50, 0x07552, 0x056c0, 0x0abb7, 0x025d0, 0x092d0, 0x0cab5, // 2000-2009
+        0x0a950, 0x0b4a0, 0x1b4a3, 0x0b550, 0x055d9, 0x04ba0, 0x0a5b0, 0x05575, 0x052b0, 0x0a950, // 2010-2019
+        0x0b954, 0x06aa0, 0x0ad50, 0x06b52, 0x04b60, 0x0a6e6, 0x0a570, 0x05270, 0x06a65, 0x0d930, // 2020-2029
+        0x05aa0, 0x0b6a3, 0x096d0, 0x04afb, 0x04ae0, 0x0a4d0, 0x1d0d6, 0x0d250, 0x0d520, 0x0dd45, // 2030-2039
+        0x0b6a0, 0x096d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0b250, 0x1b255, 0x06d40, 0x0ada0, // 2040-2049
+        0x18b63, 0x09570, 0x14978, 0x04970, 0x064b0, 0x168a6, 0x0ea50, 0x06b20, 0x1aac4, 0x0ab60, // 2050-2059
+        0x09370, 0x052e3, 0x0c960, 0x0d557, 0x0d4a0, 0x0da50, 0x05d55, 0x056a0, 0x0aad0, 0x095d4, // 2060-2069
+        0x092d0, 0x0c9b8, 0x0a950, 0x0b4a0, 0x0b6a6, 0x0ad50, 0x055a0, 0x0aba4, 0x0a5b0, 0x052b0, // 2070-2079
+        0x0b2b3, 0x0a930, 0x07557, 0x06aa0, 0x0ad50, 0x14b55, 0x04b60, 0x0a570, 0x054f4, 0x05260, // 2080-2089
+        0x0e968, 0x0d530, 0x05aa0, 0x1aaa6, 0x096d0, 0x04ae0, 0x0aae4, 0x0a4d0, 0x0d260, 0x0f253, // 2090-2099
+        0x0d520, // 2100
+    };
+
+    // 중국 표준시(UTC+8) 기준 음력 테이블 (lunar-javascript와 1900-2100 일치)
+    private static final int[] LUNAR_DATA_CN = {
         0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2, // 1900-1909
         0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2, 0x095b0, 0x14977, // 1910-1919
         0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970, // 1920-1929
@@ -32,6 +64,13 @@ public class LunarCalculator {
         0x0e968, 0x0d520, 0x0daa0, 0x16aa6, 0x056d0, 0x04ae0, 0x0a9d4, 0x0a2d0, 0x0d150, 0x0f252, // 2090-2099
         0x0d520, // 2100
     };
+
+    public static final String REGION_KR = "kr";
+    public static final String REGION_CN = "cn";
+    private static final String PREFS_NAME = "com.onemoondate.preferences";
+    private static final String KEY_LUNAR_REGION = "lunarRegion";
+    // 중국 음력을 기본으로 쓰는 지역. src/utils/deviceLocale.ts의 판정과 같게 유지한다
+    private static final List<String> CN_LUNAR_COUNTRIES = Arrays.asList("CN", "TW", "HK", "MO");
 
     private static final int BASE_YEAR = 1900;
     private static final int BASE_JULIAN_DAY = toJulianDay(1900, 1, 31);
@@ -66,26 +105,26 @@ public class LunarCalculator {
     /**
      * 특정 연도의 윤달 월 반환
      */
-    private static int getLeapMonth(int year) {
-        return LUNAR_DATA[year - BASE_YEAR] & 0xf;
+    private static int getLeapMonth(int[] data, int year) {
+        return data[year - BASE_YEAR] & 0xf;
     }
 
     /**
      * 특정 연도의 윤달 일수 반환
      */
-    private static int getLeapDays(int year) {
-        if (getLeapMonth(year) == 0) {
+    private static int getLeapDays(int[] data, int year) {
+        if (getLeapMonth(data, year) == 0) {
             return 0;
         }
-        return (LUNAR_DATA[year - BASE_YEAR] & 0x10000) != 0 ? 30 : 29;
+        return (data[year - BASE_YEAR] & 0x10000) != 0 ? 30 : 29;
     }
 
     /**
      * 특정 연도의 총 일수 반환
      */
-    private static int getYearDays(int year) {
+    private static int getYearDays(int[] data, int year) {
         int sum = 348; // 29일 * 12개월
-        int info = LUNAR_DATA[year - BASE_YEAR];
+        int info = data[year - BASE_YEAR];
 
         for (int i = 0x8000; i > 0x8; i >>= 1) {
             if ((info & i) != 0) {
@@ -93,7 +132,7 @@ public class LunarCalculator {
             }
         }
 
-        return sum + getLeapDays(year);
+        return sum + getLeapDays(data, year);
     }
 
     /**
@@ -101,11 +140,11 @@ public class LunarCalculator {
      * bit[4-15]가 각 월의 대소를 나타냄 (bit 15 = 1월, bit 4 = 12월)
      * JavaScript 버전과 동일한 로직 사용: 0x10000 >> month
      */
-    private static int getMonthDays(int year, int month) {
+    private static int getMonthDays(int[] data, int year, int month) {
         if (year < BASE_YEAR || year > 2100) {
             return 30;
         }
-        int info = LUNAR_DATA[year - BASE_YEAR];
+        int info = data[year - BASE_YEAR];
         int bitMask = 0x10000 >> month;
         return (info & bitMask) != 0 ? 30 : 29;
     }
@@ -115,6 +154,11 @@ public class LunarCalculator {
      * 율리우스 일수를 사용하여 시간대와 무관하게 정확한 계산
      */
     public static LunarDate solarToLunar(int solarYear, int solarMonth, int solarDay) {
+        return solarToLunar(solarYear, solarMonth, solarDay, REGION_KR);
+    }
+
+    public static LunarDate solarToLunar(int solarYear, int solarMonth, int solarDay, String region) {
+        int[] data = REGION_CN.equals(region) ? LUNAR_DATA_CN : LUNAR_DATA_KR;
         int targetJulianDay = toJulianDay(solarYear, solarMonth, solarDay);
         int offset = targetJulianDay - BASE_JULIAN_DAY;
 
@@ -127,19 +171,19 @@ public class LunarCalculator {
         int lunarYear = BASE_YEAR;
 
         int yearDays;
-        while (lunarYear <= 2100 && days >= (yearDays = getYearDays(lunarYear))) {
+        while (lunarYear <= 2100 && days >= (yearDays = getYearDays(data, lunarYear))) {
             days -= yearDays;
             lunarYear++;
         }
 
-        int leapMonth = getLeapMonth(lunarYear);
+        int leapMonth = getLeapMonth(data, lunarYear);
         int lunarMonth = 1;
         int lunarDay = 1;
         boolean isLeapMonth = false;
 
         int monthDays;
         for (int month = 1; month <= 12; month++) {
-            monthDays = getMonthDays(lunarYear, month);
+            monthDays = getMonthDays(data, lunarYear, month);
 
             if (days < monthDays) {
                 lunarMonth = month;
@@ -150,7 +194,7 @@ public class LunarCalculator {
             days -= monthDays;
 
             if (month == leapMonth) {
-                monthDays = getLeapDays(lunarYear);
+                monthDays = getLeapDays(data, lunarYear);
                 if (days < monthDays) {
                     lunarMonth = month;
                     lunarDay = days + 1;
@@ -181,6 +225,15 @@ public class LunarCalculator {
             cal.get(Calendar.MONTH) + 1,
             cal.get(Calendar.DAY_OF_MONTH)
         );
+    }
+
+    public static String getSavedRegion(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String region = prefs.getString(KEY_LUNAR_REGION, null);
+        if (REGION_KR.equals(region) || REGION_CN.equals(region)) {
+            return region;
+        }
+        return CN_LUNAR_COUNTRIES.contains(Locale.getDefault().getCountry()) ? REGION_CN : REGION_KR;
     }
 
     /**

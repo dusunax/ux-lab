@@ -6,6 +6,7 @@ import {
   generateDayOptions,
 } from '../utils/dateOptions';
 import {useI18n} from '../i18n';
+import {useLunarRegion} from '../contexts/LunarRegionContext';
 import type {LunarDate, Translation} from '../types';
 
 interface UseDateConverterReturn {
@@ -27,6 +28,7 @@ export const useDateConverter = (
   onLunarChange?: (lunarData: LunarDate) => void,
 ): UseDateConverterReturn => {
   const {getGanZhi} = useI18n();
+  const {region} = useLunarRegion();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
@@ -46,7 +48,7 @@ export const useDateConverter = (
     }
     
     try {
-      const result = solarToLunar(new Date(selectedYear, selectedMonth - 1, selectedDay));
+      const result = solarToLunar(new Date(selectedYear, selectedMonth - 1, selectedDay), region);
       if (result) {
         const ganZhi = getGanZhi(result.year);
         const lunarData: LunarDate = {
@@ -62,7 +64,7 @@ export const useDateConverter = (
     } catch {
       setConvertError(t?.convertError || '변환 실패');
     }
-  }, [selectedYear, selectedMonth, selectedDay, onLunarChange, t, getGanZhi]);
+  }, [selectedYear, selectedMonth, selectedDay, onLunarChange, t, getGanZhi, region]);
 
   const handleMonthSelect = (month: number) => {
     setSelectedMonth(month);

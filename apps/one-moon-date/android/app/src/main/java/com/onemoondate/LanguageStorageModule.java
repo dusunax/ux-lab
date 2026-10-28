@@ -13,6 +13,7 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
     private static final String PREFS_NAME = "com.onemoondate.preferences";
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_DARK_MODE = "darkMode";
+    private static final String KEY_LUNAR_REGION = "lunarRegion";
 
     public LanguageStorageModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -78,6 +79,37 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject("SET_DARK_MODE_ERROR", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void setLunarRegion(String region, Promise promise) {
+        if (!"kr".equals(region) && !"cn".equals(region)) {
+            promise.reject("INVALID_LUNAR_REGION", "지원하지 않는 음력 기준: " + region);
+            return;
+        }
+        try {
+            SharedPreferences prefs = getReactApplicationContext()
+                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            prefs.edit().putString(KEY_LUNAR_REGION, region).apply();
+
+            android.content.Intent intent = new android.content.Intent(
+                getReactApplicationContext(),
+                com.onemoondate.widget.LunarWidgetProvider.class
+            );
+            intent.setAction("com.onemoondate.ACTION_UPDATE_WIDGET");
+            getReactApplicationContext().sendBroadcast(intent);
+
+            android.content.Intent intentLarge = new android.content.Intent(
+                getReactApplicationContext(),
+                com.onemoondate.widget.LunarWidgetLargeProvider.class
+            );
+            intentLarge.setAction("com.onemoondate.ACTION_UPDATE_WIDGET_LARGE");
+            getReactApplicationContext().sendBroadcast(intentLarge);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject("SET_LUNAR_REGION_ERROR", e.getMessage());
         }
     }
 

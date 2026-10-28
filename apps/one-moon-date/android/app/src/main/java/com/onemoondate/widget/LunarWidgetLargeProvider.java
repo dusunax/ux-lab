@@ -189,7 +189,8 @@ public class LunarWidgetLargeProvider extends AppWidgetProvider {
             LunarCalculator.LunarDate lunar = LunarCalculator.solarToLunar(
                 currentYear,
                 currentMonth,
-                currentDay
+                currentDay,
+                LunarCalculator.getSavedRegion(context)
             );
 
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout_large);

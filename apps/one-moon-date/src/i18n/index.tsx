@@ -1,23 +1,13 @@
 import React, {createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode} from 'react';
-import {NativeModules, Platform} from 'react-native';
 import {translations, getZodiacKey} from './translations';
 import {saveLanguage, loadLanguage} from '../utils/storage';
+import {getDeviceLocale} from '../utils/deviceLocale';
 import type {Language, I18nContextValue, GanZhi} from '../types';
 
 const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 
 const getDeviceLanguage = (): Language => {
-  let locale = 'ko';
-
-  if (Platform.OS === 'ios') {
-    locale = NativeModules.SettingsManager?.settings?.AppleLocale ||
-            NativeModules.SettingsManager?.settings?.AppleLanguages?.[0] ||
-            'ko';
-  } else {
-    locale = NativeModules.I18nManager?.localeIdentifier || 'ko';
-  }
-
-  const lang = locale.substring(0, 2).toLowerCase();
+  const lang = getDeviceLocale().substring(0, 2).toLowerCase();
 
   if (['ko', 'en', 'ja'].includes(lang)) {
     return lang as Language;
