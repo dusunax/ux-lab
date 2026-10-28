@@ -84,6 +84,10 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLunarRegion(String region, Promise promise) {
+        if (!"kr".equals(region) && !"cn".equals(region)) {
+            promise.reject("INVALID_LUNAR_REGION", "지원하지 않는 음력 기준: " + region);
+            return;
+        }
         try {
             SharedPreferences prefs = getReactApplicationContext()
                 .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);

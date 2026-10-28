@@ -11,13 +11,111 @@ import {useI18n} from '../../i18n';
 import {useDarkMode} from '../../contexts/DarkModeContext';
 import {useLunarRegion} from '../../contexts/LunarRegionContext';
 import {getLunarRegionLabelKey} from '../../i18n/translations';
-import type {Language, LunarRegion} from '../../types';
+import type {Language} from '../../types';
 
 const LANGUAGE_LABELS: Record<Language, string> = {
   ko: '한국어',
   en: 'English',
   ja: '日本語',
 };
+
+interface Option {
+  key: string;
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+}
+
+interface OptionRowProps extends Omit<Option, 'key'> {
+  isLast: boolean;
+  isDarkMode: boolean;
+}
+
+const OptionRow = ({label, selected, onPress, isLast, isDarkMode}: OptionRowProps) => (
+  <TouchableOpacity
+    style={[
+      styles.modalItem,
+      isDarkMode && styles.modalItemDark,
+      isLast && styles.modalItemLast,
+      selected && styles.modalItemActive,
+    ]}
+    onPress={onPress}
+    accessibilityRole="radio"
+    accessibilityState={{checked: selected}}
+    accessibilityLabel={label}>
+    <Text
+      style={[
+        styles.modalItemText,
+        isDarkMode && styles.textDark,
+        selected && styles.modalItemTextActive,
+      ]}>
+      {label}
+    </Text>
+    {selected && <Text style={styles.modalCheckmark}>✓</Text>}
+  </TouchableOpacity>
+);
+
+interface SettingsSectionProps {
+  icon: string;
+  title?: string;
+  options: Option[];
+  isDarkMode: boolean;
+}
+
+// 언어와 음력 기준은 성격이 다른 설정이라 아이콘 붙은 제목과 별도 카드로 나눈다
+const SettingsSection = ({icon, title, options, isDarkMode}: SettingsSectionProps) => (
+  <View style={styles.section}>
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionIcon} accessible={false}>{icon}</Text>
+      <Text
+        style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}
+        accessibilityRole="header">
+        {title}
+      </Text>
+    </View>
+    <View
+      style={[styles.sectionCard, isDarkMode && styles.sectionCardDark]}
+      accessibilityRole="radiogroup"
+      accessibilityLabel={title}>
+      {options.map(({key, ...option}, i) => (
+        <OptionRow key={key} {...option} isLast={i === options.length - 1} isDarkMode={isDarkMode} />
+      ))}
+    </View>
+  </View>
+);
+
+interface SettingsModalProps {
+  visible: boolean;
+  onClose: () => void;
+  closeLabel?: string;
+  isDarkMode: boolean;
+  children: React.ReactNode;
+}
+
+const SettingsModal = ({visible, onClose, closeLabel, isDarkMode, children}: SettingsModalProps) => (
+  <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    {/* 오버레이는 바깥 탭으로 닫기만 담당한다. 접근성 트리에서 빼야 VoiceOver가 항목을 하나씩 읽는다 */}
+    <TouchableOpacity
+      style={styles.modalOverlay}
+      activeOpacity={1}
+      onPress={onClose}
+      accessible={false}>
+      <View
+        style={[styles.modalContent, isDarkMode && styles.modalContentDark]}
+        accessibilityViewIsModal
+        onStartShouldSetResponder={() => true}>
+        {children}
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel={closeLabel}>
+          <Text style={styles.closeButtonText}>{closeLabel}</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  </Modal>
+);
 
 export const LanguageSelector = () => {
   const [visible, setVisible] = useState(false);
@@ -26,81 +124,27 @@ export const LanguageSelector = () => {
   const {region, changeRegion, availableRegions} = useLunarRegion();
   const close = () => setVisible(false);
 
-  const handleLanguageChange = (lang: Language) => {
-    try {
+  const languageOptions: Option[] = availableLanguages.map((lang) => ({
+    key: lang,
+    label: LANGUAGE_LABELS[lang] || lang.toUpperCase(),
+    selected: language === lang,
+    onPress: () => {
       close();
       changeLanguage(lang).catch((error) => {
         console.error('언어 변경 중 오류 발생:', error);
       });
-    } catch (error) {
-      console.error('언어 변경 중 오류 발생:', error);
+    },
+  }));
+
+  const regionOptions: Option[] = availableRegions.map((r) => ({
+    key: r,
+    label: t?.[getLunarRegionLabelKey(r)] || r.toUpperCase(),
+    selected: region === r,
+    onPress: () => {
       close();
-    }
-  };
-
-  const getLanguageLabel = (lang: Language): string => {
-    return LANGUAGE_LABELS[lang] || lang.toUpperCase();
-  };
-
-  const handleRegionChange = (newRegion: LunarRegion) => {
-    close();
-    changeRegion(newRegion);
-  };
-
-  const getRegionLabel = (r: LunarRegion): string => {
-    return t?.[getLunarRegionLabelKey(r)] || r.toUpperCase();
-  };
-
-  const renderOption = (
-    key: string,
-    label: string,
-    selected: boolean,
-    onPress: () => void,
-    isLast: boolean,
-  ) => (
-    <TouchableOpacity
-      key={key}
-      style={[
-        styles.modalItem,
-        isDarkMode && styles.modalItemDark,
-        isLast && styles.modalItemLast,
-        selected && styles.modalItemActive,
-      ]}
-      onPress={onPress}
-      accessibilityRole="radio"
-      accessibilityState={{checked: selected}}
-      accessibilityLabel={label}>
-      <Text
-        style={[
-          styles.modalItemText,
-          isDarkMode && styles.textDark,
-          selected && styles.modalItemTextActive,
-        ]}>
-        {label}
-      </Text>
-      {selected && <Text style={styles.modalCheckmark}>✓</Text>}
-    </TouchableOpacity>
-  );
-
-  // 언어와 음력 기준은 성격이 다른 설정이라 아이콘 붙은 제목과 별도 카드로 나눈다
-  const renderSection = (icon: string, title: string | undefined, options: React.ReactNode) => (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionIcon} accessible={false}>{icon}</Text>
-        <Text
-          style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}
-          accessibilityRole="header">
-          {title}
-        </Text>
-      </View>
-      <View
-        style={[styles.sectionCard, isDarkMode && styles.sectionCardDark]}
-        accessibilityRole="radiogroup"
-        accessibilityLabel={title}>
-        {options}
-      </View>
-    </View>
-  );
+      changeRegion(r);
+    },
+  }));
 
   return (
     <>
@@ -114,57 +158,10 @@ export const LanguageSelector = () => {
         </Text>
       </TouchableOpacity>
 
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={close}>
-        {/* 오버레이는 바깥 탭으로 닫기만 담당한다. 접근성 트리에서 빼야 VoiceOver가 항목을 하나씩 읽는다 */}
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={close}
-          accessible={false}>
-          <View
-            style={[styles.modalContent, isDarkMode && styles.modalContentDark]}
-            accessibilityViewIsModal
-            onStartShouldSetResponder={() => true}>
-            {renderSection(
-              '🌐',
-              t?.languageSection,
-              availableLanguages.map((lang, i) =>
-                renderOption(
-                  lang,
-                  getLanguageLabel(lang),
-                  language === lang,
-                  () => handleLanguageChange(lang),
-                  i === availableLanguages.length - 1,
-                ),
-              ),
-            )}
-            {renderSection(
-              '🌙',
-              t?.lunarRegionSection,
-              availableRegions.map((r, i) =>
-                renderOption(
-                  r,
-                  getRegionLabel(r),
-                  region === r,
-                  () => handleRegionChange(r),
-                  i === availableRegions.length - 1,
-                ),
-              ),
-            )}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={close}
-              accessibilityRole="button"
-              accessibilityLabel={t?.close}>
-              <Text style={styles.closeButtonText}>{t?.close}</Text>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+      <SettingsModal visible={visible} onClose={close} closeLabel={t?.close} isDarkMode={isDarkMode}>
+        <SettingsSection icon="🌐" title={t?.languageSection} options={languageOptions} isDarkMode={isDarkMode} />
+        <SettingsSection icon="🌙" title={t?.lunarRegionSection} options={regionOptions} isDarkMode={isDarkMode} />
+      </SettingsModal>
     </>
   );
 };

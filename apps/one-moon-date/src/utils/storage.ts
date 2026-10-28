@@ -86,8 +86,8 @@ const syncLunarRegionToNative = async (region: LunarRegion): Promise<void> => {
     if (LanguageStorage && LanguageStorage.setLunarRegion) {
       await LanguageStorage.setLunarRegion(region);
     }
-  } catch (e) {
-    console.log('네이티브 음력 기준 저장 실패 (다음 실행 때 재시도):', e);
+  } catch {
+    // 위젯 쪽 저장 실패는 앱 동작에 영향이 없고, 다음 실행 때 다시 보낸다
   }
 };
 
@@ -96,8 +96,8 @@ export const saveLunarRegion = async (region: LunarRegion): Promise<boolean> => 
     await AsyncStorage.setItem(LUNAR_REGION_STORAGE_KEY, region);
     await syncLunarRegionToNative(region);
     return true;
-  } catch (error) {
-    console.error('음력 기준 저장 실패:', error);
+  } catch {
+    // 호출한 쪽(LunarRegionContext)이 false를 받아 화면을 이전 기준으로 되돌린다
     return false;
   }
 };
@@ -110,8 +110,8 @@ export const loadLunarRegion = async (): Promise<LunarRegion | null> => {
       syncLunarRegionToNative(region);
     }
     return region;
-  } catch (error) {
-    console.error('음력 기준 불러오기 실패:', error);
+  } catch {
+    // 읽지 못하면 기기 지역 기본값을 그대로 쓴다
     return null;
   }
 };
