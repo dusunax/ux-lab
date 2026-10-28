@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: 300,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#E4E4EA',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingTop: 12,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: Colors.text.secondary,
+    color: '#3C3C43',
   },
   sectionTitleDark: {
     color: Colors.text.light,
@@ -231,10 +231,13 @@ const styles = StyleSheet.create({
   sectionCard: {
     backgroundColor: Colors.white,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#D1D1D8',
     overflow: 'hidden',
   },
   sectionCardDark: {
     backgroundColor: Colors.card.dark,
+    borderColor: '#45454A',
   },
   closeButton: {
     paddingTop: 2,
