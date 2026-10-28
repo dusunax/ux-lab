@@ -6,6 +6,7 @@ import {useLunarDate} from '../hooks/useLunarDate';
 import {useDateConverter} from '../hooks/useDateConverter';
 import {useI18n} from '../i18n';
 import {useDarkMode} from '../contexts/DarkModeContext';
+import {useLunarRegion} from '../contexts/LunarRegionContext';
 import {LoadingScreen} from '../components/LoadingScreen';
 import {LanguageSelector} from '../components/LanguageSelector';
 import {DarkModeToggle} from '../components/DarkModeToggle/DarkModeToggle';
@@ -18,6 +19,7 @@ export const MainScreen = () => {
   const insets = useSafeAreaInsets();
   const {darkMode: isDarkMode} = useDarkMode();
   const {t, isLoading: i18nLoading} = useI18n();
+  const {region, isLoading: regionLoading} = useLunarRegion();
   const {lunar: defaultLunar, refreshing, onRefresh} = useLunarDate();
   const [converterLunar, setConverterLunar] = useState<LunarDate | null>(null);
   
@@ -30,7 +32,7 @@ export const MainScreen = () => {
 
   const handleLunarDateSelect = useCallback((lunarYear: number, lunarMonth: number, lunarDay: number, isLeapMonth: boolean) => {
     try {
-      const solarDate = lunarToSolar(lunarYear, lunarMonth, lunarDay, isLeapMonth);
+      const solarDate = lunarToSolar(lunarYear, lunarMonth, lunarDay, isLeapMonth, region);
       converter.setSolarDate(
         solarDate.getFullYear(),
         solarDate.getMonth() + 1,
@@ -39,9 +41,9 @@ export const MainScreen = () => {
     } catch (error) {
       console.error('음력 날짜 변환 실패:', error);
     }
-  }, [converter]);
+  }, [converter, region]);
 
-  if (!t || i18nLoading || !displayLunar) {
+  if (!t || i18nLoading || regionLoading || !displayLunar) {
     return <LoadingScreen />;
   }
 

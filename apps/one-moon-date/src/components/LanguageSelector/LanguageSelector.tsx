@@ -9,7 +9,9 @@ import {
 import {Colors} from '../../constants/colors';
 import {useI18n} from '../../i18n';
 import {useDarkMode} from '../../contexts/DarkModeContext';
-import type {Language} from '../../types';
+import {useLunarRegion} from '../../contexts/LunarRegionContext';
+import {getLunarRegionLabelKey} from '../../i18n/translations';
+import type {Language, LunarRegion} from '../../types';
 
 const LANGUAGE_LABELS: Record<Language, string> = {
   ko: '한국어',
@@ -18,19 +20,21 @@ const LANGUAGE_LABELS: Record<Language, string> = {
 };
 
 export const LanguageSelector = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const {darkMode: isDarkMode} = useDarkMode();
   const {language, changeLanguage, availableLanguages, t} = useI18n();
+  const {region, changeRegion, availableRegions} = useLunarRegion();
+  const close = () => setVisible(false);
 
   const handleLanguageChange = (lang: Language) => {
     try {
-      setModalVisible(false);
+      close();
       changeLanguage(lang).catch((error) => {
         console.error('언어 변경 중 오류 발생:', error);
       });
     } catch (error) {
       console.error('언어 변경 중 오류 발생:', error);
-      setModalVisible(false);
+      close();
     }
   };
 
@@ -38,11 +42,71 @@ export const LanguageSelector = () => {
     return LANGUAGE_LABELS[lang] || lang.toUpperCase();
   };
 
+  const handleRegionChange = (newRegion: LunarRegion) => {
+    close();
+    changeRegion(newRegion);
+  };
+
+  const getRegionLabel = (r: LunarRegion): string => {
+    return t?.[getLunarRegionLabelKey(r)] || r.toUpperCase();
+  };
+
+  const renderOption = (
+    key: string,
+    label: string,
+    selected: boolean,
+    onPress: () => void,
+    isLast: boolean,
+  ) => (
+    <TouchableOpacity
+      key={key}
+      style={[
+        styles.modalItem,
+        isDarkMode && styles.modalItemDark,
+        isLast && styles.modalItemLast,
+        selected && styles.modalItemActive,
+      ]}
+      onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{checked: selected}}
+      accessibilityLabel={label}>
+      <Text
+        style={[
+          styles.modalItemText,
+          isDarkMode && styles.textDark,
+          selected && styles.modalItemTextActive,
+        ]}>
+        {label}
+      </Text>
+      {selected && <Text style={styles.modalCheckmark}>✓</Text>}
+    </TouchableOpacity>
+  );
+
+  // 언어와 음력 기준은 성격이 다른 설정이라 아이콘 붙은 제목과 별도 카드로 나눈다
+  const renderSection = (icon: string, title: string | undefined, options: React.ReactNode) => (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionIcon} accessible={false}>{icon}</Text>
+        <Text
+          style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}
+          accessibilityRole="header">
+          {title}
+        </Text>
+      </View>
+      <View
+        style={[styles.sectionCard, isDarkMode && styles.sectionCardDark]}
+        accessibilityRole="radiogroup"
+        accessibilityLabel={title}>
+        {options}
+      </View>
+    </View>
+  );
+
   return (
     <>
       <TouchableOpacity
         style={styles.langIconButton}
-        onPress={() => setModalVisible(true)}
+        onPress={() => setVisible(true)}
         accessibilityRole="button"
         accessibilityLabel={t?.languageSelectorLabel}>
         <Text style={[styles.langIconText, isDarkMode && styles.langIconTextDark]}>
@@ -51,39 +115,53 @@ export const LanguageSelector = () => {
       </TouchableOpacity>
 
       <Modal
-        visible={modalVisible}
+        visible={visible}
         transparent
         animationType="fade"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={close}>
+        {/* 오버레이는 바깥 탭으로 닫기만 담당한다. 접근성 트리에서 빼야 VoiceOver가 항목을 하나씩 읽는다 */}
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={() => setModalVisible(false)}>
-          <View style={[styles.modalContent, isDarkMode && styles.modalContentDark]}>
-            {availableLanguages.map((lang) => (
-              <TouchableOpacity
-                key={lang}
-                style={[
-                  styles.modalItem,
-                  language === lang && styles.modalItemActive,
-                ]}
-                onPress={() => handleLanguageChange(lang)}
-                accessibilityRole="button"
-                accessibilityState={{selected: language === lang}}
-                accessibilityLabel={getLanguageLabel(lang)}>
-                <Text
-                  style={[
-                    styles.modalItemText,
-                    isDarkMode && styles.textDark,
-                    language === lang && styles.modalItemTextActive,
-                  ]}>
-                  {getLanguageLabel(lang)}
-                </Text>
-                {language === lang && (
-                  <Text style={styles.modalCheckmark}>✓</Text>
-                )}
-              </TouchableOpacity>
-            ))}
+          onPress={close}
+          accessible={false}>
+          <View
+            style={[styles.modalContent, isDarkMode && styles.modalContentDark]}
+            accessibilityViewIsModal
+            onStartShouldSetResponder={() => true}>
+            {renderSection(
+              '🌐',
+              t?.languageSection,
+              availableLanguages.map((lang, i) =>
+                renderOption(
+                  lang,
+                  getLanguageLabel(lang),
+                  language === lang,
+                  () => handleLanguageChange(lang),
+                  i === availableLanguages.length - 1,
+                ),
+              ),
+            )}
+            {renderSection(
+              '🌙',
+              t?.lunarRegionSection,
+              availableRegions.map((r, i) =>
+                renderOption(
+                  r,
+                  getRegionLabel(r),
+                  region === r,
+                  () => handleRegionChange(r),
+                  i === availableRegions.length - 1,
+                ),
+              ),
+            )}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={close}
+              accessibilityRole="button"
+              accessibilityLabel={t?.close}>
+              <Text style={styles.closeButtonText}>{t?.close}</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -113,9 +191,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    width: 280,
-    backgroundColor: Colors.white,
-    borderRadius: 16,
+    width: 300,
+    backgroundColor: '#F2F2F7',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingTop: 12,
     overflow: 'hidden',
     shadowColor: Colors.shadow.color,
     shadowOffset: {width: 0, height: 4},
@@ -124,25 +204,62 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   modalContentDark: {
+    backgroundColor: Colors.background.dark,
+  },
+  section: {
+    marginBottom: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingTop: 4,
+    paddingBottom: 8,
+  },
+  sectionIcon: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  sectionTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.text.secondary,
+  },
+  sectionTitleDark: {
+    color: Colors.text.light,
+  },
+  sectionCard: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  sectionCardDark: {
     backgroundColor: Colors.card.dark,
   },
-  modalTitle: {
-    fontSize: 20,
+  closeButton: {
+    paddingTop: 2,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: 16,
     fontWeight: '600',
-    color: Colors.text.primary.light,
-    padding: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    color: Colors.accent.blue,
   },
   modalItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
+  },
+  modalItemDark: {
+    borderBottomColor: '#3a3a3a',
+  },
+  modalItemLast: {
+    borderBottomWidth: 0,
   },
   modalItemActive: {
     backgroundColor: Colors.accent.blue + '10',

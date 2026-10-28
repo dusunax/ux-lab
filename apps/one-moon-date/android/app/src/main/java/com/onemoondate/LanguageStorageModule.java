@@ -13,6 +13,7 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
     private static final String PREFS_NAME = "com.onemoondate.preferences";
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_DARK_MODE = "darkMode";
+    private static final String KEY_LUNAR_REGION = "lunarRegion";
 
     public LanguageStorageModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -78,6 +79,35 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
             promise.resolve(true);
         } catch (Exception e) {
             promise.reject("SET_DARK_MODE_ERROR", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void setLunarRegion(String region, Promise promise) {
+        try {
+            SharedPreferences prefs = getReactApplicationContext()
+                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            prefs.edit().putString(KEY_LUNAR_REGION, region).apply();
+
+            // 기본 위젯 업데이트
+            android.content.Intent intent = new android.content.Intent(
+                getReactApplicationContext(),
+                com.onemoondate.widget.LunarWidgetProvider.class
+            );
+            intent.setAction("com.onemoondate.ACTION_UPDATE_WIDGET");
+            getReactApplicationContext().sendBroadcast(intent);
+
+            // 큰 위젯 업데이트
+            android.content.Intent intentLarge = new android.content.Intent(
+                getReactApplicationContext(),
+                com.onemoondate.widget.LunarWidgetLargeProvider.class
+            );
+            intentLarge.setAction("com.onemoondate.ACTION_UPDATE_WIDGET_LARGE");
+            getReactApplicationContext().sendBroadcast(intentLarge);
+
+            promise.resolve(true);
+        } catch (Exception e) {
+            promise.reject("SET_LUNAR_REGION_ERROR", e.getMessage());
         }
     }
 

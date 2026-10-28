@@ -1,5 +1,7 @@
 export type Language = 'ko' | 'en' | 'ja';
 
+export type LunarRegion = 'kr' | 'cn';
+
 export interface LunarDate {
   year: number;
   month: number;
@@ -53,6 +55,11 @@ export interface Translation {
   leapMonth: string;
   darkModeToggleLabel: string;
   languageSelectorLabel: string;
+  languageSection: string;
+  lunarRegionSection: string;
+  lunarRegionKr: string;
+  lunarRegionCn: string;
+  close: string;
   errorBoundaryMessage: string;
   errorBoundaryRetry: string;
   zodiac: Zodiac;
@@ -81,6 +88,13 @@ export interface I18nContextValue {
   isLoading: boolean;
 }
 
+export interface LunarRegionContextValue {
+  region: LunarRegion;
+  changeRegion: (region: LunarRegion) => Promise<void>;
+  availableRegions: LunarRegion[];
+  isLoading: boolean;
+}
+
 export interface DarkModeContextValue {
   darkMode: boolean;
   isLoading: boolean;
@@ -91,6 +105,7 @@ export interface LanguageStorageModule {
   setLanguage: (language: string) => Promise<void>;
   getLanguage: () => Promise<string | null>;
   setDarkMode?: (isDark: boolean) => Promise<void>;
+  setLunarRegion?: (region: string) => Promise<void>;
 }
 
 declare module 'react-native' {

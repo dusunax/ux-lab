@@ -1,6 +1,7 @@
 import {useState, useEffect, useCallback} from 'react';
 import {getTodayLunar} from '../utils/lunarCalendar';
 import {useI18n} from '../i18n';
+import {useLunarRegion} from '../contexts/LunarRegionContext';
 import type {LunarDate} from '../types';
 
 interface UseLunarDateReturn {
@@ -13,10 +14,11 @@ export const useLunarDate = (): UseLunarDateReturn => {
   const [lunar, setLunar] = useState<LunarDate | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const {getGanZhi} = useI18n();
+  const {region} = useLunarRegion();
 
   const updateLunarDate = useCallback(() => {
     const today = new Date();
-    const lunarDate = getTodayLunar();
+    const lunarDate = getTodayLunar(region);
     const ganZhi = getGanZhi(lunarDate.year);
 
     setLunar({
@@ -24,7 +26,7 @@ export const useLunarDate = (): UseLunarDateReturn => {
       ...ganZhi,
       solarDate: today,
     });
-  }, [getGanZhi]);
+  }, [getGanZhi, region]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

@@ -1,4 +1,4 @@
-import type {Translations} from '../types';
+import type {LunarRegion, Translations} from '../types';
 
 export const translations: Translations = {
   ko: {
@@ -16,7 +16,12 @@ export const translations: Translations = {
     convertError: '변환 실패',
     leapMonth: '윤',
     darkModeToggleLabel: '다크 모드 전환',
-    languageSelectorLabel: '언어 선택',
+    languageSelectorLabel: '언어 및 음력 기준',
+    languageSection: '언어',
+    lunarRegionSection: '음력 기준',
+    lunarRegionKr: '한국 음력',
+    lunarRegionCn: '중국 음력',
+    close: '닫기',
     errorBoundaryMessage: '문제가 발생했습니다. 다시 시도해 주세요.',
     errorBoundaryRetry: '다시 시도',
     zodiac: {
@@ -53,7 +58,12 @@ export const translations: Translations = {
     convertError: 'Conversion failed',
     leapMonth: 'Leap ',
     darkModeToggleLabel: 'Toggle dark mode',
-    languageSelectorLabel: 'Select language',
+    languageSelectorLabel: 'Language and lunar calendar',
+    languageSection: 'Language',
+    lunarRegionSection: 'Lunar calendar standard',
+    lunarRegionKr: 'Korean lunar calendar',
+    lunarRegionCn: 'Chinese lunar calendar',
+    close: 'Done',
     errorBoundaryMessage: 'Something went wrong. Please try again.',
     errorBoundaryRetry: 'Try again',
     zodiac: {
@@ -90,7 +100,12 @@ export const translations: Translations = {
     convertError: '変換失敗',
     leapMonth: '閏',
     darkModeToggleLabel: 'ダークモード切替',
-    languageSelectorLabel: '言語選択',
+    languageSelectorLabel: '言語と旧暦の基準',
+    languageSection: '言語',
+    lunarRegionSection: '旧暦の基準',
+    lunarRegionKr: '韓国の旧暦',
+    lunarRegionCn: '中国の旧暦',
+    close: '閉じる',
     errorBoundaryMessage: '問題が発生しました。もう一度お試しください。',
     errorBoundaryRetry: 'もう一度試す',
     zodiac: {
@@ -120,4 +135,8 @@ export const getZodiacKey = (index: number): keyof Translations['ko']['zodiac'] 
     'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'goat',
   ];
   return keys[index % 12];
+};
+
+export const getLunarRegionLabelKey = (region: LunarRegion): 'lunarRegionKr' | 'lunarRegionCn' => {
+  return region === 'cn' ? 'lunarRegionCn' : 'lunarRegionKr';
 };
