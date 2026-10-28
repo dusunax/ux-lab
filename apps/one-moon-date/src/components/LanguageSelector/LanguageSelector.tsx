@@ -203,8 +203,11 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  // 다크 모드에서는 어두워진 뒤 화면과 팝업이 묻히지 않도록 배경을 한 단계 밝히고 테두리를 둔다
   modalContentDark: {
-    backgroundColor: Colors.background.dark,
+    backgroundColor: '#242427',
+    borderWidth: 1,
+    borderColor: '#4A4A50',
   },
   section: {
     marginBottom: 16,
@@ -236,8 +239,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sectionCardDark: {
-    backgroundColor: Colors.card.dark,
-    borderColor: '#45454A',
+    backgroundColor: '#333338',
+    borderColor: '#4A4A50',
   },
   closeButton: {
     paddingTop: 2,
@@ -259,7 +262,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F0F0F0',
   },
   modalItemDark: {
-    borderBottomColor: '#3a3a3a',
+    borderBottomColor: '#46464C',
   },
   modalItemLast: {
     borderBottomWidth: 0,
