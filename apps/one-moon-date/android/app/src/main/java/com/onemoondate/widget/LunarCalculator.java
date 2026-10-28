@@ -157,9 +157,6 @@ public class LunarCalculator {
         return solarToLunar(solarYear, solarMonth, solarDay, REGION_KR);
     }
 
-    /**
-     * 지정한 지역 기준으로 양력을 음력으로 변환
-     */
     public static LunarDate solarToLunar(int solarYear, int solarMonth, int solarDay, String region) {
         int[] data = REGION_CN.equals(region) ? LUNAR_DATA_CN : LUNAR_DATA_KR;
         int targetJulianDay = toJulianDay(solarYear, solarMonth, solarDay);
@@ -230,9 +227,6 @@ public class LunarCalculator {
         );
     }
 
-    /**
-     * 앱에서 고른 음력 기준. 고르기 전에는 기기 지역으로 판정한다
-     */
     public static String getSavedRegion(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         String region = prefs.getString(KEY_LUNAR_REGION, null);

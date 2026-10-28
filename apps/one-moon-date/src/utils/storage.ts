@@ -76,7 +76,6 @@ export const saveDarkMode = async (isDark: boolean): Promise<boolean> => {
   }
 };
 
-// 위젯이 읽는 SharedPreferences에 기록한다. 실패해도 다음 실행 때 loadLunarRegion이 다시 보낸다
 const syncLunarRegionToNative = async (region: LunarRegion): Promise<void> => {
   if (Platform.OS !== 'android') {
     return;
@@ -87,7 +86,7 @@ const syncLunarRegionToNative = async (region: LunarRegion): Promise<void> => {
       await LanguageStorage.setLunarRegion(region);
     }
   } catch {
-    // 위젯 쪽 저장 실패는 앱 동작에 영향이 없고, 다음 실행 때 다시 보낸다
+    // 실패해도 다음 실행 때 loadLunarRegion이 다시 보낸다
   }
 };
 
@@ -97,7 +96,6 @@ export const saveLunarRegion = async (region: LunarRegion): Promise<boolean> => 
     await syncLunarRegionToNative(region);
     return true;
   } catch {
-    // 호출한 쪽(LunarRegionContext)이 false를 받아 화면을 이전 기준으로 되돌린다
     return false;
   }
 };
@@ -111,7 +109,6 @@ export const loadLunarRegion = async (): Promise<LunarRegion | null> => {
     }
     return region;
   } catch {
-    // 읽지 못하면 기기 지역 기본값을 그대로 쓴다
     return null;
   }
 };

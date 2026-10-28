@@ -93,7 +93,6 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
                 .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             prefs.edit().putString(KEY_LUNAR_REGION, region).apply();
 
-            // 기본 위젯 업데이트
             android.content.Intent intent = new android.content.Intent(
                 getReactApplicationContext(),
                 com.onemoondate.widget.LunarWidgetProvider.class
@@ -101,7 +100,6 @@ public class LanguageStorageModule extends ReactContextBaseJavaModule {
             intent.setAction("com.onemoondate.ACTION_UPDATE_WIDGET");
             getReactApplicationContext().sendBroadcast(intent);
 
-            // 큰 위젯 업데이트
             android.content.Intent intentLarge = new android.content.Intent(
                 getReactApplicationContext(),
                 com.onemoondate.widget.LunarWidgetLargeProvider.class

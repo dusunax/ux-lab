@@ -62,7 +62,6 @@ interface SettingsSectionProps {
   isDarkMode: boolean;
 }
 
-// 언어와 음력 기준은 성격이 다른 설정이라 아이콘 붙은 제목과 별도 카드로 나눈다
 const SettingsSection = ({icon, title, options, isDarkMode}: SettingsSectionProps) => (
   <View style={styles.section}>
     <View style={styles.sectionHeader}>
@@ -200,7 +199,6 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  // 다크 모드에서는 어두워진 뒤 화면과 팝업이 묻히지 않도록 배경을 한 단계 밝히고 테두리를 둔다
   modalContentDark: {
     backgroundColor: '#242427',
     borderWidth: 1,
