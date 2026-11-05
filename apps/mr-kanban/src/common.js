@@ -39,6 +39,12 @@ function missingRequired(cfg) {
   return out;
 }
 
+// 필요 승인 수: 0도 그대로 쓰고, 빈 값·숫자가 아니면 기본값 1
+function parseApprovals(v) {
+  const n = Number(v);
+  return v === '' || v == null || !Number.isFinite(n) ? 1 : Math.max(0, Math.floor(n));
+}
+
 // 예전 단일 토큰(tokenEnc)을 그때 설정의 칸으로 옮긴다
 function migrateTokens(cfg) {
   if (!cfg.tokenEnc) return cfg;
@@ -59,4 +65,4 @@ function classify(mr, { approvedCount, pipeline, needed, reviewed }) {
   return 'draft';
 }
 
-module.exports = { GITHUB_API, normalizeBase, tokenKind, tokenSlot, tokenHosts, missingRequired, migrateTokens, classify };
+module.exports = { GITHUB_API, normalizeBase, tokenKind, tokenSlot, tokenHosts, missingRequired, parseApprovals, migrateTokens, classify };

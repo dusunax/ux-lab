@@ -84,7 +84,7 @@ function cardEl(c) {
   const cm = el('span', null, String(c.notes));
   cm.prepend(icon(ICON_COMMENT));
   m.append(cm);
-  if (c.column !== 'merged') {
+  if (c.column !== 'merged' && c.needed > 0) { // 필요 승인 수가 0이면 승인 표시를 생략한다
     const ap = el('span', null, `${c.approvedCount}/${c.needed}`);
     ap.prepend(icon(ICON_CHECK));
     m.append(ap);

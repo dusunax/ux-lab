@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, safeStorage, screen } = require('electron');
 const fs = require('fs');
 const path = require('path');
-const { normalizeBase, tokenKind, tokenSlot, tokenHosts, missingRequired, migrateTokens } = require('./common');
+const { normalizeBase, tokenKind, tokenSlot, tokenHosts, missingRequired, parseApprovals, migrateTokens } = require('./common');
 const providers = { gitlab: require('./gitlab'), github: require('./github') };
 
 const DEFAULTS = { provider: 'gitlab', baseUrl: '', users: [], intervalSec: 60, approvalsNeeded: 1, tokens: {}, bounds: null, maxHeight: 0, uiSize: 'm', collapsed: false };
@@ -112,7 +112,7 @@ function applyInput(cfg, input) {
   }
   if (Array.isArray(input.users)) cfg.users = [...new Set(input.users.map((u) => String(u).trim()).filter(Boolean))];
   cfg.intervalSec = Math.max(30, Math.min(300, Number(input.intervalSec) || 60));
-  cfg.approvalsNeeded = Math.max(0, Number(input.approvalsNeeded) || 1);
+  cfg.approvalsNeeded = parseApprovals(input.approvalsNeeded);
   return cfg;
 }
 

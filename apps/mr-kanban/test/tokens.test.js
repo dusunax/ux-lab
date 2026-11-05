@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { tokenKind, tokenSlot, tokenHosts, missingRequired, migrateTokens } = require('../src/common');
+const { tokenKind, tokenSlot, tokenHosts, missingRequired, parseApprovals, migrateTokens } = require('../src/common');
 
 const GH = 'https://api.github.com';
 const GHE = 'https://ghe.example.local/api/v3';
@@ -34,4 +34,12 @@ test('missingRequired: 주소·쓸 수 있는 토큰·담당자 ID가 모두 있
   assert.deepEqual(missingRequired({ provider: 'github', baseUrl: GH, tokens, users: ['me'] }), []);
   assert.deepEqual(missingRequired({ provider: 'gitlab', baseUrl: '', tokens, users: ['me'] }), ['URL', '토큰']);
   assert.deepEqual(missingRequired({ provider: 'github', baseUrl: GHE, tokens, users: [] }), ['토큰', '담당자 ID']);
+});
+test('parseApprovals: 0은 그대로, 빈 값·숫자 아님은 1', () => {
+  assert.equal(parseApprovals('0'), 0);
+  assert.equal(parseApprovals(0), 0);
+  assert.equal(parseApprovals('2'), 2);
+  assert.equal(parseApprovals(''), 1);
+  assert.equal(parseApprovals('abc'), 1);
+  assert.equal(parseApprovals('-3'), 0);
 });
