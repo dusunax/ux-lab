@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src data:">
+<title>Review Kanban</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="bar">
+    <div id="pill">
+      <span id="status" class="status-dot"></span>
+      <button id="btn-refresh" title="새로고침">↻</button>
+      <span id="updated">불러오는 중…</span>
+      <!-- 축소했을 때 컬럼별 개수 칩 -->
+      <div id="mini" hidden></div>
+      <span class="spacer"></span>
+      <div id="tabs" role="tablist">
+        <button id="tab-board" class="tab active" role="tab">보드</button>
+        <button id="tab-settings" class="tab" role="tab">설정</button>
+      </div>
+      <button id="btn-collapse" title="축소"></button>
+      <span class="sep"></span>
+      <button id="btn-quit" title="종료">✕</button>
+    </div>
+  </header>
+
+  <main id="board"></main>
+  <div id="grip" title="드래그: 크기 조절 · 더블클릭: 자동 높이"></div>
+
+  <section id="settings" hidden>
+    <span class="sec-title">연결 설정</span>
+    <label><span class="lbl-row">제공자 <span id="saved-provider" class="saved" hidden></span></span>
+      <select id="f-provider">
+        <option value="gitlab">GitLab</option>
+        <option value="github">GitHub</option>
+      </select>
+    </label>
+    <div id="gh-host" class="row" role="radiogroup" hidden>
+      <label class="radio"><input type="radio" name="gh-host" value="cloud" checked> github.com</label>
+      <label class="radio"><input type="radio" name="gh-host" value="enterprise"> Enterprise Server</label>
+    </div>
+    <label id="url-field"><span><span id="l-url">GitLab URL</span> <span class="req" title="필수">*</span></span> <input id="f-url" aria-required="true" placeholder="http://gitlab.example.local"></label>
+    <label><span><span id="l-token">개인 토큰 (api 스코프)</span> <span id="req-token" class="req" title="필수">*</span></span> <input id="f-token" type="password" autocomplete="off" placeholder="변경 시 다시 입력"></label>
+    <label><span><span id="l-users">담당자 GitLab ID (쉼표 또는 줄바꿈으로 구분)</span> <span class="req" title="필수">*</span></span> <textarea id="f-users" aria-required="true" rows="3" placeholder="user1, user2"></textarea></label>
+    <div class="row">
+      <label>폴링(초) <input id="f-interval" type="number" min="30" max="300"></label>
+      <label>필요 승인 수 <input id="f-approvals" type="number" min="0"></label>
+    </div>
+    <div class="row actions">
+      <span id="test-result" class="muted"></span>
+      <button id="btn-test">연결 테스트</button>
+      <button id="btn-save">저장</button>
+    </div>
+
+    <!-- 화면 설정: 연결 설정과 별개로 고르면 바로 적용·저장 -->
+    <div class="sec">
+      <span class="sec-title">화면 설정</span>
+      <div class="row" role="radiogroup" aria-label="GUI">
+        <span class="muted">GUI</span>
+        <label class="radio"><input type="radio" name="ui-size" value="s"> Small</label>
+        <label class="radio"><input type="radio" name="ui-size" value="m" checked> Medium</label>
+        <label class="radio"><input type="radio" name="ui-size" value="l"> Large</label>
+      </div>
+    </div>
+  </section>
+  <!-- 오류 줄은 맨 아래에 -->
+  <div id="error" hidden></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "review-kanban",
+  "version": "0.1.0",
+  "private": true,
+  "description": "GitLab MR·GitHub PR 코드 리뷰 진행 상황 칸반 위젯",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}
