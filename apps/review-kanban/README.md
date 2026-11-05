@@ -1,4 +1,4 @@
-# MR Kanban
+# Review Kanban
 
 GitLab Merge Request 또는 GitHub Pull Request를 담당자별로 모아 칸반으로 보여주는 항상 위(always-on-top) 데스크톱 위젯입니다. Electron 기반, 빌드 도구 없이 동작합니다.
 
@@ -18,8 +18,8 @@ GitLab Merge Request 또는 GitHub Pull Request를 담당자별로 모아 칸반
 ## 실행
 
 ```bash
-pnpm --filter mr-kanban install
-pnpm --filter mr-kanban start
+pnpm --filter review-kanban install
+pnpm --filter review-kanban start
 ```
 
 설정 탭에서 제공자, URL, 토큰, 담당자 username, 폴링 주기(30~300초), 필요 승인 수를 입력합니다. 설정이 비어 있으면 앱이 설정 탭으로 시작합니다.
@@ -53,5 +53,5 @@ GitHub 검색 API는 분당 30회 한도라 폴링 1회에 담당자당 2회를 
 ## 테스트
 
 ```bash
-pnpm --filter mr-kanban test
+pnpm --filter review-kanban test
 ```

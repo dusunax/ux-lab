@@ -24,6 +24,18 @@ let failures = 0;
 let lastBoard = null;
 
 const cfgPath = () => path.join(app.getPath('userData'), 'config.json');
+
+// 예전 이름(mr-kanban)으로 저장한 설정을 한 번만 옮긴다. 토큰은 키체인 항목이 앱 이름을 따르므로
+// 새 이름으로는 풀 수 없어 옮기지 않는다 (처음 한 번 다시 입력)
+function migrateLegacyConfig() {
+  const legacy = path.join(app.getPath('appData'), 'mr-kanban', 'config.json');
+  if (fs.existsSync(cfgPath()) || !fs.existsSync(legacy)) return;
+  try {
+    const { tokens, tokenEnc, ...rest } = JSON.parse(fs.readFileSync(legacy, 'utf8'));
+    fs.mkdirSync(path.dirname(cfgPath()), { recursive: true });
+    saveCfg(rest);
+  } catch { /* 옮기지 못하면 새 설정으로 시작 */ }
+}
 function loadCfg() {
   try {
     const { fontSize, ...saved } = JSON.parse(fs.readFileSync(cfgPath(), 'utf8'));
@@ -195,5 +207,5 @@ ipcMain.handle('win:autoheight', () => { const c = loadCfg(); c.maxHeight = 0; s
 ipcMain.handle('win:close', () => app.quit());
 
 // 렌더러가 로드되기 전에 보낸 결과는 사라지므로, 로드가 끝날 때마다(처음 실행·새로고침) 바로 한 번 받아온다
-app.whenReady().then(() => { createWindow(); win.webContents.on('did-finish-load', poll); });
+app.whenReady().then(() => { migrateLegacyConfig(); createWindow(); win.webContents.on('did-finish-load', poll); });
 app.on('window-all-closed', () => app.quit());
