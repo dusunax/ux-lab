@@ -194,6 +194,6 @@ ipcMain.handle('ui:pref', (_e, key, value) => {
 ipcMain.handle('win:autoheight', () => { const c = loadCfg(); c.maxHeight = 0; saveCfg(c); });
 ipcMain.handle('win:close', () => app.quit());
 
-// 렌더러가 로드되기 전에 보낸 결과는 사라지므로, 첫 폴링은 로드가 끝난 뒤에 한다
-app.whenReady().then(() => { createWindow(); win.webContents.once('did-finish-load', poll); });
+// 렌더러가 로드되기 전에 보낸 결과는 사라지므로, 로드가 끝날 때마다(처음 실행·새로고침) 바로 한 번 받아온다
+app.whenReady().then(() => { createWindow(); win.webContents.on('did-finish-load', poll); });
 app.on('window-all-closed', () => app.quit());
