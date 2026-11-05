@@ -318,7 +318,8 @@ async function fitSettings() {
   const chrome = $('app').offsetHeight - s.offsetHeight; // 툴바·오류 줄·여백
   s.style.flex = 'none';
   s.style.height = 'auto';
-  const h = s.offsetHeight;
+  // 내용 높이는 소수점이 붙을 수 있어(GUI 배율·레티나) 정수로 반올림하면 1px 모자라 스크롤바가 생긴다 → 올림
+  const h = Math.ceil(s.getBoundingClientRect().height);
   s.style.flex = '';
   s.style.height = '';
   await window.api.fit(chrome + h);

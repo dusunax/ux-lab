@@ -36,7 +36,7 @@ button:disabled, button:disabled:hover { opacity: .45; cursor: default; backgrou
 .col { padding: 8px; min-width: 0; min-height: 0; display: flex; flex-direction: column;
   background: rgba(255,255,255,.97); border-radius: 18px; border: 1px solid rgba(110,120,165,.28); box-shadow: 0 2px 8px rgba(30,40,90,.16); }
 
-.colhead { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; line-height: 1; border-radius: 12px; color: #fff; font-weight: 700; margin-bottom: 0; }
+.colhead { flex: none; /* 높이를 잴 때 목록에 밀려 헤더가 눌리지 않게 */ display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 10px; line-height: 1; border-radius: 12px; color: #fff; font-weight: 700; margin-bottom: 0; }
 .h-draft { background: var(--draft); } .h-review { background: var(--review); }
 .h-ready { background: var(--ready); } .h-merged { background: var(--merged); }
 .cnt { display: inline-flex; align-items: center; justify-content: center; height: 18px; min-width: 18px; background: rgba(255,255,255,.85); border-radius: 9px; padding: 0 6px; font-weight: 700; font-size: .92em; line-height: 1; }

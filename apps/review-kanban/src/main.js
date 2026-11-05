@@ -166,7 +166,8 @@ const zoom = () => win.webContents.getZoomFactor();
 ipcMain.handle('win:fit', (_e, h) => {
   if (!win || win.isDestroyed()) return;
   const wa = screen.getDisplayMatching(win.getBounds()).workArea;
-  const H = Math.round(Math.max(40, Math.min((Number(h) || 0) * zoom(), wa.height))); // 축소하면 툴바 높이까지 줄어든다
+  // 배율을 곱한 값을 반올림하면 내용보다 1px 작아져 스크롤바가 생길 수 있어 올림한다. 축소하면 툴바 높이까지 줄어든다
+  const H = Math.ceil(Math.max(40, Math.min((Number(h) || 0) * zoom(), wa.height)));
   const [w, cur] = win.getContentSize();
   if (Math.abs(cur - H) > 1) win.setContentSize(w, H);
 });
