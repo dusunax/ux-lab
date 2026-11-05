@@ -76,7 +76,9 @@ function cardEl(c) {
   const changed = prev.size > 0 && prev.get(key) !== c.updatedAt;
   const d = el('div', `card${warn ? ' warn' : ''}${changed ? ' changed' : ''}`);
   d.title = c.title;
-  d.append(el('div', 't', `${c.iid} ${c.title}`));
+  const t = el('div', 't');
+  t.append(el('span', 'iid', `!${c.iid}`), ` ${c.title}`); // 번호는 굵게, 제목은 텍스트 노드로 (외부 문자열)
+  d.append(t);
   const m = el('div', 'm');
   if (c.pipeline) m.append(el('span', `dot ${c.pipeline}`));
   const cm = el('span', null, String(c.notes));
@@ -336,6 +338,7 @@ async function showTab(name) {
   $('tab-settings').classList.toggle('active', settings);
   if (settings) await openSettings(); else render();
   renderError();
+  requestAnimationFrame(refit); // 탭 전환 직후 높이 맞춤이 겹쳐도 한 프레임 뒤 다시 맞춘다
 }
 // 축소 중에 탭을 누르면 축소를 풀고 그 탭을 연다
 function openTab(name) {

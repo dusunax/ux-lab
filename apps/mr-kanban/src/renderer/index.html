@@ -12,7 +12,7 @@
     <div id="pill">
       <span id="status" class="status-dot"></span>
       <button id="btn-refresh" title="새로고침">↻</button>
-      <span id="updated">--</span>
+      <span id="updated">불러오는 중…</span>
       <!-- 축소했을 때 컬럼별 개수 칩 -->
       <div id="mini" hidden></div>
       <span class="spacer"></span>
@@ -30,6 +30,7 @@
   <div id="grip" title="드래그: 크기 조절 · 더블클릭: 자동 높이"></div>
 
   <section id="settings" hidden>
+    <span class="sec-title">연결 설정</span>
     <label><span class="lbl-row">제공자 <span id="saved-provider" class="saved" hidden></span></span>
       <select id="f-provider">
         <option value="gitlab">GitLab</option>
@@ -55,9 +56,9 @@
 
     <!-- 화면 설정: 연결 설정과 별개로 고르면 바로 적용·저장 -->
     <div class="sec">
-      <span class="sec-title">화면</span>
-      <div class="row" role="radiogroup" aria-label="UI 크기">
-        <span class="muted">UI 크기</span>
+      <span class="sec-title">화면 설정</span>
+      <div class="row" role="radiogroup" aria-label="GUI">
+        <span class="muted">GUI</span>
         <label class="radio"><input type="radio" name="ui-size" value="s"> Small</label>
         <label class="radio"><input type="radio" name="ui-size" value="m" checked> Medium</label>
         <label class="radio"><input type="radio" name="ui-size" value="l"> Large</label>

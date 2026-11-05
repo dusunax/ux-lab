@@ -50,7 +50,8 @@ button:disabled, button:disabled:hover { opacity: .45; cursor: default; backgrou
 .card:hover { box-shadow: 0 3px 11px rgba(30,40,90,.32), 0 1px 2px rgba(30,40,90,.18); }
 .card.warn { box-shadow: 0 0 0 2px var(--review); }
 .card.changed { box-shadow: 0 0 0 2px #4d8dff; }
-.card .t { font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-all; }
+.card .t { font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-all; }
+.card .t .iid { font-weight: 800; } /* MR·PR 번호를 제목과 구분 */
 .card .m { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; margin-top: 6px; color: var(--sub); font-weight: 600; }
 .card .m > span { display: inline-flex; align-items: center; gap: 4px; height: 18px; line-height: 1; }
 .card .m > span > span { line-height: 1; }
